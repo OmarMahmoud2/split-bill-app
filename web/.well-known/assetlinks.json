@@ -1,0 +1,15 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "net.omarmali.splitapp",
+            "sha256_cert_fingerprints": [
+                "38:35:53:72:B0:51:7C:BA:F2:F5:EE:D9:3F:25:83:32:8D:0B:59:44:05:94:34:C0:C2:8F:64:82:00:98:B8:BF",
+                "01:F6:73:8F:99:F8:FA:7E:E3:96:29:99:80:4E:AB:31:5B:54:D1:3E:B2:C5:81:35:6B:18:08:8E:04:E2:94:BB"
+            ]
+        }
+    }
+]
