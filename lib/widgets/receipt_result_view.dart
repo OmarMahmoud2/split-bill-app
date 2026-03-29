@@ -5,7 +5,7 @@ import 'package:split_bill_app/utils/currency_utils.dart';
 
 class ReceiptResultView extends StatelessWidget {
   final Map<String, dynamic> receiptData;
-  final bool isEditing;
+  final String? editingSection;
   final List<Map<String, TextEditingController>> itemControllers;
   final String currencyCode;
   final TextEditingController restaurantController;
@@ -15,15 +15,15 @@ class ReceiptResultView extends StatelessWidget {
   final TextEditingController discountController;
   final TextEditingController tipController;
   final TextEditingController deliveryController;
+  final ValueChanged<String?> onEditingSectionChanged;
   final VoidCallback onSave;
   final VoidCallback onAddItem;
   final void Function(int index) onDeleteItem;
-  final VoidCallback onCancel;
 
   const ReceiptResultView({
     super.key,
     required this.receiptData,
-    required this.isEditing,
+    required this.editingSection,
     required this.itemControllers,
     required this.currencyCode,
     required this.restaurantController,
@@ -33,10 +33,10 @@ class ReceiptResultView extends StatelessWidget {
     required this.discountController,
     required this.tipController,
     required this.deliveryController,
+    required this.onEditingSectionChanged,
     required this.onSave,
     required this.onAddItem,
     required this.onDeleteItem,
-    required this.onCancel,
   });
 
   @override
@@ -60,7 +60,9 @@ class ReceiptResultView extends StatelessWidget {
     final confidenceScores = Map<String, dynamic>.from(
       receiptData['confidence_scores'] ?? const {},
     );
-    final warnings = List<String>.from(receiptData['warnings'] ?? const []);
+    final isEditingHeader = editingSection == 'header';
+    final isEditingItems = editingSection == 'items';
+    final isEditingCharges = editingSection == 'charges';
 
     double currentSubtotal = 0;
     for (var controllers in itemControllers) {
@@ -68,22 +70,6 @@ class ReceiptResultView extends StatelessWidget {
       final price = double.tryParse(controllers['price']!.text) ?? 0;
       currentSubtotal += qty * price;
     }
-
-    final flaggedItemCount = receiptItems.where((item) {
-      return _needsReview(_score(item['confidence_score']));
-    }).length;
-    final flaggedChargeCount =
-        otherCharges.where((charge) {
-          return _needsReview(_score(charge['confidence_score']));
-        }).length +
-        _editableChargeEntries(confidenceScores)
-            .where((entry) => _needsReview(entry.score))
-            .length;
-    final shouldShowReviewBanner =
-        receiptData['needs_review'] == true ||
-        warnings.isNotEmpty ||
-        flaggedItemCount > 0 ||
-        flaggedChargeCount > 0;
 
     final dateStr = DateTime.now().toString().substring(0, 10);
     final timeStr = TimeOfDay.now().format(context);
@@ -122,28 +108,49 @@ class ReceiptResultView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            if (isEditing)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildSmallEditField(
-                  controller: restaurantController,
-                  label: 'receipt_store_name'.tr(),
-                  isBold: true,
-                  fontSize: 20,
-                ),
-              )
-            else
-              Text(
-                receiptData['restaurant_name']?.toString().trim().isNotEmpty ==
-                        true
-                    ? receiptData['restaurant_name']
-                    : 'receipt_store_name'.tr(),
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: onSurface,
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: isEditingHeader
+                        ? _buildSmallEditField(
+                            controller: restaurantController,
+                            label: 'receipt_store_name'.tr(),
+                            isBold: true,
+                            fontSize: 20,
+                          )
+                        : Text(
+                            receiptData['restaurant_name']
+                                        ?.toString()
+                                        .trim()
+                                        .isNotEmpty ==
+                                    true
+                                ? receiptData['restaurant_name']
+                                : 'receipt_store_name'.tr(),
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: onSurface,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildSectionEditButton(
+                    isEditing: isEditingHeader,
+                    onTap: () {
+                      if (isEditingHeader) {
+                        onSave();
+                        onEditingSectionChanged(null);
+                      } else {
+                        onEditingSectionChanged('header');
+                      }
+                    },
+                  ),
+                ],
               ),
+            ),
             const SizedBox(height: 4),
             Text(
               "$dateStr  |  $timeStr",
@@ -173,13 +180,6 @@ class ReceiptResultView extends StatelessWidget {
                 ],
               ),
             ),
-            if (shouldShowReviewBanner)
-              _buildReviewBanner(
-                context,
-                warnings: warnings,
-                flaggedItemCount: flaggedItemCount,
-                flaggedChargeCount: flaggedChargeCount,
-              ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -195,20 +195,22 @@ class ReceiptResultView extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  if (isEditing)
-                    Text(
-                      'receipt_review_subtitle'.tr(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: muted,
-                      ),
-                    ),
+                  _buildSectionEditButton(
+                    isEditing: isEditingItems,
+                    onTap: () {
+                      if (isEditingItems) {
+                        onSave();
+                        onEditingSectionChanged(null);
+                      } else {
+                        onEditingSectionChanged('items');
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-            if (isEditing)
+            if (isEditingItems)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Align(
@@ -233,7 +235,7 @@ class ReceiptResultView extends StatelessWidget {
                     ? receiptItems[idx]
                     : const <String, dynamic>{};
 
-                if (isEditing) {
+                if (isEditingItems) {
                   return _buildEditableItemCard(
                     context,
                     itemData: itemData,
@@ -257,13 +259,42 @@ class ReceiptResultView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Divider(height: 32),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Text(
+                    'receipt_charges'.tr(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      letterSpacing: 0.4,
+                      color: muted,
+                    ),
+                  ),
+                  const Spacer(),
+                  _buildSectionEditButton(
+                    isEditing: isEditingCharges,
+                    onTap: () {
+                      if (isEditingCharges) {
+                        onSave();
+                        onEditingSectionChanged(null);
+                      } else {
+                        onEditingSectionChanged('charges');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
             _buildChargeRow(
               context,
               'receipt_subtotal'.tr(),
               currentSubtotal,
               confidenceScore: _score(confidenceScores['subtotal']),
             ),
-            if (isEditing) ...[
+            if (isEditingCharges) ...[
               _buildChargeEditRow(
                 'receipt_tax'.tr(),
                 taxController,
@@ -371,146 +402,6 @@ class ReceiptResultView extends StatelessWidget {
     );
   }
 
-  List<_ChargeConfidenceEntry> _editableChargeEntries(
-    Map<String, dynamic> confidenceScores,
-  ) {
-    return [
-      _ChargeConfidenceEntry(
-        key: 'subtotal',
-        score: _score(confidenceScores['subtotal']),
-      ),
-      _ChargeConfidenceEntry(
-        key: 'tax_amount',
-        score: _score(confidenceScores['tax_amount']),
-      ),
-      _ChargeConfidenceEntry(
-        key: 'service_charge',
-        score: _score(confidenceScores['service_charge']),
-      ),
-      _ChargeConfidenceEntry(
-        key: 'discount_amount',
-        score: _score(confidenceScores['discount_amount']),
-      ),
-      _ChargeConfidenceEntry(
-        key: 'tip_amount',
-        score: _score(confidenceScores['tip_amount']),
-      ),
-      _ChargeConfidenceEntry(
-        key: 'delivery_fee',
-        score: _score(confidenceScores['delivery_fee']),
-      ),
-      _ChargeConfidenceEntry(
-        key: 'total_amount',
-        score: _score(confidenceScores['total_amount']),
-      ),
-    ];
-  }
-
-  Widget _buildReviewBanner(
-    BuildContext context, {
-    required List<String> warnings,
-    required int flaggedItemCount,
-    required int flaggedChargeCount,
-  }) {
-    final color = Colors.amber.shade700;
-    final summaryParts = <String>[
-      if (flaggedItemCount > 0)
-        'receipt_flagged_items_count'.tr(
-          namedArgs: {'count': flaggedItemCount.toString()},
-        ),
-      if (flaggedChargeCount > 0)
-        'receipt_flagged_charges_count'.tr(
-          namedArgs: {'count': flaggedChargeCount.toString()},
-        ),
-    ];
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(24, 18, 24, 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.amber.shade50,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: color),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'receipt_review_recommended'.tr(),
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 15,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'receipt_review_subtitle'.tr(),
-            style: TextStyle(
-              color: Colors.amber.shade900,
-              fontSize: 13,
-              height: 1.4,
-            ),
-          ),
-          if (summaryParts.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: summaryParts
-                  .map(
-                    (label) => _buildInfoPill(
-                      label: label,
-                      backgroundColor: Colors.white,
-                      foregroundColor: color,
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
-          if (warnings.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            ...warnings.take(3).map(
-              (warning) => Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "• ",
-                      style: TextStyle(
-                        color: Colors.amber.shade900,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        warning,
-                        style: TextStyle(
-                          color: Colors.amber.shade900,
-                          fontSize: 12,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
   Widget _buildEditableItemCard(
     BuildContext context, {
     required Map<String, dynamic> itemData,
@@ -597,7 +488,12 @@ class ReceiptResultView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 94,
+                width: _fieldWidthFor(
+                  qtyController.text,
+                  minWidth: 82,
+                  maxWidth: 110,
+                  charWidth: 16,
+                ),
                 child: _buildSmallEditField(
                   controller: qtyController,
                   label: 'receipt_qty'.tr(),
@@ -742,6 +638,7 @@ class ReceiptResultView extends StatelessWidget {
         fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
         color: readOnly ? Colors.grey[600] : Colors.black,
       ),
+      maxLines: 1,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(fontSize: 12, color: Colors.grey[500]),
@@ -762,7 +659,29 @@ class ReceiptResultView extends StatelessWidget {
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 16,
+          vertical: 15,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionEditButton({
+    required bool isEditing,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: isEditing ? const Color(0xFF00B365) : Colors.grey.shade100,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Icon(
+            isEditing ? Icons.check_rounded : Icons.edit_outlined,
+            size: 18,
+            color: isEditing ? Colors.white : Colors.grey.shade700,
+          ),
         ),
       ),
     );
@@ -802,7 +721,12 @@ class ReceiptResultView extends StatelessWidget {
               const SizedBox(width: 10),
             ],
             SizedBox(
-              width: 156,
+              width: _fieldWidthFor(
+                controller.text,
+                minWidth: 110,
+                maxWidth: 190,
+                charWidth: 14,
+              ),
               child: _buildSmallEditField(
                 controller: controller,
                 label: label,
@@ -927,8 +851,6 @@ class ReceiptResultView extends StatelessWidget {
 
   bool _shouldHighlight(double score) => score < 0.88;
 
-  bool _needsReview(double score) => score < 0.78;
-
   double _score(dynamic rawValue, {double fallback = 0.92}) {
     if (rawValue is num) {
       return rawValue.clamp(0.0, 1.0).toDouble();
@@ -941,6 +863,19 @@ class ReceiptResultView extends StatelessWidget {
       return qty.toInt().toString();
     }
     return qty.toStringAsFixed(1);
+  }
+
+  double _fieldWidthFor(
+    String value, {
+    required double minWidth,
+    required double maxWidth,
+    double charWidth = 12,
+  }) {
+    final trimmed = value.trim();
+    final estimated = trimmed.isEmpty
+        ? minWidth
+        : (trimmed.length * charWidth) + 48;
+    return estimated.clamp(minWidth, maxWidth).toDouble();
   }
 
   _ConfidencePalette _confidencePalette(double score) {
@@ -975,15 +910,5 @@ class _ConfidencePalette {
     required this.background,
     required this.border,
     required this.accent,
-  });
-}
-
-class _ChargeConfidenceEntry {
-  final String key;
-  final double score;
-
-  const _ChargeConfidenceEntry({
-    required this.key,
-    required this.score,
   });
 }

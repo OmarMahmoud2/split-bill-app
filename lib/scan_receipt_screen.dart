@@ -51,7 +51,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   late AnimationController _loadingTextController;
 
   // Editing State
-  bool _isEditing = false;
+  String? _editingSection;
   final TextEditingController _restaurantController = TextEditingController();
   final TextEditingController _totalController = TextEditingController();
   final TextEditingController _taxController = TextEditingController();
@@ -427,7 +427,6 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       _receiptData!['warnings'] = _receiptData!['needs_review'] == true
           ? List<String>.from(_receiptData!['warnings'] ?? const [])
           : <String>[];
-      _isEditing = false;
     });
     HapticFeedback.mediumImpact();
   }
@@ -749,43 +748,24 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   }
 
   Widget _buildHeaderTrailing() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser?.uid)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return const SizedBox(width: 48);
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox(width: 48);
 
-            final userData = snapshot.data!.data() as Map<String, dynamic>?;
-            final isPremium = userData?['isPremium'] ?? false;
+        final userData = snapshot.data!.data() as Map<String, dynamic>?;
+        final isPremium = userData?['isPremium'] ?? false;
 
-            if (isPremium) {
-              return _buildProBadge();
-            }
+        if (isPremium) {
+          return _buildProBadge();
+        }
 
-            final points = userData?['points'] ?? 0;
-            return _buildPointsBadge(points);
-          },
-        ),
-        if (_receiptData != null)
-          IconButton(
-            icon: Icon(
-              _isEditing ? Icons.save_rounded : Icons.edit_rounded,
-              color: const Color(0xFF00B365),
-            ),
-            onPressed: () {
-              if (_isEditing) {
-                _saveChanges();
-              } else {
-                setState(() => _isEditing = true);
-              }
-            },
-          ),
-      ],
+        final points = userData?['points'] ?? 0;
+        return _buildPointsBadge(points);
+      },
     );
   }
 
@@ -894,7 +874,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         Expanded(
           child: ReceiptResultView(
             receiptData: _receiptData!,
-            isEditing: _isEditing,
+            editingSection: _editingSection,
             itemControllers: _itemControllers,
             currencyCode: _receiptData!['currency_code'] ?? 'USD',
             restaurantController: _restaurantController,
@@ -904,10 +884,15 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             discountController: _discountController,
             tipController: _tipController,
             deliveryController: _deliveryController,
+            onEditingSectionChanged: (section) {
+              if (_editingSection != null && _editingSection != section) {
+                _saveChanges();
+              }
+              setState(() => _editingSection = section);
+            },
             onSave: _saveChanges,
             onAddItem: _addEmptyItem,
             onDeleteItem: _removeItem,
-            onCancel: () => setState(() => _isEditing = false),
           ),
         ),
         _buildBottomAction(),
@@ -941,11 +926,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              if (_isEditing) {
-                _saveChanges();
-              } else {
-                _showAssignmentMethodSheet();
-              }
+              _saveChanges();
+              _showAssignmentMethodSheet();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF00B365),
@@ -957,7 +939,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
               elevation: 0,
             ),
             child: Text(
-              _isEditing ? 'scan_save_changes'.tr() : 'scan_next_step'.tr(),
+              'scan_next_step'.tr(),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),

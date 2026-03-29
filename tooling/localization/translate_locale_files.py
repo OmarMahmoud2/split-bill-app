@@ -131,6 +131,7 @@ MANUAL_ENGLISH = {
     "receipt_discount": "Discount",
     "receipt_other_charges": "Other Charges",
     "receipt_other_charge_label": "Other charge",
+    "receipt_charges": "Charges",
     "receipt_ready": "Receipt ready",
     "receipt_review_recommended": "Review recommended",
     "receipt_review_subtitle": "Some lines may need a quick check before you continue.",
