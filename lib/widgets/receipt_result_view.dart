@@ -47,9 +47,20 @@ class ReceiptResultView extends StatelessWidget {
     final discount = double.tryParse(discountController.text) ?? 0.0;
     final tip = double.tryParse(tipController.text) ?? 0.0;
     final delivery = double.tryParse(deliveryController.text) ?? 0.0;
-    final otherCharges = List<Map<String, dynamic>>.from(
-      receiptData['other_charges'] ?? const [],
+    final receiptItems = List<Map<String, dynamic>>.from(
+      (receiptData['items'] as List? ?? const []).map(
+        (item) => Map<String, dynamic>.from(item as Map),
+      ),
     );
+    final otherCharges = List<Map<String, dynamic>>.from(
+      (receiptData['other_charges'] as List? ?? const []).map(
+        (charge) => Map<String, dynamic>.from(charge as Map),
+      ),
+    );
+    final confidenceScores = Map<String, dynamic>.from(
+      receiptData['confidence_scores'] ?? const {},
+    );
+    final warnings = List<String>.from(receiptData['warnings'] ?? const []);
 
     double currentSubtotal = 0;
     for (var controllers in itemControllers) {
@@ -57,6 +68,22 @@ class ReceiptResultView extends StatelessWidget {
       final price = double.tryParse(controllers['price']!.text) ?? 0;
       currentSubtotal += qty * price;
     }
+
+    final flaggedItemCount = receiptItems.where((item) {
+      return _needsReview(_score(item['confidence_score']));
+    }).length;
+    final flaggedChargeCount =
+        otherCharges.where((charge) {
+          return _needsReview(_score(charge['confidence_score']));
+        }).length +
+        _editableChargeEntries(confidenceScores)
+            .where((entry) => _needsReview(entry.score))
+            .length;
+    final shouldShowReviewBanner =
+        receiptData['needs_review'] == true ||
+        warnings.isNotEmpty ||
+        flaggedItemCount > 0 ||
+        flaggedChargeCount > 0;
 
     final dateStr = DateTime.now().toString().substring(0, 10);
     final timeStr = TimeOfDay.now().format(context);
@@ -84,7 +111,15 @@ class ReceiptResultView extends StatelessWidget {
             const SizedBox(height: 24),
             SizedBox(
               height: 100,
-              child: Lottie.asset('assets/animations/food.json', repeat: true),
+              child: Lottie.asset(
+                'assets/animations/food.json',
+                repeat: true,
+                errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.receipt_long_rounded,
+                  size: 72,
+                  color: Colors.orange,
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             if (isEditing)
@@ -99,7 +134,10 @@ class ReceiptResultView extends StatelessWidget {
               )
             else
               Text(
-                receiptData['restaurant_name'] ?? "Unknown Store",
+                receiptData['restaurant_name']?.toString().trim().isNotEmpty ==
+                        true
+                    ? receiptData['restaurant_name']
+                    : 'receipt_store_name'.tr(),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -135,48 +173,41 @@ class ReceiptResultView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            if (shouldShowReviewBanner)
+              _buildReviewBanner(
+                context,
+                warnings: warnings,
+                flaggedItemCount: flaggedItemCount,
+                flaggedChargeCount: flaggedChargeCount,
+              ),
+            const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      'receipt_item'.tr(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                  Text(
+                    'receipt_item'.tr(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      letterSpacing: 0.4,
+                      color: muted,
                     ),
                   ),
-                  Expanded(
-                    child: Text(
-                      'receipt_qty'.tr(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: Colors.grey,
+                  const Spacer(),
+                  if (isEditing)
+                    Text(
+                      'receipt_review_subtitle'.tr(),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: muted,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'receipt_total'.tr(),
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                  if (isEditing) const SizedBox(width: 36),
                 ],
               ),
             ),
+            const SizedBox(height: 10),
             if (isEditing)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -198,85 +229,27 @@ class ReceiptResultView extends StatelessWidget {
                 final nameController = itemControllers[idx]['name']!;
                 final qtyController = itemControllers[idx]['qty']!;
                 final priceController = itemControllers[idx]['price']!;
+                final itemData = idx < receiptItems.length
+                    ? receiptItems[idx]
+                    : const <String, dynamic>{};
 
                 if (isEditing) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: _buildSmallEditField(
-                            controller: nameController,
-                            label: 'receipt_item'.tr(),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _buildSmallEditField(
-                            controller: qtyController,
-                            label: 'receipt_qty'.tr(),
-                            isNumber: true,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _buildSmallEditField(
-                            controller: priceController,
-                            label: 'receipt_price'.tr(),
-                            isNumber: true,
-                            textAlign: TextAlign.right,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () => onDeleteItem(idx),
-                          tooltip: 'receipt_delete_item'.tr(),
-                          icon: const Icon(Icons.delete_outline_rounded),
-                        ),
-                      ],
-                    ),
+                  return _buildEditableItemCard(
+                    context,
+                    itemData: itemData,
+                    nameController: nameController,
+                    qtyController: qtyController,
+                    priceController: priceController,
+                    onDelete: () => onDeleteItem(idx),
                   );
                 }
 
-                final qty = double.tryParse(qtyController.text) ?? 1.0;
-                final price = double.tryParse(priceController.text) ?? 0.0;
-                final lineTotal = qty * price;
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          nameController.text,
-                          style: TextStyle(color: muted, fontSize: 14),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          "x${qty.toStringAsFixed(0)}",
-                          style: TextStyle(color: muted, fontSize: 14),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          CurrencyUtils.format(
-                            lineTotal,
-                            currencyCode: currencyCode,
-                          ),
-                          style: TextStyle(
-                            color: onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                    ],
-                  ),
+                return _buildReadOnlyItemCard(
+                  context,
+                  itemData: itemData,
+                  nameController: nameController,
+                  qtyController: qtyController,
+                  priceController: priceController,
                 );
               },
             ),
@@ -288,27 +261,48 @@ class ReceiptResultView extends StatelessWidget {
               context,
               'receipt_subtotal'.tr(),
               currentSubtotal,
+              confidenceScore: _score(confidenceScores['subtotal']),
             ),
             if (isEditing) ...[
-              _buildChargeEditRow('receipt_tax'.tr(), taxController),
+              _buildChargeEditRow(
+                'receipt_tax'.tr(),
+                taxController,
+                confidenceScore: _score(confidenceScores['tax_amount']),
+              ),
               _buildChargeEditRow(
                 'receipt_service_charge'.tr(),
                 serviceController,
+                confidenceScore: _score(confidenceScores['service_charge']),
               ),
-              _buildChargeEditRow('receipt_discount'.tr(), discountController),
-              _buildChargeEditRow('receipt_tip'.tr(), tipController),
+              _buildChargeEditRow(
+                'receipt_discount'.tr(),
+                discountController,
+                confidenceScore: _score(confidenceScores['discount_amount']),
+              ),
+              _buildChargeEditRow(
+                'receipt_tip'.tr(),
+                tipController,
+                confidenceScore: _score(confidenceScores['tip_amount']),
+              ),
               _buildChargeEditRow(
                 'receipt_delivery_fee'.tr(),
                 deliveryController,
+                confidenceScore: _score(confidenceScores['delivery_fee']),
               ),
             ] else ...[
               if (tax > 0)
-                _buildChargeRow(context, 'receipt_tax'.tr(), tax),
+                _buildChargeRow(
+                  context,
+                  'receipt_tax'.tr(),
+                  tax,
+                  confidenceScore: _score(confidenceScores['tax_amount']),
+                ),
               if (service > 0)
                 _buildChargeRow(
                   context,
                   'receipt_service_charge'.tr(),
                   service,
+                  confidenceScore: _score(confidenceScores['service_charge']),
                 ),
               if (discount > 0)
                 _buildChargeRow(
@@ -316,14 +310,21 @@ class ReceiptResultView extends StatelessWidget {
                   'receipt_discount'.tr(),
                   discount,
                   isNegative: true,
+                  confidenceScore: _score(confidenceScores['discount_amount']),
                 ),
               if (tip > 0)
-                _buildChargeRow(context, 'receipt_tip'.tr(), tip),
+                _buildChargeRow(
+                  context,
+                  'receipt_tip'.tr(),
+                  tip,
+                  confidenceScore: _score(confidenceScores['tip_amount']),
+                ),
               if (delivery > 0)
                 _buildChargeRow(
                   context,
                   'receipt_delivery_fee'.tr(),
                   delivery,
+                  confidenceScore: _score(confidenceScores['delivery_fee']),
                 ),
             ],
             if (otherCharges.isNotEmpty) ...[
@@ -346,8 +347,10 @@ class ReceiptResultView extends StatelessWidget {
               ...otherCharges.map(
                 (charge) => _buildChargeRow(
                   context,
-                  charge['label']?.toString() ?? 'Other',
+                  charge['label']?.toString() ?? 'receipt_other_charge_label'.tr(),
                   (charge['amount'] as num?)?.toDouble() ?? 0.0,
+                  confidenceScore: _score(charge['confidence_score']),
+                  confidenceNote: charge['confidence_note']?.toString(),
                 ),
               ),
             ],
@@ -364,6 +367,356 @@ class ReceiptResultView extends StatelessWidget {
             const SizedBox(height: 24),
           ],
         ),
+      ),
+    );
+  }
+
+  List<_ChargeConfidenceEntry> _editableChargeEntries(
+    Map<String, dynamic> confidenceScores,
+  ) {
+    return [
+      _ChargeConfidenceEntry(
+        key: 'subtotal',
+        score: _score(confidenceScores['subtotal']),
+      ),
+      _ChargeConfidenceEntry(
+        key: 'tax_amount',
+        score: _score(confidenceScores['tax_amount']),
+      ),
+      _ChargeConfidenceEntry(
+        key: 'service_charge',
+        score: _score(confidenceScores['service_charge']),
+      ),
+      _ChargeConfidenceEntry(
+        key: 'discount_amount',
+        score: _score(confidenceScores['discount_amount']),
+      ),
+      _ChargeConfidenceEntry(
+        key: 'tip_amount',
+        score: _score(confidenceScores['tip_amount']),
+      ),
+      _ChargeConfidenceEntry(
+        key: 'delivery_fee',
+        score: _score(confidenceScores['delivery_fee']),
+      ),
+      _ChargeConfidenceEntry(
+        key: 'total_amount',
+        score: _score(confidenceScores['total_amount']),
+      ),
+    ];
+  }
+
+  Widget _buildReviewBanner(
+    BuildContext context, {
+    required List<String> warnings,
+    required int flaggedItemCount,
+    required int flaggedChargeCount,
+  }) {
+    final color = Colors.amber.shade700;
+    final summaryParts = <String>[
+      if (flaggedItemCount > 0)
+        'receipt_flagged_items_count'.tr(
+          namedArgs: {'count': flaggedItemCount.toString()},
+        ),
+      if (flaggedChargeCount > 0)
+        'receipt_flagged_charges_count'.tr(
+          namedArgs: {'count': flaggedChargeCount.toString()},
+        ),
+    ];
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(24, 18, 24, 0),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.amber.shade50,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.amber.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: color),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'receipt_review_recommended'.tr(),
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'receipt_review_subtitle'.tr(),
+            style: TextStyle(
+              color: Colors.amber.shade900,
+              fontSize: 13,
+              height: 1.4,
+            ),
+          ),
+          if (summaryParts.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: summaryParts
+                  .map(
+                    (label) => _buildInfoPill(
+                      label: label,
+                      backgroundColor: Colors.white,
+                      foregroundColor: color,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+          if (warnings.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ...warnings.take(3).map(
+              (warning) => Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "• ",
+                      style: TextStyle(
+                        color: Colors.amber.shade900,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        warning,
+                        style: TextStyle(
+                          color: Colors.amber.shade900,
+                          fontSize: 12,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditableItemCard(
+    BuildContext context, {
+    required Map<String, dynamic> itemData,
+    required TextEditingController nameController,
+    required TextEditingController qtyController,
+    required TextEditingController priceController,
+    required VoidCallback onDelete,
+  }) {
+    final score = _score(itemData['confidence_score']);
+    final palette = _confidencePalette(score);
+    final badge = _buildConfidenceChip(score);
+    final note = itemData['confidence_note']?.toString().trim() ?? '';
+    final qty = double.tryParse(qtyController.text) ?? 0.0;
+    final price = double.tryParse(priceController.text) ?? 0.0;
+    final lineTotal = qty * price;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: palette.background,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: palette.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSmallEditField(
+                      controller: nameController,
+                      label: 'receipt_item'.tr(),
+                    ),
+                    if (badge != null || (note.isNotEmpty && _shouldHighlight(score))) ...[
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (badge != null) badge,
+                          if (note.isNotEmpty && _shouldHighlight(score))
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 230),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 7,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: palette.border),
+                              ),
+                              child: Text(
+                                note,
+                                style: TextStyle(
+                                  color: palette.accent,
+                                  fontSize: 11,
+                                  height: 1.35,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: onDelete,
+                tooltip: 'receipt_delete_item'.tr(),
+                icon: const Icon(Icons.delete_outline_rounded),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 94,
+                child: _buildSmallEditField(
+                  controller: qtyController,
+                  label: 'receipt_qty'.tr(),
+                  isNumber: true,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: _buildInfoPill(
+                    label:
+                        "${'receipt_line_total'.tr()}: ${CurrencyUtils.format(lineTotal, currencyCode: currencyCode)}",
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.grey.shade800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildSmallEditField(
+            controller: priceController,
+            label: 'receipt_price'.tr(),
+            isNumber: true,
+            isBold: true,
+            fontSize: 16,
+            textAlign: TextAlign.right,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyItemCard(
+    BuildContext context, {
+    required Map<String, dynamic> itemData,
+    required TextEditingController nameController,
+    required TextEditingController qtyController,
+    required TextEditingController priceController,
+  }) {
+    final score = _score(itemData['confidence_score']);
+    final palette = _confidencePalette(score);
+    final badge = _buildConfidenceChip(score);
+    final note = itemData['confidence_note']?.toString().trim() ?? '';
+    final qty = double.tryParse(qtyController.text) ?? 1.0;
+    final price = double.tryParse(priceController.text) ?? 0.0;
+    final lineTotal =
+        (itemData['line_total'] as num?)?.toDouble() ?? (qty * price);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: palette.background,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: palette.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  nameController.text,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              if (badge != null) badge,
+              const SizedBox(width: 8),
+              Text(
+                CurrencyUtils.format(lineTotal, currencyCode: currencyCode),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildInfoPill(
+                label: "x${_formatQty(qty)}",
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.grey.shade800,
+              ),
+              _buildInfoPill(
+                label:
+                    "${'receipt_price'.tr()}: ${CurrencyUtils.format(price, currencyCode: currencyCode)}",
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.grey.shade800,
+              ),
+            ],
+          ),
+          if (note.isNotEmpty && _shouldHighlight(score)) ...[
+            const SizedBox(height: 10),
+            Text(
+              note,
+              style: TextStyle(
+                color: palette.accent,
+                fontSize: 12,
+                height: 1.35,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -391,46 +744,74 @@ class ReceiptResultView extends StatelessWidget {
       ),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(fontSize: 12, color: Colors.grey[400]),
+        labelStyle: TextStyle(fontSize: 12, color: Colors.grey[500]),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: Colors.white,
+        isDense: false,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[200]!),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey[300]!),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[200]!),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey[300]!),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF00B365)),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF00B365), width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
+          horizontal: 16,
+          vertical: 16,
         ),
       ),
     );
   }
 
-  Widget _buildChargeEditRow(String label, TextEditingController controller) {
+  Widget _buildChargeEditRow(
+    String label,
+    TextEditingController controller, {
+    double confidenceScore = 1.0,
+  }) {
+    final palette = _confidencePalette(confidenceScore);
+    final badge = _buildConfidenceChip(confidenceScore);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
-          SizedBox(
-            width: 140,
-            child: _buildSmallEditField(
-              controller: controller,
-              label: label,
-              isNumber: true,
-              textAlign: TextAlign.right,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: palette.background,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: palette.border),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-          ),
-        ],
+            if (badge != null) ...[
+              badge,
+              const SizedBox(width: 10),
+            ],
+            SizedBox(
+              width: 156,
+              child: _buildSmallEditField(
+                controller: controller,
+                label: label,
+                isNumber: true,
+                textAlign: TextAlign.right,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -440,23 +821,169 @@ class ReceiptResultView extends StatelessWidget {
     String label,
     double value, {
     bool isNegative = false,
+    double confidenceScore = 1.0,
+    String? confidenceNote,
   }) {
+    final palette = _confidencePalette(confidenceScore);
+    final badge = _buildConfidenceChip(confidenceScore);
+    final note = confidenceNote?.trim() ?? '';
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 14)),
-          Text(
-            "${isNegative ? '-' : ''}${CurrencyUtils.format(value, currencyCode: currencyCode)}",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: palette.background,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: palette.border),
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                  ),
+                ),
+                if (badge != null) ...[
+                  badge,
+                  const SizedBox(width: 10),
+                ],
+                Text(
+                  "${isNegative ? '-' : ''}${CurrencyUtils.format(value, currencyCode: currencyCode)}",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            if (note.isNotEmpty && _shouldHighlight(confidenceScore)) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  note,
+                  style: TextStyle(
+                    color: palette.accent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
+
+  Widget _buildInfoPill({
+    required String label,
+    required Color backgroundColor,
+    required Color foregroundColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: foregroundColor.withValues(alpha: 0.15)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: foregroundColor,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildConfidenceChip(double score) {
+    final key = _confidenceChipKey(score);
+    if (key == null) return null;
+    final palette = _confidencePalette(score);
+    return _buildInfoPill(
+      label: key.tr(),
+      backgroundColor: Colors.white,
+      foregroundColor: palette.accent,
+    );
+  }
+
+  String? _confidenceChipKey(double score) {
+    if (score < 0.72) {
+      return 'receipt_review_chip';
+    }
+    if (score < 0.88) {
+      return 'receipt_check_chip';
+    }
+    return null;
+  }
+
+  bool _shouldHighlight(double score) => score < 0.88;
+
+  bool _needsReview(double score) => score < 0.78;
+
+  double _score(dynamic rawValue, {double fallback = 0.92}) {
+    if (rawValue is num) {
+      return rawValue.clamp(0.0, 1.0).toDouble();
+    }
+    return fallback;
+  }
+
+  String _formatQty(double qty) {
+    if (qty == qty.roundToDouble()) {
+      return qty.toInt().toString();
+    }
+    return qty.toStringAsFixed(1);
+  }
+
+  _ConfidencePalette _confidencePalette(double score) {
+    if (score < 0.72) {
+      return _ConfidencePalette(
+        background: Colors.red.shade50,
+        border: Colors.red.shade200,
+        accent: Colors.red.shade700,
+      );
+    }
+    if (score < 0.88) {
+      return _ConfidencePalette(
+        background: Colors.amber.shade50,
+        border: Colors.amber.shade200,
+        accent: Colors.amber.shade800,
+      );
+    }
+    return _ConfidencePalette(
+      background: Colors.white,
+      border: Colors.grey.shade200,
+      accent: Colors.green.shade700,
+    );
+  }
+}
+
+class _ConfidencePalette {
+  final Color background;
+  final Color border;
+  final Color accent;
+
+  const _ConfidencePalette({
+    required this.background,
+    required this.border,
+    required this.accent,
+  });
+}
+
+class _ChargeConfidenceEntry {
+  final String key;
+  final double score;
+
+  const _ChargeConfidenceEntry({
+    required this.key,
+    required this.score,
+  });
 }

@@ -296,22 +296,137 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     });
   }
 
+  double _confidenceValue(dynamic rawValue, {double fallback = 0.92}) {
+    if (rawValue is num) {
+      return rawValue.clamp(0.0, 1.0).toDouble();
+    }
+    return fallback;
+  }
+
+  double _averageScores(Iterable<double> values, {double fallback = 1.0}) {
+    final scores = values.toList();
+    if (scores.isEmpty) return fallback;
+    return scores.reduce((left, right) => left + right) / scores.length;
+  }
+
+  bool _didItemChange(
+    Map<String, dynamic> originalItem, {
+    required String name,
+    required double qty,
+    required double price,
+  }) {
+    final originalName = (originalItem['name'] ?? '').toString().trim();
+    final originalQty = (originalItem['qty'] as num?)?.toDouble() ?? 1.0;
+    final originalPrice =
+        ((originalItem['price'] ?? originalItem['unit_price']) as num?)
+            ?.toDouble() ??
+        0.0;
+
+    return originalName != name ||
+        (originalQty - qty).abs() > 0.001 ||
+        (originalPrice - price).abs() > 0.001;
+  }
+
   void _saveChanges() {
     _updateTotal(); // Ensure everything is up to date
     setState(() {
       _receiptData!['restaurant_name'] = _restaurantController.text;
+      final originalItems = List<Map<String, dynamic>>.from(
+        (_receiptData!['items'] as List? ?? const []).map(
+          (item) => Map<String, dynamic>.from(item as Map),
+        ),
+      );
 
       final List<Map<String, dynamic>> updatedItems = [];
-      for (var controllers in _itemControllers) {
+      final updatedItemScores = <double>[];
+      for (int index = 0; index < _itemControllers.length; index++) {
+        final controllers = _itemControllers[index];
         final name = controllers['name']!.text.trim();
         if (name.isEmpty) continue;
+        final qty = double.tryParse(controllers['qty']!.text) ?? 1.0;
+        final price = double.tryParse(controllers['price']!.text) ?? 0.0;
+        final originalItem = index < originalItems.length
+            ? originalItems[index]
+            : <String, dynamic>{};
+        final wasEdited =
+            originalItem.isEmpty ||
+            _didItemChange(
+              originalItem,
+              name: name,
+              qty: qty,
+              price: price,
+            );
+        final confidenceScore = wasEdited
+            ? 1.0
+            : _confidenceValue(originalItem['confidence_score']);
+        final confidenceNote = wasEdited
+            ? ''
+            : (originalItem['confidence_note']?.toString() ?? '');
+        final reviewStatus = wasEdited
+            ? 'confirmed'
+            : (originalItem['review_status']?.toString().trim().isNotEmpty ==
+                      true
+                  ? originalItem['review_status'].toString().trim()
+                  : (confidenceScore < 0.78 ? 'review' : 'confident'));
+
         updatedItems.add({
+          ...originalItem,
           'name': name,
-          'qty': int.tryParse(controllers['qty']!.text) ?? 1,
-          'price': double.tryParse(controllers['price']!.text) ?? 0.0,
+          'qty': qty,
+          'price': price,
+          'line_total': qty * price,
+          'confidence_score': confidenceScore,
+          'confidence_note': confidenceNote,
+          'review_status': reviewStatus,
         });
+        updatedItemScores.add(confidenceScore);
       }
       _receiptData!['items'] = updatedItems;
+      final updatedConfidence = Map<String, dynamic>.from(
+        _receiptData!['confidence_scores'] ?? const {},
+      );
+      final subtotalScore = _averageScores(updatedItemScores, fallback: 1.0);
+      final chargeScores = <double>[
+        _confidenceValue(updatedConfidence['tax_amount'], fallback: 1.0),
+        _confidenceValue(updatedConfidence['service_charge'], fallback: 1.0),
+        _confidenceValue(updatedConfidence['discount_amount'], fallback: 1.0),
+        _confidenceValue(updatedConfidence['tip_amount'], fallback: 1.0),
+        _confidenceValue(updatedConfidence['delivery_fee'], fallback: 1.0),
+      ];
+      final otherChargeScores = List<Map<String, dynamic>>.from(
+        (_receiptData!['other_charges'] as List? ?? const []).map(
+          (charge) => Map<String, dynamic>.from(charge as Map),
+        ),
+      ).map((charge) => _confidenceValue(charge['confidence_score'])).toList();
+
+      final totalScore = _averageScores(
+        [subtotalScore, ...chargeScores],
+        fallback: 1.0,
+      );
+      final overallScore = _averageScores(
+        [...updatedItemScores, ...chargeScores, ...otherChargeScores, totalScore],
+        fallback: 1.0,
+      );
+
+      updatedConfidence.addAll({
+        'overall': overallScore,
+        'subtotal': subtotalScore,
+        'tax_amount': chargeScores[0],
+        'service_charge': chargeScores[1],
+        'discount_amount': chargeScores[2],
+        'tip_amount': chargeScores[3],
+        'delivery_fee': chargeScores[4],
+        'total_amount': totalScore,
+      });
+      _receiptData!['confidence_scores'] = updatedConfidence;
+      _receiptData!['needs_review'] =
+          updatedItemScores.any((score) => score < 0.78) ||
+          otherChargeScores.any((score) => score < 0.78) ||
+          chargeScores.any((score) => score < 0.78) ||
+          totalScore < 0.78;
+      _receiptData!['warnings'] = _receiptData!['needs_review'] == true
+          ? List<String>.from(_receiptData!['warnings'] ?? const [])
+          : <String>[];
       _isEditing = false;
     });
     HapticFeedback.mediumImpact();
@@ -324,6 +439,21 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         'qty': TextEditingController(text: '1'),
         'price': TextEditingController(text: '0'),
       });
+      final items = List<Map<String, dynamic>>.from(
+        (_receiptData?['items'] as List? ?? const []).map(
+          (item) => Map<String, dynamic>.from(item as Map),
+        ),
+      );
+      items.add({
+        'name': '',
+        'qty': 1.0,
+        'price': 0.0,
+        'line_total': 0.0,
+        'confidence_score': 1.0,
+        'confidence_note': '',
+        'review_status': 'confirmed',
+      });
+      _receiptData?['items'] = items;
     });
     _updateTotal();
   }
@@ -336,7 +466,17 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     removed['qty']?.dispose();
     removed['price']?.dispose();
 
-    setState(() {});
+    setState(() {
+      final items = List<Map<String, dynamic>>.from(
+        (_receiptData?['items'] as List? ?? const []).map(
+          (item) => Map<String, dynamic>.from(item as Map),
+        ),
+      );
+      if (index >= 0 && index < items.length) {
+        items.removeAt(index);
+      }
+      _receiptData?['items'] = items;
+    });
     _updateTotal();
   }
 

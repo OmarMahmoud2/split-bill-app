@@ -1128,7 +1128,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               errorBuilder: (c, e, s) => const CircularProgressIndicator(),
             ),
             const SizedBox(height: 24),
-            Text('uploading_payment_proof',
+            Text('uploading_proof',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ).tr(),
           ],
