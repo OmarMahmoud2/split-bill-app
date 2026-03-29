@@ -16,6 +16,7 @@ import 'services/revenue_cat_service.dart';
 import 'utils/currency_utils.dart';
 import 'widgets/bill_summary_widgets.dart';
 import 'widgets/custom_app_header.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BillSummaryConfirmScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -616,10 +617,9 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               ],
             ),
             const Divider(height: 48),
-            const Text(
-              "Item Breakdown",
+            Text('item_breakdown',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
             const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
@@ -734,8 +734,8 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   void _showRouletteModal() {
     if (widget.participants.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Add participants to play Bill Roulette!"),
+        SnackBar(
+          content: Text('add_participants_to_play_bill_roulette').tr(),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -787,15 +787,13 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                     ),
                   ),
                 ),
-                const Text(
-                  "Bill Roulette!",
+                Text('bill_roulette_2',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+                ).tr(),
                 const SizedBox(height: 12),
-                Text(
-                  "One lucky person pays the whole bill! 🍀",
+                Text('one_lucky_person_pays_the_whole_bill',
                   style: TextStyle(color: Colors.grey[600]),
-                ),
+                ).tr(),
                 const SizedBox(height: 24),
                 Expanded(
                   child: FortuneWheel(
@@ -883,15 +881,14 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               height: 150,
               repeat: true,
             ),
-            const Text(
-              "🎉 WE HAVE A WINNER! 🎉",
+            Text('we_have_a_winner',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
                 color: Colors.redAccent,
               ),
-            ),
+            ).tr(),
             const SizedBox(height: 24),
             CircleAvatar(
               radius: 50,
@@ -938,17 +935,15 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                     onPressed: () {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            "Mercy shown! Bill splitting remains as is.",
-                          ),
+                        SnackBar(
+                          content: Text('mercy_shown_bill_splitting_remains_as_is',
+                          ).tr(),
                         ),
                       );
                     },
-                    child: const Text(
-                      "Pardon Them",
+                    child: Text('pardon_them',
                       style: TextStyle(color: Colors.grey),
-                    ),
+                    ).tr(),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -965,7 +960,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: const Text("Assign Bill"),
+                    child: Text('assign_bill').tr(),
                   ),
                 ),
               ],
@@ -1000,7 +995,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text("Bill successfully assigned to the loser! 😈"),
+        content: Text('bill_successfully_assigned_to_the_loser').tr(),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
@@ -1020,7 +1015,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: CustomAppHeader(
-        title: "Split Summary",
+        title: 'split_summary'.tr(),
         trailing: IconButton(
           icon: Icon(
             _isEditing ? Icons.save_rounded : Icons.edit_rounded,
@@ -1130,13 +1125,12 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               child: OutlinedButton.icon(
                 onPressed: _showRouletteModal,
                 icon: const Icon(Icons.casino_rounded, color: Colors.redAccent),
-                label: const Text(
-                  "Bill Roulette",
+                label: Text('bill_roulette',
                   style: TextStyle(
                     color: Colors.redAccent,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                ).tr(),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: const BorderSide(color: Colors.redAccent, width: 1.5),
@@ -1195,10 +1189,9 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
             ),
             child: _isCreating
                 ? const CircularProgressIndicator(color: Colors.white)
-                : const Text(
-                    "Create Bill",
+                : Text('create_bill',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  ).tr(),
           ),
         ),
       ),

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class QrDialog {
   static void show(
@@ -51,15 +52,14 @@ class QrDialog {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      "Scan to add to bill",
+                    Text('scan_to_add_to_bill',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.5,
                       ),
-                    ),
+                    ).tr(),
                     const SizedBox(height: 32),
                     Container(
                       padding: const EdgeInsets.all(24),
@@ -103,13 +103,12 @@ class QrDialog {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: const Text(
-                        "Close",
+                      child: Text('close',
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      ).tr(),
                     ),
                   ],
                 ),

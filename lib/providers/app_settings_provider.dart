@@ -1,9 +1,11 @@
+import 'dart:ui';
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/services/user_preferences_service.dart';
 
 class AppSettingsProvider extends ChangeNotifier {
@@ -12,8 +14,7 @@ class AppSettingsProvider extends ChangeNotifier {
 
   final UserPreferencesService _preferencesService;
 
-  ThemeMode _themeMode = ThemeMode.system;
-  Locale _locale = const Locale(UserPreferencesService.defaultLocaleCode);
+  Locale _locale = resolveSupportedLocale(PlatformDispatcher.instance.locales);
   String _currencyCode = UserPreferencesService.defaultCurrencyCode;
 
   StreamSubscription<User?>? _authSubscription;
@@ -21,7 +22,6 @@ class AppSettingsProvider extends ChangeNotifier {
 
   bool _initialized = false;
 
-  ThemeMode get themeMode => _themeMode;
   Locale get locale => _locale;
   String get currencyCode => _currencyCode;
 
@@ -36,10 +36,10 @@ class AppSettingsProvider extends ChangeNotifier {
 
   Future<void> _loadLocalPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    _themeMode = _preferencesService.parseThemeMode(prefs.getString('themeMode'));
-    _locale = Locale(
-      prefs.getString('localeCode') ?? UserPreferencesService.defaultLocaleCode,
-    );
+    final savedLocaleCode = prefs.getString('localeCode');
+    _locale = savedLocaleCode == null
+        ? resolveSupportedLocale(PlatformDispatcher.instance.locales)
+        : findLocaleOption(savedLocaleCode).locale;
     _currencyCode =
         prefs.getString('currencyCode') ??
         UserPreferencesService.defaultCurrencyCode;
@@ -48,10 +48,6 @@ class AppSettingsProvider extends ChangeNotifier {
 
   Future<void> _saveLocalPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      'themeMode',
-      _preferencesService.serializeThemeMode(_themeMode),
-    );
     await prefs.setString('localeCode', _locale.languageCode);
     await prefs.setString('currencyCode', _currencyCode);
   }
@@ -65,7 +61,11 @@ class AppSettingsProvider extends ChangeNotifier {
       return;
     }
 
-    await _preferencesService.ensureDefaults(user);
+    await _preferencesService.ensureDefaults(
+      user,
+      localeCode: _locale.languageCode,
+      currencyCode: _currencyCode,
+    );
 
     _profileSubscription = FirebaseFirestore.instance
         .collection('users')
@@ -73,29 +73,15 @@ class AppSettingsProvider extends ChangeNotifier {
         .snapshots()
         .listen((snapshot) {
           final data = snapshot.data() ?? {};
-          _themeMode = _preferencesService.parseThemeMode(
-            data['themeMode'] as String?,
-          );
-          _locale = Locale(
-            (data['localeCode'] as String?) ??
-                UserPreferencesService.defaultLocaleCode,
-          );
+          _locale = findLocaleOption(
+            (data['localeCode'] as String?) ?? _locale.languageCode,
+          ).locale;
           _currencyCode =
               (data['currencyCode'] as String?) ??
               UserPreferencesService.defaultCurrencyCode;
           _saveLocalPreferences();
           notifyListeners();
         });
-  }
-
-  Future<void> updateThemeMode(ThemeMode mode) async {
-    _themeMode = mode;
-    notifyListeners();
-    await _saveLocalPreferences();
-    await _preferencesService.updatePreference(
-      'themeMode',
-      _preferencesService.serializeThemeMode(mode),
-    );
   }
 
   Future<void> updateLocale(Locale locale) async {

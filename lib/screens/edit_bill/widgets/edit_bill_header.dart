@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EditBillHeader extends StatelessWidget {
   final String storeName;
@@ -35,15 +36,14 @@ class EditBillHeader extends StatelessWidget {
           Expanded(
             child: Column(
               children: [
-                Text(
-                  "EDITING BILL",
+                Text('editing_bill',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
                     color: Colors.blue[800],
                     letterSpacing: 1.5,
                   ),
-                ),
+                ).tr(),
                 Text(
                   storeName,
                   style: const TextStyle(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/widgets/ad_modal.dart';
 import 'package:split_bill_app/widgets/premium_modal.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NoPointsDialog extends StatelessWidget {
   final Future<void> Function() onWatchAd;
@@ -70,8 +71,7 @@ class NoPointsDialog extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Title
-          const Text(
-            "Running Low on Points",
+          Text('running_low_on_points',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -79,22 +79,21 @@ class NoPointsDialog extends StatelessWidget {
               letterSpacing: -0.5,
             ),
             textAlign: TextAlign.center,
-          ),
+          ).tr(),
 
           const SizedBox(height: 12),
 
           // Subtitle
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Text(
-              "You need 1 point to use this feature.\nWatch a quick ad or go premium to continue.",
+            child: Text('you_need_1_point_to_use_this_feature_nwatch_a_quick_ad_or_go_premium_to_continue',
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.grey.shade600,
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
-            ),
+            ).tr(),
           ),
 
           const SizedBox(height: 40),
@@ -154,27 +153,25 @@ class NoPointsDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Watch a Quick Ad",
+                      Text('watch_a_quick_ad',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: Colors.black87,
                         ),
-                      ),
+                      ).tr(),
                       SizedBox(height: 4),
-                      Text(
-                        "+1 Point Instantly",
+                      Text('plus_1_point_instantly',
                         style: TextStyle(
                           color: Colors.purple,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
-                      ),
+                      ).tr(),
                     ],
                   ),
                 ),
@@ -228,23 +225,21 @@ class NoPointsDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Split Bill Premium",
+                      Text('split_bill_premium',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: Colors.white,
                         ),
-                      ),
+                      ).tr(),
                       SizedBox(height: 4),
-                      Text(
-                        "Unlimited Scans & No Ads",
+                      Text('unlimited_scans_and_no_ads',
                         style: TextStyle(color: Colors.white70, fontSize: 13),
-                      ),
+                      ).tr(),
                     ],
                   ),
                 ),

@@ -9,6 +9,7 @@ import 'package:split_bill_app/phone_input_screen.dart';
 import 'package:split_bill_app/new_onboarding_screen.dart';
 import 'package:split_bill_app/animated_splash_screen.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -65,8 +66,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
       future: _checkOnboardingStatus(),
       builder: (context, onboardingSnapshot) {
         if (onboardingSnapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: LoadingStateWidget(message: "Checking onboarding..."),
+          return Scaffold(
+            body: LoadingStateWidget(message: 'checking_onboarding'.tr()),
           );
         }
 
@@ -80,9 +81,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
+              return Scaffold(
                 body: LoadingStateWidget(
-                  message: "Setting up secure connection...",
+                  message: 'setting_up_secure_connection'.tr(),
                 ),
               );
             }
@@ -95,8 +96,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
                     .get(),
                 builder: (context, userSnapshot) {
                   if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Scaffold(
-                      body: LoadingStateWidget(message: "Signing you in..."),
+                    return Scaffold(
+                      body: LoadingStateWidget(message: 'signing_you_in'.tr()),
                     );
                   }
 

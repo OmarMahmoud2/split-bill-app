@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/services/contact_service.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MultiContactPicker extends StatefulWidget {
   final List<String> alreadySelectedIds;
@@ -86,10 +87,9 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Select Contacts",
+            Text('select_contacts',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
             if (_selectedIds.isNotEmpty)
               Text(
                 "${_selectedIds.length} selected",
@@ -101,10 +101,9 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
           if (_selectedIds.isNotEmpty)
             TextButton(
               onPressed: _returnSelection,
-              child: const Text(
-                "Add",
+              child: Text('add',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+              ).tr(),
             ),
         ],
       ),
@@ -117,7 +116,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
               controller: _searchController,
               onChanged: _filterContacts,
               decoration: InputDecoration(
-                hintText: "Search name or phone...",
+                hintText: 'search_name_or_phone'.tr(),
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.grey[100],
@@ -133,7 +132,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
           // Contact List
           Expanded(
             child: _isLoading
-                ? const LoadingStateWidget(message: "Loading contacts...")
+                ? LoadingStateWidget(message: 'loading_contacts'.tr())
                 : ListView.builder(
                     itemCount: _filteredContacts.length,
                     itemBuilder: (context, index) {

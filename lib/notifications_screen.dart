@@ -6,6 +6,7 @@ import 'services/notification_service.dart';
 import 'bill_details_screen.dart';
 import 'participant_bill_screen.dart';
 import 'widgets/empty_state_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -23,16 +24,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Clear All Notifications?"),
-        content: const Text("This will delete all your notification history."),
+        title: Text('clear_all_notifications').tr(),
+        content: Text('this_will_delete_all_your_notification_history').tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
+            child: Text('common_cancel').tr(),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Clear All", style: TextStyle(color: Colors.red)),
+            child: Text('clear_all', style: TextStyle(color: Colors.red)).tr(),
           ),
         ],
       ),
@@ -51,7 +52,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("All notifications cleared.")),
+          SnackBar(content: Text('all_notifications_cleared').tr()),
         );
       }
     }
@@ -60,8 +61,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text("Please log in to view notifications.")),
+      return Scaffold(
+        body: Center(child: Text('please_log_in_to_view_notifications').tr()),
       );
     }
     return Scaffold(
@@ -94,22 +95,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Expanded(
-                    child: Text(
-                      "Notifications",
+                  Expanded(
+                    child: Text('notifications',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
                         letterSpacing: -0.5,
                       ),
-                    ),
+                    ).tr(),
                   ),
                   // Mark as Read (Pill)
                   _buildPillAction(
                     icon: Icons.done_all_rounded,
                     color: Colors.blue,
                     onTap: () => NotificationService().markAllAsRead(),
-                    tooltip: "Mark all read",
+                    tooltip: 'mark_all_read'.tr(),
                   ),
                   const SizedBox(width: 8),
                   // Clear All (Pill)
@@ -117,7 +117,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     icon: Icons.delete_sweep_rounded,
                     color: Colors.red,
                     onTap: _clearAll,
-                    tooltip: "Clear all",
+                    tooltip: 'clear_all'.tr(),
                   ),
                 ],
               ),
@@ -134,17 +134,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const LoadingStateWidget(
-                    message: "Loading notifications...",
+                  return LoadingStateWidget(
+                    message: 'loading_notifications'.tr(),
                   );
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const EmptyStateWidget(
+                  return EmptyStateWidget(
                     icon: Icons.notifications_none_rounded,
-                    title: "No Notifications",
-                    message:
-                        "Your history is clean for now. Any alerts will appear here.",
+                    title: 'no_notifications'.tr(),
+                    message: 'your_history_is_clean_for_now_any_alerts_will_appear_here'.tr(),
                   );
                 }
 
@@ -154,13 +153,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   itemBuilder: (context, index) {
                     var doc = snapshot.data!.docs[index];
                     var data = doc.data() as Map<String, dynamic>;
-                    String title = data['title'] ?? 'Notification';
+                    String title = data['title'] ?? 'notification'.tr();
                     String body = data['body'] ?? '';
                     bool read = data['read'] ?? false;
                     Timestamp? ts = data['date'] as Timestamp?;
                     String timeAgo = ts != null
                         ? _formatTimestamp(ts)
-                        : 'Unknown time';
+                        : 'unknown_time'.tr();
 
                     return Container(
                       margin: const EdgeInsets.symmetric(
@@ -327,10 +326,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final now = DateTime.now();
     final date = ts.toDate();
     final diff = now.difference(date);
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    if (diff.inMinutes < 1) return 'just_now'.tr();
+    if (diff.inMinutes < 60) {
+      return 'minutes_ago'.tr(namedArgs: {'count': diff.inMinutes.toString()});
+    }
+    if (diff.inHours < 24) {
+      return 'hours_ago'.tr(namedArgs: {'count': diff.inHours.toString()});
+    }
+    if (diff.inDays < 7) {
+      return 'days_ago'.tr(namedArgs: {'count': diff.inDays.toString()});
+    }
     return '${date.day}/${date.month}/${date.year}';
   }
 }

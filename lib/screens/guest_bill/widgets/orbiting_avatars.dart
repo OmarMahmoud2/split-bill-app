@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class OrbitingAvatars extends StatefulWidget {
   final List<dynamic> participants;
@@ -87,8 +88,7 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    "Select\nYour Name",
+                  Text('select_nyour_name',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
@@ -96,7 +96,7 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
                       color: Colors.black87,
                       height: 1.2,
                     ),
-                  ),
+                  ).tr(),
                 ],
               ),
             ),

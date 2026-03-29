@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl_phone_field/intl_phone_field.dart'; // THE NEW PACKAGE
 import 'home_screen.dart';
 import 'services/user_preferences_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PhoneInputScreen extends StatefulWidget {
   const PhoneInputScreen({super.key});
@@ -20,7 +21,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   Future<void> _savePhone() async {
     if (_fullPhoneNumber == null || _fullPhoneNumber!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid phone number")),
+        SnackBar(content: Text('please_enter_a_valid_phone_number').tr()),
       );
       return;
     }
@@ -57,15 +58,14 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              title: const Row(
+              title: Row(
                 children: [
                   Icon(Icons.warning_amber_rounded, color: Colors.orange),
                   SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      "Phone Number Already Exists",
+                    child: Text('phone_number_already_exists',
                       style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    ).tr(),
                   ),
                 ],
               ),
@@ -78,7 +78,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Try Different Number"),
+                  child: Text('try_different_number').tr(),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -95,7 +95,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text("Clear & Retry"),
+                  child: Text('clear_and_retry').tr(),
                 ),
               ],
             ),
@@ -113,7 +113,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         'email': user.email,
         'points': 7, // 🎁 Start with 7 free points
         'isPremium': false, // Default to free tier
-        'themeMode': UserPreferencesService.defaultThemeMode,
         'localeCode': localeCode,
         'currencyCode': UserPreferencesService.defaultCurrencyCode,
       }, SetOptions(merge: true));
@@ -128,7 +127,12 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -137,27 +141,25 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Complete Setup")),
+      appBar: AppBar(title: Text('complete_setup').tr()),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Let's verify your number",
+            Text('let_s_verify_your_number',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
             const SizedBox(height: 10),
-            const Text(
-              "This allows friends to find you by your contact details.",
+            Text('this_allows_friends_to_find_you_by_your_contact_details',
               style: TextStyle(color: Colors.grey),
-            ),
+            ).tr(),
             const SizedBox(height: 30),
 
             // --- SMART INPUT FIELD ---
             IntlPhoneField(
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
+              decoration: InputDecoration(
+                labelText: 'phone_number'.tr(),
                 border: OutlineInputBorder(borderSide: BorderSide()),
               ),
               initialCountryCode:
@@ -183,7 +185,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Save & Continue"),
+                    : Text('save_and_continue').tr(),
               ),
             ),
           ],

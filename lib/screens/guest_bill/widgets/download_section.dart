@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DownloadSection extends StatelessWidget {
   const DownloadSection({super.key});
@@ -59,8 +60,7 @@ class DownloadSection extends StatelessWidget {
                   color: Colors.white,
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  "Join the Party!",
+                Text('join_the_party',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 28,
@@ -68,17 +68,16 @@ class DownloadSection extends StatelessWidget {
                     letterSpacing: -0.5,
                   ),
                   textAlign: TextAlign.center,
-                ),
+                ).tr(),
                 const SizedBox(height: 12),
-                const Text(
-                  "Don't just pay bills, manage them along with your friends. Download SplitBill now!",
+                Text('don_t_just_pay_bills_manage_them_along_with_your_friends_download_splitbill_now',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 16,
                     height: 1.5,
                   ),
                   textAlign: TextAlign.center,
-                ),
+                ).tr(),
                 const SizedBox(height: 32),
                 Wrap(
                   spacing: 16,

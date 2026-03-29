@@ -1,24 +1,27 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:split_bill_app/config/app_links.dart';
+import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/login_screen.dart';
 import 'package:split_bill_app/payment_settings_screen.dart';
 import 'package:split_bill_app/groups_screen.dart';
-import 'package:split_bill_app/settings_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:split_bill_app/new_onboarding_screen.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
+import 'package:provider/provider.dart';
 import 'package:split_bill_app/widgets/premium_modal.dart';
 import 'package:split_bill_app/widgets/ad_modal.dart';
+import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_header.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_cards.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_menu_widgets.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
 import 'package:split_bill_app/screens/profile/widgets/version_info.dart';
-import 'package:split_bill_app/screens/completed_bills_screen.dart';
+import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -38,20 +41,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _shareApp(BuildContext context) async {
-    final box = context.findRenderObject() as RenderBox?;
-    final Rect? sharePosition = box != null
-        ? (box.localToGlobal(Offset.zero) & box.size)
-        : null;
-
-    final String message =
-        "${AppLinks.shareText}\n\nDownload here: ${AppLinks.storeUrl}";
-
-    await SharePlus.instance.share(
-      ShareParams(
-        text: message,
-        subject: "Split Bill App",
-        sharePositionOrigin: sharePosition,
-      ),
+    await showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('share_split_bill',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.4,
+                  ),
+                ).tr(),
+                const SizedBox(height: 8),
+                Text('choose_the_store_link_you_want_to_send_so_your_friend_lands_on_the_right_download_page',
+                  style: TextStyle(color: Colors.grey.shade600, height: 1.45),
+                ).tr(),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StoreShareCard(
+                        icon: Icons.android_rounded,
+                        title: 'share_to_android'.tr(),
+                        subtitle: 'google_play_link'.tr(),
+                        colors: const [Color(0xFF34A853), Color(0xFF0F9D58)],
+                        onTap: () async {
+                          Navigator.pop(sheetContext);
+                          await SharePlus.instance.share(
+                            ShareParams(
+                              text:
+                                  "Download Split Bill for Android\n\n${AppLinks.playStoreUrl}",
+                              subject: "Split Bill on Google Play",
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _StoreShareCard(
+                        icon: Icons.apple_rounded,
+                        title: 'share_to_iphone'.tr(),
+                        subtitle: 'app_store_link'.tr(),
+                        colors: const [Color(0xFF5E5CE6), Color(0xFF0A84FF)],
+                        onTap: () async {
+                          Navigator.pop(sheetContext);
+                          await SharePlus.instance.share(
+                            ShareParams(
+                              text:
+                                  "Download Split Bill for iPhone\n\n${AppLinks.appStoreUrl}",
+                              subject: "Split Bill on the App Store",
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -63,10 +126,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Fallback for debug/unpublished apps
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                "In-app rating is not available in development mode.",
-              ),
+            SnackBar(
+              content: Text('in_app_rating_is_not_available_in_development_mode',
+              ).tr(),
             ),
           );
         }
@@ -74,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Could not open rating dialog.")),
+          SnackBar(content: Text('could_not_open_rating_dialog').tr()),
         );
       }
     }
@@ -86,9 +148,113 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showDeleteAccountDialog() => ProfileDialogs.showDeleteAccount(context);
 
+  void _showLocaleSheet(AppSettingsProvider settings) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return SearchableSelectionSheet<LocaleOption>(
+          title: 'choose_language'.tr(),
+          searchHint: 'search_languages'.tr(),
+          items: supportedLocaleOptions
+              .map(
+                (option) => SearchableSheetItem<LocaleOption>(
+                  value: option,
+                  title: option.englishName,
+                  subtitle: option.nativeName,
+                  searchTerms: [option.code, option.englishName, option.nativeName],
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFEEF4FF), Color(0xFFF5F7FF)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      option.nativeName.characters.first,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+          isSelected: (option) => option.code == settings.locale.languageCode,
+          onSelected: (option) async {
+            await settings.updateLocale(option.locale);
+            if (context.mounted) {
+              await context.setLocale(option.locale);
+            }
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  void _showCurrencySheet(AppSettingsProvider settings) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return SearchableSelectionSheet<CurrencyOption>(
+          title: 'choose_currency'.tr(),
+          searchHint: 'search_currencies'.tr(),
+          items: supportedCurrencyOptions
+              .map(
+                (option) => SearchableSheetItem<CurrencyOption>(
+                  value: option,
+                  title: '${option.code} • ${option.name}',
+                  subtitle: option.region,
+                  searchTerms: [option.code, option.name, option.region, option.symbol],
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFF7E8), Color(0xFFFFF1CC)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      option.symbol,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+          isSelected: (option) => option.code == settings.currencyCode,
+          onSelected: (option) async {
+            await settings.updateCurrencyCode(option.code);
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (user == null) return const LoginScreen();
+    final settings = context.watch<AppSettingsProvider>();
+    final selectedLocale = findLocaleOption(settings.locale.languageCode);
+    final selectedCurrency = findCurrencyOption(settings.currencyCode);
 
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
@@ -118,41 +284,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    const ProfileSectionTitle(title: "Personal"),
+                    ProfileSectionTitle(title: 'preferences'.tr()),
                     ProfileCoolTile(
-                      icon: Icons.receipt_long_rounded,
-                      title: "Completed Bills",
-                      subtitle: "View your past bills history",
-                      color: Colors.blueGrey,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CompletedBillsScreen(),
-                        ),
-                      ),
-                    ),
-                    // ProfileCoolTile(
-                    //   icon: Icons.qr_code_2_rounded,
-                    //   title: "My QR Code",
-                    //   subtitle: "Show your code to friends",
-                    //   color: Colors.indigo,
-                    //   onTap: () =>
-                    //       QrDialog.show(context, name, photoUrl, user!.uid),
-                    // ),
-                    ProfileCoolTile(
-                      icon: Icons.tune_rounded,
-                      title: "App Preferences",
-                      subtitle: "Theme, language, and currency",
+                      icon: Icons.language_rounded,
+                      title: 'app_language'.tr(),
+                      subtitle:
+                          '${selectedLocale.englishName} • ${selectedLocale.nativeName}',
                       color: Colors.indigo,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SettingsScreen()),
-                      ),
+                      compact: true,
+                      onTap: () => _showLocaleSheet(settings),
                     ),
+                    ProfileCoolTile(
+                      icon: Icons.attach_money_rounded,
+                      title: 'default_currency'.tr(),
+                      subtitle:
+                          '${selectedCurrency.code} • ${selectedCurrency.name} • ${selectedCurrency.region}',
+                      color: Colors.teal,
+                      compact: true,
+                      onTap: () => _showCurrencySheet(settings),
+                    ),
+                    ProfileSectionTitle(title: 'personal'.tr()),
                     ProfileCoolTile(
                       icon: Icons.account_balance_wallet_rounded,
-                      title: "Payment Methods",
-                      subtitle: "Manage how you pay & receive",
+                      title: 'payment_methods'.tr(),
+                      subtitle: 'manage_how_you_pay_and_receive'.tr(),
                       color: Colors.green,
                       onTap: () => Navigator.push(
                         context,
@@ -163,8 +318,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     ProfileCoolTile(
                       icon: Icons.groups_rounded,
-                      title: "My Groups",
-                      subtitle: "View and manage your squads",
+                      title: 'my_groups'.tr(),
+                      subtitle: 'view_and_manage_your_squads'.tr(),
                       color: Colors.orange,
                       onTap: () => Navigator.push(
                         context,
@@ -190,8 +345,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 20),
-                              const ProfileSectionTitle(
-                                title: "Premium Status",
+                              ProfileSectionTitle(
+                                title: 'premium_status'.tr(),
                               ),
                               const PremiumStatusCard(),
                             ],
@@ -203,21 +358,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 20),
-                            const ProfileSectionTitle(
-                              title: "Premium & Points",
+                            ProfileSectionTitle(
+                              title: 'premium_and_points'.tr(),
                             ),
                             ScanPointsCard(points: points),
                             ProfileCoolTile(
                               icon: Icons.play_circle_filled_rounded,
-                              title: "Watch Ad for Points",
-                              subtitle: "Earn 1 point per rewarded video",
+                              title: 'watch_ad_for_points'.tr(),
+                              subtitle: 'earn_1_point_per_rewarded_video'.tr(),
                               color: Colors.purple,
                               onTap: _showWatchAdConfirmation,
                             ),
                             ProfileCoolTile(
                               icon: Icons.workspace_premium_rounded,
-                              title: "Upgrade to Premium",
-                              subtitle: "Unlimited scans • No ads • Lifetime",
+                              title: 'upgrade_to_premium'.tr(),
+                              subtitle: 'unlimited_scans_no_ads_lifetime'.tr(),
                               color: Colors.blue,
                               onTap: _showPremiumDialog,
                             ),
@@ -227,43 +382,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
 
                     const SizedBox(height: 20),
-                    const ProfileSectionTitle(title: "Support"),
+                    ProfileSectionTitle(title: 'support'.tr()),
                     ProfileCoolTile(
                       icon: Icons.share_rounded,
-                      title: "Share App",
-                      subtitle: "Gift this app to your friends",
+                      title: 'share_app'.tr(),
+                      subtitle: 'gift_this_app_to_your_friends'.tr(),
                       color: Colors.blue,
                       onTap: () => _shareApp(context),
                     ),
                     ProfileCoolTile(
                       icon: Icons.star_rounded,
-                      title: "Rate Us",
-                      subtitle: "Help us grow with 5 stars",
+                      title: 'rate_us'.tr(),
+                      subtitle: 'help_us_grow_with_5_stars'.tr(),
                       color: Colors.amber,
                       onTap: _rateApp,
                     ),
                     ProfileCoolTile(
                       icon: Icons.mail_rounded,
-                      title: "Contact Us",
-                      subtitle: "Need help? Reach out to us",
+                      title: 'contact_us'.tr(),
+                      subtitle: 'need_help_reach_out_to_us'.tr(),
                       color: Colors.teal,
                       onTap: _contactUs,
                     ),
 
                     const SizedBox(height: 20),
-                    const ProfileSectionTitle(title: "Account"),
+                    ProfileSectionTitle(title: 'account'.tr()),
                     ProfileCoolTile(
                       icon: Icons.logout_rounded,
-                      title: "Logout",
-                      subtitle: "Sign out of your account",
+                      title: 'logout'.tr(),
+                      subtitle: 'sign_out_of_your_account'.tr(),
                       color: Colors.red,
                       isDestructive: true,
                       onTap: _showLogoutDialog,
                     ),
                     ProfileCoolTile(
                       icon: Icons.person_remove_rounded,
-                      title: "Delete Account",
-                      subtitle: "Dangerous & Irreversible",
+                      title: 'delete_account'.tr(),
+                      subtitle: 'dangerous_and_irreversible'.tr(),
                       color: Colors.red,
                       isDestructive: true,
                       onTap: _showDeleteAccountDialog,
@@ -271,11 +426,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     if (kDebugMode) ...[
                       const SizedBox(height: 20),
-                      const ProfileSectionTitle(title: "Developer"),
+                      ProfileSectionTitle(title: 'developer'.tr()),
                       ProfileCoolTile(
                         icon: Icons.rocket_launch_rounded,
-                        title: "Show Onboarding",
-                        subtitle: "View intro screens",
+                        title: 'show_onboarding'.tr(),
+                        subtitle: 'view_intro_screens'.tr(),
                         color: Colors.deepPurple,
                         onTap: () => Navigator.push(
                           context,
@@ -286,8 +441,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       ProfileCoolTile(
                         icon: Icons.data_usage_rounded,
-                        title: "Seed Transactions",
-                        subtitle: "Add 4 test bills",
+                        title: 'seed_transactions'.tr(),
+                        subtitle: 'add_4_test_bills'.tr(),
                         color: Colors.brown,
                         onTap: _seedTransactions,
                       ),
@@ -319,10 +474,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // 1. If the ad is not ready, attempt to load it and show a professional loading message
     if (!RewardedAdHelper.isReady) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Ad is initializing... Please try again in a few seconds.",
-          ),
+        SnackBar(
+          content: Text('ad_is_initializing_please_try_again_in_a_few_seconds',
+          ).tr(),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.blueAccent,
         ),
@@ -341,8 +495,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onRewardEarned: () {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("🎉 Success! You earned 1 scan point."),
+            SnackBar(
+              content: Text('success_you_earned_1_scan_point').tr(),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.green,
             ),
@@ -355,7 +509,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text("Ad Not Available"),
+              title: Text('ad_not_available').tr(),
               content: const Text(
                 "We're having trouble reaching the ad server right now. "
                 "Please ensure you have an active internet connection or try again later.",
@@ -363,7 +517,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("OK"),
+                  child: Text('ok').tr(),
                 ),
               ],
             ),
@@ -619,8 +773,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) {
       Navigator.pop(context); // Close loading
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Added 6 diverse test bills!")),
+        SnackBar(content: Text('added_6_diverse_test_bills').tr()),
       );
     }
+  }
+}
+
+class _StoreShareCard extends StatelessWidget {
+  const _StoreShareCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.colors,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final List<Color> colors;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: colors),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: colors.first.withValues(alpha: 0.35),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: Colors.white, size: 28),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

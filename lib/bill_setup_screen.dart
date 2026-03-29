@@ -11,6 +11,7 @@ import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:split_bill_app/services/contact_service.dart';
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 
 class BillSetupScreen extends StatefulWidget {
   const BillSetupScreen({super.key});
@@ -62,12 +63,11 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Add People",
+            Text('add_people',
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -178,7 +178,13 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
 
     if (exists) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("${newData['displayName']} is already added.")),
+        SnackBar(
+          content: Text(
+            'user_already_added'.tr(
+              namedArgs: {'name': (newData['displayName'] ?? '').toString()},
+            ),
+          ),
+        ),
       );
     } else {
       _participants.add(newPerson);
@@ -217,14 +223,20 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text("User not found")));
+          ).showSnackBar(SnackBar(content: Text('user_not_found').tr()));
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ).showSnackBar(
+          SnackBar(
+            content: Text(
+              'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+            ),
+          ),
+        );
       }
     } finally {
       setState(() => _isLoading = false);
@@ -244,10 +256,9 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Select a Group",
+              Text('select_a_group',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              ).tr(),
               const SizedBox(height: 16),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
@@ -257,8 +268,8 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(
-                        child: Text("No groups found. Create one first!"),
+                      return Center(
+                        child: Text('no_groups_found_create_one_first').tr(),
                       );
                     }
 
@@ -285,7 +296,11 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
                             ),
                           ),
                           title: Text(groupData['name'] ?? "Unnamed Group"),
-                          subtitle: Text("${members.length} members"),
+                          subtitle: Text(
+                            'members_count'.tr(
+                              namedArgs: {'count': members.length.toString()},
+                            ),
+                          ),
                           onTap: () {
                             Navigator.pop(context);
                             _addMembersFromGroup(members);
@@ -307,12 +322,12 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FD), // Light premium background
-      appBar: const CustomAppHeader(
-        title: "Who's Splitting?",
-        subtitle: "SETUP BILL",
+      appBar: CustomAppHeader(
+        title: 'who_s_splitting'.tr(),
+        subtitle: 'setup_bill'.tr(),
       ),
       body: _isLoading
-          ? const LoadingStateWidget(message: "Syncing contacts...")
+          ? LoadingStateWidget(message: 'syncing_contacts'.tr())
           : Column(
               children: [
                 // 1. PARTICIPANTS LIST
@@ -349,12 +364,11 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
                                       Icons.add_circle_rounded,
                                       size: 18,
                                     ),
-                                    label: const Text(
-                                      "Add More",
+                                    label: Text('add_more',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
-                                    ),
+                                    ).tr(),
                                   ),
                                 ],
                               ),
@@ -402,24 +416,22 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            "It's just you... for now",
+          Text('it_s_just_you_for_now',
             style: TextStyle(
               color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
-          ),
+          ).tr(),
           const SizedBox(height: 8),
-          Text(
-            "Add friends to split the bill with",
+          Text('add_friends_to_split_the_bill_with',
             style: TextStyle(color: Colors.grey[500], fontSize: 15),
-          ),
+          ).tr(),
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: _showAddParticipantsModal,
             icon: const Icon(Icons.person_add_rounded),
-            label: const Text("Add People"),
+            label: Text('add_people').tr(),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
@@ -552,15 +564,14 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    "HOST",
+                  child: Text('host',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 9,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.5,
                     ),
-                  ),
+                  ).tr(),
                 ),
               if (isPro)
                 Container(
@@ -582,14 +593,13 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
                       ),
                     ],
                   ),
-                  child: const Text(
-                    "PRO",
+                  child: Text('pro',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w900,
                       fontSize: 8,
                     ),
-                  ),
+                  ).tr(),
                 ),
             ],
           ),
@@ -667,10 +677,9 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
                       ),
                       foregroundColor: Colors.black87,
                     ),
-                    child: const Text(
-                      "Enter Manually",
+                    child: Text('enter_manually',
                       style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    ).tr(),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -699,10 +708,9 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
                       ),
                     ),
                     icon: const Icon(Icons.qr_code_scanner_rounded),
-                    label: const Text(
-                      "Scan Receipt",
+                    label: Text('scan_receipt',
                       style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    ).tr(),
                   ),
                 ),
               ],
@@ -710,14 +718,13 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
             if (_participants.length <= 1)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
-                child: Text(
-                  "Add at least one friend to proceed",
+                child: Text('add_at_least_one_friend_to_proceed',
                   style: TextStyle(
                     color: Colors.red[300],
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
-                ),
+                ).tr(),
               ),
           ],
         ),
@@ -813,7 +820,13 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Error adding group: $e")));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(
+            'error_adding_group'.tr(namedArgs: {'error': e.toString()}),
+          ),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -824,8 +837,8 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
   void _removeContact(int index) {
     if (_participants[index]['type'] == 'host') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("You cannot remove yourself from the bill."),
+        SnackBar(
+          content: Text('you_cannot_remove_yourself_from_the_bill').tr(),
         ),
       );
       return;

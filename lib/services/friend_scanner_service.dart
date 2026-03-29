@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ScanFriendScreen extends StatefulWidget {
   const ScanFriendScreen({super.key});
@@ -33,10 +34,9 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          "Scan Friend's QR",
+        title: Text('scan_friend_s_qr',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        ).tr(),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -80,19 +80,18 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 100,
             left: 0,
             right: 0,
             child: Center(
-              child: Text(
-                "Center the QR code in the box",
+              child: Text('center_the_qr_code_in_the_box',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
                 ),
-              ),
+              ).tr(),
             ),
           ),
         ],

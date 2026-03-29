@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EditBillSummaryDialog extends StatefulWidget {
   final double initialTax;
@@ -88,10 +89,9 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-      title: const Text(
-        "Update Summary",
+      title: Text('update_summary',
         style: TextStyle(fontWeight: FontWeight.bold),
-      ),
+      ).tr(),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -111,7 +111,7 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+          child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
         ),
         ElevatedButton(
           onPressed: () {
@@ -125,7 +125,7 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text("Save & Exit"),
+          child: Text('save_and_exit').tr(),
         ),
       ],
     );

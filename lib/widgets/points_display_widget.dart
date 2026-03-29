@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Displays user's current points count with a coin icon
 class PointsDisplayWidget extends StatelessWidget {
@@ -24,19 +25,18 @@ class PointsDisplayWidget extends StatelessWidget {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.monetization_on, color: Colors.grey, size: 20),
                 SizedBox(width: 6),
-                Text(
-                  '--',
+                Text('text',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: Colors.grey,
                   ),
-                ),
+                ).tr(),
               ],
             ),
           );
@@ -78,14 +78,13 @@ class PointsDisplayWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              const Text(
-                'points',
+              Text('points',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.white70,
                   fontWeight: FontWeight.w500,
                 ),
-              ),
+              ).tr(),
             ],
           ),
         );

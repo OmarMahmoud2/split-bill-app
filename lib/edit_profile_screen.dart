@@ -7,6 +7,7 @@ import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/custom_app_header.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final Map<String, dynamic> currentData;
@@ -81,7 +82,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(
+            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+          ),
+        ),
+      );
     }
   }
 
@@ -90,17 +97,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppHeader(
-        title: "Edit Profile",
-        infoMessage:
-            "✨ Benefits of Completing Profile:\n\n• Better bill splitting experience\n• Easier for friends to find you\n• Personalized app experience\n• Access to premium features",
+        title: 'edit_profile'.tr(),
+        infoMessage: 'edit_profile_benefits_message'.tr(),
       ),
       body: _isLoading
-          ? const LoadingStateWidget(message: "Saving your changes...")
+          ? LoadingStateWidget(message: 'saving_your_changes'.tr())
           : _isSuccess
           ? SuccessStateWidget(
-              message: "Profile updated successfully!",
+              message: 'profile_updated_successfully'.tr(),
               onAction: () => Navigator.pop(context),
-              actionLabel: "Back to Profile",
+              actionLabel: 'back_to_profile'.tr(),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -213,13 +219,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           context,
                         ).primaryColor.withValues(alpha: 0.4),
                       ),
-                      child: const Text(
-                        "Save Changes",
+                      child: Text('scan_save_changes',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      ).tr(),
                     ),
                   ),
                 ],

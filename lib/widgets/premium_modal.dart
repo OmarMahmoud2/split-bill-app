@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PremiumModal extends StatefulWidget {
   const PremiumModal({super.key});
@@ -103,11 +104,11 @@ class _PremiumModalState extends State<PremiumModal>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: const Text("Parental Gate"),
+            title: Text('parental_gate').tr(),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("Quick check! Solve this to continue:"),
+                Text('quick_check_solve_this_to_continue').tr(),
                 const SizedBox(height: 16),
                 Text(
                   "$a + $b = ?",
@@ -123,7 +124,7 @@ class _PremiumModalState extends State<PremiumModal>
                   autofocus: true,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    hintText: "Answer",
+                    hintText: 'answer'.tr(),
                     filled: true,
                     fillColor: Colors.grey[100],
                     border: OutlineInputBorder(
@@ -137,7 +138,7 @@ class _PremiumModalState extends State<PremiumModal>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text("Cancel"),
+                child: Text('common_cancel').tr(),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -147,7 +148,7 @@ class _PremiumModalState extends State<PremiumModal>
                     Navigator.pop(context, false);
                   }
                 },
-                child: const Text("Verify"),
+                child: Text('verify').tr(),
               ),
             ],
           ),
@@ -165,7 +166,7 @@ class _PremiumModalState extends State<PremiumModal>
         _showSuccessConfetti();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No previous purchase found')),
+          SnackBar(content: Text('no_previous_purchase_found').tr()),
         );
       }
     }
@@ -173,8 +174,8 @@ class _PremiumModalState extends State<PremiumModal>
 
   void _showSuccessConfetti() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('🎉 Welcome to Premium!'),
+      SnackBar(
+        content: Text('welcome_to_premium').tr(),
         backgroundColor: Colors.amber,
         duration: Duration(seconds: 4),
       ),
@@ -269,24 +270,22 @@ class _PremiumModalState extends State<PremiumModal>
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            const Text(
-                              "Upgrade to PRO",
+                            Text('upgrade_to_pro',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white,
                                 letterSpacing: 1,
                               ),
-                            ),
+                            ).tr(),
                             const SizedBox(height: 8),
-                            Text(
-                              "Unlock the full power of Split Bill",
+                            Text('unlock_the_full_power_of_split_bill',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white.withValues(alpha: 0.7),
                               ),
                               textAlign: TextAlign.center,
-                            ),
+                            ).tr(),
                             const SizedBox(height: 32),
 
                             // Features
@@ -327,13 +326,12 @@ class _PremiumModalState extends State<PremiumModal>
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    "One-time payment • Lifetime access",
+                                  Text('one_time_payment_lifetime_access',
                                     style: TextStyle(
                                       color: Colors.white.withValues(alpha: 0.5),
                                       fontSize: 12,
                                     ),
-                                  ),
+                                  ).tr(),
                                   const SizedBox(height: 20),
 
                                   // Shimmering Button
@@ -400,14 +398,13 @@ class _PremiumModalState extends State<PremiumModal>
                                                         strokeWidth: 2,
                                                       ),
                                                 )
-                                              : const Text(
-                                                  "Unlock Premium Now",
+                                              : Text('unlock_premium_now',
                                                   style: TextStyle(
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.w900,
                                                     fontSize: 18,
                                                   ),
-                                                ),
+                                                ).tr(),
                                         ),
                                       );
                                     },
@@ -415,20 +412,18 @@ class _PremiumModalState extends State<PremiumModal>
                                 ],
                               )
                             else
-                              const Text(
-                                "Pricing unavailable",
+                              Text('pricing_unavailable',
                                 style: TextStyle(color: Colors.redAccent),
-                              ),
+                              ).tr(),
 
                             const SizedBox(height: 16),
                             TextButton(
                               onPressed: _handleRestore,
-                              child: Text(
-                                "Restore Purchase",
+                              child: Text('restore_purchase',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.5),
                                 ),
-                              ),
+                              ).tr(),
                             ),
                           ],
                         ),

@@ -1,5 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 
@@ -110,10 +110,9 @@ class BillSummaryWidget extends StatelessWidget {
                         color: Colors.grey[400],
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        "Created by ",
+                      Text('created_by',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      ),
+                      ).tr(),
                       Text(
                         hostName!,
                         style: TextStyle(

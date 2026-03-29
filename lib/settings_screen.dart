@@ -19,34 +19,7 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          _SectionTitle(title: 'theme_mode'.tr()),
-          const SizedBox(height: 12),
-          SegmentedButton<ThemeMode>(
-            showSelectedIcon: false,
-            segments: [
-              ButtonSegment(
-                value: ThemeMode.system,
-                label: Text('theme_system'.tr()),
-                icon: const Icon(Icons.brightness_auto_rounded),
-              ),
-              ButtonSegment(
-                value: ThemeMode.light,
-                label: Text('theme_light'.tr()),
-                icon: const Icon(Icons.light_mode_rounded),
-              ),
-              ButtonSegment(
-                value: ThemeMode.dark,
-                label: Text('theme_dark'.tr()),
-                icon: const Icon(Icons.dark_mode_rounded),
-              ),
-            ],
-            selected: {settings.themeMode},
-            onSelectionChanged: (selection) {
-              settings.updateThemeMode(selection.first);
-            },
-          ),
-          const SizedBox(height: 28),
-          _SectionTitle(title: 'language'.tr()),
+          _SectionTitle(title: 'settings_title'.tr()),
           const SizedBox(height: 12),
           _SettingsCard(
             title: 'app_language'.tr(),
@@ -54,8 +27,6 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.language_rounded,
             onTap: () => _showLocaleSheet(context, settings),
           ),
-          const SizedBox(height: 28),
-          _SectionTitle(title: 'currency'.tr()),
           const SizedBox(height: 12),
           _SettingsCard(
             title: 'default_currency'.tr(),

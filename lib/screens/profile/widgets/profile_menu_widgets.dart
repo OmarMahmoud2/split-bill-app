@@ -29,6 +29,7 @@ class ProfileCoolTile extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
   final bool isDestructive;
+  final bool compact;
 
   const ProfileCoolTile({
     super.key,
@@ -38,10 +39,17 @@ class ProfileCoolTile extends StatelessWidget {
     required this.color,
     required this.onTap,
     this.isDestructive = false,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final tilePadding = compact ? 12.0 : 16.0;
+    final iconPadding = compact ? 10.0 : 12.0;
+    final iconSize = compact ? 20.0 : 24.0;
+    final titleSize = compact ? 14.0 : 15.0;
+    final subtitleSize = compact ? 11.5 : 12.0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -61,18 +69,18 @@ class ProfileCoolTile extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(tilePadding),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(iconPadding),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, color: color, size: 24),
+                  child: Icon(icon, color: color, size: iconSize),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: compact ? 12 : 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +89,7 @@ class ProfileCoolTile extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontSize: titleSize,
                           color: isDestructive
                               ? Colors.red[700]
                               : Colors.black87,
@@ -90,14 +98,17 @@ class ProfileCoolTile extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         subtitle,
-                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: subtitleSize,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Icon(
                   Icons.arrow_forward_ios_rounded,
-                  size: 14,
+                  size: compact ? 12 : 14,
                   color: Colors.grey[300],
                 ),
               ],

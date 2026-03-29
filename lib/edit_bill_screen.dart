@@ -15,6 +15,7 @@ import 'screens/edit_bill/widgets/edit_assignment_sheet.dart';
 import 'screens/edit_bill/widgets/participant_options_sheet.dart';
 import 'screens/edit_bill/widgets/edit_bill_summary_dialog.dart';
 import 'screens/split_bill/widgets/add_members_sheet.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EditBillScreen extends StatefulWidget {
   final String billId;
@@ -134,7 +135,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
         context: context,
         barrierDismissible: false,
         builder: (context) =>
-            const LoadingStateWidget(message: "Checking app status..."),
+            LoadingStateWidget(message: 'checking_app_status'.tr()),
       );
 
       try {
@@ -153,14 +154,30 @@ class _EditBillScreenState extends State<EditBillScreen> {
         if (addedCount > 0) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text("Added $addedCount people!")));
+          ).showSnackBar(
+            SnackBar(
+              content: Text(
+                'added_people_count'.tr(
+                  namedArgs: {'count': addedCount.toString()},
+                ),
+              ),
+            ),
+          );
         }
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context); // Close loading
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Error adding contacts: $e")));
+        ).showSnackBar(
+          SnackBar(
+            content: Text(
+              'error_adding_contacts'.tr(
+                namedArgs: {'error': e.toString()},
+              ),
+            ),
+          ),
+        );
       }
     }
   }
@@ -184,7 +201,13 @@ class _EditBillScreenState extends State<EditBillScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Error scanning QR: $e")));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(
+            'error_scanning_qr'.tr(namedArgs: {'error': e.toString()}),
+          ),
+        ),
+      );
     }
   }
 
@@ -194,7 +217,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
 
     if (candidateId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Error: User ID missing from data.")),
+        SnackBar(content: Text('error_user_id_missing_from_data').tr()),
       );
       return;
     }
@@ -203,7 +226,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
     if (participants.any((p) => p['id'] == candidateId)) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("User already in bill!")));
+      ).showSnackBar(SnackBar(content: Text('user_already_in_bill').tr()));
       return;
     }
 
@@ -226,7 +249,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
     if (participants.any((p) => p['id'] == id && p['isHost'] == true)) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Cannot remove yourself!")));
+      ).showSnackBar(SnackBar(content: Text('cannot_remove_yourself').tr()));
       return;
     }
 
@@ -389,8 +412,8 @@ class _EditBillScreenState extends State<EditBillScreen> {
       if (mounted) {
         Navigator.pop(context); // Close loading
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Bill updated! 🚀"),
+          SnackBar(
+            content: Text('bill_updated').tr(),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -404,7 +427,12 @@ class _EditBillScreenState extends State<EditBillScreen> {
       if (!mounted) return;
       Navigator.pop(context); // Close loading
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(
+            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -432,8 +460,8 @@ class _EditBillScreenState extends State<EditBillScreen> {
       }
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Split equally among all!"),
+      SnackBar(
+        content: Text('split_equally_among_all').tr(),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -444,17 +472,15 @@ class _EditBillScreenState extends State<EditBillScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          "Split Bill Equally?",
+        title: Text('split_bill_equally',
           style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          "This will assign all items to all participants. This action will overwrite your current assignments.",
-        ),
+        ).tr(),
+        content: Text('this_will_assign_all_items_to_all_participants_this_action_will_overwrite_your_current_assignments',
+        ).tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -468,7 +494,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text("Confirm Split"),
+            child: Text('confirm_split').tr(),
           ),
         ],
       ),

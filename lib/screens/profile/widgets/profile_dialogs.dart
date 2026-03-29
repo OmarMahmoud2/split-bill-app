@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/services/auth_service.dart';
 import 'package:split_bill_app/login_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ProfileDialogs {
   static Future<void> showContactUs(BuildContext context) async {
@@ -61,8 +62,7 @@ class ProfileDialogs {
                       ),
                       const SizedBox(height: 16),
 
-                      const Text(
-                        "We're Here to Help!",
+                      Text('we_re_here_to_help',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
@@ -71,10 +71,9 @@ class ProfileDialogs {
                           fontFamily: '.SF Pro Text',
                         ),
                         textAlign: TextAlign.center,
-                      ),
+                      ).tr(),
                       const SizedBox(height: 8),
-                      Text(
-                        "Have a question or feedback?\nReach out to us anytime.",
+                      Text('have_a_question_or_feedback_nreach_out_to_us_anytime',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -84,7 +83,7 @@ class ProfileDialogs {
                           fontFamily: '.SF Pro Text',
                         ),
                         textAlign: TextAlign.center,
-                      ),
+                      ).tr(),
                       const SizedBox(height: 24),
 
                       // Email Button
@@ -122,19 +121,18 @@ class ProfileDialogs {
                                 ),
                               ],
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.email_rounded, color: Colors.white),
                                 SizedBox(width: 12),
-                                Text(
-                                  "Send Email",
+                                Text('send_email',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
-                                ),
+                                ).tr(),
                               ],
                             ),
                           ),
@@ -151,8 +149,8 @@ class ProfileDialogs {
                             Clipboard.setData(const ClipboardData(text: email));
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Email copied to clipboard!"),
+                              SnackBar(
+                                content: Text('email_copied_to_clipboard').tr(),
                                 behavior: SnackBarBehavior.floating,
                                 backgroundColor: Colors.green,
                               ),
@@ -165,15 +163,14 @@ class ProfileDialogs {
                               color: Colors.grey[100],
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: const Center(
-                              child: Text(
-                                "Copy Email Address",
+                            child: Center(
+                              child: Text('copy_email_address',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black54,
                                 ),
-                              ),
+                              ).tr(),
                             ),
                           ),
                         ),
@@ -183,10 +180,9 @@ class ProfileDialogs {
                       // Cancel Button
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          "Maybe Later",
+                        child: Text('maybe_later',
                           style: TextStyle(color: Colors.grey),
-                        ),
+                        ).tr(),
                       ),
                     ],
                   ),
@@ -207,15 +203,14 @@ class ProfileDialogs {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          "Logout",
+        title: Text('logout',
           style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: const Text("Are you sure you want to logout?"),
+        ).tr(),
+        content: Text('are_you_sure_you_want_to_logout').tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
           ),
           TextButton(
             onPressed: () async {
@@ -228,10 +223,9 @@ class ProfileDialogs {
                 );
               }
             },
-            child: const Text(
-              "Logout",
+            child: Text('logout',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
           ),
         ],
       ),
@@ -243,27 +237,24 @@ class ProfileDialogs {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.red),
             SizedBox(width: 8),
-            Text(
-              "Delete Account",
+            Text('delete_account',
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-            ),
+            ).tr(),
           ],
         ),
-        content: const Text(
-          "This action is extremely destructive and irreversible. You will lose all your bills and data forever.\n\nYou'll be asked to sign in again to confirm this action.\n\nAre you absolutely sure?",
+        content: Text('this_action_is_extremely_destructive_and_irreversible_you_will_lose_all_your_bills_and_data_forever_n_nyou_ll_be_asked_to_sign_in_again_to_confirm_this_action_n_nare_you_absolutely_sure',
           style: TextStyle(fontSize: 14),
-        ),
+        ).tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "No, Keep it",
+            child: Text('no_keep_it',
               style: TextStyle(color: Colors.grey),
-            ),
+            ).tr(),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -277,14 +268,14 @@ class ProfileDialogs {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (dialogContext) => const PopScope(
+                    builder: (dialogContext) => PopScope(
                       canPop: false,
                       child: AlertDialog(
                         content: Row(
                           children: [
                         CircularProgressIndicator(),
                         SizedBox(width: 20),
-                        Text("Deleting account..."),
+                        Text('deleting_account').tr(),
                       ],
                     ),
                   ),
@@ -322,7 +313,7 @@ class ProfileDialogs {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text("Yes, Delete"),
+            child: Text('yes_delete').tr(),
           ),
         ],
       ),

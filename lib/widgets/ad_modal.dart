@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AdModal extends StatefulWidget {
   final VoidCallback onWatchAd;
@@ -113,15 +114,14 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            const Text(
-                              "Earn Scan Points!",
+                            Text('earn_scan_points',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.black87,
                               ),
                               textAlign: TextAlign.center,
-                            ),
+                            ).tr(),
                             const SizedBox(height: 12),
                             RichText(
                               textAlign: TextAlign.center,
@@ -131,17 +131,15 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                                   color: Colors.grey[600],
                                   height: 1.5,
                                 ),
-                                children: const [
-                                  TextSpan(text: "Watch a short video to get "),
-                                  TextSpan(
-                                    text: "+1 Point",
+                                children: [
+                                  TextSpan(text: 'watch_a_short_video_to_get'.tr()),
+                                  TextSpan(text: 'plus_1_point'.tr(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.purple,
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: " for your next receipt scan.",
+                                  TextSpan(text: 'for_your_next_receipt_scan'.tr(),
                                   ),
                                 ],
                               ),
@@ -159,7 +157,7 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                                 icon: const Icon(
                                   Icons.play_circle_fill_rounded,
                                 ),
-                                label: const Text("Watch Video"),
+                                label: Text('watch_video').tr(),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.purple,
                                   foregroundColor: Colors.white,
@@ -181,10 +179,9 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                             const SizedBox(height: 16),
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: const Text(
-                                "No Thanks",
+                              child: Text('no_thanks',
                                 style: TextStyle(color: Colors.grey),
-                              ),
+                              ).tr(),
                             ),
                           ],
                         ),

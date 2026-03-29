@@ -41,20 +41,20 @@ Booted simulator used during verification:
 - `iPhone 17 Pro Max`
 - UDID: `F5282ACF-EF0C-48F8-A66A-31E8C51C45D9`
 
-Run the app against the live backend with:
+Run the app with:
 
 ```bash
 cd /Users/omarmahmoud/FlutterProjects/VsCodePros/split_bill_app
-flutter run -d F5282ACF-EF0C-48F8-A66A-31E8C51C45D9 --dart-define=SPLIT_BILL_API_BASE_URL=https://omarmali.net
+flutter run -d F5282ACF-EF0C-48F8-A66A-31E8C51C45D9
 ```
 
 ### Why This Command Matters
 
-- In debug mode, the app defaults to localhost unless you pass `SPLIT_BILL_API_BASE_URL`.
-- For live testing from the simulator, you should always pass:
+- The app now defaults to `https://omarmali.net` in both debug and release.
+- Use `SPLIT_BILL_API_BASE_URL` only when you intentionally want to point the app at another backend, for example:
 
 ```bash
---dart-define=SPLIT_BILL_API_BASE_URL=https://omarmali.net
+--dart-define=SPLIT_BILL_API_BASE_URL=http://127.0.0.1:8000
 ```
 
 ## Add A Receipt Image To The Simulator
@@ -233,8 +233,7 @@ You can consider this live-testing pass successful if:
 
 Check these first:
 
-- Did you run the app with `--dart-define=SPLIT_BILL_API_BASE_URL=https://omarmali.net`?
+- Are you overriding `SPLIT_BILL_API_BASE_URL` to a backend that is not running?
 - Are you signed in before testing scan, voice, or notifications?
 - Is the receipt image clear and readable?
 - Are you testing push on a real device with a real `fcmToken`?
-

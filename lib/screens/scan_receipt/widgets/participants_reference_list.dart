@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ParticipantsReferenceList extends StatelessWidget {
   final List<Map<String, dynamic>>? participants;
@@ -51,15 +52,14 @@ class ParticipantsReferenceList extends StatelessWidget {
                 color: Colors.grey[600],
               ),
               const SizedBox(width: 8),
-              Text(
-                "Voice Reference",
+              Text('voice_reference',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey[600],
                   letterSpacing: 0.5,
                 ),
-              ),
+              ).tr(),
             ],
           ),
           const SizedBox(height: 16),

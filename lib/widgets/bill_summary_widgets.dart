@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BillSummaryRow extends StatelessWidget {
   final String label;
@@ -130,22 +131,20 @@ class ParticipantShareCard extends StatelessWidget {
                               color: Colors.redAccent,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Text(
-                              "BIG LOSER 🤡",
+                            child: Text('big_loser',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
+                            ).tr(),
                           ),
                         ],
                       ],
                     ),
-                    Text(
-                      "View details",
+                    Text('view_details',
                       style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                    ),
+                    ).tr(),
                   ],
                 ),
               ),

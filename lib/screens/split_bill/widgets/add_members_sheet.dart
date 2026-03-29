@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddMembersSheet extends StatelessWidget {
   final VoidCallback onScanQR;
@@ -32,30 +33,29 @@ class AddMembersSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const Text(
-            "Add People",
+          Text('add_people',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          ).tr(),
           const SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildAddOption(
                 Icons.qr_code_scanner_rounded,
-                "Scan QR",
+                'scan_qr'.tr(),
                 Colors.blueAccent,
                 onScanQR,
               ),
               _buildAddOption(
                 Icons.contacts_rounded,
-                "Contacts",
+                'contacts'.tr(),
                 Colors.purpleAccent,
                 onPickContacts,
               ),
               if (onPickGroups != null)
                 _buildAddOption(
                   Icons.groups_rounded,
-                  "Groups",
+                  'groups'.tr(),
                   Colors.orangeAccent,
                   onPickGroups!,
                 ),

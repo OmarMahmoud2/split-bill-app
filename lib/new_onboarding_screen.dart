@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_wrapper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NewOnboardingScreen extends StatefulWidget {
   const NewOnboardingScreen({super.key});
@@ -21,40 +22,36 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
     OnboardingPageData(
       image:
           'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
-      title: 'Scan Receipts\nInstantly',
-      description:
-          'Just snap a photo and let AI extract all items and prices automatically.',
+      title: 'scan_receipts_ninstantly'.tr(),
+      description: 'onboarding_scan_description'.tr(),
       gradientColors: [Color(0xFF667EEA), Color(0xFF764BA2)],
     ),
     OnboardingPageData(
       image:
           'assets/onboarding/onboarding_split_bill_1767296158711-removebg-preview.png',
-      title: 'Split Bills\nFairly',
-      description:
-          'Assign items to friends or split evenly. Everyone pays what they owe.',
+      title: 'split_bills_nfairly'.tr(),
+      description: 'onboarding_split_description'.tr(),
       gradientColors: [Color(0xFFEC008C), Color(0xFFFC6767)],
     ),
     OnboardingPageData(
       image:
           'assets/onboarding/onboarding_track_payments_1767296176070-removebg-preview.png',
-      title: 'Track Payments\nEasily',
-      description: 'See who paid and who hasn\'t. Send reminders with one tap.',
+      title: 'track_payments_neasily'.tr(),
+      description: 'onboarding_track_description'.tr(),
       gradientColors: [Color(0xFF11998E), Color(0xFF38EF7D)],
     ),
     OnboardingPageData(
       image:
           'assets/onboarding/onboarding_notifications_1767296191753-removebg-preview.png',
-      title: 'Stay Updated\nAlways',
-      description:
-          'Get instant notifications when bills are shared or payments confirmed.',
+      title: 'stay_updated_nalways'.tr(),
+      description: 'onboarding_notifications_description'.tr(),
       gradientColors: [Color(0xFFFF6B6B), Color(0xFFFFA500)],
     ),
     OnboardingPageData(
       image:
           'assets/onboarding/onboarding_ready_1767296205493-removebg-preview.png',
-      title: 'Ready to\nGet Started?',
-      description:
-          'Join thousands splitting bills effortlessly. No more awkward math!',
+      title: 'ready_to_nget_started'.tr(),
+      description: 'onboarding_ready_description'.tr(),
       gradientColors: [Color(0xFF667EEA), Color(0xFF4FACFE)],
     ),
   ];
@@ -176,14 +173,13 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
                         vertical: 12,
                       ),
                     ),
-                    child: Text(
-                      'Skip',
+                    child: Text('skip',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.9),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
-                    ),
+                    ).tr(),
                   ),
                 ),
 
@@ -254,8 +250,8 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
                       ),
                       child: Text(
                         _currentPage == _pages.length - 1
-                            ? 'Get Started 🚀'
-                            : 'Next',
+                            ? 'get_started_rocket'.tr()
+                            : 'next'.tr(),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

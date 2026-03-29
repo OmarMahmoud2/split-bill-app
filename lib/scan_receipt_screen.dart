@@ -47,7 +47,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   File? _image;
   bool _isLoading = false;
   Map<String, dynamic>? _receiptData;
-  String _loadingMessage = "Analyzing Receipt...";
+  String _loadingMessageKey = 'analyzing_receipt';
   late AnimationController _loadingTextController;
 
   // Editing State
@@ -145,7 +145,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     if (_image == null) return;
 
     setState(() => _isLoading = true);
-    _loadingMessage = "Saving for later...";
+    _loadingMessageKey = 'saving_for_later';
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -195,8 +195,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Saved for later!"),
+          SnackBar(
+            content: Text('saved_for_later').tr(),
             backgroundColor: Colors.green,
           ),
         );
@@ -208,7 +208,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Error saving: $e"),
+            content: Text(
+              'error_saving'.tr(namedArgs: {'error': e.toString()}),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -367,7 +369,12 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       debugPrint("Error checking points: $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(
+            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -393,8 +400,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   Future<void> _watchAdForPoint() async {
     if (!RewardedAdHelper.isReady) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Fetching an ad... Please try again in a moment."),
+        SnackBar(
+          content: Text('fetching_an_ad_please_try_again_in_a_moment').tr(),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.blueAccent,
         ),
@@ -411,10 +418,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       onRewardEarned: () {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                "🎉 You earned 1 point! You can now use the scanner.",
-              ),
+            SnackBar(
+              content: Text('you_earned_1_point_you_can_now_use_the_scanner',
+              ).tr(),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.green,
             ),
@@ -426,14 +432,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text("Notice"),
-              content: const Text(
-                "Ads are currently unavailable. Please try again later.",
-              ),
+              title: Text('notice').tr(),
+              content: Text('ads_are_currently_unavailable_please_try_again_later',
+              ).tr(),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Got it"),
+                  child: Text('got_it_2').tr(),
                 ),
               ],
             ),
@@ -454,7 +459,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           initAspectRatio: CropAspectRatioPreset.original,
           lockAspectRatio: false,
         ),
-        IOSUiSettings(title: 'Adjust Receipt', aspectRatioLockEnabled: false),
+        IOSUiSettings(title: 'adjust_receipt'.tr(), aspectRatioLockEnabled: false),
       ],
     );
 
@@ -496,7 +501,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
     setState(() {
       _isLoading = true;
-      _loadingMessage = "Scanning receipt with AI...";
+      _loadingMessageKey = 'scanning_receipt_with_ai';
     });
     HapticFeedback.mediumImpact();
 
@@ -525,7 +530,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         HapticFeedback.heavyImpact();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Scan failed: ${e.toString().replaceFirst('Exception: ', '')}"),
+            content: Text(
+              'scan_failed'.tr(
+                namedArgs: {
+                  'error': e.toString().replaceFirst('Exception: ', ''),
+                },
+              ),
+            ),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -538,7 +549,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: CustomAppHeader(
-        title: _receiptData == null ? "Scan Receipt" : "Scan Completed",
+        title: _receiptData == null ? 'scan_receipt'.tr() : 'scan_completed'.tr(),
         trailing: _buildHeaderTrailing(),
       ),
       body: AnimatedSwitcher(
@@ -648,19 +659,18 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         ),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.workspace_premium, color: Colors.white, size: 16),
           SizedBox(width: 4),
-          Text(
-            "PRO",
+          Text('pro',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
-          ),
+          ).tr(),
         ],
       ),
     );
@@ -718,7 +728,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           FadeTransition(
             opacity: _loadingTextController,
             child: Text(
-              _loadingMessage,
+              _loadingMessageKey.tr(),
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -727,10 +737,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            "Our backend is extracting items, quantities, and charges securely.",
+          Text('our_backend_is_extracting_items_quantities_and_charges_securely',
             style: TextStyle(color: Colors.grey[500], fontSize: 14),
-          ),
+          ).tr(),
           const SizedBox(height: 50),
           Lottie.asset('assets/animations/loading.json', height: 60),
         ],

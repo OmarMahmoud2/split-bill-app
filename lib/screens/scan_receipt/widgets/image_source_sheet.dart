@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ImageSourceSheet extends StatelessWidget {
   final Function(ImageSource) onPickImage;
@@ -26,17 +27,16 @@ class ImageSourceSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const Text(
-            "Scan Receipt",
+          Text('scan_receipt',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          ).tr(),
           const SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildSourceOption(
                 icon: Icons.photo_library_rounded,
-                label: "Gallery",
+                label: 'gallery'.tr(),
                 color: Colors.blueAccent,
                 onTap: () {
                   Navigator.pop(context);
@@ -45,7 +45,7 @@ class ImageSourceSheet extends StatelessWidget {
               ),
               _buildSourceOption(
                 icon: Icons.camera_alt_rounded,
-                label: "Camera",
+                label: 'camera'.tr(),
                 color: Colors.purpleAccent,
                 onTap: () {
                   Navigator.pop(context);

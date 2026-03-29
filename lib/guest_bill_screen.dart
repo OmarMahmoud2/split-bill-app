@@ -10,6 +10,7 @@ import 'screens/guest_bill/widgets/guest_header.dart';
 import 'screens/guest_bill/widgets/download_section.dart';
 import 'screens/guest_bill/guest_selector_view.dart';
 import 'utils/currency_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GuestBillScreen extends StatefulWidget {
   final String billId;
@@ -212,24 +213,22 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Items Section
-                    const Text(
-                      "YOUR ITEMS",
+                    Text('your_items',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 12,
                         letterSpacing: 1.5,
                         color: Colors.black54,
                       ),
-                    ),
+                    ).tr(),
                     const SizedBox(height: 12),
 
                     if (myItems.isEmpty)
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(16),
-                        child: Text(
-                          "No items assigned to you",
+                        child: Text('no_items_assigned_to_you',
                           style: TextStyle(color: Colors.grey),
-                        ),
+                        ).tr(),
                       )
                     else
                       ...myItems.map(
@@ -366,13 +365,12 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "TOTAL DUE",
+                        Text('total_due',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 18,
                           ),
-                        ),
+                        ).tr(),
                         Text(
                           CurrencyUtils.format(
                             breakdown['myTotal'] as double,
@@ -477,7 +475,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId,
-              title: "Payment Received! 💸",
+              title: 'payment_received'.tr(),
               body:
                   "$participantName paid ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(data))} for $storeName.",
               data: {
@@ -551,7 +549,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId,
-              title: "Payment Marked as Sent! 💸",
+              title: 'payment_marked_as_sent'.tr(),
               body:
                   "$participantName marked ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(data))} as paid (No Proof).",
               data: {
@@ -611,16 +609,14 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Text(
-              "Confirm Payment",
+            Text('confirm_payment',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
             const SizedBox(height: 8),
-            const Text(
-              "Help the host verify your payment faster.",
+            Text('help_the_host_verify_your_payment_faster',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
-            ),
+            ).tr(),
             const SizedBox(height: 32),
             ListTile(
               leading: Container(
@@ -631,11 +627,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 ),
                 child: const Icon(Icons.image_rounded, color: Colors.blue),
               ),
-              title: const Text(
-                "Upload Screenshot",
+              title: Text('upload_screenshot',
                 style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: const Text("Recommended for digital wallets"),
+              ).tr(),
+              subtitle: Text('recommended_for_digital_wallets').tr(),
               onTap: () {
                 Navigator.pop(context);
                 _uploadPaymentProof(
@@ -660,11 +655,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   color: Colors.orange,
                 ),
               ),
-              title: const Text(
-                "I Paid (Skip Proof)",
+              title: Text('i_paid_skip_proof',
                 style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: const Text("Host will verify manually"),
+              ).tr(),
+              subtitle: Text('host_will_verify_manually').tr(),
               onTap: () {
                 Navigator.pop(context);
                 _markAsPaidNoProof(
@@ -738,14 +732,13 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "You owe to ",
+                Text('you_owe_to',
                   style: TextStyle(
                     color: Colors.black87,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
-                ),
+                ).tr(),
                 Text(
                   hostName,
                   style: const TextStyle(
@@ -776,10 +769,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   color: Colors.grey[400],
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  "Tap to see breakdown",
+                Text('tap_to_see_breakdown',
                   style: TextStyle(color: Colors.grey[500], fontSize: 13),
-                ),
+                ).tr(),
               ],
             ),
           ],
@@ -871,8 +863,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               } else {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Could not launch payment app."),
+                  SnackBar(
+                    content: Text('could_not_launch_payment_app').tr(),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -881,7 +873,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               Clipboard.setData(ClipboardData(text: value));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("$method copied to clipboard!"),
+                  content: Text(
+                    'payment_method_copied'.tr(namedArgs: {'method': method}),
+                  ),
                   backgroundColor: Colors.green,
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -991,7 +985,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.billId.isEmpty) {
-      return const Scaffold(body: Center(child: Text("Invalid Bill ID")));
+      return Scaffold(body: Center(child: Text('invalid_bill_id').tr()));
     }
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
@@ -1089,17 +1083,15 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                "Payment Proof Uploaded!",
+              Text('payment_proof_uploaded',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900),
                 textAlign: TextAlign.center,
-              ),
+              ).tr(),
               const SizedBox(height: 12),
-              const Text(
-                "The host has been notified and will review your payment soon.",
+              Text('the_host_has_been_notified_and_will_review_your_payment_soon',
                 style: TextStyle(color: Colors.grey, fontSize: 15),
                 textAlign: TextAlign.center,
-              ),
+              ).tr(),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => setState(() => _showSuccess = false),
@@ -1114,10 +1106,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  "Back to Bill",
+                child: Text('back_to_bill',
                   style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                ).tr(),
               ),
             ],
           ),
@@ -1137,10 +1128,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               errorBuilder: (c, e, s) => const CircularProgressIndicator(),
             ),
             const SizedBox(height: 24),
-            const Text(
-              "Uploading Payment Proof...",
+            Text('uploading_payment_proof',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
           ],
         ),
       );
@@ -1219,15 +1209,14 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 ),
                 child: Column(
                   children: [
-                    Text(
-                      "WELCOME BACK",
+                    Text('welcome_back',
                       style: TextStyle(
                         fontSize: 12,
                         letterSpacing: 2,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[400],
                       ),
-                    ),
+                    ).tr(),
                     const SizedBox(height: 8),
                     Text(
                       (participant['name'] ?? "Guest").toUpperCase(),
@@ -1270,15 +1259,14 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                       Expanded(child: Divider(color: Colors.grey[300])),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          "PAY WITH",
+                        child: Text('pay_with',
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                             letterSpacing: 1.5,
                           ),
-                        ),
+                        ).tr(),
                       ),
                       Expanded(child: Divider(color: Colors.grey[300])),
                     ],
@@ -1306,13 +1294,12 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                       participant['name'] ?? "Guest",
                     ),
                     icon: const Icon(Icons.check_circle_rounded, size: 24),
-                    label: const Text(
-                      "I'VE PAID",
+                    label: Text('i_ve_paid',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ).tr(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[700],
                       foregroundColor: Colors.white,

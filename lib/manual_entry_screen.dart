@@ -3,6 +3,7 @@ import 'widgets/custom_app_header.dart';
 import 'package:flutter/services.dart';
 import 'package:split_bill_app/split_bill_screen.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 
 class ManualEntryScreen extends StatefulWidget {
@@ -104,8 +105,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     if (_items.isEmpty) {
       HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Add at least one item!"),
+        SnackBar(
+          content: Text('add_at_least_one_item').tr(),
           backgroundColor: Colors.red,
         ),
       );
@@ -148,12 +149,15 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final fieldFill = colorScheme.surfaceContainerHighest.withValues(alpha: 0.7);
+
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Darker background for contrast
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppHeader(
-        title: "Enter Manually",
-        infoMessage:
-            "💡 Quick Tips:\n\n• Add store name at the top\n• Enter each item with quantity and price\n• Tap 'Add to List' or press Enter\n• Swipe items left to delete\n• Review total at bottom\n• Tap 'Continue' when done",
+        title: 'enter_manually'.tr(),
+        infoMessage: 'manual_entry_quick_tips'.tr(),
       ),
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -165,11 +169,16 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                    color: colorScheme.outline.withValues(alpha: 0.12),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueGrey.withValues(alpha: 0.08),
+                      color: Colors.black.withValues(
+                        alpha: theme.brightness == Brightness.dark ? 0.18 : 0.08,
+                      ),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -181,23 +190,21 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                     children: [
                       TextFormField(
                         controller: _storeController,
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
                         ),
                         decoration: InputDecoration(
-                          labelText: "Store Name",
+                          labelText: 'receipt_store_name'.tr(),
                           prefixIcon: Icon(
                             Icons.storefront_rounded,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: colorScheme.primary,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
-                          fillColor: Colors.grey[100],
+                          fillColor: fieldFill,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 16,
@@ -218,23 +225,22 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                               controller: _itemController,
                               focusNode: _itemFocusNode,
                               textCapitalization: TextCapitalization.sentences,
-                              style: const TextStyle(
+                              style: theme.textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
                               ),
                               decoration: InputDecoration(
-                                labelText: "Item",
-                                hintText: "Burger",
+                                labelText: 'receipt_item'.tr(),
+                                hintText: 'burger'.tr(),
                                 prefixIcon: const Icon(
                                   Icons.fastfood_rounded,
                                   size: 18,
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: Colors.grey[100],
+                                fillColor: fieldFill,
                               ),
                               onFieldSubmitted: (_) => FocusScope.of(
                                 context,
@@ -251,19 +257,18 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                               focusNode: _qtyFocusNode,
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: theme.textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
                               ),
                               decoration: InputDecoration(
-                                labelText: "Qty",
-                                hintText: "1",
+                                labelText: 'receipt_qty'.tr(),
+                                hintText: '1'.tr(),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: Colors.grey[100],
+                                fillColor: fieldFill,
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 8,
                                   vertical: 16,
@@ -287,12 +292,11 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
-                              style: const TextStyle(
+                              style: theme.textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
                               ),
                               decoration: InputDecoration(
-                                labelText: "Price",
+                                labelText: 'receipt_price'.tr(),
                                 prefixIcon: const Icon(
                                   Icons.attach_money_rounded,
                                   size: 18,
@@ -302,7 +306,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: Colors.grey[100],
+                                fillColor: fieldFill,
                               ),
                               onFieldSubmitted: (_) => _addItem(),
                             ),
@@ -314,23 +318,13 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                         width: double.infinity,
                         child: ElevatedButton.icon(
                           onPressed: _addItem,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black87,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                          ),
                           icon: const Icon(Icons.add_circle_outline_rounded),
-                          label: const Text(
-                            "Add to List",
+                          label: Text('add_to_list',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
-                          ),
+                          ).tr(),
                         ),
                       ),
                     ],
@@ -353,18 +347,16 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                               errorBuilder: (c, e, s) => Icon(
                                 Icons.receipt_long_rounded,
                                 size: 80,
-                                color: Colors.grey[300],
+                                color: colorScheme.outline.withValues(alpha: 0.4),
                               ),
                             ),
                             const SizedBox(height: 12),
-                            Text(
-                              "Your list is empty",
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 16,
+                            Text('your_list_is_empty',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: colorScheme.onSurface.withValues(alpha: 0.54),
                                 fontWeight: FontWeight.w500,
                               ),
-                            ),
+                            ).tr(),
                           ],
                         ),
                       ),
@@ -396,15 +388,18 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withValues(
+                alpha: theme.brightness == Brightness.dark ? 0.18 : 0.05,
+              ),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),
           ],
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.12)),
         ),
         child: SafeArea(
           child: Row(
@@ -413,22 +408,19 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "TOTAL ESTIMATE",
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 11,
+                  Text('total_estimate',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.54),
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
                     ),
-                  ),
+                  ).tr(),
                   const SizedBox(height: 4),
                   Text(
                     "\$${_currentTotal.toStringAsFixed(2)}",
-                    style: TextStyle(
-                      fontSize: 30,
+                    style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: colorScheme.primary,
                       height: 1.0,
                     ),
                   ),
@@ -438,7 +430,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
               ElevatedButton(
                 onPressed: _finish,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
@@ -448,19 +440,16 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   elevation: 8,
-                  shadowColor: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.4),
+                  shadowColor: colorScheme.primary.withValues(alpha: 0.4),
                 ),
                 child: Row(
-                  children: const [
-                    Text(
-                      "Continue",
+                  children: [
+                    Text('common_continue',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ).tr(),
                     SizedBox(width: 8),
                     Icon(Icons.arrow_forward_rounded, size: 20),
                   ],
@@ -479,6 +468,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     int index, {
     bool isRemoving = false,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final fieldFill = colorScheme.surfaceContainerHighest.withValues(alpha: 0.7);
     double lineTotal = (item['price'] as double) * (item['qty'] as int);
 
     return SizeTransition(
@@ -511,12 +503,17 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.grey.shade100, width: 1),
+                border: Border.all(
+                  color: colorScheme.outline.withValues(alpha: 0.1),
+                  width: 1,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.shade100,
+                    color: Colors.black.withValues(
+                      alpha: theme.brightness == Brightness.dark ? 0.14 : 0.05,
+                    ),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -551,10 +548,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                       children: [
                         Text(
                           item['name'],
-                          style: const TextStyle(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -566,24 +561,22 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: fieldFill,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 "x${item['qty']}",
-                                style: TextStyle(
+                                style: theme.textTheme.labelSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: Colors.grey[700],
+                                  color: colorScheme.onSurface.withValues(alpha: 0.8),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 6),
                             Text(
                               "@ \$${item['price']}",
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 13,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurface.withValues(alpha: 0.58),
                               ),
                             ),
                           ],
@@ -595,10 +588,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   // Price
                   Text(
                     "\$${lineTotal.toStringAsFixed(2)}",
-                    style: TextStyle(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      fontSize: 17,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -609,7 +601,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                       icon: Icon(
                         Icons.remove_circle_outline_rounded,
                         size: 20,
-                        color: Colors.grey[300],
+                        color: colorScheme.onSurface.withValues(alpha: 0.32),
                       ),
                       onPressed: () => _removeItem(index),
                       splashRadius: 20,

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:split_bill_app/widgets/bill_tile.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CompletedBillsScreen extends StatefulWidget {
   const CompletedBillsScreen({super.key});
@@ -65,7 +66,7 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return const Scaffold(body: Center(child: Text("Please log in")));
+      return Scaffold(body: Center(child: Text('please_log_in').tr()));
     }
 
     return Scaffold(
@@ -77,11 +78,17 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingStateWidget(message: "Loading history...");
+            return LoadingStateWidget(message: 'loading_history'.tr());
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            return Center(
+              child: Text(
+                'error_with_details'.tr(
+                  namedArgs: {'error': snapshot.error.toString()},
+                ),
+              ),
+            );
           }
 
           final allDocs = snapshot.data?.docs ?? [];
@@ -124,13 +131,12 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          const Text(
-                            "Completed Bills",
+                          Text('completed_bills',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 18,
                             ),
-                          ),
+                          ).tr(),
                         ],
                       ),
                     ),
@@ -151,14 +157,13 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
                           repeat: false,
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          "No completed bills yet!",
+                        Text('no_completed_bills_yet',
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
+                        ).tr(),
                       ],
                     ),
                   ),

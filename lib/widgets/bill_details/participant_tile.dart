@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ParticipantTile extends StatelessWidget {
   final Map<String, dynamic> participant;
@@ -136,15 +137,14 @@ class ParticipantTile extends StatelessWidget {
                                 color: Colors.blue[600]!.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text(
-                                "HOST",
+                              child: Text('host',
                                 style: TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.blue[700],
                                   letterSpacing: 0.5,
                                 ),
-                              ),
+                              ).tr(),
                             ),
                           ],
                           if (isAppUser && !isHost) ...[

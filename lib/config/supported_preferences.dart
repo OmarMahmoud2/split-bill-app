@@ -163,3 +163,19 @@ CurrencyOption findCurrencyOption(String code) {
     orElse: () => supportedCurrencyOptions.first,
   );
 }
+
+Locale resolveSupportedLocale(
+  Iterable<Locale> preferredLocales, {
+  Locale fallback = const Locale('en'),
+}) {
+  for (final locale in preferredLocales) {
+    final match = supportedLocaleOptions.where(
+      (option) => option.code == locale.languageCode,
+    );
+    if (match.isNotEmpty) {
+      return match.first.locale;
+    }
+  }
+
+  return fallback;
+}

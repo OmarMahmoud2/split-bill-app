@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SimpleAssignmentSheet extends StatefulWidget {
   final List<dynamic> participants;
@@ -43,10 +44,9 @@ class _SimpleAssignmentSheetState extends State<SimpleAssignmentSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Who split this item?",
+          Text('who_split_this_item',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          ).tr(),
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
@@ -132,14 +132,13 @@ class _SimpleAssignmentSheetState extends State<SimpleAssignmentSheet> {
                                       ),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: const Text(
-                                      "PRO",
+                                    child: Text('pro',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 8,
                                       ),
-                                    ),
+                                    ).tr(),
                                   ),
                               ],
                             ),
@@ -168,10 +167,9 @@ class _SimpleAssignmentSheetState extends State<SimpleAssignmentSheet> {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: const Text(
-              "Done",
+            child: Text('done',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            ).tr(),
           ),
         ],
       ),
@@ -229,10 +227,9 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Assign Quantities",
+              Text('assign_quantities',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              ).tr(),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -364,10 +361,9 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: const Text(
-              "Confirm Quantities",
+            child: Text('confirm_quantities',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            ).tr(),
           ),
         ],
       ),

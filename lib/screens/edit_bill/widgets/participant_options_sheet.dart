@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ParticipantOptionsSheet extends StatelessWidget {
   final Map<String, dynamic> participant;
@@ -120,14 +121,14 @@ class ParticipantOptionsSheet extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Remove Participant?"),
+        title: Text('remove_participant').tr(),
         content: Text(
           "Are you sure you want to remove \"${p['name']}\"? Assignments will be adjusted.",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: Text('common_cancel').tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -138,7 +139,7 @@ class ParticipantOptionsSheet extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text("Remove"),
+            child: Text('common_remove').tr(),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class VersionInfo extends StatelessWidget {
   final String version;
@@ -10,14 +11,13 @@ class VersionInfo extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          const Text(
-            "Made with ❤️ for smart spenders",
+          Text('made_with_for_smart_spenders',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 13,
               color: Colors.grey,
             ),
-          ),
+          ).tr(),
           const SizedBox(height: 4),
           Text(
             "Version $version",

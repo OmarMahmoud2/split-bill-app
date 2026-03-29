@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:split_bill_app/services/group_service.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GroupSelectionSheet extends StatelessWidget {
   final GroupService groupService;
@@ -34,20 +35,19 @@ class GroupSelectionSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const Text(
-            "Select Group",
+          Text('select_group',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          ).tr(),
           const SizedBox(height: 16),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: groupService.getMyGroups(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const LoadingStateWidget(message: "Loading groups...");
+                  return LoadingStateWidget(message: 'loading_groups'.tr());
                 }
                 if (snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text("No groups found."));
+                  return Center(child: Text('no_groups_found').tr());
                 }
                 return ListView.builder(
                   itemCount: snapshot.data!.docs.length,
@@ -118,7 +118,7 @@ class _GroupMemberSelectionDialogState
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text("Select Members"),
+      title: Text('select_members').tr(),
       content: SizedBox(
         width: double.maxFinite,
         child: ListView.builder(
@@ -147,7 +147,7 @@ class _GroupMemberSelectionDialogState
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
+          child: Text('common_cancel').tr(),
         ),
         ElevatedButton(
           onPressed: () {
@@ -157,7 +157,7 @@ class _GroupMemberSelectionDialogState
             widget.onMembersConfirmed(finalSelection);
             Navigator.pop(context);
           },
-          child: const Text("Add Selected"),
+          child: Text('add_selected').tr(),
         ),
       ],
     );

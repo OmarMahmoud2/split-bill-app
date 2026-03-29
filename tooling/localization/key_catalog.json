@@ -1,0 +1,3603 @@
+{
+  "Payment Marked as Sent! 💸": {
+    "key": "payment_marked_as_sent",
+    "source": "Payment Marked as Sent! 💸",
+    "template": "Payment Marked as Sent! 💸",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 554
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 264
+      }
+    ]
+  },
+  "Split Bills\\nFairly": {
+    "key": "split_bills_nfairly",
+    "source": "Split Bills\\nFairly",
+    "template": "Split Bills\\nFairly",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 32
+      }
+    ]
+  },
+  "Group deleted": {
+    "key": "group_deleted",
+    "source": "Group deleted",
+    "template": "Group deleted",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 121
+      }
+    ]
+  },
+  "Error: ${_messageFromError(e)}": {
+    "key": "error_error_2",
+    "source": "Error: ${_messageFromError(e)}",
+    "template": "Error: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "_messageFromError(e)"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 222
+      }
+    ]
+  },
+  "Group Details": {
+    "key": "group_details",
+    "source": "Group Details",
+    "template": "Group Details",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 97
+      }
+    ]
+  },
+  "Error: Missing User ID": {
+    "key": "error_missing_user_id",
+    "source": "Error: Missing User ID",
+    "template": "Error: Missing User ID",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 273
+      }
+    ]
+  },
+  "No squads yet. Create one!": {
+    "key": "no_squads_yet_create_one",
+    "source": "No squads yet. Create one!",
+    "template": "No squads yet. Create one!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 710
+      }
+    ]
+  },
+  "Back to Home": {
+    "key": "back_to_home",
+    "source": "Back to Home",
+    "template": "Back to Home",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 1153
+      }
+    ]
+  },
+  "Rate Us": {
+    "key": "rate_us",
+    "source": "Rate Us",
+    "template": "Rate Us",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 398
+      }
+    ]
+  },
+  "Burger": {
+    "key": "burger",
+    "source": "Burger",
+    "template": "Burger",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 233
+      }
+    ]
+  },
+  "Loading your dashboard...": {
+    "key": "loading_your_dashboard",
+    "source": "Loading your dashboard...",
+    "template": "Loading your dashboard...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/home_screen.dart",
+        "line": 236
+      }
+    ]
+  },
+  "Marked as $newStatus": {
+    "key": "marked_as_new_status",
+    "source": "Marked as $newStatus",
+    "template": "Marked as {new_status}",
+    "placeholders": [
+      {
+        "name": "new_status",
+        "expression": "newStatus"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 163
+      }
+    ]
+  },
+  "OK": {
+    "key": "ok",
+    "source": "OK",
+    "template": "OK",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 524
+      }
+    ]
+  },
+  "Mobile money wallet for East Africa": {
+    "key": "mobile_money_wallet_for_east_africa",
+    "source": "Mobile money wallet for East Africa",
+    "template": "Mobile money wallet for East Africa",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 815
+      }
+    ]
+  },
+  "User already in bill!": {
+    "key": "user_already_in_bill",
+    "source": "User already in bill!",
+    "template": "User already in bill!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 206
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 280
+      }
+    ]
+  },
+  "Confirm Assignments": {
+    "key": "confirm_assignments",
+    "source": "Confirm Assignments",
+    "template": "Confirm Assignments",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/voice/smart_review_screen.dart",
+        "line": 70
+      }
+    ]
+  },
+  "Delete Group": {
+    "key": "delete_group",
+    "source": "Delete Group",
+    "template": "Delete Group",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 105
+      }
+    ]
+  },
+  "Please complete all required fields.": {
+    "key": "please_complete_all_required_fields",
+    "source": "Please complete all required fields.",
+    "template": "Please complete all required fields.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 329
+      }
+    ]
+  },
+  "IBAN, account number, or routing details": {
+    "key": "iban_account_number_or_routing_details",
+    "source": "IBAN, account number, or routing details",
+    "template": "IBAN, account number, or routing details",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 825
+      }
+    ]
+  },
+  "Profile updated successfully!": {
+    "key": "profile_updated_successfully",
+    "source": "Profile updated successfully!",
+    "template": "Profile updated successfully!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 101
+      }
+    ]
+  },
+  "You Owe": {
+    "key": "you_owe",
+    "source": "You Owe",
+    "template": "You Owe",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 144
+      }
+    ]
+  },
+  "${members.length} members": {
+    "key": "members_count_members",
+    "source": "${members.length} members",
+    "template": "{members_count} members",
+    "placeholders": [
+      {
+        "name": "members_count",
+        "expression": "members.length"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 288
+      }
+    ]
+  },
+  "for your next receipt scan.": {
+    "key": "for_your_next_receipt_scan",
+    "source": "for your next receipt scan.",
+    "template": "for your next receipt scan.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 143
+      }
+    ]
+  },
+  "Save & Continue": {
+    "key": "save_and_continue",
+    "source": "Save & Continue",
+    "template": "Save & Continue",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 185
+      }
+    ]
+  },
+  "Deleting account...": {
+    "key": "deleting_account",
+    "source": "Deleting account...",
+    "template": "Deleting account...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 287
+      }
+    ]
+  },
+  "receipt_add_item": {
+    "key": "receipt_add_item",
+    "source": "receipt_add_item",
+    "template": "Add item",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/receipt_result_view.dart",
+        "line": 188
+      }
+    ]
+  },
+  "This squad will be gone forever. Sure?": {
+    "key": "this_squad_will_be_gone_forever_sure",
+    "source": "This squad will be gone forever. Sure?",
+    "template": "This squad will be gone forever. Sure?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 603
+      }
+    ]
+  },
+  "Fetching an ad... Please try again in a moment.": {
+    "key": "fetching_an_ad_please_try_again_in_a_moment",
+    "source": "Fetching an ad... Please try again in a moment.",
+    "template": "Fetching an ad... Please try again in a moment.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 397
+      }
+    ]
+  },
+  "Please log in to view notifications.": {
+    "key": "please_log_in_to_view_notifications",
+    "source": "Please log in to view notifications.",
+    "template": "Please log in to view notifications.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 64
+      }
+    ]
+  },
+  "Setting up secure connection...": {
+    "key": "setting_up_secure_connection",
+    "source": "Setting up secure connection...",
+    "template": "Setting up secure connection...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/auth_wrapper.dart",
+        "line": 85
+      }
+    ]
+  },
+  "Scan Receipts\\nInstantly": {
+    "key": "scan_receipts_ninstantly",
+    "source": "Scan Receipts\\nInstantly",
+    "template": "Scan Receipts\\nInstantly",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 24
+      }
+    ]
+  },
+  "Invalid Bill ID": {
+    "key": "invalid_bill_id",
+    "source": "Invalid Bill ID",
+    "template": "Invalid Bill ID",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 994
+      }
+    ]
+  },
+  "No groups found. Create one first!": {
+    "key": "no_groups_found_create_one_first",
+    "source": "No groups found. Create one first!",
+    "template": "No groups found. Create one first!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 261
+      }
+    ]
+  },
+  "Delete Group?": {
+    "key": "delete_group_2",
+    "source": "Delete Group?",
+    "template": "Delete Group?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 69
+      },
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 602
+      }
+    ]
+  },
+  "Smart Review": {
+    "key": "smart_review",
+    "source": "Smart Review",
+    "template": "Smart Review",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/voice/smart_review_screen.dart",
+        "line": 69
+      }
+    ]
+  },
+  "Added $addedCount members!": {
+    "key": "added_added_count_members",
+    "source": "Added $addedCount members!",
+    "template": "Added {added_count} members!",
+    "placeholders": [
+      {
+        "name": "added_count",
+        "expression": "addedCount"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 464
+      }
+    ]
+  },
+  "Email Address": {
+    "key": "email_address",
+    "source": "Email Address",
+    "template": "Email Address",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 398
+      }
+    ]
+  },
+  "${selectedLocale.englishName} • ${selectedLocale.nativeName}": {
+    "key": "english_name_native_name",
+    "source": "${selectedLocale.englishName} • ${selectedLocale.nativeName}",
+    "template": "{english_name} • {native_name}",
+    "placeholders": [
+      {
+        "name": "english_name",
+        "expression": "selectedLocale.englishName"
+      },
+      {
+        "name": "native_name",
+        "expression": "selectedLocale.nativeName"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 294
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 26
+      }
+    ]
+  },
+  "Checking onboarding...": {
+    "key": "checking_onboarding",
+    "source": "Checking onboarding...",
+    "template": "Checking onboarding...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/auth_wrapper.dart",
+        "line": 69
+      }
+    ]
+  },
+  "User already in group": {
+    "key": "user_already_in_group",
+    "source": "User already in group",
+    "template": "User already in group",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 36
+      }
+    ]
+  },
+  "Ad Not Available": {
+    "key": "ad_not_available",
+    "source": "Ad Not Available",
+    "template": "Ad Not Available",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 516
+      }
+    ]
+  },
+  "${option.code} • ${option.name}": {
+    "key": "code_name",
+    "source": "${option.code} • ${option.name}",
+    "template": "{code} • {name}",
+    "placeholders": [
+      {
+        "name": "code",
+        "expression": "option.code"
+      },
+      {
+        "name": "name",
+        "expression": "option.name"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 219
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 116
+      }
+    ]
+  },
+  "No Proof Submitted": {
+    "key": "no_proof_submitted",
+    "source": "No Proof Submitted",
+    "template": "No Proof Submitted",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 53
+      }
+    ]
+  },
+  "Unlimited scans • No ads • Lifetime": {
+    "key": "unlimited_scans_no_ads_lifetime",
+    "source": "Unlimited scans • No ads • Lifetime",
+    "template": "Unlimited scans • No ads • Lifetime",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 378
+      }
+    ]
+  },
+  "Best for methods not listed here.": {
+    "key": "best_for_methods_not_listed_here",
+    "source": "Best for methods not listed here.",
+    "template": "Best for methods not listed here.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 728
+      }
+    ]
+  },
+  "Watch Ad for Points": {
+    "key": "watch_ad_for_points",
+    "source": "Watch Ad for Points",
+    "template": "Watch Ad for Points",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 370
+      }
+    ]
+  },
+  "Gift this app to your friends": {
+    "key": "gift_this_app_to_your_friends",
+    "source": "Gift this app to your friends",
+    "template": "Gift this app to your friends",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 392
+      }
+    ]
+  },
+  "Loading squad members...": {
+    "key": "loading_squad_members",
+    "source": "Loading squad members...",
+    "template": "Loading squad members...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 117
+      }
+    ]
+  },
+  "Custom method name": {
+    "key": "custom_method_name",
+    "source": "Custom method name",
+    "template": "Custom method name",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 269
+      }
+    ]
+  },
+  "Preferences": {
+    "key": "preferences",
+    "source": "Preferences",
+    "template": "Preferences",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 290
+      }
+    ]
+  },
+  "Owed to You": {
+    "key": "owed_to_you",
+    "source": "Owed to You",
+    "template": "Owed to You",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 154
+      }
+    ]
+  },
+  "Cancel": {
+    "key": "common_cancel",
+    "source": "Cancel",
+    "template": "Cancel",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 60
+      },
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 243
+      },
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 319
+      },
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 457
+      },
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 76
+      },
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 607
+      },
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 31
+      },
+      {
+        "file": "lib/screens/edit_bill/widgets/edit_bill_summary_dialog.dart",
+        "line": 114
+      },
+      {
+        "file": "lib/screens/edit_bill/widgets/participant_options_sheet.dart",
+        "line": 130
+      },
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 218
+      },
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 150
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 336
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 396
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 627
+      },
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 140
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 116
+      }
+    ]
+  },
+  "Payment Sent!": {
+    "key": "payment_sent",
+    "source": "Payment Sent!",
+    "template": "Payment Sent!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1199
+      }
+    ]
+  },
+  "Group Name": {
+    "key": "group_name",
+    "source": "Group Name",
+    "template": "Group Name",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 91
+      }
+    ]
+  },
+  "Share": {
+    "key": "share",
+    "source": "Share",
+    "template": "Share",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/success_screen.dart",
+        "line": 217
+      }
+    ]
+  },
+  "Search currencies": {
+    "key": "search_currencies",
+    "source": "Search currencies",
+    "template": "Search currencies",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 214
+      }
+    ]
+  },
+  "International transfer details and links": {
+    "key": "international_transfer_details_and_links",
+    "source": "International transfer details and links",
+    "template": "International transfer details and links",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 805
+      }
+    ]
+  },
+  "Split Summary": {
+    "key": "split_summary",
+    "source": "Split Summary",
+    "template": "Split Summary",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 1023
+      }
+    ]
+  },
+  "Bill successfully assigned to the loser! 😈": {
+    "key": "bill_successfully_assigned_to_the_loser",
+    "source": "Bill successfully assigned to the loser! 😈",
+    "template": "Bill successfully assigned to the loser! 😈",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 1003
+      }
+    ]
+  },
+  "Uploading proof...": {
+    "key": "uploading_proof",
+    "source": "Uploading proof...",
+    "template": "Uploading proof...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1192
+      }
+    ]
+  },
+  "Loading contacts...": {
+    "key": "loading_contacts",
+    "source": "Loading contacts...",
+    "template": "Loading contacts...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/multi_contact_picker.dart",
+        "line": 136
+      }
+    ]
+  },
+  "receipt_delete_item": {
+    "key": "receipt_delete_item",
+    "source": "receipt_delete_item",
+    "template": "Delete item",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/receipt_result_view.dart",
+        "line": 234
+      }
+    ]
+  },
+  "Split Bill Equally?": {
+    "key": "split_bill_equally",
+    "source": "Split Bill Equally?",
+    "template": "Split Bill Equally?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 389
+      }
+    ]
+  },
+  "Share App": {
+    "key": "share_app",
+    "source": "Share App",
+    "template": "Share App",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 391
+      }
+    ]
+  },
+  "Support": {
+    "key": "support",
+    "source": "Support",
+    "template": "Support",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 388
+      }
+    ]
+  },
+  "Select Members": {
+    "key": "select_members",
+    "source": "Select Members",
+    "template": "Select Members",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 121
+      }
+    ]
+  },
+  "Completed Bills": {
+    "key": "completed_bills",
+    "source": "Completed Bills",
+    "template": "Completed Bills",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 171
+      }
+    ]
+  },
+  "Payment Received! 💸": {
+    "key": "payment_received",
+    "source": "Payment Received! 💸",
+    "template": "Payment Received! 💸",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 480
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 193
+      }
+    ]
+  },
+  "${selectedCurrency.code} • ${selectedCurrency.name} • ${selectedCurrency.region}": {
+    "key": "code_name_region",
+    "source": "${selectedCurrency.code} • ${selectedCurrency.name} • ${selectedCurrency.region}",
+    "template": "{code} • {name} • {region}",
+    "placeholders": [
+      {
+        "name": "code",
+        "expression": "selectedCurrency.code"
+      },
+      {
+        "name": "name",
+        "expression": "selectedCurrency.name"
+      },
+      {
+        "name": "region",
+        "expression": "selectedCurrency.region"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 303
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 33
+      }
+    ]
+  },
+  "Error: $e": {
+    "key": "error_error",
+    "source": "Error: $e",
+    "template": "Error: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 227
+      },
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 407
+      },
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 84
+      },
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 503
+      },
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 577
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 217
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 284
+      },
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 130
+      },
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 370
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 262
+      }
+    ]
+  },
+  "Share your cashtag exactly as it appears.": {
+    "key": "share_your_cashtag_exactly_as_it_appears",
+    "source": "Share your cashtag exactly as it appears.",
+    "template": "Share your cashtag exactly as it appears.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 770
+      }
+    ]
+  },
+  "Back to Profile": {
+    "key": "back_to_profile",
+    "source": "Back to Profile",
+    "template": "Back to Profile",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 103
+      }
+    ]
+  },
+  "Error adding contacts: $e": {
+    "key": "error_adding_contacts_error",
+    "source": "Error adding contacts: $e",
+    "template": "Error adding contacts: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 163
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 236
+      }
+    ]
+  },
+  "Retrieving payment methods...": {
+    "key": "retrieving_payment_methods",
+    "source": "Retrieving payment methods...",
+    "template": "Retrieving payment methods...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 791
+      }
+    ]
+  },
+  "Email copied to clipboard!": {
+    "key": "email_copied_to_clipboard",
+    "source": "Email copied to clipboard!",
+    "template": "Email copied to clipboard!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 155
+      }
+    ]
+  },
+  "✅ Premium restored!": {
+    "key": "premium_restored",
+    "source": "✅ Premium restored!",
+    "template": "✅ Premium restored!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 153
+      }
+    ]
+  },
+  "Approve Payment": {
+    "key": "approve_payment",
+    "source": "Approve Payment",
+    "template": "Approve Payment",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 68
+      }
+    ]
+  },
+  "Error saving: $e": {
+    "key": "error_saving_error",
+    "source": "Error saving: $e",
+    "template": "Error saving: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 424
+      },
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 211
+      }
+    ]
+  },
+  "settings_title": {
+    "key": "settings_title",
+    "source": "settings_title",
+    "template": "App Preferences",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 18
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 22
+      }
+    ]
+  },
+  "Send Now": {
+    "key": "send_now",
+    "source": "Send Now",
+    "template": "Send Now",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 257
+      }
+    ]
+  },
+  "$displayTitle selected & copied!": {
+    "key": "display_title_selected_and_copied",
+    "source": "$displayTitle selected & copied!",
+    "template": "{display_title} selected & copied!",
+    "placeholders": [
+      {
+        "name": "display_title",
+        "expression": "displayTitle"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 955
+      }
+    ]
+  },
+  "Use the exact handle or link you want shared.": {
+    "key": "use_the_exact_handle_or_link_you_want_shared",
+    "source": "Use the exact handle or link you want shared.",
+    "template": "Use the exact handle or link you want shared.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 717
+      }
+    ]
+  },
+  "Fast social payments in the US": {
+    "key": "fast_social_payments_in_the_us",
+    "source": "Fast social payments in the US",
+    "template": "Fast social payments in the US",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 755
+      }
+    ]
+  },
+  "Add participants first!": {
+    "key": "add_participants_first",
+    "source": "Add participants first!",
+    "template": "Add participants first!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 383
+      }
+    ]
+  },
+  "My Groups": {
+    "key": "my_groups",
+    "source": "My Groups",
+    "template": "My Groups",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 324
+      }
+    ]
+  },
+  "Egypt mobile wallet and payment card details": {
+    "key": "egypt_mobile_wallet_and_payment_card_details",
+    "source": "Egypt mobile wallet and payment card details",
+    "template": "Egypt mobile wallet and payment card details",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 735
+      }
+    ]
+  },
+  "Item": {
+    "key": "receipt_item",
+    "source": "Item",
+    "template": "Item",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 232
+      }
+    ]
+  },
+  "Please log in.": {
+    "key": "please_log_in_2",
+    "source": "Please log in.",
+    "template": "Please log in.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/home_screen.dart",
+        "line": 224
+      }
+    ]
+  },
+  "Recommended for digital wallets": {
+    "key": "recommended_for_digital_wallets",
+    "source": "Recommended for digital wallets",
+    "template": "Recommended for digital wallets",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 638
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 335
+      }
+    ]
+  },
+  "Track Payments\\nEasily": {
+    "key": "track_payments_neasily",
+    "source": "Track Payments\\nEasily",
+    "template": "Track Payments\\nEasily",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 40
+      }
+    ]
+  },
+  "User not found": {
+    "key": "user_not_found",
+    "source": "User not found",
+    "template": "User not found",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 220
+      }
+    ]
+  },
+  "Use your PayPal.Me or the address people pay.": {
+    "key": "use_your_paypal_me_or_the_address_people_pay",
+    "source": "Use your PayPal.Me or the address people pay.",
+    "template": "Use your PayPal.Me or the address people pay.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 750
+      }
+    ]
+  },
+  "Search languages": {
+    "key": "search_languages",
+    "source": "Search languages",
+    "template": "Search languages",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 162
+      }
+    ]
+  },
+  "No Notifications": {
+    "key": "no_notifications",
+    "source": "No Notifications",
+    "template": "No Notifications",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 145
+      }
+    ]
+  },
+  "SETUP BILL": {
+    "key": "setup_bill",
+    "source": "SETUP BILL",
+    "template": "SETUP BILL",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 312
+      }
+    ]
+  },
+  "Watch Video": {
+    "key": "watch_video",
+    "source": "Watch Video",
+    "template": "Watch Video",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 162
+      }
+    ]
+  },
+  "Sign Up": {
+    "key": "sign_up",
+    "source": "Sign Up",
+    "template": "Sign Up",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 529
+      }
+    ]
+  },
+  "Payment methods updated!": {
+    "key": "payment_methods_updated",
+    "source": "Payment methods updated!",
+    "template": "Payment methods updated!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 453
+      }
+    ]
+  },
+  "International transfers and payment links": {
+    "key": "international_transfers_and_payment_links",
+    "source": "International transfers and payment links",
+    "template": "International transfers and payment links",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 795
+      }
+    ]
+  },
+  "US bank-linked transfers": {
+    "key": "us_bank_linked_transfers",
+    "source": "US bank-linked transfers",
+    "template": "US bank-linked transfers",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 775
+      }
+    ]
+  },
+  "Payment Methods": {
+    "key": "payment_methods",
+    "source": "Payment Methods",
+    "template": "Payment Methods",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 445
+      },
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 312
+      }
+    ]
+  },
+  "Manage how you pay & receive": {
+    "key": "manage_how_you_pay_and_receive",
+    "source": "Manage how you pay & receive",
+    "template": "Manage how you pay & receive",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 313
+      }
+    ]
+  },
+  "Tap to assign items manually (Free)": {
+    "key": "tap_to_assign_items_manually_free",
+    "source": "Tap to assign items manually (Free)",
+    "template": "Tap to assign items manually (Free)",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 52
+      }
+    ]
+  },
+  "Choose language": {
+    "key": "choose_language",
+    "source": "Choose language",
+    "template": "Choose language",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 161
+      }
+    ]
+  },
+  "No groups found.": {
+    "key": "no_groups_found",
+    "source": "No groups found.",
+    "template": "No groups found.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 50
+      }
+    ]
+  },
+  "Complete Setup": {
+    "key": "complete_setup",
+    "source": "Complete Setup",
+    "template": "Complete Setup",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 139
+      }
+    ]
+  },
+  "Dangerous & Irreversible": {
+    "key": "dangerous_and_irreversible",
+    "source": "Dangerous & Irreversible",
+    "template": "Dangerous & Irreversible",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 424
+      }
+    ]
+  },
+  "Quick check! Solve this to continue:": {
+    "key": "quick_check_solve_this_to_continue",
+    "source": "Quick check! Solve this to continue:",
+    "template": "Quick check! Solve this to continue:",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 110
+      }
+    ]
+  },
+  "Split equally among all!": {
+    "key": "split_equally_among_all",
+    "source": "Split equally among all!",
+    "template": "Split equally among all!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 436
+      }
+    ]
+  },
+  "Host will verify manually": {
+    "key": "host_will_verify_manually",
+    "source": "Host will verify manually",
+    "template": "Host will verify manually",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 667
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 358
+      }
+    ]
+  },
+  "Reminder sent to $name! 🔔": {
+    "key": "reminder_sent_to_name",
+    "source": "Reminder sent to $name! 🔔",
+    "template": "Reminder sent to {name}! 🔔",
+    "placeholders": [
+      {
+        "name": "name",
+        "expression": "name"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 291
+      }
+    ]
+  },
+  "Logout": {
+    "key": "logout",
+    "source": "Logout",
+    "template": "Logout",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 415
+      }
+    ]
+  },
+  "Who's Splitting?": {
+    "key": "who_s_splitting",
+    "source": "Who's Splitting?",
+    "template": "Who's Splitting?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 311
+      }
+    ]
+  },
+  "Bill deleted.": {
+    "key": "bill_deleted",
+    "source": "Bill deleted.",
+    "template": "Bill deleted.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 342
+      }
+    ]
+  },
+  "Scan failed: ${e.toString().replaceFirst('Exception: ', '')}": {
+    "key": "scan_failed_exception",
+    "source": "Scan failed: ${e.toString().replaceFirst('Exception: ', '')}",
+    "template": "Scan failed: {exception}",
+    "placeholders": [
+      {
+        "name": "exception",
+        "expression": "e.toString().replaceFirst('Exception: ', '')"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 528
+      }
+    ]
+  },
+  "default_currency": {
+    "key": "default_currency",
+    "source": "default_currency",
+    "template": "Default currency",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 302
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 32
+      }
+    ]
+  },
+  "View intro screens": {
+    "key": "view_intro_screens",
+    "source": "View intro screens",
+    "template": "View intro screens",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 436
+      }
+    ]
+  },
+  "Choose payment method": {
+    "key": "choose_payment_method",
+    "source": "Choose payment method",
+    "template": "Choose payment method",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 108
+      }
+    ]
+  },
+  "Assign Bill": {
+    "key": "assign_bill",
+    "source": "Assign Bill",
+    "template": "Assign Bill",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 968
+      }
+    ]
+  },
+  "GOT IT!": {
+    "key": "got_it",
+    "source": "GOT IT!",
+    "template": "GOT IT!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1200
+      }
+    ]
+  },
+  "Please enter a valid phone number": {
+    "key": "please_enter_a_valid_phone_number",
+    "source": "Please enter a valid phone number",
+    "template": "Please enter a valid phone number",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 23
+      }
+    ]
+  },
+  "Use the phone or email your bank uses for Zelle.": {
+    "key": "use_the_phone_or_email_your_bank_uses_for_zelle",
+    "source": "Use the phone or email your bank uses for Zelle.",
+    "template": "Use the phone or email your bank uses for Zelle.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 780
+      }
+    ]
+  },
+  "Saving payment methods...": {
+    "key": "saving_payment_methods",
+    "source": "Saving payment methods...",
+    "template": "Saving payment methods...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 450
+      }
+    ]
+  },
+  "Clear All": {
+    "key": "clear_all",
+    "source": "Clear All",
+    "template": "Clear All",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 35
+      }
+    ]
+  },
+  "Ad failed to load. Please try again.": {
+    "key": "ad_failed_to_load_please_try_again",
+    "source": "Ad failed to load. Please try again.",
+    "template": "Ad failed to load. Please try again.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 193
+      }
+    ]
+  },
+  "Loading history...": {
+    "key": "loading_history",
+    "source": "Loading history...",
+    "template": "Loading history...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/completed_bills_screen.dart",
+        "line": 80
+      }
+    ]
+  },
+  "Error: ${snapshot.error}": {
+    "key": "error_error_3",
+    "source": "Error: ${snapshot.error}",
+    "template": "Error: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "snapshot.error"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 1005
+      },
+      {
+        "file": "lib/screens/completed_bills_screen.dart",
+        "line": 84
+      }
+    ]
+  },
+  "Egypt instant account-to-account payments": {
+    "key": "egypt_instant_account_to_account_payments",
+    "source": "Egypt instant account-to-account payments",
+    "template": "Egypt instant account-to-account payments",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 712
+      }
+    ]
+  },
+  "Delete Account": {
+    "key": "delete_account",
+    "source": "Delete Account",
+    "template": "Delete Account",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 423
+      }
+    ]
+  },
+  "Syncing contacts...": {
+    "key": "syncing_contacts",
+    "source": "Syncing contacts...",
+    "template": "Syncing contacts...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 315
+      }
+    ]
+  },
+  "Confirm Split": {
+    "key": "confirm_split",
+    "source": "Confirm Split",
+    "template": "Confirm Split",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 471
+      }
+    ]
+  },
+  "Create your first squad": {
+    "key": "create_your_first_squad",
+    "source": "Create your first squad",
+    "template": "Create your first squad",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 711
+      }
+    ]
+  },
+  "Continue": {
+    "key": "common_continue",
+    "source": "Continue",
+    "template": "Continue",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 671
+      }
+    ]
+  },
+  "Share the wallet number people send to.": {
+    "key": "share_the_wallet_number_people_send_to",
+    "source": "Share the wallet number people send to.",
+    "template": "Share the wallet number people send to.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 820
+      }
+    ]
+  },
+  "Got it!": {
+    "key": "got_it_3",
+    "source": "Got it!",
+    "template": "Got it!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 40
+      },
+      {
+        "file": "lib/widgets/custom_app_header.dart",
+        "line": 168
+      }
+    ]
+  },
+  "Account": {
+    "key": "account",
+    "source": "Account",
+    "template": "Account",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 412
+      }
+    ]
+  },
+  "You cannot remove yourself from the bill.": {
+    "key": "you_cannot_remove_yourself_from_the_bill",
+    "source": "You cannot remove yourself from the bill.",
+    "template": "You cannot remove yourself from the bill.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 828
+      }
+    ]
+  },
+  "Added 6 diverse test bills!": {
+    "key": "added_6_diverse_test_bills",
+    "source": "Added 6 diverse test bills!",
+    "template": "Added 6 diverse test bills!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 780
+      }
+    ]
+  },
+  "Edit Profile": {
+    "key": "edit_profile",
+    "source": "Edit Profile",
+    "template": "Edit Profile",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 93
+      }
+    ]
+  },
+  "Qty": {
+    "key": "receipt_qty",
+    "source": "Qty",
+    "template": "Qty",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 264
+      }
+    ]
+  },
+  "Bill not found": {
+    "key": "bill_not_found",
+    "source": "Bill not found",
+    "template": "Bill not found",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 670
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1098
+      }
+    ]
+  },
+  "Phone Number": {
+    "key": "phone_number",
+    "source": "Phone Number",
+    "template": "Phone Number",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 159
+      }
+    ]
+  },
+  "Checking payments...": {
+    "key": "checking_payments",
+    "source": "Checking payments...",
+    "template": "Checking payments...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1094
+      }
+    ]
+  },
+  "Account created! Please verify your email.": {
+    "key": "account_created_please_verify_your_email",
+    "source": "Account created! Please verify your email.",
+    "template": "Account created! Please verify your email.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 566
+      }
+    ]
+  },
+  "app_language": {
+    "key": "app_language",
+    "source": "app_language",
+    "template": "App language",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 293
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 25
+      }
+    ]
+  },
+  "$method copied to clipboard!": {
+    "key": "method_copied_to_clipboard",
+    "source": "$method copied to clipboard!",
+    "template": "{method} copied to clipboard!",
+    "placeholders": [
+      {
+        "name": "method",
+        "expression": "method"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 884
+      }
+    ]
+  },
+  "Search payment methods": {
+    "key": "search_payment_methods",
+    "source": "Search payment methods",
+    "template": "Search payment methods",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 109
+      }
+    ]
+  },
+  "Are you sure you want to logout?": {
+    "key": "are_you_sure_you_want_to_logout",
+    "source": "Are you sure you want to logout?",
+    "template": "Are you sure you want to logout?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 214
+      }
+    ]
+  },
+  "Choose currency": {
+    "key": "choose_currency",
+    "source": "Choose currency",
+    "template": "Choose currency",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 213
+      }
+    ]
+  },
+  "Clear all": {
+    "key": "clear_all_2",
+    "source": "Clear all",
+    "template": "Clear all",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 120
+      }
+    ]
+  },
+  "Notice": {
+    "key": "notice",
+    "source": "Notice",
+    "template": "Notice",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 429
+      }
+    ]
+  },
+  "Final Steps": {
+    "key": "final_steps",
+    "source": "Final Steps",
+    "template": "Final Steps",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 595
+      }
+    ]
+  },
+  "Cannot remove the host of the bill.": {
+    "key": "cannot_remove_the_host_of_the_bill",
+    "source": "Cannot remove the host of the bill.",
+    "template": "Cannot remove the host of the bill.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 317
+      }
+    ]
+  },
+  "Delete Permanently": {
+    "key": "delete_permanently",
+    "source": "Delete Permanently",
+    "template": "Delete Permanently",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 327
+      }
+    ]
+  },
+  "${newData['displayName']} is already added.": {
+    "key": "display_name_is_already_added",
+    "source": "${newData['displayName']} is already added.",
+    "template": "{display_name} is already added.",
+    "placeholders": [
+      {
+        "name": "display_name",
+        "expression": "newData['displayName']"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 181
+      }
+    ]
+  },
+  "Could not open rating dialog.": {
+    "key": "could_not_open_rating_dialog",
+    "source": "Could not open rating dialog.",
+    "template": "Could not open rating dialog.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 142
+      }
+    ]
+  },
+  "Mark all read": {
+    "key": "mark_all_read",
+    "source": "Mark all read",
+    "template": "Mark all read",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 112
+      }
+    ]
+  },
+  "Great when you want people to pay via mobile wallet.": {
+    "key": "great_when_you_want_people_to_pay_via_mobile_wallet",
+    "source": "Great when you want people to pay via mobile wallet.",
+    "template": "Great when you want people to pay via mobile wallet.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 740
+      }
+    ]
+  },
+  "Use the handle friends search for in Venmo.": {
+    "key": "use_the_handle_friends_search_for_in_venmo",
+    "source": "Use the handle friends search for in Venmo.",
+    "template": "Use the handle friends search for in Venmo.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 760
+      }
+    ]
+  },
+  "Parental Gate": {
+    "key": "parental_gate",
+    "source": "Parental Gate",
+    "template": "Parental Gate",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 106
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 91
+      }
+    ]
+  },
+  "Show Onboarding": {
+    "key": "show_onboarding",
+    "source": "Show Onboarding",
+    "template": "Show Onboarding",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 435
+      }
+    ]
+  },
+  "Remove Participant?": {
+    "key": "remove_participant",
+    "source": "Remove Participant?",
+    "template": "Remove Participant?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/edit_bill/widgets/participant_options_sheet.dart",
+        "line": 123
+      }
+    ]
+  },
+  "Error scanning QR: $e": {
+    "key": "error_scanning_qr_error",
+    "source": "Error scanning QR: $e",
+    "template": "Error scanning QR: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 187
+      }
+    ]
+  },
+  "Loading groups...": {
+    "key": "loading_groups",
+    "source": "Loading groups...",
+    "template": "Loading groups...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 47
+      }
+    ]
+  },
+  "Apple Sign-In Failed: $e": {
+    "key": "apple_sign_in_failed_error",
+    "source": "Apple Sign-In Failed: $e",
+    "template": "Apple Sign-In Failed: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 143
+      }
+    ]
+  },
+  "Seed Transactions": {
+    "key": "seed_transactions",
+    "source": "Seed Transactions",
+    "template": "Seed Transactions",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 447
+      }
+    ]
+  },
+  "Your history is clean for now. Any alerts will appear here.": {
+    "key": "your_history_is_clean_for_now_any_alerts_will_appear_here",
+    "source": "Your history is clean for now. Any alerts will appear here.",
+    "template": "Your history is clean for now. Any alerts will appear here.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 146
+      }
+    ]
+  },
+  "Try Different Number": {
+    "key": "try_different_number",
+    "source": "Try Different Number",
+    "template": "Try Different Number",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 81
+      }
+    ]
+  },
+  "Help us grow with 5 stars": {
+    "key": "help_us_grow_with_5_stars",
+    "source": "Help us grow with 5 stars",
+    "template": "Help us grow with 5 stars",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 399
+      }
+    ]
+  },
+  "Split Bill: $store": {
+    "key": "split_bill_store",
+    "source": "Split Bill: $store",
+    "template": "Split Bill: {store}",
+    "placeholders": [
+      {
+        "name": "store",
+        "expression": "store"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 476
+      }
+    ]
+  },
+  "Need help? Reach out to us": {
+    "key": "need_help_reach_out_to_us",
+    "source": "Need help? Reach out to us",
+    "template": "Need help? Reach out to us",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 406
+      }
+    ]
+  },
+  "Use a custom payment method name": {
+    "key": "use_a_custom_payment_method_name",
+    "source": "Use a custom payment method name",
+    "template": "Use a custom payment method name",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 723
+      }
+    ]
+  },
+  "Please log in": {
+    "key": "please_log_in",
+    "source": "Please log in",
+    "template": "Please log in",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/completed_bills_screen.dart",
+        "line": 68
+      }
+    ]
+  },
+  "Error adding group: $e": {
+    "key": "error_adding_group_error",
+    "source": "Error adding group: $e",
+    "template": "Error adding group: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 816
+      }
+    ]
+  },
+  "Start with the apps or wallets you actually want friends to use when they pay you back.": {
+    "key": "start_with_the_apps_or_wallets_you_actually_want_friends_to_use_when_they_pay_you_back",
+    "source": "Start with the apps or wallets you actually want friends to use when they pay you back.",
+    "template": "Start with the apps or wallets you actually want friends to use when they pay you back.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 526
+      }
+    ]
+  },
+  "Answer": {
+    "key": "answer",
+    "source": "Answer",
+    "template": "Answer",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 126
+      }
+    ]
+  },
+  "Split Equally": {
+    "key": "split_equally",
+    "source": "Split Equally",
+    "template": "Split Equally",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 407
+      }
+    ]
+  },
+  "App Store link": {
+    "key": "app_store_link",
+    "source": "App Store link",
+    "template": "App Store link",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 99
+      }
+    ]
+  },
+  "Enter result": {
+    "key": "enter_result",
+    "source": "Enter result",
+    "template": "Enter result",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 109
+      }
+    ]
+  },
+  "Use only the details you are comfortable sharing.": {
+    "key": "use_only_the_details_you_are_comfortable_sharing",
+    "source": "Use only the details you are comfortable sharing.",
+    "template": "Use only the details you are comfortable sharing.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 830
+      }
+    ]
+  },
+  "Voice Command": {
+    "key": "voice_command",
+    "source": "Voice Command",
+    "template": "Voice Command",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 40
+      }
+    ]
+  },
+  "🎉 Welcome to Premium!": {
+    "key": "welcome_to_premium",
+    "source": "🎉 Welcome to Premium!",
+    "template": "🎉 Welcome to Premium!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 177
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 71
+      }
+    ]
+  },
+  "Google Play link": {
+    "key": "google_play_link",
+    "source": "Google Play link",
+    "template": "Google Play link",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 80
+      }
+    ]
+  },
+  "Sign out of your account": {
+    "key": "sign_out_of_your_account",
+    "source": "Sign out of your account",
+    "template": "Sign out of your account",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 416
+      }
+    ]
+  },
+  "Ad is still loading... Please try again in a moment.": {
+    "key": "ad_is_still_loading_please_try_again_in_a_moment",
+    "source": "Ad is still loading... Please try again in a moment.",
+    "template": "Ad is still loading... Please try again in a moment.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 171
+      }
+    ]
+  },
+  "Add $label": {
+    "key": "add_label",
+    "source": "Add $label",
+    "template": "Add {label}",
+    "placeholders": [
+      {
+        "name": "label",
+        "expression": "label"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 688
+      }
+    ]
+  },
+  "Yes, Delete": {
+    "key": "yes_delete",
+    "source": "Yes, Delete",
+    "template": "Yes, Delete",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 325
+      }
+    ]
+  },
+  "Clear All Notifications?": {
+    "key": "clear_all_notifications",
+    "source": "Clear All Notifications?",
+    "template": "Clear All Notifications?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 26
+      }
+    ]
+  },
+  "Saved for later!": {
+    "key": "saved_for_later",
+    "source": "Saved for later!",
+    "template": "Saved for later!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 199
+      }
+    ]
+  },
+  "View and manage your squads": {
+    "key": "view_and_manage_your_squads",
+    "source": "View and manage your squads",
+    "template": "View and manage your squads",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 325
+      }
+    ]
+  },
+  "1": {
+    "key": "1",
+    "source": "1",
+    "template": "1",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 265
+      }
+    ]
+  },
+  "Saving your changes...": {
+    "key": "saving_your_changes",
+    "source": "Saving your changes...",
+    "template": "Saving your changes...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 98
+      }
+    ]
+  },
+  "Payment Accepted! ✅": {
+    "key": "payment_accepted",
+    "source": "Payment Accepted! ✅",
+    "template": "Payment Accepted! ✅",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 201
+      }
+    ]
+  },
+  "Confirm": {
+    "key": "confirm",
+    "source": "Confirm",
+    "template": "Confirm",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 132
+      }
+    ]
+  },
+  "Manual Assignment": {
+    "key": "manual_assignment",
+    "source": "Manual Assignment",
+    "template": "Manual Assignment",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 51
+      }
+    ]
+  },
+  "Add Selected": {
+    "key": "add_selected",
+    "source": "Add Selected",
+    "template": "Add Selected",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 160
+      }
+    ]
+  },
+  "All notifications cleared.": {
+    "key": "all_notifications_cleared",
+    "source": "All notifications cleared.",
+    "template": "All notifications cleared.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 54
+      }
+    ]
+  },
+  "Best when you already have the bill photo or want camera import.": {
+    "key": "best_when_you_already_have_the_bill_photo_or_want_camera_import",
+    "source": "Best when you already have the bill photo or want camera import.",
+    "template": "Best when you already have the bill photo or want camera import.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 43
+      }
+    ]
+  },
+  "Got it": {
+    "key": "got_it_2",
+    "source": "Got it",
+    "template": "Got it",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 430
+      },
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 436
+      }
+    ]
+  },
+  "Signing you in...": {
+    "key": "signing_you_in",
+    "source": "Signing you in...",
+    "template": "Signing you in...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/auth_wrapper.dart",
+        "line": 99
+      }
+    ]
+  },
+  "Global wallet, requests, and payment links": {
+    "key": "global_wallet_requests_and_payment_links",
+    "source": "Global wallet, requests, and payment links",
+    "template": "Global wallet, requests, and payment links",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 745
+      }
+    ]
+  },
+  "Loading your squads...": {
+    "key": "loading_your_squads",
+    "source": "Loading your squads...",
+    "template": "Loading your squads...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 703
+      }
+    ]
+  },
+  "Verify": {
+    "key": "verify",
+    "source": "Verify",
+    "template": "Verify",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 150
+      }
+    ]
+  },
+  "Ready to\\nGet Started?": {
+    "key": "ready_to_nget_started",
+    "source": "Ready to\\nGet Started?",
+    "template": "Ready to\\nGet Started?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 55
+      }
+    ]
+  },
+  "Creating your squad...": {
+    "key": "creating_your_squad",
+    "source": "Creating your squad...",
+    "template": "Creating your squad...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 737
+      }
+    ]
+  },
+  "Bill split equally among all members!": {
+    "key": "bill_split_equally_among_all_members",
+    "source": "Bill split equally among all members!",
+    "template": "Bill split equally among all members!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 375
+      }
+    ]
+  },
+  "Premium Status": {
+    "key": "premium_status",
+    "source": "Premium Status",
+    "template": "Premium Status",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 352
+      }
+    ]
+  },
+  "Upgrade to Premium": {
+    "key": "upgrade_to_premium",
+    "source": "Upgrade to Premium",
+    "template": "Upgrade to Premium",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 377
+      }
+    ]
+  },
+  "Incorrect answer. Purchase cancelled.": {
+    "key": "incorrect_answer_purchase_cancelled",
+    "source": "Incorrect answer. Purchase cancelled.",
+    "template": "Incorrect answer. Purchase cancelled.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 126
+      }
+    ]
+  },
+  "Don't have an account?": {
+    "key": "don_t_have_an_account",
+    "source": "Don't have an account?",
+    "template": "Don't have an account?",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 522
+      }
+    ]
+  },
+  "Add participants to play Bill Roulette!": {
+    "key": "add_participants_to_play_bill_roulette",
+    "source": "Add participants to play Bill Roulette!",
+    "template": "Add participants to play Bill Roulette!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 738
+      }
+    ]
+  },
+  "Bill updated! 🚀": {
+    "key": "bill_updated",
+    "source": "Bill updated! 🚀",
+    "template": "Bill updated! 🚀",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 393
+      }
+    ]
+  },
+  "Net Balance": {
+    "key": "net_balance",
+    "source": "Net Balance",
+    "template": "Net Balance",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 164
+      }
+    ]
+  },
+  "Scan receipt": {
+    "key": "scan_receipt",
+    "source": "Scan receipt",
+    "template": "Scan receipt",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 42
+      }
+    ]
+  },
+  "To continue with the purchase, please solve this:": {
+    "key": "to_continue_with_the_purchase_please_solve_this",
+    "source": "To continue with the purchase, please solve this:",
+    "template": "To continue with the purchase, please solve this:",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 95
+      }
+    ]
+  },
+  "Contact Us": {
+    "key": "contact_us",
+    "source": "Contact Us",
+    "template": "Contact Us",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 405
+      }
+    ]
+  },
+  "Clear & Retry": {
+    "key": "clear_and_retry",
+    "source": "Clear & Retry",
+    "template": "Clear & Retry",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 98
+      }
+    ]
+  },
+  "Add People": {
+    "key": "add_people",
+    "source": "Add People",
+    "template": "Add People",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 422
+      }
+    ]
+  },
+  "Share the contact people should use to find you.": {
+    "key": "share_the_contact_people_should_use_to_find_you",
+    "source": "Share the contact people should use to find you.",
+    "template": "Share the contact people should use to find you.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 790
+      }
+    ]
+  },
+  "Error: User ID missing from data.": {
+    "key": "error_user_id_missing_from_data",
+    "source": "Error: User ID missing from data.",
+    "template": "Error: User ID missing from data.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 197
+      }
+    ]
+  },
+  "Signing in...": {
+    "key": "signing_in",
+    "source": "Signing in...",
+    "template": "Signing in...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 204
+      }
+    ]
+  },
+  "Added $addedCount people!": {
+    "key": "added_added_count_people",
+    "source": "Added $addedCount people!",
+    "template": "Added {added_count} people!",
+    "placeholders": [
+      {
+        "name": "added_count",
+        "expression": "addedCount"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 156
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 229
+      }
+    ]
+  },
+  "Personal": {
+    "key": "personal",
+    "source": "Personal",
+    "template": "Personal",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 309
+      }
+    ]
+  },
+  "Share to Android": {
+    "key": "share_to_android",
+    "source": "Share to Android",
+    "template": "Share to Android",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 79
+      }
+    ]
+  },
+  "Just say who ate what! (Cost: 1 Credit)": {
+    "key": "just_say_who_ate_what_cost_1_credit",
+    "source": "Just say who ate what! (Cost: 1 Credit)",
+    "template": "Just say who ate what! (Cost: 1 Credit)",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 41
+      }
+    ]
+  },
+  "Earn 1 point per rewarded video": {
+    "key": "earn_1_point_per_rewarded_video",
+    "source": "Earn 1 point per rewarded video",
+    "template": "Earn 1 point per rewarded video",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 371
+      }
+    ]
+  },
+  "Delete": {
+    "key": "common_delete",
+    "source": "Delete",
+    "template": "Delete",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 80
+      },
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 611
+      }
+    ]
+  },
+  "Reminder: ${widget.billName}": {
+    "key": "reminder_bill_name",
+    "source": "Reminder: ${widget.billName}",
+    "template": "Reminder: {bill_name}",
+    "placeholders": [
+      {
+        "name": "bill_name",
+        "expression": "widget.billName"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 283
+      }
+    ]
+  },
+  "Loading your methods...": {
+    "key": "loading_your_methods",
+    "source": "Loading your methods...",
+    "template": "Loading your methods...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 457
+      }
+    ]
+  },
+  "This will delete all your notification history.": {
+    "key": "this_will_delete_all_your_notification_history",
+    "source": "This will delete all your notification history.",
+    "template": "This will delete all your notification history.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 27
+      }
+    ]
+  },
+  "Search name or phone...": {
+    "key": "search_name_or_phone",
+    "source": "Search name or phone...",
+    "template": "Search name or phone...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/multi_contact_picker.dart",
+        "line": 120
+      }
+    ]
+  },
+  "✅ +1 Point Earned!": {
+    "key": "plus_1_point_earned",
+    "source": "✅ +1 Point Earned!",
+    "template": "✅ +1 Point Earned!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 183
+      }
+    ]
+  },
+  "Could not launch payment app.": {
+    "key": "could_not_launch_payment_app",
+    "source": "Could not launch payment app.",
+    "template": "Could not launch payment app.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 875
+      }
+    ]
+  },
+  "Approve": {
+    "key": "approve",
+    "source": "Approve",
+    "template": "Approve",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 120
+      }
+    ]
+  },
+  "Watch a short video to get": {
+    "key": "watch_a_short_video_to_get",
+    "source": "Watch a short video to get",
+    "template": "Watch a short video to get",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 135
+      }
+    ]
+  },
+  "Stay Updated\\nAlways": {
+    "key": "stay_updated_nalways",
+    "source": "Stay Updated\\nAlways",
+    "template": "Stay Updated\\nAlways",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 47
+      }
+    ]
+  },
+  "Error saving payment methods: $e": {
+    "key": "error_saving_payment_methods_error",
+    "source": "Error saving payment methods: $e",
+    "template": "Error saving payment methods: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 85
+      }
+    ]
+  },
+  "Remove": {
+    "key": "common_remove",
+    "source": "Remove",
+    "template": "Remove",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 306
+      },
+      {
+        "file": "lib/screens/edit_bill/widgets/participant_options_sheet.dart",
+        "line": 141
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 350
+      }
+    ]
+  },
+  "Save & Exit": {
+    "key": "save_and_exit",
+    "source": "Save & Exit",
+    "template": "Save & Exit",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/screens/edit_bill/widgets/edit_bill_summary_dialog.dart",
+        "line": 128
+      }
+    ]
+  },
+  "e.g. Bankak or Stripe Payment Link": {
+    "key": "e_g_bankak_or_stripe_payment_link",
+    "source": "e.g. Bankak or Stripe Payment Link",
+    "template": "e.g. Bankak or Stripe Payment Link",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 270
+      }
+    ]
+  },
+  "Good for cross-border settlements.": {
+    "key": "good_for_cross_border_settlements",
+    "source": "Good for cross-border settlements.",
+    "template": "Good for cross-border settlements.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 810
+      }
+    ]
+  },
+  "Loading bill details...": {
+    "key": "loading_bill_details",
+    "source": "Loading bill details...",
+    "template": "Loading bill details...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 666
+      }
+    ]
+  },
+  "Cannot remove yourself!": {
+    "key": "cannot_remove_yourself",
+    "source": "Cannot remove yourself!",
+    "template": "Cannot remove yourself!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 229
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 302
+      }
+    ]
+  },
+  "Price": {
+    "key": "receipt_price",
+    "source": "Price",
+    "template": "Price",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 299
+      }
+    ]
+  },
+  "Google Sign-In Failed: $e": {
+    "key": "google_sign_in_failed_error",
+    "source": "Google Sign-In Failed: $e",
+    "template": "Google Sign-In Failed: {error}",
+    "placeholders": [
+      {
+        "name": "error",
+        "expression": "e"
+      }
+    ],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 104
+      }
+    ]
+  },
+  "Premium & Points": {
+    "key": "premium_and_points",
+    "source": "Premium & Points",
+    "template": "Premium & Points",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 365
+      }
+    ]
+  },
+  "Error loading payment methods": {
+    "key": "error_loading_payment_methods",
+    "source": "Error loading payment methods",
+    "template": "Error loading payment methods",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 796
+      }
+    ]
+  },
+  "+1 Point": {
+    "key": "plus_1_point",
+    "source": "+1 Point",
+    "template": "+1 Point",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 136
+      }
+    ]
+  },
+  "Split Bill": {
+    "key": "app_title",
+    "source": "Split Bill",
+    "template": "Split Bill",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/main.dart",
+        "line": 239
+      }
+    ]
+  },
+  "Add Method": {
+    "key": "add_method",
+    "source": "Add Method",
+    "template": "Add Method",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 527
+      }
+    ]
+  },
+  "Store Name": {
+    "key": "receipt_store_name",
+    "source": "Store Name",
+    "template": "Store Name",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 197
+      }
+    ]
+  },
+  "Add at least one item!": {
+    "key": "add_at_least_one_item",
+    "source": "Add at least one item!",
+    "template": "Add at least one item!",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 108
+      }
+    ]
+  },
+  "Password reset email sent! Check your inbox.": {
+    "key": "password_reset_email_sent_check_your_inbox",
+    "source": "Password reset email sent! Check your inbox.",
+    "template": "Password reset email sent! Check your inbox.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 190
+      }
+    ]
+  },
+  "Add 4 test bills": {
+    "key": "add_4_test_bills",
+    "source": "Add 4 test bills",
+    "template": "Add 4 test bills",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 448
+      }
+    ]
+  },
+  "Password": {
+    "key": "password",
+    "source": "Password",
+    "template": "Password",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 404
+      }
+    ]
+  },
+  "Developer": {
+    "key": "developer",
+    "source": "Developer",
+    "template": "Developer",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 432
+      }
+    ]
+  },
+  "US payments with cashtag support": {
+    "key": "us_payments_with_cashtag_support",
+    "source": "US payments with cashtag support",
+    "template": "US payments with cashtag support",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 765
+      }
+    ]
+  },
+  "Share to iPhone": {
+    "key": "share_to_iphone",
+    "source": "Share to iPhone",
+    "template": "Share to iPhone",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 98
+      }
+    ]
+  },
+  "Adjust Receipt": {
+    "key": "adjust_receipt",
+    "source": "Adjust Receipt",
+    "template": "Adjust Receipt",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 457
+      }
+    ]
+  },
+  "Add": {
+    "key": "add",
+    "source": "Add",
+    "template": "Add",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 192
+      }
+    ]
+  },
+  "Checking app status...": {
+    "key": "checking_app_status",
+    "source": "Checking app status...",
+    "template": "Checking app status...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 137
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 211
+      }
+    ]
+  },
+  "No previous purchase found": {
+    "key": "no_previous_purchase_found",
+    "source": "No previous purchase found",
+    "template": "No previous purchase found",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 168
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 160
+      }
+    ]
+  },
+  "Use your Revtag or a payment link.": {
+    "key": "use_your_revtag_or_a_payment_link",
+    "source": "Use your Revtag or a payment link.",
+    "template": "Use your Revtag or a payment link.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 800
+      }
+    ]
+  },
+  "Enter Manually": {
+    "key": "enter_manually",
+    "source": "Enter Manually",
+    "template": "Enter Manually",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 158
+      }
+    ]
+  },
+  "Build the receipt yourself, then continue to split and add people.": {
+    "key": "build_the_receipt_yourself_then_continue_to_split_and_add_people",
+    "source": "Build the receipt yourself, then continue to split and add people.",
+    "template": "Build the receipt yourself, then continue to split and add people.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 51
+      }
+    ]
+  },
+  "Add your payment methods": {
+    "key": "add_your_payment_methods",
+    "source": "Add your payment methods",
+    "template": "Add your payment methods",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 525
+      }
+    ]
+  },
+  "🎉 Success! You earned 1 scan point.": {
+    "key": "success_you_earned_1_scan_point",
+    "source": "🎉 Success! You earned 1 scan point.",
+    "template": "🎉 Success! You earned 1 scan point.",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 503
+      }
+    ]
+  },
+  "Enter manually": {
+    "key": "enter_manually_2",
+    "source": "Enter manually",
+    "template": "Enter manually",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 50
+      }
+    ]
+  },
+  "Loading notifications...": {
+    "key": "loading_notifications",
+    "source": "Loading notifications...",
+    "template": "Loading notifications...",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 138
+      }
+    ]
+  },
+  "Reminder": {
+    "key": "reminder",
+    "source": "Reminder",
+    "template": "Reminder",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 234
+      }
+    ]
+  },
+  "iPhone wallet payments and requests": {
+    "key": "iphone_wallet_payments_and_requests",
+    "source": "iPhone wallet payments and requests",
+    "template": "iPhone wallet payments and requests",
+    "placeholders": [],
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 785
+      }
+    ]
+  }
+}

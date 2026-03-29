@@ -6,12 +6,15 @@ import 'package:split_bill_app/notifications_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeHeader extends StatelessWidget {
   final User? user;
   final double iOwe;
   final double owedToMe;
+  final int completedBillsCount;
   final void Function(String name, String? photoUrl) onQrTap;
+  final VoidCallback onCompletedBillsTap;
   final ImageProvider? Function(String?) getAvatarImage;
 
   const HomeHeader({
@@ -19,7 +22,9 @@ class HomeHeader extends StatelessWidget {
     required this.user,
     required this.iOwe,
     required this.owedToMe,
+    required this.completedBillsCount,
     required this.onQrTap,
+    required this.onCompletedBillsTap,
     required this.getAvatarImage,
   });
 
@@ -34,7 +39,7 @@ class HomeHeader extends StatelessWidget {
           .doc(user!.uid)
           .snapshots(),
       builder: (context, snap) {
-        String name = user?.displayName ?? "User";
+        String name = user?.displayName ?? 'user'.tr();
         String? photoUrl;
 
         if (snap.hasData && snap.data!.exists) {
@@ -97,14 +102,13 @@ class HomeHeader extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Welcome back,",
+                          Text('welcome_back_2',
                             style: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
-                          ),
+                          ).tr(),
                           Text(
                             firstName,
                             style: const TextStyle(
@@ -127,44 +131,51 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // 2. SCROLLABLE SUMMARY CARDS: You Owe / Owed to you
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
+              GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 14,
+                mainAxisSpacing: 14,
+                childAspectRatio: 1.35,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  children: [
-                    _buildSquareCard(
-                      context: context,
-                      title: "You Owe",
-                      amount: iOwe,
+                children: [
+                  _buildSummaryCard(
+                    title: 'you_owe'.tr(),
+                    value: CurrencyUtils.format(
+                      iOwe,
                       currencyCode: currencyCode,
-                      color: Colors.orange,
-                      icon: Icons.outbound_rounded,
+                      decimalDigits: 1,
                     ),
-                    const SizedBox(width: 14),
-                    _buildSquareCard(
-                      context: context,
-                      title: "Owed to You",
-                      amount: owedToMe,
+                    color: Colors.orange,
+                    icon: Icons.outbound_rounded,
+                  ),
+                  _buildSummaryCard(
+                    title: 'owed_to_you'.tr(),
+                    value: CurrencyUtils.format(
+                      owedToMe,
                       currencyCode: currencyCode,
-                      color: Colors.green,
-                      icon: Icons.call_received_rounded,
+                      decimalDigits: 1,
                     ),
-                    // Add a third card for "Total Balance" or similar to make scrolling more evident
-                    const SizedBox(width: 14),
-                    _buildSquareCard(
-                      context: context,
-                      title: "Net Balance",
-                      amount: (owedToMe - iOwe).abs(),
-                      currencyCode: currencyCode,
-                      color: (owedToMe - iOwe) >= 0 ? Colors.blue : Colors.red,
-                      icon: Icons.account_balance_wallet_rounded,
-                      isNet: true,
-                      netValue: owedToMe - iOwe,
-                    ),
-                  ],
-                ),
+                    color: Colors.green,
+                    icon: Icons.call_received_rounded,
+                  ),
+                  _buildSummaryCard(
+                    title: 'net_balance'.tr(),
+                    value:
+                        '${(owedToMe - iOwe) >= 0 ? "+" : "-"}${CurrencyUtils.format((owedToMe - iOwe).abs(), currencyCode: currencyCode, decimalDigits: 1)}',
+                    color: (owedToMe - iOwe) >= 0 ? Colors.blue : Colors.red,
+                    icon: Icons.account_balance_wallet_rounded,
+                  ),
+                  _buildSummaryCard(
+                    title: 'completed_bills'.tr(),
+                    value: '$completedBillsCount',
+                    color: Colors.deepPurple,
+                    icon: Icons.task_alt_rounded,
+                    footerLabel: 'open_history'.tr(),
+                    onTap: onCompletedBillsTap,
+                  ),
+                ],
               ),
             ],
           ),
@@ -239,70 +250,99 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildSquareCard({
-    required BuildContext context,
+  Widget _buildSummaryCard({
     required String title,
-    required double amount,
-    required String currencyCode,
+    required String value,
     required Color color,
     required IconData icon,
-    bool isNet = false,
-    double netValue = 0,
+    String? footerLabel,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      width: 150,
-      height: 150,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: color.withValues(alpha: 0.1), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              FittedBox(
-                child: Text(
-                  "${isNet ? (netValue >= 0 ? "+" : "-") : ""}${CurrencyUtils.format(amount.abs(), currencyCode: currencyCode, decimalDigits: 1)}",
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                    letterSpacing: -0.5,
-                  ),
-                ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Ink(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: color.withValues(alpha: 0.1), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: color.withValues(alpha: 0.06),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
-        ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: color, size: 18),
+                  ),
+                  if (onTap != null)
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 12,
+                      color: Colors.grey[400],
+                    ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  FittedBox(
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 17,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ),
+                  if (footerLabel != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      footerLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -53,6 +53,7 @@ dependencies:
   audio_waveforms: ^2.0.1
   flutter_localizations:
     sdk: flutter
+  font_awesome_flutter: ^11.0.0
 
 dev_dependencies:
   flutter_test:

@@ -10,6 +10,7 @@ import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'services/notification_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ParticipantBillScreen extends StatefulWidget {
   final String billId;
@@ -190,7 +191,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId!,
-              title: "Payment Received! 💸",
+              title: 'payment_received'.tr(),
               body:
                   "${user?.displayName ?? 'A friend'} paid ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(currentBillData))} $methodText for $storeName.",
               data: {
@@ -261,7 +262,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId!,
-              title: "Payment Marked as Sent! 💸",
+              title: 'payment_marked_as_sent'.tr(),
               body:
                   "${user?.displayName ?? 'A friend'} marked ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(currentBillData))} as paid (No Proof).",
               data: {
@@ -308,16 +309,14 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Text(
-              "Confirm Payment",
+            Text('confirm_payment',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            ).tr(),
             const SizedBox(height: 8),
-            const Text(
-              "Help the host verify your payment faster.",
+            Text('help_the_host_verify_your_payment_faster',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
-            ),
+            ).tr(),
             const SizedBox(height: 32),
             ListTile(
               leading: Container(
@@ -328,11 +327,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 ),
                 child: const Icon(Icons.image_rounded, color: Colors.blue),
               ),
-              title: const Text(
-                "Upload Screenshot",
+              title: Text('upload_screenshot',
                 style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: const Text("Recommended for digital wallets"),
+              ).tr(),
+              subtitle: Text('recommended_for_digital_wallets').tr(),
               onTap: () {
                 Navigator.pop(context);
                 _uploadPaymentProof();
@@ -351,11 +349,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                   color: Colors.orange,
                 ),
               ),
-              title: const Text(
-                "I Paid (Skip Proof)",
+              title: Text('i_paid_skip_proof',
                 style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: const Text("Host will verify manually"),
+              ).tr(),
+              subtitle: Text('host_will_verify_manually').tr(),
               onTap: () {
                 Navigator.pop(context);
                 _markAsPaidNoProof();
@@ -394,15 +391,14 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           Expanded(
             child: Column(
               children: [
-                Text(
-                  "BILL DETAILS",
+                Text('bill_details',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
                     color: Colors.blue[800],
                     letterSpacing: 1.5,
                   ),
-                ),
+                ).tr(),
                 Text(
                   storeName,
                   style: const TextStyle(
@@ -452,13 +448,12 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "You owe to ",
+              Text('you_owe_to',
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontWeight: FontWeight.w600,
                 ),
-              ),
+              ).tr(),
               Text(
                 hostName,
                 style: const TextStyle(
@@ -534,46 +529,42 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      "RECEIPT BREAKDOWN",
+                    Text('receipt_breakdown',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 2,
                         color: Colors.grey,
                       ),
-                    ),
+                    ).tr(),
                     const SizedBox(height: 24),
 
                     // Headers
-                    const Row(
+                    Row(
                       children: [
                         SizedBox(
                           width: 40,
-                          child: Text(
-                            "Qty",
+                          child: Text('receipt_qty',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                             ),
-                          ),
+                          ).tr(),
                         ),
                         Expanded(
-                          child: Text(
-                            "Item(s)",
+                          child: Text('item_s',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                             ),
-                          ),
+                          ).tr(),
                         ),
-                        Text(
-                          "Price",
+                        Text('receipt_price',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
-                        ),
+                        ).tr(),
                       ],
                     ),
                     const Padding(
@@ -680,13 +671,12 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "TOTAL",
+                        Text('total',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 20,
                           ),
-                        ),
+                        ).tr(),
                         Text(
                           CurrencyUtils.format(
                             calc['myTotal'] as double,
@@ -787,13 +777,13 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       future: FirebaseFirestore.instance.collection('users').doc(hostId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const LoadingStateWidget(
-            message: "Retrieving payment methods...",
+          return LoadingStateWidget(
+            message: 'retrieving_payment_methods'.tr(),
           );
         }
 
         if (snapshot.hasError) {
-          return const Text("Error loading payment methods");
+          return Text('error_loading_payment_methods').tr();
         }
 
         if (!snapshot.data!.exists) {
@@ -808,17 +798,16 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Text(
-                  "SELECT PAYMENT METHOD",
+                child: Text('select_payment_method',
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
                     letterSpacing: 1,
                     color: Colors.grey,
                   ),
-                ),
+                ).tr(),
               ),
               ...rawList.map((item) {
                 final map = item as Map<String, dynamic>;
@@ -848,31 +837,29 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.orange),
             ),
-            child: const Text(
-              "Host hasn't added payment methods yet.",
+            child: Text('host_hasn_t_added_payment_methods_yet',
               style: TextStyle(
                 color: Colors.black87,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
-            ),
+            ).tr(),
           );
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Text(
-                "SELECT PAYMENT METHOD",
+              child: Text('select_payment_method',
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
                   letterSpacing: 1,
                   color: Colors.grey,
                 ),
-              ),
+              ).tr(),
             ),
             ...validMethods.map(
               (entry) => _buildPaymentCard(entry.key, entry.value.toString()),
@@ -952,7 +939,11 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             Clipboard.setData(ClipboardData(text: value));
             messenger.showSnackBar(
               SnackBar(
-                content: Text("$displayTitle selected & copied!"),
+                content: Text(
+                  'selection_copied'.tr(
+                    namedArgs: {'label': displayTitle},
+                  ),
+                ),
                 behavior: SnackBarBehavior.floating,
                 duration: const Duration(seconds: 2),
                 backgroundColor: Colors.green[700],
@@ -1038,14 +1029,13 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          "PAY",
+                        Text('pay',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: isSelected ? Colors.white : Colors.blue[800],
                           ),
-                        ),
+                        ).tr(),
                         const SizedBox(width: 4),
                         Icon(
                           Icons.open_in_new_rounded,
@@ -1090,12 +1080,12 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const LoadingStateWidget(
-                  message: "Checking payments...",
+                return LoadingStateWidget(
+                  message: 'checking_payments'.tr(),
                 );
               }
               if (!snapshot.hasData || !snapshot.data!.exists) {
-                return const Center(child: Text("Bill not found"));
+                return Center(child: Text('bill_not_found').tr());
               }
 
               var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -1167,10 +1157,9 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _showPaymentActionSheet,
                   icon: const Icon(Icons.check_circle_rounded),
-                  label: const Text(
-                    "I'VE PAID",
+                  label: Text('i_ve_paid',
                     style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-                  ),
+                  ).tr(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[900],
                     foregroundColor: Colors.white,
@@ -1189,15 +1178,15 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           if (_isLoading)
             Container(
               color: Colors.white.withValues(alpha: 0.95),
-              child: const LoadingStateWidget(message: "Uploading proof..."),
+              child: LoadingStateWidget(message: 'uploading_proof'.tr()),
             ),
 
           if (_showSuccess)
             Container(
               color: Colors.white,
               child: SuccessStateWidget(
-                message: "Payment Sent!",
-                actionLabel: "GOT IT!",
+                message: 'payment_sent'.tr(),
+                actionLabel: 'got_it'.tr(),
                 onAction: () => setState(() => _showSuccess = false),
               ),
             ),

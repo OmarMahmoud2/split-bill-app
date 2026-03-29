@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/share_link_utils.dart';
 import 'home_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SuccessScreen extends StatelessWidget {
   final String storeName;
@@ -71,32 +72,29 @@ class SuccessScreen extends StatelessWidget {
                       repeat: false,
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      "Success!",
+                    Text('success',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    const Text(
-                      "Your bill has been created and sent.",
+                    ).tr(),
+                    Text('your_bill_has_been_created_and_sent',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
+                    ).tr(),
                     const SizedBox(height: 40),
 
                     if (notifiedUsers.isNotEmpty) ...[
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          "NOTIFIED VIA APP",
+                        child: Text('notified_via_app',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
                             letterSpacing: 1.2,
                           ),
-                        ),
+                        ).tr(),
                       ),
                       const SizedBox(height: 16),
                       Container(
@@ -138,17 +136,16 @@ class SuccessScreen extends StatelessWidget {
                     ],
 
                     if (guestUsers.isNotEmpty) ...[
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          "MANUAL SHARE NEEDED",
+                        child: Text('manual_share_needed',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Colors.orange,
                             letterSpacing: 1.2,
                           ),
-                        ),
+                        ).tr(),
                       ),
                       const SizedBox(height: 16),
                       ListView.separated(
@@ -214,7 +211,7 @@ class SuccessScreen extends StatelessWidget {
                                         guest['id'],
                                       ),
                                       icon: const Icon(Icons.share, size: 16),
-                                      label: const Text("Share"),
+                                      label: Text('share').tr(),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.orange,
                                         foregroundColor: Colors.white,
@@ -259,10 +256,9 @@ class SuccessScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: const Text(
-                    "Done",
+                  child: Text('done',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
+                  ).tr(),
                 ),
               ),
             ),

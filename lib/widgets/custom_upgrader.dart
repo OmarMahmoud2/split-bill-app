@@ -4,6 +4,7 @@ import 'package:upgrader/upgrader.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CustomUpgrader extends StatefulWidget {
   final Widget child;
@@ -91,15 +92,14 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          "Update Available! 🚀",
+                        Text('update_available',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
                           ),
                           textAlign: TextAlign.center,
-                        ),
+                        ).tr(),
                         const SizedBox(height: 12),
                         Text(
                           "Version ${_upgrader.currentAppStoreVersion ?? 'New'} is now available.",
@@ -110,15 +110,14 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          "We've added new features and fixed some bugs to improve your experience.",
+                        Text('we_ve_added_new_features_and_fixed_some_bugs_to_improve_your_experience',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
                             height: 1.4,
                           ),
                           textAlign: TextAlign.center,
-                        ),
+                        ).tr(),
                         const SizedBox(height: 24),
 
                         // Update Button
@@ -144,22 +143,20 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
                               elevation: 4,
                               shadowColor: Colors.blueAccent.withValues(alpha: 0.4),
                             ),
-                            child: const Text(
-                              "Update Now",
+                            child: Text('update_now',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
+                            ).tr(),
                           ),
                         ),
                         const SizedBox(height: 12),
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            "Later",
+                          child: Text('later',
                             style: TextStyle(color: Colors.grey),
-                          ),
+                          ).tr(),
                         ),
                       ],
                     ),

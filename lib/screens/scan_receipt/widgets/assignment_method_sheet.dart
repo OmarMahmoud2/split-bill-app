@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AssignmentMethodSheet extends StatelessWidget {
   final VoidCallback onVoiceCommand;
@@ -30,15 +31,14 @@ class AssignmentMethodSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const Text(
-            "How to assign items?",
+          Text('how_to_assign_items',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          ).tr(),
           const SizedBox(height: 32),
           _buildMethodOption(
             icon: Icons.mic_rounded,
-            title: "Voice Command",
-            subtitle: "Just say who ate what! (Cost: 1 Credit)",
+            title: 'voice_command'.tr(),
+            subtitle: 'just_say_who_ate_what_cost_1_credit'.tr(),
             color: Colors.blueAccent,
             onTap: () {
               Navigator.pop(context);
@@ -48,8 +48,8 @@ class AssignmentMethodSheet extends StatelessWidget {
           const SizedBox(height: 16),
           _buildMethodOption(
             icon: Icons.touch_app_rounded,
-            title: "Manual Assignment",
-            subtitle: "Tap to assign items manually (Free)",
+            title: 'manual_assignment'.tr(),
+            subtitle: 'tap_to_assign_items_manually_free'.tr(),
             color: Colors.grey.shade700,
             onTap: () {
               Navigator.pop(context);

@@ -14,6 +14,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'screens/split_bill/widgets/add_members_sheet.dart';
 import 'screens/split_bill/widgets/assignment_sheets.dart';
 import 'screens/split_bill/widgets/group_selection_sheet.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SplitBillScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -208,7 +209,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         context: context,
         barrierDismissible: false,
         builder: (context) =>
-            const LoadingStateWidget(message: "Checking app status..."),
+            LoadingStateWidget(message: 'checking_app_status'.tr()),
       );
 
       try {
@@ -226,14 +227,30 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         if (addedCount > 0) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text("Added $addedCount people!")));
+          ).showSnackBar(
+            SnackBar(
+              content: Text(
+                'added_people_count'.tr(
+                  namedArgs: {'count': addedCount.toString()},
+                ),
+              ),
+            ),
+          );
         }
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context); // Close loading
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Error adding contacts: $e")));
+        ).showSnackBar(
+          SnackBar(
+            content: Text(
+              'error_adding_contacts'.tr(
+                namedArgs: {'error': e.toString()},
+              ),
+            ),
+          ),
+        );
       }
     }
   }
@@ -259,7 +276,13 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Error: $e")));
+        ).showSnackBar(
+          SnackBar(
+            content: Text(
+              'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+            ),
+          ),
+        );
       }
     }
   }
@@ -270,14 +293,14 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
     if (candidateId == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Error: Missing User ID")));
+      ).showSnackBar(SnackBar(content: Text('error_missing_user_id').tr()));
       return;
     }
 
     if (participants.any((p) => p['id'] == candidateId)) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("User already in bill!")));
+      ).showSnackBar(SnackBar(content: Text('user_already_in_bill').tr()));
       return;
     }
 
@@ -299,7 +322,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
     if (participants.any((p) => p['id'] == id && p['isHost'] == true)) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Cannot remove yourself!")));
+      ).showSnackBar(SnackBar(content: Text('cannot_remove_yourself').tr()));
       return;
     }
 
@@ -314,7 +337,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
   void _showRemoveParticipantDialog(Map<String, dynamic> participant) {
     if (participant['isHost'] == true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cannot remove the host of the bill.")),
+        SnackBar(content: Text('cannot_remove_the_host_of_the_bill').tr()),
       );
       return;
     }
@@ -323,17 +346,16 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          "Remove Participant?",
+        title: Text('remove_participant',
           style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        ).tr(),
         content: Text(
           "Are you sure you want to remove \"${participant['name']}\" from this bill?",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -347,7 +369,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text("Remove"),
+            child: Text('common_remove').tr(),
           ),
         ],
       ),
@@ -372,7 +394,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Bill split equally among all members!")),
+      SnackBar(content: Text('bill_split_equally_among_all_members').tr()),
     );
   }
 
@@ -380,20 +402,19 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
     if (participants.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Add participants first!")));
+      ).showSnackBar(SnackBar(content: Text('add_participants_first').tr()));
       return;
     }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Split Bill Equally?"),
-        content: const Text(
-          "This will assign all current members to every item on the receipt. Existing assignments will be cleared.",
-        ),
+        title: Text('split_bill_equally').tr(),
+        content: Text('this_will_assign_all_current_members_to_every_item_on_the_receipt_existing_assignments_will_be_cleared',
+        ).tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: Text('common_cancel').tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -404,7 +425,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text("Split Equally"),
+            child: Text('split_equally').tr(),
           ),
         ],
       ),
@@ -461,7 +482,15 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text("Added $addedCount members!")));
+    ).showSnackBar(
+      SnackBar(
+        content: Text(
+          'added_members_count'.tr(
+            namedArgs: {'count': addedCount.toString()},
+          ),
+        ),
+      ),
+    );
   }
 
   // --- ADD MEMBERS MODAL ---
@@ -569,7 +598,13 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              "Item '${items[i]['name']}' is not fully assigned! ($assignedQty/$totalQty)",
+              'item_not_fully_assigned'.tr(
+                namedArgs: {
+                  'item': (items[i]['name'] ?? '').toString(),
+                  'assigned': assignedQty.toString(),
+                  'total': totalQty.toString(),
+                },
+              ),
             ),
             backgroundColor: Colors.red,
           ),
@@ -592,29 +627,29 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text("Final Steps"),
+          title: Text('final_steps').tr(),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildMoneyInput("Tax / VAT", tempTax, (v) => tempTax = v),
+                _buildMoneyInput('tax_vat'.tr(), tempTax, (v) => tempTax = v),
                 const SizedBox(height: 12),
                 _buildMoneyInput(
-                  "Service Charge",
+                  'service_charge'.tr(),
                   tempService,
                   (v) => tempService = v,
                 ),
                 const SizedBox(height: 12),
-                _buildMoneyInput("Tip", tempTip, (v) => tempTip = v),
+                _buildMoneyInput('tip'.tr(), tempTip, (v) => tempTip = v),
                 const SizedBox(height: 12),
                 _buildMoneyInput(
-                  "Delivery Fee",
+                  'delivery_fee'.tr(),
                   tempDelivery,
                   (v) => tempDelivery = v,
                 ),
                 const SizedBox(height: 12),
                 _buildMoneyInput(
-                  "Discount",
+                  'discount'.tr(),
                   tempDiscount,
                   (v) => tempDiscount = v,
                 ),
@@ -624,7 +659,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+              child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
             ),
             ElevatedButton(
               onPressed: () {
@@ -668,7 +703,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text("Continue"),
+              child: Text('common_continue').tr(),
             ),
           ],
         );
@@ -685,7 +720,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       initialValue: initial == 0 ? "" : initial.toStringAsFixed(2),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(
-        labelText: "Add $label",
+        labelText: 'add_label'.tr(namedArgs: {'label': label}),
         prefixIcon: const Icon(Icons.attach_money_rounded, size: 18),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
@@ -737,13 +772,12 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          "Assign Items",
+                        Text('assign_items',
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 12,
                           ),
-                        ),
+                        ).tr(),
                       ],
                     ),
                   ),
@@ -959,10 +993,9 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                                         fontSize: 14,
                                       ),
                                     ),
-                                    const Text(
-                                      " = ",
+                                    Text('equals_sign',
                                       style: TextStyle(color: Colors.grey),
-                                    ),
+                                    ).tr(),
                                     Text(
                                       "\$${total.toStringAsFixed(1)}",
                                       style: const TextStyle(
@@ -1127,19 +1160,17 @@ class BillSummaryScreen extends StatelessWidget {
               size: 80,
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Bill Sent!",
+            Text('bill_sent',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),
-            ),
+            ).tr(),
             const SizedBox(height: 10),
-            const Text(
-              "Your friends have been notified.",
+            Text('your_friends_have_been_notified',
               style: TextStyle(color: Colors.white70),
-            ),
+            ).tr(),
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pushAndRemoveUntil(
@@ -1150,7 +1181,7 @@ class BillSummaryScreen extends StatelessWidget {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.teal,
               ),
-              child: const Text("Back to Home"),
+              child: Text('back_to_home').tr(),
             ),
           ],
         ),

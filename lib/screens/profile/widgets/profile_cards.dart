@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PremiumStatusCard extends StatelessWidget {
   const PremiumStatusCard({super.key});
@@ -38,23 +39,21 @@ class PremiumStatusCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Premium Active",
+                Text('premium_active',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                ).tr(),
                 SizedBox(height: 4),
-                Text(
-                  "Unlimited scans • Ad-free forever",
+                Text('unlimited_scans_ad_free_forever',
                   style: TextStyle(color: Colors.white70, fontSize: 13),
-                ),
+                ).tr(),
               ],
             ),
           ),
@@ -96,14 +95,13 @@ class ScanPointsCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Scan Points",
+                Text('scan_points',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
-                ),
+                ).tr(),
                 const SizedBox(height: 4),
                 Text(
                   "$points points",
@@ -116,10 +114,9 @@ class ScanPointsCard extends StatelessWidget {
               ],
             ),
           ),
-          const Text(
-            "1 point = 1 scan",
+          Text('1_point_1_scan',
             style: TextStyle(color: Colors.white70, fontSize: 12),
-          ),
+          ).tr(),
         ],
       ),
     );

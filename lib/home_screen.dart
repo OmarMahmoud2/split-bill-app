@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:split_bill_app/profile_screen.dart';
-import 'package:split_bill_app/bill_setup_screen.dart'; // New Entry Point
 import 'package:split_bill_app/widgets/banner_ad_widget.dart';
 import 'package:lottie/lottie.dart';
+import 'package:split_bill_app/manual_entry_screen.dart';
+import 'package:split_bill_app/screens/completed_bills_screen.dart';
+import 'package:split_bill_app/scan_receipt_screen.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/bill_tile.dart';
+import 'package:split_bill_app/widgets/create_bill_sheet.dart';
 import 'package:split_bill_app/widgets/home/home_header.dart';
 import 'package:split_bill_app/widgets/home/qr_dialog.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -156,19 +160,69 @@ class _HomeScreenState extends State<HomeScreen>
     return {'iOwe': iOwe, 'owedToMe': owedToMe};
   }
 
+  int _calculateCompletedBillsCount(List<QueryDocumentSnapshot> docs) {
+    if (user == null) return 0;
+
+    int count = 0;
+    for (var doc in docs) {
+      final data = doc.data() as Map<String, dynamic>? ?? {};
+      if (!data.containsKey('hostId') || !data.containsKey('participants')) {
+        continue;
+      }
+
+      final amIHost = data['hostId'] == user!.uid;
+      final participants = data['participants'] as List? ?? [];
+      bool isSettled = false;
+
+      if (amIHost) {
+        isSettled = !participants.any(
+          (p) => p['status'] == 'PENDING' || p['status'] == 'REVIEW',
+        );
+      } else {
+        final me = participants.firstWhere(
+          (p) => p['id'] == user!.uid,
+          orElse: () => null,
+        );
+        isSettled = me != null && me['status'] == 'PAID';
+      }
+
+      if (isSettled && data['status'] != 'UNATTEMPTED') {
+        count++;
+      }
+    }
+    return count;
+  }
+
   // --- UI BUILDING BLOCKS ---
 
   void _onAddBillTap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const BillSetupScreen()),
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => CreateBillSheet(
+        onScanTap: () {
+          Navigator.pop(sheetContext);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ScanReceiptScreen()),
+          );
+        },
+        onManualTap: () {
+          Navigator.pop(sheetContext);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ManualEntryScreen()),
+          );
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return const Scaffold(body: Center(child: Text("Please log in.")));
+      return Scaffold(body: Center(child: Text('please_log_in_2').tr()));
     }
 
     Widget content;
@@ -179,13 +233,14 @@ class _HomeScreenState extends State<HomeScreen>
         stream: _billsStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingStateWidget(
-              message: "Loading your dashboard...",
+            return LoadingStateWidget(
+              message: 'loading_your_dashboard'.tr(),
             );
           }
 
           final allDocs = snapshot.data?.docs ?? [];
           final totals = _calculateTotals(allDocs);
+          final completedBillsCount = _calculateCompletedBillsCount(allDocs);
           final filteredDocs = _filterBills(allDocs);
 
           return CustomScrollView(
@@ -196,8 +251,15 @@ class _HomeScreenState extends State<HomeScreen>
                   user: user,
                   iOwe: totals['iOwe']!,
                   owedToMe: totals['owedToMe']!,
+                  completedBillsCount: completedBillsCount,
                   onQrTap: (name, photoUrl) =>
                       QrDialog.show(context, name, photoUrl, user?.uid ?? ""),
+                  onCompletedBillsTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CompletedBillsScreen(),
+                    ),
+                  ),
                   getAvatarImage: ImageUtils.getAvatarImage,
                 ),
               ),
@@ -236,7 +298,9 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: TabBar(
@@ -246,14 +310,16 @@ class _HomeScreenState extends State<HomeScreen>
                       borderRadius: BorderRadius.circular(25),
                     ),
                     labelColor: Colors.white,
-                    unselectedLabelColor: Colors.grey[600],
+                    unselectedLabelColor: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.58),
                     labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,
-                    tabs: const [
-                      Tab(text: "Recent"),
-                      Tab(text: "Unfinished"),
-                      Tab(text: "Later"),
+                    tabs: [
+                      Tab(text: 'recent'.tr()),
+                      Tab(text: 'unfinished'.tr()),
+                      Tab(text: 'later'.tr()),
                     ],
                   ),
                 ),
@@ -281,12 +347,11 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBody: true,
       body: content,
       floatingActionButton: FloatingActionButton(
         onPressed: _onAddBillTap,
-        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: const Icon(Icons.add_rounded, size: 32, color: Colors.white),
@@ -296,11 +361,16 @@ class _HomeScreenState extends State<HomeScreen>
         height: 70,
         margin: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.14),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
+              color: Colors.black.withValues(
+                alpha: Theme.of(context).brightness == Brightness.dark ? 0.24 : 0.12,
+              ),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -339,7 +409,9 @@ class _HomeScreenState extends State<HomeScreen>
               isSelected ? iconFilled : iconOutline,
               color: isSelected
                   ? Theme.of(context).colorScheme.primary
-                  : Colors.grey,
+                  : Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.48),
               size: 28,
             ),
             if (isSelected)
@@ -366,7 +438,11 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             Lottie.asset('assets/animations/empty.json', height: 150),
             const SizedBox(height: 10),
-            const Text("No bills found!", style: TextStyle(color: Colors.grey)),
+            Text('no_bills_found',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.58),
+              ),
+            ).tr(),
           ],
         ),
       ),

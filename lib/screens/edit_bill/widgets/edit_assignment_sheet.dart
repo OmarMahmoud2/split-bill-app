@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EditAssignmentSheet extends StatefulWidget {
   final List<Map<String, dynamic>> participants;
@@ -69,10 +70,9 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Who split this item?",
+          Text('who_split_this_item',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          ).tr(),
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
@@ -163,10 +163,9 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: const Text(
-              "Confirm Selection",
+            child: Text('confirm_selection',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            ).tr(),
           ),
         ],
       ),

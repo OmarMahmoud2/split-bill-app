@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'services/contact_service.dart';
 import 'services/group_service.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GroupDetailsScreen extends StatefulWidget {
   final String groupId;
@@ -33,7 +34,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       if (currentMembers.any((m) => m['id'] == uid)) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("User already in group")),
+            SnackBar(content: Text('user_already_in_group').tr()),
           );
         }
         return;
@@ -66,18 +67,17 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     final confirm = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Delete Group?"),
-        content: const Text(
-          "This cannot be undone. All members will be removed from this list.",
-        ),
+        title: Text('delete_group_2').tr(),
+        content: Text('this_cannot_be_undone_all_members_will_be_removed_from_this_list',
+        ).tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
+            child: Text('common_cancel').tr(),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            child: Text('common_delete', style: TextStyle(color: Colors.red)).tr(),
           ),
         ],
       ),
@@ -94,7 +94,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text("Group Details"),
+        title: Text('group_details').tr(),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -102,7 +102,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
           IconButton(
             onPressed: _deleteGroup,
             icon: const Icon(Icons.delete_forever, color: Colors.red),
-            tooltip: "Delete Group",
+            tooltip: 'delete_group'.tr(),
           ),
         ],
       ),
@@ -113,12 +113,12 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const LoadingStateWidget(
-              message: "Loading squad members...",
+            return LoadingStateWidget(
+              message: 'loading_squad_members'.tr(),
             );
           }
           if (!snapshot.data!.exists) {
-            return const Center(child: Text("Group deleted"));
+            return Center(child: Text('group_deleted').tr());
           }
 
           var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -179,17 +179,16 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "Members",
+                    Text('members',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ).tr(),
                     TextButton.icon(
                       onPressed: () => _addMember(members),
                       icon: const Icon(Icons.person_add),
-                      label: const Text("Add"),
+                      label: Text('add').tr(),
                     ),
                   ],
                 ),

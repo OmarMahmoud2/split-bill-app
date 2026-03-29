@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -17,34 +18,40 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(80); // Taller for floating effect
+  Size get preferredSize => const Size.fromHeight(80);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return SafeArea(
       bottom: false,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(
+                alpha: theme.brightness == Brightness.dark ? 0.18 : 0.06,
+              ),
+              blurRadius: 22,
+              offset: const Offset(0, 8),
             ),
           ],
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.15)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Row(
           children: [
             // Leading (Back Button)
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 size: 20,
-                color: Colors.black,
+                color: colorScheme.onSurface,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -58,10 +65,9 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
                   if (subtitle != null) ...[
                     Text(
                       subtitle!.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade600,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: colorScheme.primary,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -69,10 +75,9 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
                   ],
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,
@@ -87,8 +92,8 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
               trailing!
             else if (onInfoTap != null || infoMessage != null)
               Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -115,6 +120,9 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _showInfoDialog(BuildContext context, String title, String message) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -127,20 +135,19 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: colorScheme.primary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.info_outline_rounded,
-                  color: Colors.blue.shade600,
+                  color: colorScheme.primary,
                   size: 32,
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 20,
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
@@ -148,9 +155,8 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
               const SizedBox(height: 12),
               Text(
                 message,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey.shade700,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.74),
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
@@ -160,15 +166,7 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text("Got it!"),
+                  child: Text('got_it_3').tr(),
                 ),
               ),
             ],

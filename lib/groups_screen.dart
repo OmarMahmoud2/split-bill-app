@@ -8,6 +8,7 @@ import 'package:split_bill_app/services/contact_service.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/empty_state_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});
@@ -26,18 +27,16 @@ class _GroupsScreenState extends State<GroupsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text(
-          "Groups",
+        title: Text('groups',
           style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          "Create squads for your roommates, family, or travel buddies. Groups help you split bills faster by selecting multiple people with one tap!",
+        ).tr(),
+        content: Text('create_squads_for_your_roommates_family_or_travel_buddies_groups_help_you_split_bills_faster_by_selecting_multiple_people_with_one_tap',
           style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
+        ).tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Got it!"),
+            child: Text('got_it_3').tr(),
           ),
         ],
       ),
@@ -80,15 +79,14 @@ class _GroupsScreenState extends State<GroupsScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  "Create New Group",
+                Text('create_new_group',
                   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-                ),
+                ).tr(),
                 const SizedBox(height: 24),
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
-                    labelText: "Group Name",
+                    labelText: 'group_name'.tr(),
                     prefixIcon: const Icon(Icons.group_work_rounded),
                     filled: true,
                     fillColor: Colors.grey[50],
@@ -250,13 +248,12 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         borderRadius: BorderRadius.circular(18),
                       ),
                     ),
-                    child: const Text(
-                      "Create Group",
+                    child: Text('create_group',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
-                    ),
+                    ).tr(),
                   ),
                 ),
               ],
@@ -352,7 +349,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
               style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 22),
             ),
             Text(
-              "${members.length} members",
+              'members_count'.tr(
+                namedArgs: {'count': members.length.toString()},
+              ),
               style: TextStyle(color: Colors.grey[500]),
             ),
             const SizedBox(height: 24),
@@ -380,11 +379,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                     trailing: m['id'] == FirebaseAuth.instance.currentUser?.uid
-                        ? const Chip(
-                            label: Text(
-                              "Owner",
+                        ? Chip(
+                            label: Text('owner',
                               style: TextStyle(fontSize: 10),
-                            ),
+                            ).tr(),
                             backgroundColor: Colors.blueGrey,
                             labelStyle: TextStyle(color: Colors.white),
                           )
@@ -409,10 +407,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         Icons.delete_outline_rounded,
                         color: Colors.red,
                       ),
-                      label: const Text(
-                        "Delete Group",
+                      label: Text('delete_group',
                         style: TextStyle(color: Colors.red),
-                      ),
+                      ).tr(),
                       style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -430,10 +427,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         _showEditModal(groupId, data);
                       },
                       icon: const Icon(Icons.edit_rounded, color: Colors.white),
-                      label: const Text(
-                        "Edit Members",
+                      label: Text('edit_members',
                         style: TextStyle(color: Colors.white),
-                      ),
+                      ).tr(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
@@ -475,10 +471,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
             ),
             child: Column(
               children: [
-                const Text(
-                  "Edit Group Members",
+                Text('edit_group_members',
                   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-                ),
+                ).tr(),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -578,13 +573,12 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         borderRadius: BorderRadius.circular(18),
                       ),
                     ),
-                    child: const Text(
-                      "Save Changes",
+                    child: Text('scan_save_changes',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ).tr(),
                   ),
                 ),
               ],
@@ -599,16 +593,16 @@ class _GroupsScreenState extends State<GroupsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Delete Group?"),
-        content: const Text("This squad will be gone forever. Sure?"),
+        title: Text('delete_group_2').tr(),
+        content: Text('this_squad_will_be_gone_forever_sure').tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
+            child: Text('common_cancel').tr(),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            child: Text('common_delete', style: TextStyle(color: Colors.red)).tr(),
           ),
         ],
       ),
@@ -661,13 +655,12 @@ class _GroupsScreenState extends State<GroupsScreen> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          const Text(
-                            "My Squads",
+                          Text('my_squads',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 18,
                             ),
-                          ),
+                          ).tr(),
                           const Spacer(),
                           GestureDetector(
                             onTap: _showInfo,
@@ -698,17 +691,17 @@ class _GroupsScreenState extends State<GroupsScreen> {
                 stream: _groupService.getMyGroups(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SliverFillRemaining(
+                    return SliverFillRemaining(
                       child: LoadingStateWidget(
-                        message: "Loading your squads...",
+                        message: 'loading_your_squads'.tr(),
                       ),
                     );
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const SliverFillRemaining(
+                    return SliverFillRemaining(
                       child: EmptyStateWidget(
-                        message: "No squads yet. Create one!",
-                        title: "Create your first squad",
+                        message: 'no_squads_yet_create_one'.tr(),
+                        title: 'create_your_first_squad'.tr(),
                       ),
                     );
                   }
@@ -734,7 +727,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
           ),
 
           if (_isCreating)
-            const LoadingStateWidget(message: "Creating your squad..."),
+            LoadingStateWidget(message: 'creating_your_squad'.tr()),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -820,7 +813,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         ),
                       ),
                       Text(
-                        "${members.length} members",
+                        'members_count'.tr(
+                          namedArgs: {'count': members.length.toString()},
+                        ),
                         style: TextStyle(color: Colors.grey[500], fontSize: 13),
                       ),
                     ],

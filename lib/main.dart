@@ -9,15 +9,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart'; // RESTORED IMPORT
+import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'guest_bill_screen.dart';
 import 'bill_details_screen.dart';
 import 'participant_bill_screen.dart';
 import 'services/notification_service.dart';
-import 'utils/app_theme.dart'; // UPDATED: Using new theme system
-import 'auth_wrapper.dart'; // NEW: AuthWrapper separated
+import 'utils/app_theme.dart';
+import 'auth_wrapper.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
 import 'config/supported_preferences.dart';
@@ -69,7 +69,6 @@ void main() async {
       supportedLocales: supportedLocaleOptions.map((option) => option.locale).toList(),
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
-      startLocale: const Locale('en'),
       useOnlyLangCode: true,
       child: MultiProvider(
         providers: [
@@ -238,13 +237,12 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
           navigatorKey: navigatorKey,
           title: 'Split Bill',
+          onGenerateTitle: (context) => 'app_title'.tr(),
           debugShowCheckedModeBanner: false,
           locale: context.locale,
           supportedLocales: context.supportedLocales,
           localizationsDelegates: context.localizationDelegates,
           theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: appSettings.themeMode,
 
           home: CustomUpgrader(
             child: billIdFromUrl != null

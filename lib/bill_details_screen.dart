@@ -14,6 +14,7 @@ import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/share_link_utils.dart';
 import 'services/notification_service.dart';
 import 'package:split_bill_app/widgets/custom_app_header.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BillDetailsScreen extends StatefulWidget {
   final String billId;
@@ -50,14 +51,13 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text("No Proof Submitted"),
-          content: const Text(
-            "This participant marked their share as PAID but didn't upload a screenshot. Do you want to approve it?",
-          ),
+          title: Text('no_proof_submitted').tr(),
+          content: Text('this_participant_marked_their_share_as_paid_but_didn_t_upload_a_screenshot_do_you_want_to_approve_it',
+          ).tr(),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              child: Text('common_cancel').tr(),
             ),
             ElevatedButton(
               onPressed: () {
@@ -65,7 +65,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                 _markAsPaid(allParticipants, index, forcePaid: true);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text("Approve Payment"),
+              child: Text('approve_payment').tr(),
             ),
           ],
         ),
@@ -97,13 +97,12 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        "Cancel",
+                      child: Text('common_cancel',
                         style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      ).tr(),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -117,7 +116,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                         Icons.check_circle_outline_rounded,
                         size: 18,
                       ),
-                      label: const Text("Approve"),
+                      label: Text('approve').tr(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[700],
                         foregroundColor: Colors.white,
@@ -160,7 +159,9 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Marked as $newStatus"),
+          content: Text(
+            'marked_as_status'.tr(namedArgs: {'status': newStatus}),
+          ),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -198,7 +199,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         await NotificationService().sendNotification(
           targetToken: token,
           targetUid: participantUid,
-          title: "Payment Accepted! ✅",
+          title: 'payment_accepted'.tr(),
           body:
               "Your payment for \"${widget.billName}\" has been approved by the host.",
           data: {
@@ -231,7 +232,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: 12),
-            const Text("Reminder"),
+            Text('reminder').tr(),
           ],
         ),
         content: Text(
@@ -240,7 +241,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -254,7 +255,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text("Send Now"),
+            child: Text('send_now').tr(),
           ),
         ],
       ),
@@ -280,15 +281,25 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         await NotificationService().sendNotification(
           targetToken: token,
           targetUid: targetUid,
-          title: "Reminder: ${widget.billName}",
-          body:
-              "You still owe ${CurrencyUtils.format(amount, currencyCode: currencyCode)}. Tap to pay.",
+          title: 'reminder_title'.tr(
+            namedArgs: {'bill_name': widget.billName},
+          ),
+          body: 'reminder_body'.tr(
+            namedArgs: {
+              'amount': CurrencyUtils.format(
+                amount,
+                currencyCode: currencyCode,
+              ),
+            },
+          ),
           data: {'billId': widget.billId},
         );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Reminder sent to $name! 🔔"),
+              content: Text(
+                'reminder_sent_to'.tr(namedArgs: {'name': name}),
+              ),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.blue[800],
             ),
@@ -306,17 +317,15 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: const Text(
-          "Delete Bill?",
+        title: Text('delete_bill',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-        ),
-        content: const Text(
-          "This action is irreversible. All participants will lose access to this bill data.",
-        ),
+        ).tr(),
+        content: Text('this_action_is_irreversible_all_participants_will_lose_access_to_this_bill_data',
+        ).tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
+            child: Text('common_cancel').tr(),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -324,7 +333,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text("Delete Permanently"),
+            child: Text('delete_permanently').tr(),
           ),
         ],
       ),
@@ -338,8 +347,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
       if (mounted) {
         Navigator.pop(context); // Go back to Home
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Bill deleted."),
+          SnackBar(
+            content: Text('bill_deleted').tr(),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -519,14 +528,13 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               ),
               margin: const EdgeInsets.only(bottom: 24),
             ),
-            const Text(
-              "Management Actions",
+            Text('management_actions',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
               ),
-            ),
+            ).tr(),
             const SizedBox(height: 24),
             ListTile(
               leading: Container(
@@ -541,10 +549,9 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   size: 22,
                 ),
               ),
-              title: const Text(
-                "Edit Bill Info",
+              title: Text('edit_bill_info',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+              ).tr(),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -573,14 +580,13 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   size: 22,
                 ),
               ),
-              title: const Text(
-                "Delete Entire Bill",
+              title: Text('delete_entire_bill',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   color: Colors.red,
                 ),
-              ),
+              ).tr(),
               onTap: () {
                 Navigator.pop(context);
                 _confirmDelete();
@@ -662,12 +668,12 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: LoadingStateWidget(message: "Loading bill details..."),
+          return Scaffold(
+            body: LoadingStateWidget(message: 'loading_bill_details'.tr()),
           );
         }
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const Scaffold(body: Center(child: Text("Bill not found")));
+          return Scaffold(body: Center(child: Text('bill_not_found').tr()));
         }
 
         var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -724,17 +730,16 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                     // Refined Bill Details Tile
                     _buildDetailsActionTile(data),
 
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.fromLTRB(20, 32, 20, 12),
-                      child: Text(
-                        "PARTICIPANTS",
+                      child: Text('participants',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
                           color: Colors.grey,
                           letterSpacing: 1.5,
                         ),
-                      ),
+                      ).tr(),
                     ),
 
                     ...participantsData.asMap().entries.map((entry) {
@@ -817,22 +822,20 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Full Bill Details",
+                      Text('full_bill_details',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
                           color: Colors.black87,
                         ),
-                      ),
-                      Text(
-                        "Items and charges breakdown",
+                      ).tr(),
+                      Text('items_and_charges_breakdown',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[500],
                           fontWeight: FontWeight.w500,
                         ),
-                      ),
+                      ).tr(),
                     ],
                   ),
                 ),

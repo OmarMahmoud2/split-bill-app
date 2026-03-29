@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Bottom sheet for purchasing premium upgrade
 class PremiumUpgradeDialog extends StatefulWidget {
@@ -67,8 +68,8 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
     if (success) {
       Navigator.of(context).pop(true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🎉 Welcome to Premium!'),
+        SnackBar(
+          content: Text('welcome_to_premium').tr(),
           backgroundColor: Colors.green,
         ),
       );
@@ -88,11 +89,11 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
-            title: const Text("Parental Gate"),
+            title: Text('parental_gate').tr(),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("To continue with the purchase, please solve this:"),
+                Text('to_continue_with_the_purchase_please_solve_this').tr(),
                 const SizedBox(height: 16),
                 Text(
                   "$a + $b = ?",
@@ -106,14 +107,14 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                   keyboardType: TextInputType.number,
                   autofocus: true,
                   textAlign: TextAlign.center,
-                  decoration: const InputDecoration(hintText: "Enter result"),
+                  decoration: InputDecoration(hintText: 'enter_result'.tr()),
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text("Cancel"),
+                child: Text('common_cancel').tr(),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -122,14 +123,14 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                   } else {
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Incorrect answer. Purchase cancelled."),
+                      SnackBar(
+                        content: Text('incorrect_answer_purchase_cancelled').tr(),
                         backgroundColor: Colors.red,
                       ),
                     );
                   }
                 },
-                child: const Text("Confirm"),
+                child: Text('confirm').tr(),
               ),
             ],
           ),
@@ -149,15 +150,15 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
     if (success) {
       Navigator.of(context).pop(true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Premium restored!'),
+        SnackBar(
+          content: Text('premium_restored').tr(),
           backgroundColor: Colors.green,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No previous purchase found'),
+        SnackBar(
+          content: Text('no_previous_purchase_found').tr(),
           backgroundColor: Colors.orange,
         ),
       );
@@ -229,23 +230,21 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          const Text(
-                            'Go Premium',
+                          Text('go_premium',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
-                          ),
+                          ).tr(),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Unlock unlimited scans & ad-free experience',
+                          Text('unlock_unlimited_scans_and_ad_free_experience',
                             style: TextStyle(
                               fontSize: 15,
                               color: Colors.white70,
                             ),
                             textAlign: TextAlign.center,
-                          ),
+                          ).tr(),
                         ],
                       ),
                     ),
@@ -256,14 +255,13 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "What's Included:",
+                          Text('what_s_included',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
                             ),
-                          ),
+                          ).tr(),
                           const SizedBox(height: 16),
                           _buildFeature(
                             Icons.qr_code_scanner_rounded,
@@ -330,14 +328,13 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            const Text(
-                              'One-time payment • No subscriptions',
+                            Text('one_time_payment_no_subscriptions',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black54,
                                 fontWeight: FontWeight.w500,
                               ),
-                            ),
+                            ).tr(),
                           ],
                         ),
                       ),
@@ -361,25 +358,23 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                                   ),
                                   elevation: 0,
                                 ),
-                                child: const Text(
-                                  'Upgrade to Premium',
+                                child: Text('upgrade_to_premium',
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
                                   ),
-                                ),
+                                ).tr(),
                               ),
                             ),
                             const SizedBox(height: 12),
                             TextButton(
                               onPressed: _isPurchasing ? null : _handleRestore,
-                              child: const Text(
-                                'Restore Previous Purchase',
+                              child: Text('restore_previous_purchase',
                                 style: TextStyle(
                                   color: Colors.black54,
                                   fontSize: 14,
                                 ),
-                              ),
+                              ).tr(),
                             ),
                             const SizedBox(height: 40),
                           ],
@@ -395,20 +390,19 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
         if (_isPurchasing)
           Container(
             color: Colors.black.withValues(alpha: 0.5),
-            child: const Center(
+            child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircularProgressIndicator(color: Colors.white),
                   SizedBox(height: 16),
-                  Text(
-                    "Processing...",
+                  Text('processing',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
+                  ).tr(),
                 ],
               ),
             ),

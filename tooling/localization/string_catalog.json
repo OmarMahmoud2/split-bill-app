@@ -1,0 +1,3191 @@
+{
+  "src_00e0fc4c242f52ff": {
+    "key": "src_00e0fc4c242f52ff",
+    "source": "Payment Marked as Sent! 💸",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 554
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 264
+      }
+    ]
+  },
+  "src_00eeea42f309b6ca": {
+    "key": "src_00eeea42f309b6ca",
+    "source": "Split Bills\\nFairly",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 32
+      }
+    ]
+  },
+  "src_019dc8a566ca1771": {
+    "key": "src_019dc8a566ca1771",
+    "source": "Group deleted",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 121
+      }
+    ]
+  },
+  "src_020c48920f4b1411": {
+    "key": "src_020c48920f4b1411",
+    "source": "Error: ${_messageFromError(e)}",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 222
+      }
+    ]
+  },
+  "src_021ef1aa05ff2892": {
+    "key": "src_021ef1aa05ff2892",
+    "source": "Group Details",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 97
+      }
+    ]
+  },
+  "src_02acb9e41d8852ad": {
+    "key": "src_02acb9e41d8852ad",
+    "source": "Error: Missing User ID",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 273
+      }
+    ]
+  },
+  "src_04332373313c4358": {
+    "key": "src_04332373313c4358",
+    "source": "No squads yet. Create one!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 710
+      }
+    ]
+  },
+  "src_047db0e1b10cbb22": {
+    "key": "src_047db0e1b10cbb22",
+    "source": "Back to Home",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 1153
+      }
+    ]
+  },
+  "src_050c24a9e71dbf39": {
+    "key": "src_050c24a9e71dbf39",
+    "source": "Rate Us",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 398
+      }
+    ]
+  },
+  "src_058af45db012e650": {
+    "key": "src_058af45db012e650",
+    "source": "Burger",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 233
+      }
+    ]
+  },
+  "src_05b724994d5a23ac": {
+    "key": "src_05b724994d5a23ac",
+    "source": "Loading your dashboard...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/home_screen.dart",
+        "line": 236
+      }
+    ]
+  },
+  "src_0855bd46af27368d": {
+    "key": "src_0855bd46af27368d",
+    "source": "Marked as $newStatus",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 163
+      }
+    ]
+  },
+  "src_091d3d07b5b3076f": {
+    "key": "src_091d3d07b5b3076f",
+    "source": "OK",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 524
+      }
+    ]
+  },
+  "src_09d6ca832466e10e": {
+    "key": "src_09d6ca832466e10e",
+    "source": "Mobile money wallet for East Africa",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 815
+      }
+    ]
+  },
+  "src_09f4bfb5d46791b5": {
+    "key": "src_09f4bfb5d46791b5",
+    "source": "User already in bill!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 206
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 280
+      }
+    ]
+  },
+  "src_0a8608c826304841": {
+    "key": "src_0a8608c826304841",
+    "source": "Confirm Assignments",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/voice/smart_review_screen.dart",
+        "line": 70
+      }
+    ]
+  },
+  "src_0aca4e7371c6a791": {
+    "key": "src_0aca4e7371c6a791",
+    "source": "Delete Group",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 105
+      }
+    ]
+  },
+  "src_0ca19850cfffb033": {
+    "key": "src_0ca19850cfffb033",
+    "source": "Please complete all required fields.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 329
+      }
+    ]
+  },
+  "src_0d4086bd9c2fc8ec": {
+    "key": "src_0d4086bd9c2fc8ec",
+    "source": "IBAN, account number, or routing details",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 825
+      }
+    ]
+  },
+  "src_0dbf638c66658325": {
+    "key": "src_0dbf638c66658325",
+    "source": "Profile updated successfully!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 101
+      }
+    ]
+  },
+  "src_10b37a465264cd25": {
+    "key": "src_10b37a465264cd25",
+    "source": "You Owe",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 144
+      }
+    ]
+  },
+  "src_10b38d406379c22d": {
+    "key": "src_10b38d406379c22d",
+    "source": "${members.length} members",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 288
+      }
+    ]
+  },
+  "src_124b083d171caa6d": {
+    "key": "src_124b083d171caa6d",
+    "source": "for your next receipt scan.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 143
+      }
+    ]
+  },
+  "src_1257cd35e26de107": {
+    "key": "src_1257cd35e26de107",
+    "source": "Save & Continue",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 185
+      }
+    ]
+  },
+  "src_1357bf88bffdbd20": {
+    "key": "src_1357bf88bffdbd20",
+    "source": "Deleting account...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 287
+      }
+    ]
+  },
+  "src_13a7af454fcf5d5f": {
+    "key": "src_13a7af454fcf5d5f",
+    "source": "receipt_add_item",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/receipt_result_view.dart",
+        "line": 188
+      }
+    ]
+  },
+  "src_14b79734cd9b8742": {
+    "key": "src_14b79734cd9b8742",
+    "source": "This squad will be gone forever. Sure?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 603
+      }
+    ]
+  },
+  "src_15d93345f7c21b02": {
+    "key": "src_15d93345f7c21b02",
+    "source": "Fetching an ad... Please try again in a moment.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 397
+      }
+    ]
+  },
+  "src_174086c5a5a18974": {
+    "key": "src_174086c5a5a18974",
+    "source": "Please log in to view notifications.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 64
+      }
+    ]
+  },
+  "src_1a29f67259b188cb": {
+    "key": "src_1a29f67259b188cb",
+    "source": "Setting up secure connection...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/auth_wrapper.dart",
+        "line": 85
+      }
+    ]
+  },
+  "src_1b72aa9272f3e6eb": {
+    "key": "src_1b72aa9272f3e6eb",
+    "source": "Scan Receipts\\nInstantly",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 24
+      }
+    ]
+  },
+  "src_1befc4b20e3d865a": {
+    "key": "src_1befc4b20e3d865a",
+    "source": "Invalid Bill ID",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 994
+      }
+    ]
+  },
+  "src_1c10610badc81c6d": {
+    "key": "src_1c10610badc81c6d",
+    "source": "No groups found. Create one first!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 261
+      }
+    ]
+  },
+  "src_1c6afc2a548eecaa": {
+    "key": "src_1c6afc2a548eecaa",
+    "source": "Delete Group?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 69
+      },
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 602
+      }
+    ]
+  },
+  "src_1c77ca0fd631b4be": {
+    "key": "src_1c77ca0fd631b4be",
+    "source": "Smart Review",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/voice/smart_review_screen.dart",
+        "line": 69
+      }
+    ]
+  },
+  "src_1dd9c577e275d836": {
+    "key": "src_1dd9c577e275d836",
+    "source": "Added $addedCount members!",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 464
+      }
+    ]
+  },
+  "src_1e2e135dac5ba993": {
+    "key": "src_1e2e135dac5ba993",
+    "source": "Email Address",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 398
+      }
+    ]
+  },
+  "src_1f7f8510321c47e0": {
+    "key": "src_1f7f8510321c47e0",
+    "source": "${selectedLocale.englishName} • ${selectedLocale.nativeName}",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 294
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 26
+      }
+    ]
+  },
+  "src_2095762548af96a8": {
+    "key": "src_2095762548af96a8",
+    "source": "Checking onboarding...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/auth_wrapper.dart",
+        "line": 69
+      }
+    ]
+  },
+  "src_213821ffbd5d8ae2": {
+    "key": "src_213821ffbd5d8ae2",
+    "source": "User already in group",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 36
+      }
+    ]
+  },
+  "src_23abb06930192882": {
+    "key": "src_23abb06930192882",
+    "source": "Ad Not Available",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 516
+      }
+    ]
+  },
+  "src_2440d0a895a0486d": {
+    "key": "src_2440d0a895a0486d",
+    "source": "${option.code} • ${option.name}",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 219
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 116
+      }
+    ]
+  },
+  "src_2469e402dc5dd0ad": {
+    "key": "src_2469e402dc5dd0ad",
+    "source": "No Proof Submitted",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 53
+      }
+    ]
+  },
+  "src_24fb9fab3877a3be": {
+    "key": "src_24fb9fab3877a3be",
+    "source": "Unlimited scans • No ads • Lifetime",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 378
+      }
+    ]
+  },
+  "src_25b94e60e2657760": {
+    "key": "src_25b94e60e2657760",
+    "source": "Best for methods not listed here.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 728
+      }
+    ]
+  },
+  "src_26c7154c86431831": {
+    "key": "src_26c7154c86431831",
+    "source": "Watch Ad for Points",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 370
+      }
+    ]
+  },
+  "src_28e39f0445438303": {
+    "key": "src_28e39f0445438303",
+    "source": "Gift this app to your friends",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 392
+      }
+    ]
+  },
+  "src_28f2553a97dc8344": {
+    "key": "src_28f2553a97dc8344",
+    "source": "Loading squad members...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 117
+      }
+    ]
+  },
+  "src_2a37319e5752ffb6": {
+    "key": "src_2a37319e5752ffb6",
+    "source": "Custom method name",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 269
+      }
+    ]
+  },
+  "src_2b5047d39b9baf3d": {
+    "key": "src_2b5047d39b9baf3d",
+    "source": "Preferences",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 290
+      }
+    ]
+  },
+  "src_2c1bc8465d08cdb8": {
+    "key": "src_2c1bc8465d08cdb8",
+    "source": "Owed to You",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 154
+      }
+    ]
+  },
+  "src_2ceb11be2290bb1b": {
+    "key": "src_2ceb11be2290bb1b",
+    "source": "Cancel",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 60
+      },
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 243
+      },
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 319
+      },
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 457
+      },
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 76
+      },
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 607
+      },
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 31
+      },
+      {
+        "file": "lib/screens/edit_bill/widgets/edit_bill_summary_dialog.dart",
+        "line": 114
+      },
+      {
+        "file": "lib/screens/edit_bill/widgets/participant_options_sheet.dart",
+        "line": 130
+      },
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 218
+      },
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 150
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 336
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 396
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 627
+      },
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 140
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 116
+      }
+    ]
+  },
+  "src_2d394ba0f7fccc4c": {
+    "key": "src_2d394ba0f7fccc4c",
+    "source": "Payment Sent!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1199
+      }
+    ]
+  },
+  "src_2d9356347ff7c77f": {
+    "key": "src_2d9356347ff7c77f",
+    "source": "Group Name",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 91
+      }
+    ]
+  },
+  "src_2df075aface0dab8": {
+    "key": "src_2df075aface0dab8",
+    "source": "Share",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/success_screen.dart",
+        "line": 217
+      }
+    ]
+  },
+  "src_2f6a996235de8aec": {
+    "key": "src_2f6a996235de8aec",
+    "source": "Search currencies",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 214
+      }
+    ]
+  },
+  "src_304b825852dd2478": {
+    "key": "src_304b825852dd2478",
+    "source": "International transfer details and links",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 805
+      }
+    ]
+  },
+  "src_306bdbcf2eb1d457": {
+    "key": "src_306bdbcf2eb1d457",
+    "source": "Split Summary",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 1023
+      }
+    ]
+  },
+  "src_31deff848383a2ba": {
+    "key": "src_31deff848383a2ba",
+    "source": "Bill successfully assigned to the loser! 😈",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 1003
+      }
+    ]
+  },
+  "src_31f06f25f1c2be80": {
+    "key": "src_31f06f25f1c2be80",
+    "source": "Uploading proof...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1192
+      }
+    ]
+  },
+  "src_32224d43131f8186": {
+    "key": "src_32224d43131f8186",
+    "source": "Loading contacts...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/multi_contact_picker.dart",
+        "line": 136
+      }
+    ]
+  },
+  "src_3300d08c0189842f": {
+    "key": "src_3300d08c0189842f",
+    "source": "receipt_delete_item",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/receipt_result_view.dart",
+        "line": 234
+      }
+    ]
+  },
+  "src_357ae6be4f47e350": {
+    "key": "src_357ae6be4f47e350",
+    "source": "Split Bill Equally?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 389
+      }
+    ]
+  },
+  "src_357b3f3128157643": {
+    "key": "src_357b3f3128157643",
+    "source": "Share App",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 391
+      }
+    ]
+  },
+  "src_3736464cf8d6fa08": {
+    "key": "src_3736464cf8d6fa08",
+    "source": "Support",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 388
+      }
+    ]
+  },
+  "src_39bb2aabca5d43f2": {
+    "key": "src_39bb2aabca5d43f2",
+    "source": "Select Members",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 121
+      }
+    ]
+  },
+  "src_3dba6d789c1b18b4": {
+    "key": "src_3dba6d789c1b18b4",
+    "source": "Completed Bills",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 171
+      }
+    ]
+  },
+  "src_3e0b21e04b1c01fa": {
+    "key": "src_3e0b21e04b1c01fa",
+    "source": "Payment Received! 💸",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 480
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 193
+      }
+    ]
+  },
+  "src_413d68c4ccc9b05b": {
+    "key": "src_413d68c4ccc9b05b",
+    "source": "${selectedCurrency.code} • ${selectedCurrency.name} • ${selectedCurrency.region}",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 303
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 33
+      }
+    ]
+  },
+  "src_419aa855c6f565a0": {
+    "key": "src_419aa855c6f565a0",
+    "source": "Error: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 227
+      },
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 407
+      },
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 84
+      },
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 503
+      },
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 577
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 217
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 284
+      },
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 130
+      },
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 370
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 262
+      }
+    ]
+  },
+  "src_4454fb5b70b302f1": {
+    "key": "src_4454fb5b70b302f1",
+    "source": "Share your cashtag exactly as it appears.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 770
+      }
+    ]
+  },
+  "src_452b2e016c1b9d72": {
+    "key": "src_452b2e016c1b9d72",
+    "source": "Back to Profile",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 103
+      }
+    ]
+  },
+  "src_45efa38d5096aea2": {
+    "key": "src_45efa38d5096aea2",
+    "source": "Error adding contacts: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 163
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 236
+      }
+    ]
+  },
+  "src_47a1a772364d90b8": {
+    "key": "src_47a1a772364d90b8",
+    "source": "Retrieving payment methods...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 791
+      }
+    ]
+  },
+  "src_47cdb76d31dc68db": {
+    "key": "src_47cdb76d31dc68db",
+    "source": "Email copied to clipboard!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 155
+      }
+    ]
+  },
+  "src_48af019aa824cc9a": {
+    "key": "src_48af019aa824cc9a",
+    "source": "✅ Premium restored!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 153
+      }
+    ]
+  },
+  "src_491da3cf1f7a685c": {
+    "key": "src_491da3cf1f7a685c",
+    "source": "Approve Payment",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 68
+      }
+    ]
+  },
+  "src_49615bed06a50a68": {
+    "key": "src_49615bed06a50a68",
+    "source": "Error saving: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 424
+      },
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 211
+      }
+    ]
+  },
+  "src_4cb0c11ef6d5bd59": {
+    "key": "src_4cb0c11ef6d5bd59",
+    "source": "settings_title",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 18
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 22
+      }
+    ]
+  },
+  "src_4e58174f5b4ba99f": {
+    "key": "src_4e58174f5b4ba99f",
+    "source": "Send Now",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 257
+      }
+    ]
+  },
+  "src_4ee0f477c3c9b5e9": {
+    "key": "src_4ee0f477c3c9b5e9",
+    "source": "$displayTitle selected & copied!",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 955
+      }
+    ]
+  },
+  "src_4eec0954189e5849": {
+    "key": "src_4eec0954189e5849",
+    "source": "Use the exact handle or link you want shared.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 717
+      }
+    ]
+  },
+  "src_50c90c382ebb09e9": {
+    "key": "src_50c90c382ebb09e9",
+    "source": "Fast social payments in the US",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 755
+      }
+    ]
+  },
+  "src_50f412c855eef133": {
+    "key": "src_50f412c855eef133",
+    "source": "Add participants first!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 383
+      }
+    ]
+  },
+  "src_50fe5290e0220f29": {
+    "key": "src_50fe5290e0220f29",
+    "source": "My Groups",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 324
+      }
+    ]
+  },
+  "src_5162c197f9907bc0": {
+    "key": "src_5162c197f9907bc0",
+    "source": "Egypt mobile wallet and payment card details",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 735
+      }
+    ]
+  },
+  "src_52cfa1d198476806": {
+    "key": "src_52cfa1d198476806",
+    "source": "Item",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 232
+      }
+    ]
+  },
+  "src_57919b08a15d2e3e": {
+    "key": "src_57919b08a15d2e3e",
+    "source": "Please log in.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/home_screen.dart",
+        "line": 224
+      }
+    ]
+  },
+  "src_57dbaac3e33fb8f5": {
+    "key": "src_57dbaac3e33fb8f5",
+    "source": "Recommended for digital wallets",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 638
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 335
+      }
+    ]
+  },
+  "src_5846b46a4a847ff0": {
+    "key": "src_5846b46a4a847ff0",
+    "source": "Track Payments\\nEasily",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 40
+      }
+    ]
+  },
+  "src_592c5f2504341ad3": {
+    "key": "src_592c5f2504341ad3",
+    "source": "User not found",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 220
+      }
+    ]
+  },
+  "src_598a4cd0027da89d": {
+    "key": "src_598a4cd0027da89d",
+    "source": "Use your PayPal.Me or the address people pay.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 750
+      }
+    ]
+  },
+  "src_59a54c55cb94206a": {
+    "key": "src_59a54c55cb94206a",
+    "source": "Search languages",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 162
+      }
+    ]
+  },
+  "src_5a442c8f15d30062": {
+    "key": "src_5a442c8f15d30062",
+    "source": "No Notifications",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 145
+      }
+    ]
+  },
+  "src_5cd1f01cec697d0b": {
+    "key": "src_5cd1f01cec697d0b",
+    "source": "SETUP BILL",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 312
+      }
+    ]
+  },
+  "src_5e9f0cc06318f2eb": {
+    "key": "src_5e9f0cc06318f2eb",
+    "source": "Watch Video",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 162
+      }
+    ]
+  },
+  "src_5ed8698a2f254511": {
+    "key": "src_5ed8698a2f254511",
+    "source": "Sign Up",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 529
+      }
+    ]
+  },
+  "src_5eec70526efd559f": {
+    "key": "src_5eec70526efd559f",
+    "source": "Payment methods updated!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 453
+      }
+    ]
+  },
+  "src_5eee147de73e8615": {
+    "key": "src_5eee147de73e8615",
+    "source": "International transfers and payment links",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 795
+      }
+    ]
+  },
+  "src_5f5f3b0eef5a9705": {
+    "key": "src_5f5f3b0eef5a9705",
+    "source": "US bank-linked transfers",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 775
+      }
+    ]
+  },
+  "src_5f6365980bd7a553": {
+    "key": "src_5f6365980bd7a553",
+    "source": "Payment Methods",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 445
+      },
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 312
+      }
+    ]
+  },
+  "src_6029ac58fe6eda32": {
+    "key": "src_6029ac58fe6eda32",
+    "source": "Manage how you pay & receive",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 313
+      }
+    ]
+  },
+  "src_606da6b75466c7aa": {
+    "key": "src_606da6b75466c7aa",
+    "source": "Tap to assign items manually (Free)",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 52
+      }
+    ]
+  },
+  "src_60fc83381b9275ca": {
+    "key": "src_60fc83381b9275ca",
+    "source": "Choose language",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 161
+      }
+    ]
+  },
+  "src_618bc1300ebc3000": {
+    "key": "src_618bc1300ebc3000",
+    "source": "No groups found.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 50
+      }
+    ]
+  },
+  "src_61ba71ae56af2093": {
+    "key": "src_61ba71ae56af2093",
+    "source": "Complete Setup",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 139
+      }
+    ]
+  },
+  "src_62057c1ed8cfb9f3": {
+    "key": "src_62057c1ed8cfb9f3",
+    "source": "Dangerous & Irreversible",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 424
+      }
+    ]
+  },
+  "src_641dcbee08e36024": {
+    "key": "src_641dcbee08e36024",
+    "source": "Quick check! Solve this to continue:",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 110
+      }
+    ]
+  },
+  "src_64fe373b0417548e": {
+    "key": "src_64fe373b0417548e",
+    "source": "Split equally among all!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 436
+      }
+    ]
+  },
+  "src_6609417a1b03b17f": {
+    "key": "src_6609417a1b03b17f",
+    "source": "Host will verify manually",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 667
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 358
+      }
+    ]
+  },
+  "src_67636b30744ec8b3": {
+    "key": "src_67636b30744ec8b3",
+    "source": "Reminder sent to $name! 🔔",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 291
+      }
+    ]
+  },
+  "src_67749057edb2586b": {
+    "key": "src_67749057edb2586b",
+    "source": "Logout",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 415
+      }
+    ]
+  },
+  "src_67abf63bd2a43b7a": {
+    "key": "src_67abf63bd2a43b7a",
+    "source": "Who's Splitting?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 311
+      }
+    ]
+  },
+  "src_6f5970c39c79aabd": {
+    "key": "src_6f5970c39c79aabd",
+    "source": "Bill deleted.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 342
+      }
+    ]
+  },
+  "src_71082cf14ede42e3": {
+    "key": "src_71082cf14ede42e3",
+    "source": "Scan failed: ${e.toString().replaceFirst('Exception: ', '')}",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 528
+      }
+    ]
+  },
+  "src_716f5ae9b1bcc680": {
+    "key": "src_716f5ae9b1bcc680",
+    "source": "default_currency",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 302
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 32
+      }
+    ]
+  },
+  "src_71a0b3d8b88d6153": {
+    "key": "src_71a0b3d8b88d6153",
+    "source": "View intro screens",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 436
+      }
+    ]
+  },
+  "src_71a352146896bef7": {
+    "key": "src_71a352146896bef7",
+    "source": "Choose payment method",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 108
+      }
+    ]
+  },
+  "src_71b77164e3280801": {
+    "key": "src_71b77164e3280801",
+    "source": "Assign Bill",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 968
+      }
+    ]
+  },
+  "src_72dd0243bb1b8731": {
+    "key": "src_72dd0243bb1b8731",
+    "source": "GOT IT!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1200
+      }
+    ]
+  },
+  "src_732d031b2be46181": {
+    "key": "src_732d031b2be46181",
+    "source": "Please enter a valid phone number",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 23
+      }
+    ]
+  },
+  "src_737ead80999e28fc": {
+    "key": "src_737ead80999e28fc",
+    "source": "Use the phone or email your bank uses for Zelle.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 780
+      }
+    ]
+  },
+  "src_7623f539f8d5db53": {
+    "key": "src_7623f539f8d5db53",
+    "source": "Saving payment methods...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 450
+      }
+    ]
+  },
+  "src_76d1628d0e8b9245": {
+    "key": "src_76d1628d0e8b9245",
+    "source": "Clear All",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 35
+      }
+    ]
+  },
+  "src_76fb65b4e60d8b37": {
+    "key": "src_76fb65b4e60d8b37",
+    "source": "Ad failed to load. Please try again.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 193
+      }
+    ]
+  },
+  "src_77b48fdc8fcf408b": {
+    "key": "src_77b48fdc8fcf408b",
+    "source": "Loading history...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/completed_bills_screen.dart",
+        "line": 80
+      }
+    ]
+  },
+  "src_7b291b9a70f574c9": {
+    "key": "src_7b291b9a70f574c9",
+    "source": "Error: ${snapshot.error}",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 1005
+      },
+      {
+        "file": "lib/screens/completed_bills_screen.dart",
+        "line": 84
+      }
+    ]
+  },
+  "src_7bbc385153ac3705": {
+    "key": "src_7bbc385153ac3705",
+    "source": "Egypt instant account-to-account payments",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 712
+      }
+    ]
+  },
+  "src_7d00063d92ed2821": {
+    "key": "src_7d00063d92ed2821",
+    "source": "Delete Account",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 423
+      }
+    ]
+  },
+  "src_80ba721a7917b8d7": {
+    "key": "src_80ba721a7917b8d7",
+    "source": "Syncing contacts...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 315
+      }
+    ]
+  },
+  "src_80f814665c9fcaeb": {
+    "key": "src_80f814665c9fcaeb",
+    "source": "Confirm Split",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 471
+      }
+    ]
+  },
+  "src_81352e3802de2f40": {
+    "key": "src_81352e3802de2f40",
+    "source": "Create your first squad",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 711
+      }
+    ]
+  },
+  "src_81ecf2d4386b8e84": {
+    "key": "src_81ecf2d4386b8e84",
+    "source": "Continue",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 671
+      }
+    ]
+  },
+  "src_844a82b3d40a5e83": {
+    "key": "src_844a82b3d40a5e83",
+    "source": "Share the wallet number people send to.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 820
+      }
+    ]
+  },
+  "src_84682e163a7ef4f1": {
+    "key": "src_84682e163a7ef4f1",
+    "source": "Got it!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 40
+      },
+      {
+        "file": "lib/widgets/custom_app_header.dart",
+        "line": 168
+      }
+    ]
+  },
+  "src_846b3790b6e25c1c": {
+    "key": "src_846b3790b6e25c1c",
+    "source": "Account",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 412
+      }
+    ]
+  },
+  "src_8521b660bac287b4": {
+    "key": "src_8521b660bac287b4",
+    "source": "You cannot remove yourself from the bill.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 828
+      }
+    ]
+  },
+  "src_85d8804b3c922ffe": {
+    "key": "src_85d8804b3c922ffe",
+    "source": "Added 6 diverse test bills!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 780
+      }
+    ]
+  },
+  "src_8641b6c3688a0cec": {
+    "key": "src_8641b6c3688a0cec",
+    "source": "Edit Profile",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 93
+      }
+    ]
+  },
+  "src_869c5819f08245f3": {
+    "key": "src_869c5819f08245f3",
+    "source": "Qty",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 264
+      }
+    ]
+  },
+  "src_86e910d4704b4b21": {
+    "key": "src_86e910d4704b4b21",
+    "source": "Bill not found",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 670
+      },
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1098
+      }
+    ]
+  },
+  "src_871b1fe6d1846958": {
+    "key": "src_871b1fe6d1846958",
+    "source": "Phone Number",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 159
+      }
+    ]
+  },
+  "src_875b937091c18f82": {
+    "key": "src_875b937091c18f82",
+    "source": "Checking payments...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 1094
+      }
+    ]
+  },
+  "src_87658950e7b0bd77": {
+    "key": "src_87658950e7b0bd77",
+    "source": "Account created! Please verify your email.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 566
+      }
+    ]
+  },
+  "src_87755f011277129f": {
+    "key": "src_87755f011277129f",
+    "source": "app_language",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 293
+      },
+      {
+        "file": "lib/settings_screen.dart",
+        "line": 25
+      }
+    ]
+  },
+  "src_889632fdbf97841c": {
+    "key": "src_889632fdbf97841c",
+    "source": "$method copied to clipboard!",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 884
+      }
+    ]
+  },
+  "src_8a805d633a2c5501": {
+    "key": "src_8a805d633a2c5501",
+    "source": "Search payment methods",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 109
+      }
+    ]
+  },
+  "src_8b9acc23bfc9a9a8": {
+    "key": "src_8b9acc23bfc9a9a8",
+    "source": "Are you sure you want to logout?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 214
+      }
+    ]
+  },
+  "src_8bca6269abb6036b": {
+    "key": "src_8bca6269abb6036b",
+    "source": "Choose currency",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 213
+      }
+    ]
+  },
+  "src_8cda828dac449ea5": {
+    "key": "src_8cda828dac449ea5",
+    "source": "Clear all",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 120
+      }
+    ]
+  },
+  "src_9117fb5195e75151": {
+    "key": "src_9117fb5195e75151",
+    "source": "Notice",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 429
+      }
+    ]
+  },
+  "src_91c9938a2cb46c64": {
+    "key": "src_91c9938a2cb46c64",
+    "source": "Final Steps",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 595
+      }
+    ]
+  },
+  "src_92272880846500c8": {
+    "key": "src_92272880846500c8",
+    "source": "Cannot remove the host of the bill.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 317
+      }
+    ]
+  },
+  "src_922fd95ddfd317c3": {
+    "key": "src_922fd95ddfd317c3",
+    "source": "Delete Permanently",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 327
+      }
+    ]
+  },
+  "src_9580feee98ce7d64": {
+    "key": "src_9580feee98ce7d64",
+    "source": "${newData['displayName']} is already added.",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 181
+      }
+    ]
+  },
+  "src_96a2a08d493c7e18": {
+    "key": "src_96a2a08d493c7e18",
+    "source": "Could not open rating dialog.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 142
+      }
+    ]
+  },
+  "src_978e956f5e3073c9": {
+    "key": "src_978e956f5e3073c9",
+    "source": "Mark all read",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 112
+      }
+    ]
+  },
+  "src_97ac9641e3c21f7a": {
+    "key": "src_97ac9641e3c21f7a",
+    "source": "Great when you want people to pay via mobile wallet.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 740
+      }
+    ]
+  },
+  "src_97b113392e2661a1": {
+    "key": "src_97b113392e2661a1",
+    "source": "Use the handle friends search for in Venmo.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 760
+      }
+    ]
+  },
+  "src_98594d732f5105ef": {
+    "key": "src_98594d732f5105ef",
+    "source": "Parental Gate",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 106
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 91
+      }
+    ]
+  },
+  "src_98a5e0b73b5dbf95": {
+    "key": "src_98a5e0b73b5dbf95",
+    "source": "Show Onboarding",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 435
+      }
+    ]
+  },
+  "src_996afd12831dc325": {
+    "key": "src_996afd12831dc325",
+    "source": "Remove Participant?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/edit_bill/widgets/participant_options_sheet.dart",
+        "line": 123
+      }
+    ]
+  },
+  "src_9a4d923dfbc7a2aa": {
+    "key": "src_9a4d923dfbc7a2aa",
+    "source": "Error scanning QR: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 187
+      }
+    ]
+  },
+  "src_9baa48d6dde99dd1": {
+    "key": "src_9baa48d6dde99dd1",
+    "source": "Loading groups...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 47
+      }
+    ]
+  },
+  "src_9bf9bb2b80df8d94": {
+    "key": "src_9bf9bb2b80df8d94",
+    "source": "Apple Sign-In Failed: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 143
+      }
+    ]
+  },
+  "src_9f34b7aa22f6956d": {
+    "key": "src_9f34b7aa22f6956d",
+    "source": "Seed Transactions",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 447
+      }
+    ]
+  },
+  "src_9f78dc2beb22095a": {
+    "key": "src_9f78dc2beb22095a",
+    "source": "Your history is clean for now. Any alerts will appear here.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 146
+      }
+    ]
+  },
+  "src_9fa1bb84192ae0c0": {
+    "key": "src_9fa1bb84192ae0c0",
+    "source": "Try Different Number",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 81
+      }
+    ]
+  },
+  "src_a023418249f292f1": {
+    "key": "src_a023418249f292f1",
+    "source": "Help us grow with 5 stars",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 399
+      }
+    ]
+  },
+  "src_a1452226f527fa3b": {
+    "key": "src_a1452226f527fa3b",
+    "source": "Split Bill: $store",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 476
+      }
+    ]
+  },
+  "src_a2109d3e1310a305": {
+    "key": "src_a2109d3e1310a305",
+    "source": "Need help? Reach out to us",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 406
+      }
+    ]
+  },
+  "src_a39bd26d4b38dc88": {
+    "key": "src_a39bd26d4b38dc88",
+    "source": "Use a custom payment method name",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 723
+      }
+    ]
+  },
+  "src_a43d5c4995434de4": {
+    "key": "src_a43d5c4995434de4",
+    "source": "Please log in",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/completed_bills_screen.dart",
+        "line": 68
+      }
+    ]
+  },
+  "src_a4dd31e31b7c3be0": {
+    "key": "src_a4dd31e31b7c3be0",
+    "source": "Error adding group: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 816
+      }
+    ]
+  },
+  "src_a538808db9b3b6b0": {
+    "key": "src_a538808db9b3b6b0",
+    "source": "Start with the apps or wallets you actually want friends to use when they pay you back.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 526
+      }
+    ]
+  },
+  "src_a6a92648588602bf": {
+    "key": "src_a6a92648588602bf",
+    "source": "Answer",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 126
+      }
+    ]
+  },
+  "src_a755b4e052a9015c": {
+    "key": "src_a755b4e052a9015c",
+    "source": "Split Equally",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 407
+      }
+    ]
+  },
+  "src_a8fc336c390d8e43": {
+    "key": "src_a8fc336c390d8e43",
+    "source": "App Store link",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 99
+      }
+    ]
+  },
+  "src_ab0397cc3e43742e": {
+    "key": "src_ab0397cc3e43742e",
+    "source": "Enter result",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 109
+      }
+    ]
+  },
+  "src_ab0b09e5e64d5a84": {
+    "key": "src_ab0b09e5e64d5a84",
+    "source": "Use only the details you are comfortable sharing.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 830
+      }
+    ]
+  },
+  "src_ab27930627ba3a58": {
+    "key": "src_ab27930627ba3a58",
+    "source": "Voice Command",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 40
+      }
+    ]
+  },
+  "src_ac4491e21ebf0706": {
+    "key": "src_ac4491e21ebf0706",
+    "source": "🎉 Welcome to Premium!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 177
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 71
+      }
+    ]
+  },
+  "src_ac76b19e49ac4f64": {
+    "key": "src_ac76b19e49ac4f64",
+    "source": "Google Play link",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 80
+      }
+    ]
+  },
+  "src_ad163b64b7f2a63f": {
+    "key": "src_ad163b64b7f2a63f",
+    "source": "Sign out of your account",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 416
+      }
+    ]
+  },
+  "src_ad799c72d2e48463": {
+    "key": "src_ad799c72d2e48463",
+    "source": "Ad is still loading... Please try again in a moment.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 171
+      }
+    ]
+  },
+  "src_adfe125ed1839e76": {
+    "key": "src_adfe125ed1839e76",
+    "source": "Add $label",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 688
+      }
+    ]
+  },
+  "src_aebd867da98c3197": {
+    "key": "src_aebd867da98c3197",
+    "source": "Yes, Delete",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/profile/widgets/profile_dialogs.dart",
+        "line": 325
+      }
+    ]
+  },
+  "src_aec290e9fec62722": {
+    "key": "src_aec290e9fec62722",
+    "source": "Clear All Notifications?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 26
+      }
+    ]
+  },
+  "src_af0119c785738de4": {
+    "key": "src_af0119c785738de4",
+    "source": "Saved for later!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 199
+      }
+    ]
+  },
+  "src_af5603e9c17f9306": {
+    "key": "src_af5603e9c17f9306",
+    "source": "View and manage your squads",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 325
+      }
+    ]
+  },
+  "src_af63ac4c86019afc": {
+    "key": "src_af63ac4c86019afc",
+    "source": "1",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 265
+      }
+    ]
+  },
+  "src_b402effa10b01a63": {
+    "key": "src_b402effa10b01a63",
+    "source": "Saving your changes...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_profile_screen.dart",
+        "line": 98
+      }
+    ]
+  },
+  "src_b48c75cf5b8ccb0c": {
+    "key": "src_b48c75cf5b8ccb0c",
+    "source": "Payment Accepted! ✅",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 201
+      }
+    ]
+  },
+  "src_b85774dc5d18ff0f": {
+    "key": "src_b85774dc5d18ff0f",
+    "source": "Confirm",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 132
+      }
+    ]
+  },
+  "src_b97d943a82d61ca4": {
+    "key": "src_b97d943a82d61ca4",
+    "source": "Manual Assignment",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 51
+      }
+    ]
+  },
+  "src_bb5a9423ee55b6f5": {
+    "key": "src_bb5a9423ee55b6f5",
+    "source": "Add Selected",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/split_bill/widgets/group_selection_sheet.dart",
+        "line": 160
+      }
+    ]
+  },
+  "src_bc9c607bb2abb6ae": {
+    "key": "src_bc9c607bb2abb6ae",
+    "source": "All notifications cleared.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 54
+      }
+    ]
+  },
+  "src_bca28ade1ac411c1": {
+    "key": "src_bca28ade1ac411c1",
+    "source": "Best when you already have the bill photo or want camera import.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 43
+      }
+    ]
+  },
+  "src_bd20a2111e25f4ea": {
+    "key": "src_bd20a2111e25f4ea",
+    "source": "Got it",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 430
+      },
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 436
+      }
+    ]
+  },
+  "src_bf392e0aa01bd2c4": {
+    "key": "src_bf392e0aa01bd2c4",
+    "source": "Signing you in...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/auth_wrapper.dart",
+        "line": 99
+      }
+    ]
+  },
+  "src_bfa7008c85c1bb51": {
+    "key": "src_bfa7008c85c1bb51",
+    "source": "Global wallet, requests, and payment links",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 745
+      }
+    ]
+  },
+  "src_c0a88f88b42e86e5": {
+    "key": "src_c0a88f88b42e86e5",
+    "source": "Loading your squads...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 703
+      }
+    ]
+  },
+  "src_c2b6c18334a4a2c4": {
+    "key": "src_c2b6c18334a4a2c4",
+    "source": "Verify",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 150
+      }
+    ]
+  },
+  "src_c403f223bbb7d2bd": {
+    "key": "src_c403f223bbb7d2bd",
+    "source": "Ready to\\nGet Started?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 55
+      }
+    ]
+  },
+  "src_c54e67430f797acf": {
+    "key": "src_c54e67430f797acf",
+    "source": "Creating your squad...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 737
+      }
+    ]
+  },
+  "src_c8056a58f9481cca": {
+    "key": "src_c8056a58f9481cca",
+    "source": "Bill split equally among all members!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 375
+      }
+    ]
+  },
+  "src_c8fd3203ced8f9a4": {
+    "key": "src_c8fd3203ced8f9a4",
+    "source": "Premium Status",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 352
+      }
+    ]
+  },
+  "src_c909d039e0269c5d": {
+    "key": "src_c909d039e0269c5d",
+    "source": "Upgrade to Premium",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 377
+      }
+    ]
+  },
+  "src_c96abb935e931a42": {
+    "key": "src_c96abb935e931a42",
+    "source": "Incorrect answer. Purchase cancelled.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 126
+      }
+    ]
+  },
+  "src_cad07cc65ad2fb30": {
+    "key": "src_cad07cc65ad2fb30",
+    "source": "Don't have an account?",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 522
+      }
+    ]
+  },
+  "src_cf255f76dcd8b10b": {
+    "key": "src_cf255f76dcd8b10b",
+    "source": "Add participants to play Bill Roulette!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_summary_confirm_screen.dart",
+        "line": 738
+      }
+    ]
+  },
+  "src_cf63068f6f7de669": {
+    "key": "src_cf63068f6f7de669",
+    "source": "Bill updated! 🚀",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 393
+      }
+    ]
+  },
+  "src_d0638f7a6cac6f7c": {
+    "key": "src_d0638f7a6cac6f7c",
+    "source": "Net Balance",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/home/home_header.dart",
+        "line": 164
+      }
+    ]
+  },
+  "src_d14628e5df083b3c": {
+    "key": "src_d14628e5df083b3c",
+    "source": "Scan receipt",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 42
+      }
+    ]
+  },
+  "src_d17047bcc5137d24": {
+    "key": "src_d17047bcc5137d24",
+    "source": "To continue with the purchase, please solve this:",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 95
+      }
+    ]
+  },
+  "src_d1cae0dcd2945c35": {
+    "key": "src_d1cae0dcd2945c35",
+    "source": "Contact Us",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 405
+      }
+    ]
+  },
+  "src_d23a933d63afb642": {
+    "key": "src_d23a933d63afb642",
+    "source": "Clear & Retry",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/phone_input_screen.dart",
+        "line": 98
+      }
+    ]
+  },
+  "src_d3309b0b9e3966bf": {
+    "key": "src_d3309b0b9e3966bf",
+    "source": "Add People",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_setup_screen.dart",
+        "line": 422
+      }
+    ]
+  },
+  "src_d38ed779e0bb827d": {
+    "key": "src_d38ed779e0bb827d",
+    "source": "Share the contact people should use to find you.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 790
+      }
+    ]
+  },
+  "src_d47bf5c03dfa5a75": {
+    "key": "src_d47bf5c03dfa5a75",
+    "source": "Error: User ID missing from data.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 197
+      }
+    ]
+  },
+  "src_d4834a205d67ccdf": {
+    "key": "src_d4834a205d67ccdf",
+    "source": "Signing in...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 204
+      }
+    ]
+  },
+  "src_d52a433f929cf886": {
+    "key": "src_d52a433f929cf886",
+    "source": "Added $addedCount people!",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 156
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 229
+      }
+    ]
+  },
+  "src_d55fc5f69bdfe24d": {
+    "key": "src_d55fc5f69bdfe24d",
+    "source": "Personal",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 309
+      }
+    ]
+  },
+  "src_d6229faeb231697a": {
+    "key": "src_d6229faeb231697a",
+    "source": "Share to Android",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 79
+      }
+    ]
+  },
+  "src_d8233599b17cf335": {
+    "key": "src_d8233599b17cf335",
+    "source": "Just say who ate what! (Cost: 1 Credit)",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/scan_receipt/widgets/assignment_method_sheet.dart",
+        "line": 41
+      }
+    ]
+  },
+  "src_d88f841c680ccfae": {
+    "key": "src_d88f841c680ccfae",
+    "source": "Earn 1 point per rewarded video",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 371
+      }
+    ]
+  },
+  "src_dc673e73b5c13aea": {
+    "key": "src_dc673e73b5c13aea",
+    "source": "Delete",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 80
+      },
+      {
+        "file": "lib/groups_screen.dart",
+        "line": 611
+      }
+    ]
+  },
+  "src_ddaa5f6f43512a13": {
+    "key": "src_ddaa5f6f43512a13",
+    "source": "Reminder: ${widget.billName}",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 283
+      }
+    ]
+  },
+  "src_de476fab5918a5b6": {
+    "key": "src_de476fab5918a5b6",
+    "source": "Loading your methods...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 457
+      }
+    ]
+  },
+  "src_e382d7e67d5abb77": {
+    "key": "src_e382d7e67d5abb77",
+    "source": "This will delete all your notification history.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 27
+      }
+    ]
+  },
+  "src_e3cdf6cfddb6de29": {
+    "key": "src_e3cdf6cfddb6de29",
+    "source": "Search name or phone...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/multi_contact_picker.dart",
+        "line": 120
+      }
+    ]
+  },
+  "src_e54d02268da24546": {
+    "key": "src_e54d02268da24546",
+    "source": "✅ +1 Point Earned!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/voice_command_overlay.dart",
+        "line": 183
+      }
+    ]
+  },
+  "src_e5c269d389d9f737": {
+    "key": "src_e5c269d389d9f737",
+    "source": "Could not launch payment app.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/guest_bill_screen.dart",
+        "line": 875
+      }
+    ]
+  },
+  "src_e5d01bef737e2e3a": {
+    "key": "src_e5d01bef737e2e3a",
+    "source": "Approve",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 120
+      }
+    ]
+  },
+  "src_e61d1691e4881ae7": {
+    "key": "src_e61d1691e4881ae7",
+    "source": "Watch a short video to get",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 135
+      }
+    ]
+  },
+  "src_e752ebbe81851734": {
+    "key": "src_e752ebbe81851734",
+    "source": "Stay Updated\\nAlways",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/new_onboarding_screen.dart",
+        "line": 47
+      }
+    ]
+  },
+  "src_e81aecd568f7cab0": {
+    "key": "src_e81aecd568f7cab0",
+    "source": "Error saving payment methods: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 85
+      }
+    ]
+  },
+  "src_ea4f08110bb8f15d": {
+    "key": "src_ea4f08110bb8f15d",
+    "source": "Remove",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 306
+      },
+      {
+        "file": "lib/screens/edit_bill/widgets/participant_options_sheet.dart",
+        "line": 141
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 350
+      }
+    ]
+  },
+  "src_eb109d7c5cb2ab56": {
+    "key": "src_eb109d7c5cb2ab56",
+    "source": "Save & Exit",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/screens/edit_bill/widgets/edit_bill_summary_dialog.dart",
+        "line": 128
+      }
+    ]
+  },
+  "src_eb9f8ca2ede4b58d": {
+    "key": "src_eb9f8ca2ede4b58d",
+    "source": "e.g. Bankak or Stripe Payment Link",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 270
+      }
+    ]
+  },
+  "src_ec0dbe33c7adb2b2": {
+    "key": "src_ec0dbe33c7adb2b2",
+    "source": "Good for cross-border settlements.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 810
+      }
+    ]
+  },
+  "src_edab2a65de361f40": {
+    "key": "src_edab2a65de361f40",
+    "source": "Loading bill details...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 666
+      }
+    ]
+  },
+  "src_edad6cd6d5d222d6": {
+    "key": "src_edad6cd6d5d222d6",
+    "source": "Cannot remove yourself!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 229
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 302
+      }
+    ]
+  },
+  "src_eed76e8afe9f604a": {
+    "key": "src_eed76e8afe9f604a",
+    "source": "Price",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 299
+      }
+    ]
+  },
+  "src_ef11b62dbc8bad07": {
+    "key": "src_ef11b62dbc8bad07",
+    "source": "Google Sign-In Failed: $e",
+    "hasInterpolation": true,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 104
+      }
+    ]
+  },
+  "src_ef5505644ce08513": {
+    "key": "src_ef5505644ce08513",
+    "source": "Premium & Points",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 365
+      }
+    ]
+  },
+  "src_ef93a99e16cd70c5": {
+    "key": "src_ef93a99e16cd70c5",
+    "source": "Error loading payment methods",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/participant_bill_screen.dart",
+        "line": 796
+      }
+    ]
+  },
+  "src_f397080cda4f76db": {
+    "key": "src_f397080cda4f76db",
+    "source": "+1 Point",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/ad_modal.dart",
+        "line": 136
+      }
+    ]
+  },
+  "src_f40e646bfca6ad50": {
+    "key": "src_f40e646bfca6ad50",
+    "source": "Split Bill",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/main.dart",
+        "line": 239
+      }
+    ]
+  },
+  "src_f42ae7595d232ff5": {
+    "key": "src_f42ae7595d232ff5",
+    "source": "Add Method",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 527
+      }
+    ]
+  },
+  "src_f50e6a9ce22e06b1": {
+    "key": "src_f50e6a9ce22e06b1",
+    "source": "Store Name",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 197
+      }
+    ]
+  },
+  "src_f55413a15b385bb2": {
+    "key": "src_f55413a15b385bb2",
+    "source": "Add at least one item!",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 108
+      }
+    ]
+  },
+  "src_f6a2dc9d316b1fe9": {
+    "key": "src_f6a2dc9d316b1fe9",
+    "source": "Password reset email sent! Check your inbox.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 190
+      }
+    ]
+  },
+  "src_f6d58a0eb6c091f6": {
+    "key": "src_f6d58a0eb6c091f6",
+    "source": "Add 4 test bills",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 448
+      }
+    ]
+  },
+  "src_f6e1665c7022a1f8": {
+    "key": "src_f6e1665c7022a1f8",
+    "source": "Password",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/login_screen.dart",
+        "line": 404
+      }
+    ]
+  },
+  "src_f706eaac61c7e1ad": {
+    "key": "src_f706eaac61c7e1ad",
+    "source": "Developer",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 432
+      }
+    ]
+  },
+  "src_f77de6277d871db2": {
+    "key": "src_f77de6277d871db2",
+    "source": "US payments with cashtag support",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 765
+      }
+    ]
+  },
+  "src_f7ea9094fff63a7e": {
+    "key": "src_f7ea9094fff63a7e",
+    "source": "Share to iPhone",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 98
+      }
+    ]
+  },
+  "src_f971a5fa3ca8ca62": {
+    "key": "src_f971a5fa3ca8ca62",
+    "source": "Adjust Receipt",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/scan_receipt_screen.dart",
+        "line": 457
+      }
+    ]
+  },
+  "src_f9aee319a006c9b4": {
+    "key": "src_f9aee319a006c9b4",
+    "source": "Add",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/group_details_screen.dart",
+        "line": 192
+      }
+    ]
+  },
+  "src_fa48a152b3ff7602": {
+    "key": "src_fa48a152b3ff7602",
+    "source": "Checking app status...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/edit_bill_screen.dart",
+        "line": 137
+      },
+      {
+        "file": "lib/split_bill_screen.dart",
+        "line": 211
+      }
+    ]
+  },
+  "src_fa77a11adcf0c84e": {
+    "key": "src_fa77a11adcf0c84e",
+    "source": "No previous purchase found",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/premium_modal.dart",
+        "line": 168
+      },
+      {
+        "file": "lib/widgets/premium_upgrade_dialog.dart",
+        "line": 160
+      }
+    ]
+  },
+  "src_fc20bea2563343dc": {
+    "key": "src_fc20bea2563343dc",
+    "source": "Use your Revtag or a payment link.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 800
+      }
+    ]
+  },
+  "src_fc697f82bb3bcea2": {
+    "key": "src_fc697f82bb3bcea2",
+    "source": "Enter Manually",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/manual_entry_screen.dart",
+        "line": 158
+      }
+    ]
+  },
+  "src_fc7443d0966b8975": {
+    "key": "src_fc7443d0966b8975",
+    "source": "Build the receipt yourself, then continue to split and add people.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 51
+      }
+    ]
+  },
+  "src_fd60016c43076be3": {
+    "key": "src_fd60016c43076be3",
+    "source": "Add your payment methods",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 525
+      }
+    ]
+  },
+  "src_feb88e52ac085f01": {
+    "key": "src_feb88e52ac085f01",
+    "source": "🎉 Success! You earned 1 scan point.",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/profile_screen.dart",
+        "line": 503
+      }
+    ]
+  },
+  "src_ff858cd8a23732c2": {
+    "key": "src_ff858cd8a23732c2",
+    "source": "Enter manually",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/widgets/create_bill_sheet.dart",
+        "line": 50
+      }
+    ]
+  },
+  "src_ffb6395a8c7df89b": {
+    "key": "src_ffb6395a8c7df89b",
+    "source": "Loading notifications...",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/notifications_screen.dart",
+        "line": 138
+      }
+    ]
+  },
+  "src_ffd3eddf6d32c94f": {
+    "key": "src_ffd3eddf6d32c94f",
+    "source": "Reminder",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/bill_details_screen.dart",
+        "line": 234
+      }
+    ]
+  },
+  "src_ffe066ae209e035d": {
+    "key": "src_ffe066ae209e035d",
+    "source": "iPhone wallet payments and requests",
+    "hasInterpolation": false,
+    "occurrences": [
+      {
+        "file": "lib/payment_settings_screen.dart",
+        "line": 785
+      }
+    ]
+  }
+}

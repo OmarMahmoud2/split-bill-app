@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BillDetailsModals {
   static String _currencyCode(Map<String, dynamic> billData) =>
@@ -50,15 +51,14 @@ class BillDetailsModals {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "BILL BREAKDOWN",
+                        Text('bill_breakdown',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w900,
                             color: Colors.blue[800],
                             letterSpacing: 2.0,
                           ),
-                        ),
+                        ).tr(),
                         const SizedBox(height: 4),
                         Text(
                           storeName,
@@ -246,14 +246,13 @@ class BillDetailsModals {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  "Detailed items and proportions",
+                Text('detailed_items_and_proportions',
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey[500],
                     fontWeight: FontWeight.w500,
                   ),
-                ),
+                ).tr(),
                 const SizedBox(height: 24),
                 Flexible(
                   child: ListView.builder(
@@ -334,15 +333,14 @@ class BillDetailsModals {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "MY TOTAL",
+                      Text('my_total',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           color: Colors.green[800],
                           fontSize: 14,
                           letterSpacing: 1.2,
                         ),
-                      ),
+                      ).tr(),
                       Text(
                         CurrencyUtils.format(
                           (participant['share'] as num).toDouble(),
@@ -371,13 +369,12 @@ class BillDetailsModals {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      "Got it!",
+                    child: Text('got_it_3',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                       ),
-                    ),
+                    ).tr(),
                   ),
                 ),
               ],
@@ -448,10 +445,9 @@ class BillDetailsModals {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "GRAND TOTAL",
+                Text('grand_total',
                   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-                ),
+                ).tr(),
                 Text(
                   CurrencyUtils.format(total, currencyCode: currencyCode),
                   style: TextStyle(

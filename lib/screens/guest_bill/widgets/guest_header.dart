@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GuestHeader extends StatelessWidget {
   final String storeName;
@@ -84,15 +85,14 @@ class GuestHeader extends StatelessWidget {
                   children: [
                     Image.asset('assets/logo.png', height: 40),
                     const SizedBox(width: 12),
-                    Text(
-                      "SplitBill",
+                    Text('splitbill',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
                         color: Colors.blue[800],
                         letterSpacing: -0.5,
                       ),
-                    ),
+                    ).tr(),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -122,15 +122,14 @@ class GuestHeader extends StatelessWidget {
                     color: Colors.blue[50],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    "GUEST PAYMENT PORTAL",
+                  child: Text('guest_payment_portal',
                     style: TextStyle(
                       color: Colors.blue[800],
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.5,
                     ),
-                  ),
+                  ).tr(),
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/split_bill_screen.dart';
 import 'package:split_bill_app/widgets/custom_app_header.dart';
@@ -65,9 +66,9 @@ class _SmartReviewScreenState extends State<SmartReviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: const CustomAppHeader(
-        title: "Smart Review",
-        subtitle: "Confirm Assignments",
+      appBar: CustomAppHeader(
+        title: 'smart_review'.tr(),
+        subtitle: 'confirm_assignments'.tr(),
       ),
       body: Column(
         children: [
@@ -79,13 +80,12 @@ class _SmartReviewScreenState extends State<SmartReviewScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "You said:",
+                Text('you_said',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.grey,
                   ),
-                ),
+                ).tr(),
                 const SizedBox(height: 8),
                 Text(
                   "\"${widget.transcript}\"",
@@ -140,10 +140,9 @@ class _SmartReviewScreenState extends State<SmartReviewScreen> {
                         ),
                         const Divider(height: 24),
                         if (assignedUserIds.isEmpty)
-                          const Text(
-                            "Unassigned",
+                          Text('unassigned',
                             style: TextStyle(color: Colors.redAccent),
-                          )
+                          ).tr()
                         else
                           Wrap(
                             spacing: 8,
@@ -180,10 +179,9 @@ class _SmartReviewScreenState extends State<SmartReviewScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  "Confirm Assignments",
+                child: Text('confirm_assignments',
                   style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
+                ).tr(),
               ),
             ),
           ),

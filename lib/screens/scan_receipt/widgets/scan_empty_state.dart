@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ScanEmptyState extends StatelessWidget {
   final File? image;
@@ -41,10 +42,9 @@ class ScanEmptyState extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.flash_on_rounded, color: Colors.amber),
-                label: const Text(
-                  "Snap Now & Split Later",
+                label: Text('snap_now_and_split_later',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                ).tr(),
               ),
             ),
           const SizedBox(height: 25),
@@ -89,22 +89,20 @@ class ScanEmptyState extends StatelessWidget {
                         width: double.infinity,
                         child: Column(
                           children: [
-                            Text(
-                              "Receipt Ready!",
+                            Text('receipt_ready',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green.shade700,
                               ),
-                            ),
+                            ).tr(),
                             const SizedBox(height: 8),
-                            const Text(
-                              "Tap to Analyze Results",
+                            Text('tap_to_analyze_results',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
                               ),
-                            ),
+                            ).tr(),
                           ],
                         ),
                       ),
@@ -121,24 +119,22 @@ class ScanEmptyState extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      const Text(
-                        "Tap to Scan",
+                      Text('tap_to_scan',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                         ),
-                      ),
+                      ).tr(),
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          "Point your camera at the receipt for magic processing",
+                        child: Text('point_your_camera_at_the_receipt_for_magic_processing',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.grey[600],
                             height: 1.5,
                           ),
-                        ),
+                        ).tr(),
                       ),
                       const Spacer(),
                     ],

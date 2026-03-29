@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/guest_header.dart';
 import 'widgets/orbiting_avatars.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GuestSelectorView extends StatelessWidget {
   final List<dynamic> participants;
@@ -40,14 +41,13 @@ class GuestSelectorView extends StatelessWidget {
             const SizedBox(height: 40),
 
             // Instructions
-            Text(
-              "Tap your avatar to log in",
+            Text('tap_your_avatar_to_log_in',
               style: TextStyle(
                 color: Colors.blueGrey[400],
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1,
               ),
-            ),
+            ).tr(),
             const SizedBox(height: 20),
           ],
         ),

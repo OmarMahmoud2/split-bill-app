@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -167,8 +168,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
   Future<void> _watchAdForPoint() async {
     if (!RewardedAdHelper.isReady) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Ad is still loading... Please try again in a moment."),
+        SnackBar(
+          content: Text('ad_is_still_loading_please_try_again_in_a_moment').tr(),
           backgroundColor: Colors.blue,
         ),
       );
@@ -179,8 +180,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       onRewardEarned: () async {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("✅ +1 Point Earned!"),
+            SnackBar(
+              content: Text('plus_1_point_earned').tr(),
               backgroundColor: Colors.green,
             ),
           );
@@ -189,8 +190,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       onAdFailed: () {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Ad failed to load. Please try again."),
+            SnackBar(
+              content: Text('ad_failed_to_load_please_try_again').tr(),
               backgroundColor: Colors.red,
             ),
           );
@@ -208,8 +209,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       setState(() {
         _isListening = true;
         _isSuccess = false;
-        _statusText = "Listening...";
-        _subStatusText = "Say your command...";
+        _statusText = 'listening'.tr();
+        _subStatusText = 'say_your_command'.tr();
         _transcript = null;
       });
 
@@ -219,7 +220,15 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Error: ${_messageFromError(e)}")));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(
+            'error_with_details'.tr(
+              namedArgs: {'error': _messageFromError(e)},
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -241,8 +250,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     setState(() {
       _isListening = false;
       _isProcessingTranscript = true;
-      _statusText = "Thinking...";
-      _subStatusText = "Analyzing audio...";
+      _statusText = 'thinking'.tr();
+      _subStatusText = 'analyzing_audio'.tr();
     });
 
     try {
@@ -512,14 +521,13 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           ),
           child: Column(
             children: [
-              const Text(
-                "You said:",
+              Text('you_said',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
               Text(
                 _transcript!,
@@ -632,19 +640,17 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          "Select Language",
+        Text('select_language',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
-        ),
+        ).tr(),
         const SizedBox(height: 8),
-        Text(
-          "Choose the language you will speak",
+        Text('choose_the_language_you_will_speak',
           style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-        ),
+        ).tr(),
         const SizedBox(height: 32),
         Wrap(
           spacing: 16,
