@@ -1,0 +1,1 @@
+Verbesserter Ablauf, Fehlerbehebungen, weitere Sprachen und Währungen hinzugefügt (1.1.0=8)

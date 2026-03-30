@@ -1,22 +1,25 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/services/auth_service.dart';
-import 'package:split_bill_app/login_screen.dart';
+import 'package:split_bill_app/auth_wrapper.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class ProfileDialogs {
   static Future<void> showContactUs(BuildContext context) async {
     const String email = "omar.mahmoud1@yahoo.com";
+    final rootContext = Navigator.of(context, rootNavigator: true).context;
+    final messenger = ScaffoldMessenger.maybeOf(rootContext);
 
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: "Contact Support",
+      barrierLabel: 'contact_support'.tr(),
       transitionDuration: const Duration(milliseconds: 400),
-      pageBuilder: (context, anim1, anim2) {
+      pageBuilder: (dialogContext, anim1, anim2) {
         return Stack(
           children: [
             // Glassmorphic Background
@@ -95,7 +98,7 @@ class ProfileDialogs {
                               scheme: 'mailto',
                               path: email,
                               queryParameters: {
-                                'subject': 'Support Request - Split Bill App',
+                                'subject': 'support_request_split_bill_app'.tr(),
                               },
                             );
                             if (await canLaunchUrl(emailLaunchUri)) {
@@ -147,8 +150,8 @@ class ProfileDialogs {
                         child: InkWell(
                           onTap: () {
                             Clipboard.setData(const ClipboardData(text: email));
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            Navigator.of(dialogContext).pop();
+                            messenger?.showSnackBar(
                               SnackBar(
                                 content: Text('email_copied_to_clipboard').tr(),
                                 behavior: SnackBarBehavior.floating,
@@ -179,7 +182,7 @@ class ProfileDialogs {
                       const SizedBox(height: 12),
                       // Cancel Button
                       TextButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.of(dialogContext).pop(),
                         child: Text('maybe_later',
                           style: TextStyle(color: Colors.grey),
                         ).tr(),
@@ -199,9 +202,13 @@ class ProfileDialogs {
   }
 
   static void showLogout(BuildContext context) {
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final rootContext = rootNavigator.context;
+    final messenger = ScaffoldMessenger.maybeOf(rootContext);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('logout',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -209,17 +216,48 @@ class ProfileDialogs {
         content: Text('are_you_sure_you_want_to_logout').tr(),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
-              await AuthService().signOut();
-              if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+              Navigator.of(dialogContext).pop();
+              showDialog(
+                context: rootContext,
+                barrierDismissible: false,
+                builder: (_) => PopScope(
+                  canPop: false,
+                  child: AlertDialog(
+                    content: Row(
+                      children: [
+                        const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2.6),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(child: Text('signing_out').tr()),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+
+              try {
+                await AuthService().signOut();
+                rootNavigator.pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const AuthWrapper()),
                   (route) => false,
+                );
+              } catch (e) {
+                if (rootNavigator.canPop()) {
+                  rootNavigator.pop();
+                }
+                messenger?.showSnackBar(
+                  SnackBar(
+                    content: Text(e.toString()),
+                    backgroundColor: Colors.red,
+                  ),
                 );
               }
             },
@@ -235,88 +273,172 @@ class ProfileDialogs {
   static void showDeleteAccount(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.red),
-            SizedBox(width: 8),
-            Text('delete_account',
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-            ).tr(),
-          ],
-        ),
-        content: Text('this_action_is_extremely_destructive_and_irreversible_you_will_lose_all_your_bills_and_data_forever_n_nyou_ll_be_asked_to_sign_in_again_to_confirm_this_action_n_nare_you_absolutely_sure',
-          style: TextStyle(fontSize: 14),
-        ).tr(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('no_keep_it',
-              style: TextStyle(color: Colors.grey),
-            ).tr(),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              // Close confirmation dialog first
-              Navigator.pop(context);
+      builder: (context) => const _DeleteAccountDialog(),
+    );
+  }
+}
 
-              // Store navigator reference BEFORE async operations
-              final navigator = Navigator.of(context);
+class _DeleteAccountDialog extends StatefulWidget {
+  const _DeleteAccountDialog();
 
-              // Show loading dialog using root navigator
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (dialogContext) => PopScope(
-                      canPop: false,
-                      child: AlertDialog(
-                        content: Row(
-                          children: [
-                        CircularProgressIndicator(),
-                        SizedBox(width: 20),
-                        Text('deleting_account').tr(),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
 
-              try {
-                await AuthService().deleteAccount();
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _passwordController = TextEditingController();
+  bool _hidePassword = true;
+  String? _passwordError;
 
-                navigator.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
-              } catch (e) {
-                navigator.pop();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        e.toString().contains('cancelled')
-                            ? 'Deletion cancelled'
-                            : 'Error deleting account: $e',
-                      ),
-                      backgroundColor: Colors.red,
-                      duration: const Duration(seconds: 4),
-                    ),
-                  );
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text('yes_delete').tr(),
-          ),
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final rootContext = rootNavigator.context;
+    final messenger = ScaffoldMessenger.maybeOf(rootContext);
+    
+    final providers = user?.providerData
+            .map((provider) => provider.providerId)
+            .where((providerId) => providerId.isNotEmpty)
+            .toSet() ??
+        <String>{};
+        
+    final requiresPassword =
+        providers.contains('password') &&
+        !providers.contains('google.com') &&
+        !providers.contains('apple.com');
+
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Row(
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.red),
+          const SizedBox(width: 8),
+          Text('delete_account',
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+          ).tr(),
         ],
       ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('delete_account_warning_message',
+            style: const TextStyle(fontSize: 14),
+          ).tr(),
+          if (requiresPassword) ...[
+            const SizedBox(height: 16),
+            Text('delete_account_requires_password',
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ).tr(),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _passwordController,
+              obscureText: _hidePassword,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: 'current_password'.tr(),
+                errorText: _passwordError,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () => setState(() {
+                    _hidePassword = !_hidePassword;
+                  }),
+                  icon: Icon(
+                    _hidePassword
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('no_keep_it',
+            style: const TextStyle(color: Colors.grey),
+          ).tr(),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            if (requiresPassword &&
+                _passwordController.text.trim().isEmpty) {
+              setState(() {
+                _passwordError = 'enter_current_password_to_continue'.tr();
+              });
+              return;
+            }
+
+            Navigator.of(context).pop();
+            showDialog(
+              context: rootContext,
+              barrierDismissible: false,
+              builder: (_) => PopScope(
+                canPop: false,
+                child: AlertDialog(
+                  content: Row(
+                    children: [
+                      const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2.6),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(child: Text('deleting_account').tr()),
+                    ],
+                  ),
+                ),
+              ),
+            );
+
+            try {
+              await AuthService().deleteAccount(
+                password: requiresPassword
+                    ? _passwordController.text.trim()
+                    : null,
+              );
+
+              rootNavigator.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const AuthWrapper()),
+                (route) => false,
+              );
+            } catch (e) {
+              if (rootNavigator.canPop()) {
+                rootNavigator.pop();
+              }
+              messenger?.showSnackBar(
+                SnackBar(
+                  content: Text(e.toString()),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 4),
+                ),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text('yes_delete').tr(),
+        ),
+      ],
     );
   }
 }

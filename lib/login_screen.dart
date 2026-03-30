@@ -2,9 +2,6 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:lottie/lottie.dart';
 import 'widgets/loading_state_widget.dart';
 import 'package:split_bill_app/services/auth_service.dart';
@@ -75,22 +72,14 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<void> _signInWithGoogle() async {
     HapticFeedback.lightImpact();
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
+      final result = await _authService.signInWithGoogle();
+      if (result == null) {
         setState(() => _isLoading = false);
         return;
       }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
       HapticFeedback.mediumImpact();
 
       if (!mounted) return;
@@ -102,11 +91,7 @@ class _LoginScreenState extends State<LoginScreen>
         HapticFeedback.vibrate();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'google_sign_in_failed'.tr(
-                namedArgs: {'error': e.toString()},
-              ),
-            ),
+            content: Text(e.toString()),
             backgroundColor: Colors.red,
           ),
         );
@@ -118,22 +103,14 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<void> _signInWithApple() async {
     HapticFeedback.lightImpact();
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      final oAuthProvider = OAuthProvider('apple.com');
-      final authCredential = oAuthProvider.credential(
-        idToken: credential.identityToken,
-        accessToken: credential.authorizationCode,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(authCredential);
+      final result = await _authService.signInWithApple();
+      if (result == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
       HapticFeedback.mediumImpact();
 
       if (!mounted) return;
@@ -145,11 +122,7 @@ class _LoginScreenState extends State<LoginScreen>
         HapticFeedback.vibrate();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'apple_sign_in_failed'.tr(
-                namedArgs: {'error': e.toString()},
-              ),
-            ),
+            content: Text(e.toString()),
             backgroundColor: Colors.red,
           ),
         );
@@ -165,6 +138,7 @@ class _LoginScreenState extends State<LoginScreen>
       return;
     }
 
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     try {
       await _authService.signInWithEmail(
@@ -189,6 +163,7 @@ class _LoginScreenState extends State<LoginScreen>
       return;
     }
 
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     try {
       await _authService.resetPassword(_emailController.text.trim());

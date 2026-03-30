@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/utils/image_utils.dart';
 
 class ParticipantsReferenceList extends StatelessWidget {
   final List<Map<String, dynamic>>? participants;
@@ -8,16 +8,7 @@ class ParticipantsReferenceList extends StatelessWidget {
   const ParticipantsReferenceList({super.key, required this.participants});
 
   ImageProvider? _getAvatarImage(String? url) {
-    if (url == null || url.isEmpty) return null;
-    if (url.startsWith('data:image')) {
-      try {
-        return MemoryImage(base64Decode(url.split(',').last));
-      } catch (e) {
-        debugPrint("Error decoding base64 image: $e");
-        return null;
-      }
-    }
-    return NetworkImage(url);
+    return ImageUtils.getAvatarImage(url);
   }
 
   @override
@@ -74,7 +65,8 @@ class ParticipantsReferenceList extends StatelessWidget {
                 final data = p.containsKey('data')
                     ? (p['data'] as Map<String, dynamic>)
                     : p;
-                final name = data['displayName'] ?? data['name'] ?? "User";
+                final name =
+                    data['displayName'] ?? data['name'] ?? context.tr('guest');
                 final photoUrl = data['photoUrl'];
 
                 return Column(

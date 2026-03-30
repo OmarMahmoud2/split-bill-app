@@ -38,7 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       text: widget.currentData['phoneNumber'] ?? user?.phoneNumber ?? "",
     );
     _emailController = TextEditingController(
-      text: widget.currentData['email'] ?? user?.email ?? "No email linked",
+      text: widget.currentData['email'] ?? user?.email ?? 'no_email_linked'.tr(),
     );
   }
 
@@ -182,14 +182,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   // Name Field
                   _buildTextField(
                     controller: _nameController,
-                    label: "Display Name",
+                    label: 'display_name'.tr(),
                     icon: Icons.person_outline_rounded,
                   ),
                   const SizedBox(height: 20),
                   // Email Field (Read-only)
                   _buildTextField(
                     controller: _emailController,
-                    label: "Email Address",
+                    label: 'email_address'.tr(),
                     icon: Icons.email_outlined,
                     isReadOnly: true,
                   ),
@@ -197,7 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   // Phone Field
                   _buildTextField(
                     controller: _phoneController,
-                    label: "Phone Number",
+                    label: 'phone_number'.tr(),
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
                   ),
@@ -219,7 +219,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           context,
                         ).primaryColor.withValues(alpha: 0.4),
                       ),
-                      child: Text('scan_save_changes',
+                      child: Text('save_changes',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

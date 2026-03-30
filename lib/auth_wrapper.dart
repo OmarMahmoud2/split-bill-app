@@ -10,6 +10,7 @@ import 'package:split_bill_app/new_onboarding_screen.dart';
 import 'package:split_bill_app/animated_splash_screen.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -110,6 +111,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
                       data['phoneNumber'] == "") {
                     return const PhoneInputScreen();
                   }
+
+                  // Preload rewarded ad for free users as soon as we know they're logged in
+                  RewardedAdHelper.warmUpIfEligible();
 
                   return const HomeScreen();
                 },

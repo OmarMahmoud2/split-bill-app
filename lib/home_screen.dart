@@ -15,6 +15,7 @@ import 'package:split_bill_app/widgets/home/home_header.dart';
 import 'package:split_bill_app/widgets/home/qr_dialog.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -196,20 +197,18 @@ class _HomeScreenState extends State<HomeScreen>
   // --- UI BUILDING BLOCKS ---
 
   void _onAddBillTap() {
-    showModalBottomSheet<void>(
+    PremiumBottomSheet.show<void>(
       context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (sheetContext) => CreateBillSheet(
+      child: CreateBillSheet(
         onScanTap: () {
-          Navigator.pop(sheetContext);
+          Navigator.pop(context);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const ScanReceiptScreen()),
           );
         },
         onManualTap: () {
-          Navigator.pop(sheetContext);
+          Navigator.pop(context);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const ManualEntryScreen()),

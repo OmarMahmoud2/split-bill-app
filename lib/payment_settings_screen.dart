@@ -8,6 +8,7 @@ import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class PaymentSettingsScreen extends StatefulWidget {
   const PaymentSettingsScreen({super.key});
@@ -104,41 +105,49 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   }
 
   Future<PaymentMethodPreset?> _pickPreset(PaymentMethodPreset selectedPreset) {
-    return showModalBottomSheet<PaymentMethodPreset>(
+    return showDialog<PaymentMethodPreset>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return SearchableSelectionSheet<PaymentMethodPreset>(
-          title: 'choose_payment_method'.tr(),
-          searchHint: 'search_payment_methods'.tr(),
-          items: _paymentMethodPresets
-              .map(
-                (preset) => SearchableSheetItem<PaymentMethodPreset>(
-                  value: preset,
-                  title: preset.nameKey.tr(),
-                  subtitle: preset.subtitleKey.tr(),
-                  searchTerms: [
-                    preset.name,
-                    preset.nameKey.tr(),
-                    preset.subtitleKey.tr(),
-                    ...preset.searchTerms,
-                  ],
-                  leading: _MethodBadge(
-                    icon: preset.icon,
-                    color: preset.color,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        clipBehavior: Clip.antiAlias,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+            maxWidth: 500,
+          ),
+          child: SearchableSelectionSheet<PaymentMethodPreset>(
+            title: 'choose_payment_method'.tr(),
+            searchHint: 'search_payment_methods'.tr(),
+            items: _paymentMethodPresets
+                .map(
+                  (preset) => SearchableSheetItem<PaymentMethodPreset>(
+                    value: preset,
+                    title: preset.nameKey.tr(),
+                    subtitle: preset.subtitleKey.tr(),
+                    searchTerms: [
+                      preset.name,
+                      preset.nameKey.tr(),
+                      preset.subtitleKey.tr(),
+                      ...preset.searchTerms,
+                    ],
+                    leading: _MethodBadge(
+                      icon: preset.icon,
+                      color: preset.color,
+                    ),
                   ),
-                ),
-              )
-              .toList(),
-          isSelected: (preset) => preset.name == selectedPreset.name,
-          onSelected: (preset) => Navigator.pop(context, preset),
-        );
-      },
+                )
+                .toList(),
+            isSelected: (preset) => preset.name == selectedPreset.name,
+            onSelected: (preset) => Navigator.pop(context, preset),
+          ),
+        ),
+      ),
     );
   }
 
   Future<void> _showMethodEditor({int? index}) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final existingMethod = index != null ? _methods[index] : null;
     final initialName = existingMethod?['name']?.toString() ?? '';
     final initialValue = existingMethod?['value']?.toString() ?? '';
@@ -152,242 +161,287 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
     );
     final valueController = TextEditingController(text: initialValue);
 
-    await showModalBottomSheet<void>(
+    await PremiumBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-            final isEditing = index != null;
+      child: StatefulBuilder(
+        builder: (context, setModalState) {
+          final isEditing = index != null;
 
-            return AnimatedPadding(
-              duration: const Duration(milliseconds: 180),
-              padding: EdgeInsets.only(bottom: bottomInset),
-              child: SafeArea(
-                top: false,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 8),
+              Center(
+                child: Text(
+                  isEditing
+                      ? 'edit_payment_method'.tr()
+                      : 'add_payment_method'.tr(),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.6,
                   ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  'choose_how_friends_can_pay_you_then_add_the_exact_handle_phone_number_link_or_account_detail_they_need',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                    height: 1.45,
+                  ),
+                ).tr(),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Method Type Selector
+              Text(
+                'method_type',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: colorScheme.primary,
+                ),
+              ).tr(),
+              const SizedBox(height: 10),
+              Material(
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.4,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                child: InkWell(
+                  onTap: () async {
+                    final preset = await _pickPreset(selectedPreset);
+                    if (preset == null) return;
+                    setModalState(() {
+                      selectedPreset = preset;
+                      if (preset != otherPreset) {
+                        nameController.clear();
+                      }
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
-                        Center(
-                          child: Container(
-                            width: 48,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          ),
+                        _MethodBadge(
+                          icon: selectedPreset.icon,
+                          color: selectedPreset.color,
                         ),
-                        const SizedBox(height: 18),
-                        Text(
-                          isEditing
-                              ? 'edit_payment_method'.tr()
-                              : 'add_payment_method'.tr(),
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -0.4,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text('choose_how_friends_can_pay_you_then_add_the_exact_handle_phone_number_link_or_account_detail_they_need',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            height: 1.45,
-                          ),
-                        ).tr(),
-                        const SizedBox(height: 18),
-                        Text('method_type',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black54,
-                          ),
-                        ).tr(),
-                        const SizedBox(height: 8),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () async {
-                              final preset = await _pickPreset(selectedPreset);
-                              if (preset == null) return;
-                              setModalState(() {
-                                selectedPreset = preset;
-                                if (preset != otherPreset) {
-                                  nameController.clear();
-                                }
-                              });
-                            },
-                            borderRadius: BorderRadius.circular(22),
-                            child: Ink(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF8FAFF),
-                                borderRadius: BorderRadius.circular(22),
-                                border: Border.all(color: const Color(0xFFE6EBF5)),
-                              ),
-                              child: Row(
-                                children: [
-                                  _MethodBadge(
-                                    icon: selectedPreset.icon,
-                                    color: selectedPreset.color,
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          selectedPreset.nameKey.tr(),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          selectedPreset.subtitleKey.tr(),
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Icon(Icons.expand_more_rounded),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (selectedPreset == otherPreset) ...[
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: nameController,
-                            decoration: InputDecoration(
-                              labelText: 'custom_method_name'.tr(),
-                              hintText: 'e_g_bankak_or_stripe_payment_link'.tr(),
-                              filled: true,
-                              fillColor: const Color(0xFFF8FAFF),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: valueController,
-                          decoration: InputDecoration(
-                            labelText: selectedPreset.valueLabelKey.tr(),
-                            hintText: selectedPreset.placeholderKey.tr(),
-                            helperText: selectedPreset.helperTextKey.tr(),
-                            filled: true,
-                            fillColor: const Color(0xFFF8FAFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            if (isEditing)
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    setState(() => _methods.removeAt(index));
-                                    Navigator.pop(context);
-                                  },
-                                  icon: const Icon(Icons.delete_outline_rounded),
-                                  label: Text('common_remove').tr(),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: Colors.red.shade600,
-                                    side: BorderSide(color: Colors.red.shade100),
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18),
-                                    ),
-                                  ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                selectedPreset.nameKey.tr(),
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            if (isEditing) const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  final finalName = selectedPreset == otherPreset
-                                      ? nameController.text.trim()
-                                      : selectedPreset.name;
-                                  final finalValue = valueController.text.trim();
-
-                                  if (finalName.isEmpty || finalValue.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('please_complete_all_required_fields').tr(),
-                                      ),
-                                    );
-                                    return;
-                                  }
-
-                                  setState(() {
-                                    if (index == null) {
-                                      _methods.add({
-                                        'name': finalName,
-                                        'value': finalValue,
-                                      });
-                                    } else {
-                                      _methods[index] = {
-                                        'name': finalName,
-                                        'value': finalValue,
-                                      };
-                                    }
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                icon: Icon(
-                                  isEditing
-                                      ? Icons.save_rounded
-                                      : Icons.add_circle_outline_rounded,
-                                ),
-                                label: Text(
-                                  isEditing
-                                      ? 'save_changes'.tr()
-                                      : 'add_method'.tr(),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.black,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
+                              const SizedBox(height: 2),
+                              Text(
+                                selectedPreset.subtitleKey.tr(),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.expand_more_rounded,
+                          color: colorScheme.onSurface.withValues(alpha: 0.3),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-            );
-          },
-        );
-      },
+              
+              const SizedBox(height: 20),
+
+              if (selectedPreset == otherPreset) ...[
+                _buildPremiumTextField(
+                  context: context,
+                  controller: nameController,
+                  label: 'custom_method_name'.tr(),
+                  hint: 'e_g_bankak_or_stripe_payment_link'.tr(),
+                  icon: Icons.edit_note_rounded,
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              _buildPremiumTextField(
+                context: context,
+                controller: valueController,
+                label: selectedPreset.valueLabelKey.tr(),
+                hint: selectedPreset.placeholderKey.tr(),
+                helper: 'use_the_exact_handle_or_link_you_want_shared'.tr(),
+                icon: Icons.alternate_email_rounded,
+              ),
+
+              const SizedBox(height: 28),
+              
+              // Action Buttons
+              Row(
+                children: [
+                  if (isEditing)
+                    Expanded(
+                      flex: 2,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setState(() => _methods.removeAt(index));
+                          Navigator.pop(context);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.redAccent,
+                          side: BorderSide(
+                            color: Colors.redAccent.withValues(alpha: 0.2),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        child: const Icon(Icons.delete_outline_rounded),
+                      ),
+                    ),
+                  if (isEditing) const SizedBox(width: 12),
+                  Expanded(
+                    flex: 5,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        final finalName = selectedPreset == otherPreset
+                            ? nameController.text.trim()
+                            : selectedPreset.name;
+                        final finalValue = valueController.text.trim();
+
+                        if (finalName.isEmpty || finalValue.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('please_complete_all_required_fields').tr(),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+
+                        setState(() {
+                          if (index == null) {
+                            _methods.add({
+                              'name': finalName,
+                              'value': finalValue,
+                            });
+                          } else {
+                            _methods[index] = {
+                              'name': finalName,
+                              'value': finalValue,
+                            };
+                          }
+                        });
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        isEditing
+                            ? Icons.check_circle_rounded
+                            : Icons.add_circle_rounded,
+                      ),
+                      label: Text(
+                        isEditing
+                            ? 'save_changes'.tr()
+                            : 'add_method'.tr(),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.brightness == Brightness.dark
+                            ? colorScheme.primary
+                            : Colors.black,
+                        foregroundColor: theme.brightness == Brightness.dark
+                            ? colorScheme.onPrimary
+                            : Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPremiumTextField({
+    required BuildContext context,
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    String? helper,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: colorScheme.outline.withValues(alpha: 0.1),
+            ),
+          ),
+          child: TextField(
+            controller: controller,
+            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: colorScheme.onSurface.withValues(alpha: 0.4),
+                fontWeight: FontWeight.normal,
+              ),
+              prefixIcon: Icon(icon, color: colorScheme.primary, size: 20),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            ),
+          ),
+        ),
+        if (helper != null) ...[
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              helper,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 

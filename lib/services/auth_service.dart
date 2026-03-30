@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:split_bill_app/services/notification_service.dart';
 
 class AuthService {
   // 1. Create instances of the tools we need
@@ -32,28 +34,79 @@ class AuthService {
       );
 
       // D. Finally, sign in to Firebase with that credential
-      return await _auth.signInWithCredential(credential);
+      final result = await _auth.signInWithCredential(credential);
+      await _handlePostSignIn(result.user);
+      return result;
+    } on FirebaseAuthException catch (e) {
+      throw _formatAuthError(e);
     } catch (e) {
+      if (e.toString().toLowerCase().contains('canceled')) {
+        return null;
+      }
       debugPrint("Error signing in with Google: $e");
-      return null;
+      throw 'Unable to sign in with Google right now.';
+    }
+  }
+
+  Future<UserCredential?> signInWithApple() async {
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: const [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oAuthProvider = OAuthProvider('apple.com');
+      final authCredential = oAuthProvider.credential(
+        idToken: credential.identityToken,
+        accessToken: credential.authorizationCode,
+      );
+
+      final result = await _auth.signInWithCredential(authCredential);
+      await _handlePostSignIn(result.user);
+      return result;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        return null;
+      }
+      throw 'Unable to sign in with Apple right now.';
+    } on FirebaseAuthException catch (e) {
+      throw _formatAuthError(e);
+    } catch (e) {
+      debugPrint("Error signing in with Apple: $e");
+      throw 'Unable to sign in with Apple right now.';
     }
   }
 
   // 4. Sign Out
   Future<void> signOut() async {
-    await RevenueCatService.logoutUser();
-    await _googleSignIn.signOut();
-    await _auth.signOut();
+    await _runBestEffortCleanup(
+      NotificationService().clearStoredTokenForCurrentUser,
+    );
+    await _runBestEffortCleanup(RevenueCatService.logoutUser);
+    await _runBestEffortCleanup(_googleSignIn.signOut);
+
+    try {
+      await _auth.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw _formatAuthError(e);
+    } catch (e) {
+      debugPrint('Error signing out: $e');
+      throw 'Unable to sign you out right now. Please try again.';
+    }
   }
 
   // 5. Delete Account (Irreversible) - WITH RE-AUTHENTICATION
-  Future<void> deleteAccount() async {
+  Future<void> deleteAccount({String? password}) async {
     final user = _auth.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      throw 'No signed-in account was found.';
+    }
 
     try {
       // STEP 1: Re-authenticate the user (required by Firebase)
-      await _reauthenticateUser();
+      await _reauthenticateUser(password: password);
 
       final uid = user.uid;
       final db = FirebaseFirestore.instance;
@@ -99,12 +152,19 @@ class AuthService {
       await user.delete();
 
       // STEP 4: Sign out from all providers
-      await RevenueCatService.logoutUser();
-      await _googleSignIn.signOut();
-      await _auth.signOut();
+      await _runBestEffortCleanup(
+        NotificationService().clearStoredTokenForCurrentUser,
+      );
+      await _runBestEffortCleanup(RevenueCatService.logoutUser);
+      await _runBestEffortCleanup(_googleSignIn.signOut);
+      await _runBestEffortCleanup(_auth.signOut);
+    } on FirebaseAuthException catch (e) {
+      throw _formatSensitiveAuthError(e);
+    } on String {
+      rethrow;
     } catch (e) {
       debugPrint('Error deleting account: $e');
-      rethrow; // Re-throw so UI can handle it
+      throw 'Unable to delete your account right now. Please try again.';
     }
   }
 
@@ -130,6 +190,7 @@ class AuthService {
           await user.sendEmailVerification();
         }
       }
+      await _handlePostSignIn(result.user);
       return result;
     } on FirebaseAuthException catch (e) {
       throw _formatAuthError(e);
@@ -144,10 +205,12 @@ class AuthService {
     required String password,
   }) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      final result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      await _handlePostSignIn(result.user);
+      return result;
     } on FirebaseAuthException catch (e) {
       throw _formatAuthError(e);
     } catch (e) {
@@ -185,26 +248,54 @@ class AuthService {
         return 'Too many attempts. Please try again later.';
       case 'network-request-failed':
         return 'Network error. Check your connection.';
+      case 'invalid-credential':
+        return 'That sign-in method could not be verified. Please try again.';
+      case 'account-exists-with-different-credential':
+        return 'This email is already linked to another sign-in method.';
       default:
         return e.message ?? 'Authentication failed.';
     }
   }
 
   // Helper: Re-authenticate user before sensitive operations
-  Future<void> _reauthenticateUser() async {
+  String _formatSensitiveAuthError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'requires-recent-login':
+      case 'credential-too-old-login-again':
+        return 'Please sign in again before trying that action.';
+      case 'wrong-password':
+        return 'The password you entered is not correct.';
+      default:
+        return _formatAuthError(e);
+    }
+  }
+
+  Future<void> _reauthenticateUser({String? password}) async {
     final user = _auth.currentUser;
-    if (user == null) throw Exception('No user logged in');
+    if (user == null) throw 'No signed-in account was found.';
 
-    // Check the provider used to sign in
-    final providerId = user.providerData.isNotEmpty
-        ? user.providerData.first.providerId
-        : 'unknown';
+    final providers = user.providerData
+        .map((provider) => provider.providerId)
+        .where((providerId) => providerId.isNotEmpty)
+        .toSet();
 
-    if (providerId == 'google.com') {
-      // GOOGLE RE-AUTH
+    if ((password?.trim().isNotEmpty ?? false) && providers.contains('password')) {
+      final email = user.email;
+      if (email == null || email.isEmpty) {
+        throw 'This account is missing an email address. Please sign in again.';
+      }
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password!.trim(),
+      );
+      await user.reauthenticateWithCredential(credential);
+      return;
+    }
+
+    if (providers.contains('google.com')) {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        throw Exception('Re-authentication cancelled');
+        throw 'Re-authentication was cancelled.';
       }
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -213,19 +304,41 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
       await user.reauthenticateWithCredential(credential);
-    } else if (providerId == 'apple.com') {
-      // APPLE RE-AUTH
+      return;
+    }
+
+    if (providers.contains('apple.com')) {
       await user.reauthenticateWithProvider(AppleAuthProvider());
-    } else {
-      // Fallback or Unknown
-      // Try using AppleAuthProvider as default or throw error
-      try {
-        await user.reauthenticateWithProvider(AppleAuthProvider());
-      } catch (e) {
-        // If generic retry fails
-        debugPrint("Re-auth failed for provider $providerId: $e");
-        throw Exception("Please sign out and sign in again to proceed.");
-      }
+      return;
+    }
+
+    if (providers.contains('password')) {
+      throw 'Enter your current password to continue.';
+    }
+
+    throw 'Please sign out and sign in again to continue.';
+  }
+
+  Future<void> _handlePostSignIn(User? user) async {
+    if (user == null) return;
+    await NotificationService().syncTokenForCurrentUser(force: true);
+    await RevenueCatService.syncCurrentUser();
+
+    try {
+      final platformStr = kIsWeb ? 'web' : defaultTargetPlatform.name.toLowerCase();
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'loginPlatform': platformStr,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint("Error updating loginPlatform: $e");
+    }
+  }
+
+  Future<void> _runBestEffortCleanup(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (e) {
+      debugPrint('Auth cleanup step failed: $e');
     }
   }
 }

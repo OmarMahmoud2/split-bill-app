@@ -131,50 +131,63 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 14,
-                childAspectRatio: 1.35,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 10),
+              Column(
                 children: [
-                  _buildSummaryCard(
-                    title: 'you_owe'.tr(),
-                    value: CurrencyUtils.format(
-                      iOwe,
-                      currencyCode: currencyCode,
-                      decimalDigits: 1,
-                    ),
-                    color: Colors.orange,
-                    icon: Icons.outbound_rounded,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildSummaryCard(
+                          title: 'you_owe'.tr(),
+                          value: CurrencyUtils.format(
+                            iOwe,
+                            currencyCode: currencyCode,
+                            decimalDigits: 1,
+                          ),
+                          color: Colors.orange,
+                          icon: Icons.outbound_rounded,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          title: 'owed_to_you'.tr(),
+                          value: CurrencyUtils.format(
+                            owedToMe,
+                            currencyCode: currencyCode,
+                            decimalDigits: 1,
+                          ),
+                          color: Colors.green,
+                          icon: Icons.call_received_rounded,
+                        ),
+                      ),
+                    ],
                   ),
-                  _buildSummaryCard(
-                    title: 'owed_to_you'.tr(),
-                    value: CurrencyUtils.format(
-                      owedToMe,
-                      currencyCode: currencyCode,
-                      decimalDigits: 1,
-                    ),
-                    color: Colors.green,
-                    icon: Icons.call_received_rounded,
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildSummaryCard(
+                          title: 'net_balance'.tr(),
+                          value:
+                              '${(owedToMe - iOwe) >= 0 ? "+" : "-"}${CurrencyUtils.format((owedToMe - iOwe).abs(), currencyCode: currencyCode, decimalDigits: 1)}',
+                          color: (owedToMe - iOwe) >= 0 ? Colors.blue : Colors.red,
+                          icon: Icons.account_balance_wallet_rounded,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          title: 'completed_bills'.tr(),
+                          value: '$completedBillsCount',
+                          color: Colors.deepPurple,
+                          icon: Icons.task_alt_rounded,
+                          footerLabel: 'open_history'.tr(),
+                          onTap: onCompletedBillsTap,
+                        ),
+                      ),
+                    ],
                   ),
-                  _buildSummaryCard(
-                    title: 'net_balance'.tr(),
-                    value:
-                        '${(owedToMe - iOwe) >= 0 ? "+" : "-"}${CurrencyUtils.format((owedToMe - iOwe).abs(), currencyCode: currencyCode, decimalDigits: 1)}',
-                    color: (owedToMe - iOwe) >= 0 ? Colors.blue : Colors.red,
-                    icon: Icons.account_balance_wallet_rounded,
-                  ),
-                  _buildSummaryCard(
-                    title: 'completed_bills'.tr(),
-                    value: '$completedBillsCount',
-                    color: Colors.deepPurple,
-                    icon: Icons.task_alt_rounded,
-                    footerLabel: 'open_history'.tr(),
-                    onTap: onCompletedBillsTap,
-                  ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ],
@@ -258,87 +271,106 @@ class HomeHeader extends StatelessWidget {
     String? footerLabel,
     VoidCallback? onTap,
   }) {
+    bool hasNavigation = onTap != null;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         child: Ink(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: color.withValues(alpha: 0.1), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: color.withValues(alpha: 0.06),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: color.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(7),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: color, size: 18),
-                  ),
-                  if (onTap != null)
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 12,
-                      color: Colors.grey[400],
-                    ),
-                ],
+              // Leading Icon
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 18),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  FittedBox(
-                    child: Text(
-                      value,
-                      style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 17,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ),
-                  if (footerLabel != null) ...[
-                    const SizedBox(height: 4),
+              const SizedBox(width: 8),
+              
+              // Middle Content (Title and Subtitle)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Text(
-                      footerLabel,
+                      title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
+                    if (footerLabel != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        footerLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
+              ),
+              const SizedBox(width: 4),
+              
+              // Trailing Amount & Icon
+              Container(
+                constraints: const BoxConstraints(maxWidth: 65),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                            color: color,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (hasNavigation) ...[
+                      const SizedBox(width: 2),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 12,
+                        color: Colors.grey[400],
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ],
           ),

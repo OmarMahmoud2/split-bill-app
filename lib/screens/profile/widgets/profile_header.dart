@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/edit_profile_screen.dart';
 
@@ -18,6 +19,11 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fallbackPhone =
+        (phoneNumber != null && phoneNumber!.trim().isNotEmpty)
+        ? phoneNumber!
+        : context.tr('no_phone_set');
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 65, 20, 20),
       child: Container(
@@ -73,7 +79,7 @@ class ProfileHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    phoneNumber ?? "No phone set",
+                    fallbackPhone,
                     style: TextStyle(color: Colors.grey[500], fontSize: 13),
                   ),
                 ],

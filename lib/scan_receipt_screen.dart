@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,11 +16,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'helpers/rewarded_ad_helper.dart';
 import 'providers/app_settings_provider.dart';
 import 'widgets/custom_app_header.dart';
-import 'widgets/voice_command_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'screens/scan_receipt/widgets/no_points_dialog.dart';
 import 'screens/scan_receipt/widgets/image_source_sheet.dart';
-import 'screens/scan_receipt/widgets/assignment_method_sheet.dart';
 import 'screens/scan_receipt/widgets/participants_reference_list.dart';
 import 'screens/scan_receipt/widgets/scan_empty_state.dart';
 
@@ -52,6 +51,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
   // Editing State
   String? _editingSection;
+  DateTime _selectedDate = DateTime.now();
   final TextEditingController _restaurantController = TextEditingController();
   final TextEditingController _totalController = TextEditingController();
   final TextEditingController _taxController = TextEditingController();
@@ -171,13 +171,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       // 2. Create Bill Document
       final billData = {
         'hostId': user.uid,
-        'hostName': user.displayName ?? "Host",
+        'hostName': user.displayName ?? 'host'.tr(),
         'participants': widget.participants ?? [],
         'participants_uids': participantUids, // Saved for querying
-        'date': Timestamp.now(),
+        'date': Timestamp.fromDate(_selectedDate),
         'status': 'UNATTEMPTED',
         'localImagePath': savedImage.path,
-        'storeName': "Unattempted Receipt", // Placeholder
+        'storeName': 'unattempted_receipt'.tr(), // Placeholder
         'items': [],
         'charges': {},
       };
@@ -200,8 +200,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context); // Go back to Home
-        Navigator.pop(context); // Pop Setup Screen if applicable
+        Navigator.of(context).popUntil((route) => route.isFirst);
       }
     } catch (e) {
       debugPrint("Error saving for later: $e");
@@ -217,6 +216,78 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _deleteSavedDraft() async {
+    final billId = widget.billId;
+    if (billId == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final localImagePath =
+          widget.initialLocalImagePath ?? _image?.path ?? _receiptData?['localImagePath'];
+      if (localImagePath is String && localImagePath.isNotEmpty) {
+        final file = File(localImagePath);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+
+      await FirebaseFirestore.instance.collection('bills').doc(billId).delete();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('bill_deleted').tr(),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'error_saving'.tr(namedArgs: {'error': e.toString()}),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _confirmDeleteSavedDraft() async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('delete_saved_draft').tr(),
+        content: Text('delete_saved_draft_message').tr(),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('common_cancel').tr(),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text('common_delete').tr(),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete == true) {
+      await _deleteSavedDraft();
     }
   }
 
@@ -327,10 +398,11 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         (originalPrice - price).abs() > 0.001;
   }
 
-  void _saveChanges() {
+  void _saveChanges({bool closeEditingSection = true}) {
     _updateTotal(); // Ensure everything is up to date
     setState(() {
       _receiptData!['restaurant_name'] = _restaurantController.text;
+      _receiptData!['date'] = _selectedDate.toString();
       final originalItems = List<Map<String, dynamic>>.from(
         (_receiptData!['items'] as List? ?? const []).map(
           (item) => Map<String, dynamic>.from(item as Map),
@@ -427,56 +499,52 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       _receiptData!['warnings'] = _receiptData!['needs_review'] == true
           ? List<String>.from(_receiptData!['warnings'] ?? const [])
           : <String>[];
+      if (closeEditingSection) {
+        _editingSection = null;
+      }
     });
     HapticFeedback.mediumImpact();
   }
 
-  void _addEmptyItem() {
+  void _addItemFromDialog(String name, String qtyText, String priceText) {
+    final nameValue = name.trim();
+    if (nameValue.isEmpty) return;
+
     setState(() {
       _itemControllers.add({
-        'name': TextEditingController(),
-        'qty': TextEditingController(text: '1'),
-        'price': TextEditingController(text: '0'),
+        'name': TextEditingController(text: nameValue),
+        'qty': TextEditingController(text: qtyText),
+        'price': TextEditingController(text: priceText),
       });
-      final items = List<Map<String, dynamic>>.from(
-        (_receiptData?['items'] as List? ?? const []).map(
-          (item) => Map<String, dynamic>.from(item as Map),
-        ),
-      );
-      items.add({
-        'name': '',
-        'qty': 1.0,
-        'price': 0.0,
-        'line_total': 0.0,
-        'confidence_score': 1.0,
-        'confidence_note': '',
-        'review_status': 'confirmed',
-      });
-      _receiptData?['items'] = items;
     });
-    _updateTotal();
+    _saveChanges(closeEditingSection: false);
   }
 
-  void _removeItem(int index) {
+  void _updateItemFromDialog(
+    int index,
+    String name,
+    String qtyText,
+    String priceText,
+  ) {
+    if (index < 0 || index >= _itemControllers.length) return;
+    final nameValue = name.trim();
+    if (nameValue.isEmpty) return;
+
+    final controllers = _itemControllers[index];
+    controllers['name']!.text = nameValue;
+    controllers['qty']!.text = qtyText;
+    controllers['price']!.text = priceText;
+    _saveChanges(closeEditingSection: false);
+  }
+
+  void _deleteItemFromDialog(int index) {
     if (index < 0 || index >= _itemControllers.length) return;
 
     final removed = _itemControllers.removeAt(index);
     removed['name']?.dispose();
     removed['qty']?.dispose();
     removed['price']?.dispose();
-
-    setState(() {
-      final items = List<Map<String, dynamic>>.from(
-        (_receiptData?['items'] as List? ?? const []).map(
-          (item) => Map<String, dynamic>.from(item as Map),
-        ),
-      );
-      if (index >= 0 && index < items.length) {
-        items.removeAt(index);
-      }
-      _receiptData?['items'] = items;
-    });
-    _updateTotal();
+    _saveChanges(closeEditingSection: false);
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -701,53 +769,11 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     );
   }
 
-  Future<void> _showVoiceOverlay() async {
-    if (_receiptData == null) return;
 
-    List<Map<String, dynamic>> effectiveParticipants =
-        List<Map<String, dynamic>>.from(widget.participants ?? const []);
-
-    if (effectiveParticipants.isEmpty) {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        effectiveParticipants = [
-          {
-            'id': currentUser.uid,
-            'name': currentUser.displayName ?? currentUser.email ?? 'Me',
-          },
-        ];
-      }
-    }
-
-    final assignments = await showDialog<Map<String, List<String>>>(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (context) => VoiceCommandOverlay(
-        receiptData: _receiptData!,
-        participants: effectiveParticipants,
-      ),
-    );
-
-    if (assignments != null && assignments.isNotEmpty) {
-      if (mounted) {
-        // Navigate to Split Screen with assignments
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SplitBillScreen(
-              receiptData: _receiptData!,
-              initialParticipants: widget.participants,
-              initialAssignments: assignments,
-              resumedBillId: widget.billId,
-              cleanupImagePath: widget.initialLocalImagePath,
-            ),
-          ),
-        );
-      }
-    }
-  }
 
   Widget _buildHeaderTrailing() {
+    final canDeleteDraft = widget.billId != null;
+
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -758,13 +784,34 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
         final userData = snapshot.data!.data() as Map<String, dynamic>?;
         final isPremium = userData?['isPremium'] ?? false;
+        final badge = isPremium
+            ? _buildProBadge()
+            : _buildPointsBadge(userData?['points'] ?? 0);
 
-        if (isPremium) {
-          return _buildProBadge();
+        if (!canDeleteDraft) {
+          return badge;
         }
 
-        final points = userData?['points'] ?? 0;
-        return _buildPointsBadge(points);
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: _isLoading ? null : _confirmDeleteSavedDraft,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: Colors.redAccent,
+                  size: 20,
+                ),
+                tooltip: 'common_delete'.tr(),
+              ),
+              badge,
+            ],
+          ),
+        );
       },
     );
   }
@@ -798,8 +845,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
   Widget _buildPointsBadge(int points) {
     return Container(
-      margin: const EdgeInsets.only(right: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: const EdgeInsets.only(right: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.amber.shade400, Colors.orange.shade600],
@@ -809,14 +856,14 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.stars_rounded, color: Colors.white, size: 16),
-          const SizedBox(width: 4),
+          const Icon(Icons.stars_rounded, color: Colors.white, size: 14),
+          const SizedBox(width: 3),
           Text(
             '$points',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 13,
             ),
           ),
         ],
@@ -857,7 +904,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             ),
           ),
           const SizedBox(height: 12),
-          Text('our_backend_is_extracting_items_quantities_and_charges_securely',
+          Text('pulling_the_details_from_your_receipt',
             style: TextStyle(color: Colors.grey[500], fontSize: 14),
           ).tr(),
           const SizedBox(height: 50),
@@ -885,14 +932,22 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             tipController: _tipController,
             deliveryController: _deliveryController,
             onEditingSectionChanged: (section) {
-              if (_editingSection != null && _editingSection != section) {
-                _saveChanges();
+              if (_editingSection != null &&
+                  _editingSection != section &&
+                  section != 'items') {
+                _saveChanges(closeEditingSection: false);
               }
               setState(() => _editingSection = section);
             },
             onSave: _saveChanges,
-            onAddItem: _addEmptyItem,
-            onDeleteItem: _removeItem,
+            onAddItem: _addItemFromDialog,
+            onUpdateItem: _updateItemFromDialog,
+            onDeleteItem: _deleteItemFromDialog,
+            selectedDate: _selectedDate,
+            onDateChanged: (date) {
+              setState(() => _selectedDate = date);
+              _saveChanges(closeEditingSection: false);
+            },
           ),
         ),
         _buildBottomAction(),
@@ -901,10 +956,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   }
 
   void _showImageSourceActionSheet(BuildContext context) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => ImageSourceSheet(onPickImage: _pickImage),
+      child: ImageSourceSheet(onPickImage: _pickImage),
     );
   }
 
@@ -949,20 +1003,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   }
 
   void _showAssignmentMethodSheet() {
-    // If no contacts were pre-selected, go straight to manual (legacy flow)
-    if (widget.participants == null || widget.participants!.isEmpty) {
-      _goToManualAssignment();
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AssignmentMethodSheet(
-        onVoiceCommand: _showVoiceOverlay,
-        onManualAssignment: _goToManualAssignment,
-      ),
-    );
+    _goToManualAssignment();
   }
 
   void _goToManualAssignment() {

@@ -15,84 +15,112 @@ class AddMembersSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 24),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          Text('add_people',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ).tr(),
-          const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildAddOption(
-                Icons.qr_code_scanner_rounded,
-                'scan_qr'.tr(),
-                Colors.blueAccent,
-                onScanQR,
-              ),
-              _buildAddOption(
-                Icons.contacts_rounded,
-                'contacts'.tr(),
-                Colors.purpleAccent,
-                onPickContacts,
-              ),
-              if (onPickGroups != null)
-                _buildAddOption(
-                  Icons.groups_rounded,
-                  'groups'.tr(),
-                  Colors.orangeAccent,
-                  onPickGroups!,
+              Text(
+                'add_people',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.6,
                 ),
+              ).tr(),
+              const SizedBox(height: 8),
+              Text(
+                'invite_friends_or_select_groups_to_start_splitting_the_bill',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  height: 1.4,
+                  fontWeight: FontWeight.w500,
+                ),
+              ).tr(),
             ],
           ),
-          const SizedBox(height: 24),
-        ],
-      ),
+        ),
+
+        const SizedBox(height: 32),
+        
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildAddOption(
+              context,
+              Icons.qr_code_scanner_rounded,
+              'scan_qr'.tr(),
+              const Color(0xFF007AFF),
+              onScanQR,
+            ),
+            _buildAddOption(
+              context,
+              Icons.contacts_rounded,
+              'contacts'.tr(),
+              const Color(0xFF5856D6),
+              onPickContacts,
+            ),
+            if (onPickGroups != null)
+              _buildAddOption(
+                context,
+                Icons.groups_rounded,
+                'groups'.tr(),
+                const Color(0xFFFF9500),
+                onPickGroups!,
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
   Widget _buildAddOption(
+    BuildContext context,
     IconData icon,
     String label,
     Color color,
     VoidCallback onTap,
   ) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Column(
-        children: [
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 30),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: color.withValues(alpha: 0.2), width: 1.5),
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                label,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-        ],
+        ),
       ),
     );
   }

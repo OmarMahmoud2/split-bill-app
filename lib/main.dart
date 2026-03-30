@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'firebase_options.dart';
 import 'guest_bill_screen.dart';
 import 'bill_details_screen.dart';
@@ -20,6 +21,7 @@ import 'utils/app_theme.dart';
 import 'auth_wrapper.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
+import 'helpers/rewarded_ad_helper.dart';
 import 'config/supported_preferences.dart';
 import 'providers/app_settings_provider.dart';
 
@@ -47,6 +49,15 @@ void main() async {
   // Initialize notifications without awaiting (non-blocking)
   NotificationService().init();
   debugPrint("✅ App Launch: Notifications Init Triggered");
+
+  // Initialize Google Mobile Ads SDK early so rewarded ads can preload
+  if (!kIsWeb) {
+    unawaited(MobileAds.instance.initialize().then((_) {
+      debugPrint('✅ App Launch: Google Mobile Ads Initialized');
+      // Preload a rewarded ad for free users as soon as SDK is ready
+      RewardedAdHelper.warmUpIfEligible();
+    }));
+  }
 
   if (!kIsWeb) {
     debugPrint("⏳ App Launch: Initializing RevenueCat...");
@@ -220,13 +231,20 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    const String forcedLocale = String.fromEnvironment('LOCALE', defaultValue: '');
     final initialWebLink = kIsWeb ? _extractBillLinkData(Uri.base) : null;
     final billIdFromUrl = initialWebLink?['billId'];
     final uidFromUrl = initialWebLink?['uid'];
 
     return Consumer<AppSettingsProvider>(
       builder: (context, appSettings, child) {
-        if (context.locale.languageCode != appSettings.locale.languageCode) {
+        if (forcedLocale.isNotEmpty && context.locale.languageCode != forcedLocale.split('-')[0]) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.setLocale(Locale(forcedLocale.split('-')[0]));
+            }
+          });
+        } else if (forcedLocale.isEmpty && context.locale.languageCode != appSettings.locale.languageCode) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               context.setLocale(appSettings.locale);

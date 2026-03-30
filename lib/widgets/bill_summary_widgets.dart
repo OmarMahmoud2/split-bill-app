@@ -57,6 +57,7 @@ class ParticipantShareCard extends StatelessWidget {
   final double share;
   final bool isWinner;
   final VoidCallback onTap;
+  final VoidCallback? onEdit;
   final ImageProvider? Function(String?) getAvatarImage;
   final String currency;
 
@@ -66,6 +67,7 @@ class ParticipantShareCard extends StatelessWidget {
     required this.share,
     required this.isWinner,
     required this.onTap,
+    this.onEdit,
     required this.getAvatarImage,
     this.currency = "USD",
   });
@@ -148,16 +150,48 @@ class ParticipantShareCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(
-                CurrencyUtils.format(
-                  share,
-                  currencyCode: currency,
-                  decimalDigits: 1,
-                ),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    CurrencyUtils.format(
+                      share,
+                      currencyCode: currency,
+                      decimalDigits: 1,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (onEdit != null)
+                    GestureDetector(
+                      onTap: onEdit,
+                      behavior: HitTestBehavior.opaque,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.edit_rounded,
+                              size: 13,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'common_edit',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ).tr(),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(width: 8),
               const Icon(

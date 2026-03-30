@@ -25,13 +25,14 @@ class _PremiumModalState extends State<PremiumModal>
     with SingleTickerProviderStateMixin {
   bool _isLoading = true;
   bool _isPurchasing = false;
-  Package? _premiumPackage;
+  List<Package> _premiumPackages = [];
+  Package? _selectedPackage;
   late AnimationController _shimmerController;
 
   @override
   void initState() {
     super.initState();
-    _loadPackage();
+    _loadPackages();
     _shimmerController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -44,12 +45,15 @@ class _PremiumModalState extends State<PremiumModal>
     super.dispose();
   }
 
-  Future<void> _loadPackage() async {
+  Future<void> _loadPackages() async {
     setState(() => _isLoading = true);
     try {
-      final package = await RevenueCatService.getPremiumPackage();
+      final packages = await RevenueCatService.getPremiumPackages();
       setState(() {
-        _premiumPackage = package;
+        _premiumPackages = packages;
+        if (packages.isNotEmpty) {
+          _selectedPackage = packages.first;
+        }
         _isLoading = false;
       });
     } catch (e) {
@@ -62,7 +66,12 @@ class _PremiumModalState extends State<PremiumModal>
   }
 
   Future<void> _handlePurchase() async {
-    if (_premiumPackage == null) return;
+    if (_selectedPackage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('select_plan_to_continue').tr()),
+      );
+      return;
+    }
 
     // Parental Gate
     final passed = await _showParentalGate();
@@ -79,13 +88,16 @@ class _PremiumModalState extends State<PremiumModal>
     }
 
     setState(() => _isPurchasing = true);
-    final success = await RevenueCatService.purchasePremium(_premiumPackage!);
+    final success = await RevenueCatService.purchasePremium(_selectedPackage!);
 
     if (mounted) {
+      final messenger = ScaffoldMessenger.maybeOf(
+        Navigator.of(context, rootNavigator: true).context,
+      );
       setState(() => _isPurchasing = false);
       if (success) {
         Navigator.pop(context, true);
-        _showSuccessConfetti();
+        _showSuccessConfetti(messenger);
       }
     }
   }
@@ -160,20 +172,23 @@ class _PremiumModalState extends State<PremiumModal>
     setState(() => _isPurchasing = true);
     final success = await RevenueCatService.restorePurchases();
     if (mounted) {
+      final messenger = ScaffoldMessenger.maybeOf(
+        Navigator.of(context, rootNavigator: true).context,
+      );
       setState(() => _isPurchasing = false);
       if (success) {
         Navigator.pop(context, true);
-        _showSuccessConfetti();
+        _showSuccessConfetti(messenger);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger?.showSnackBar(
           SnackBar(content: Text('no_previous_purchase_found').tr()),
         );
       }
     }
   }
 
-  void _showSuccessConfetti() {
-    ScaffoldMessenger.of(context).showSnackBar(
+  void _showSuccessConfetti(ScaffoldMessengerState? messenger) {
+    messenger?.showSnackBar(
       SnackBar(
         content: Text('welcome_to_premium').tr(),
         backgroundColor: Colors.amber,
@@ -291,20 +306,20 @@ class _PremiumModalState extends State<PremiumModal>
                             // Features
                             _buildPremiumFeature(
                               Icons.bolt_rounded,
-                              "Unlimited Scans",
-                              "No limits, scan receipts forever.",
+                              'premium_feature_unlimited_scans_title'.tr(),
+                              'premium_feature_unlimited_scans_subtitle'.tr(),
                             ),
                             const SizedBox(height: 12),
                             _buildPremiumFeature(
                               Icons.block_flipped,
-                              "Remove Ads",
-                              "Enjoy a distraction-free experience.",
+                              'premium_feature_remove_ads_title'.tr(),
+                              'premium_feature_remove_ads_subtitle'.tr(),
                             ),
                             const SizedBox(height: 12),
                             _buildPremiumFeature(
                               Icons.diamond_outlined,
-                              "Support Development",
-                              "Help us verify your receipts faster.",
+                              'premium_feature_support_development_title'.tr(),
+                              'premium_feature_support_development_subtitle'.tr(),
                             ),
 
                             const SizedBox(height: 24),
@@ -314,25 +329,78 @@ class _PremiumModalState extends State<PremiumModal>
                               const CircularProgressIndicator(
                                 color: Color(0xFFFFD700),
                               )
-                            else if (_premiumPackage != null)
+                            else if (_premiumPackages.isNotEmpty)
                               Column(
                                 children: [
-                                  Text(
-                                    _premiumPackage!.storeProduct.priceString,
-                                    style: const TextStyle(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.w900,
-                                      color: Color(0xFFFFD700),
-                                    ),
+                                  Column(
+                                    children: _premiumPackages.map((package) {
+                                      final isSelected = _selectedPackage?.identifier == package.identifier;
+                                      final isLifetime = package.packageType == PackageType.lifetime;
+                                      return GestureDetector(
+                                        onTap: () {
+                                          setState(() => _selectedPackage = package);
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.only(bottom: 12),
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: isSelected ? const Color(0xFFFFD700).withValues(alpha: 0.1) : Colors.white10,
+                                            border: Border.all(
+                                              color: isSelected ? const Color(0xFFFFD700) : Colors.white24,
+                                              width: 2,
+                                            ),
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                                                color: isSelected ? const Color(0xFFFFD700) : Colors.white54,
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      isLifetime ? 'plan_lifetime' : 'plan_monthly',
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ).tr(),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      isLifetime ? 'plan_lifetime_desc' : 'plan_monthly_desc',
+                                                      style: TextStyle(
+                                                        color: Colors.white70,
+                                                        fontSize: 13,
+                                                      ),
+                                                    ).tr(),
+                                                  ],
+                                                ),
+                                              ),
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    package.storeProduct.priceString,
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 18,
+                                                      color: Color(0xFFFFD700),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text('one_time_payment_lifetime_access',
-                                    style: TextStyle(
-                                      color: Colors.white.withValues(alpha: 0.5),
-                                      fontSize: 12,
-                                    ),
-                                  ).tr(),
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 12),
 
                                   // Shimmering Button
                                   AnimatedBuilder(

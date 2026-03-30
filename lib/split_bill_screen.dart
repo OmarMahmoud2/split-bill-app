@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lottie/lottie.dart';
@@ -15,6 +14,13 @@ import 'screens/split_bill/widgets/add_members_sheet.dart';
 import 'screens/split_bill/widgets/assignment_sheets.dart';
 import 'screens/split_bill/widgets/group_selection_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/voice_command_overlay.dart';
+import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
 
 class SplitBillScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -71,7 +77,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         final type = p['type']; // 'host', 'app_user', 'guest'
         participants.add({
           'id': data['uid'] ?? UniqueKey().toString(),
-          'name': data['displayName'] ?? "Guest",
+          'name': data['displayName'] ?? 'guest'.tr(),
           'phoneNumber': data['phoneNumber'],
           'photoUrl': data['photoUrl'],
           'isGuest': type == 'guest',
@@ -117,15 +123,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
   }
 
   ImageProvider? _getAvatarImage(String? url) {
-    if (url == null || url.isEmpty) return null;
-    if (url.startsWith('data:image')) {
-      try {
-        return MemoryImage(base64Decode(url.split(',').last));
-      } catch (e) {
-        return null;
-      }
-    }
-    return NetworkImage(url);
+    return ImageUtils.getAvatarImage(url);
   }
 
   void _initializeHost() async {
@@ -225,9 +223,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         }
 
         if (addedCount > 0) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
                 'added_people_count'.tr(
@@ -240,14 +236,10 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'error_adding_contacts'.tr(
-                namedArgs: {'error': e.toString()},
-              ),
+              'error_adding_contacts'.tr(namedArgs: {'error': e.toString()}),
             ),
           ),
         );
@@ -274,9 +266,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         }
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               'error_with_details'.tr(namedArgs: {'error': e.toString()}),
@@ -346,7 +336,8 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('remove_participant',
+        title: Text(
+          'remove_participant',
           style: TextStyle(fontWeight: FontWeight.bold),
         ).tr(),
         content: Text(
@@ -355,7 +346,10 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
+            child: Text(
+              'common_cancel',
+              style: TextStyle(color: Colors.grey),
+            ).tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -409,7 +403,8 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('split_bill_equally').tr(),
-        content: Text('this_will_assign_all_current_members_to_every_item_on_the_receipt_existing_assignments_will_be_cleared',
+        content: Text(
+          'this_will_assign_all_current_members_to_every_item_on_the_receipt_existing_assignments_will_be_cleared',
         ).tr(),
         actions: [
           TextButton(
@@ -432,18 +427,204 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
     );
   }
 
-  void _pickGroup() {
-    showModalBottomSheet(
+  void _showQuickActionsSheet() {
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return GroupSelectionSheet(
-          groupService: _groupService,
-          onGroupSelected: (members) {
-            _showSelectGroupMembersDialog(members);
-          },
-        );
-      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'how_to_assign_items',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+            ),
+          ).tr(),
+          const SizedBox(height: 24),
+          // Split Equally option
+          _buildQuickActionTile(
+            icon: Icons.groups_rounded,
+            title: 'split_equally'.tr(),
+            subtitle: 'split_equally_subtitle'.tr(),
+            gradientColors: [const Color(0xFF00B4D8), const Color(0xFF0077B6)],
+            onTap: () {
+              Navigator.pop(context);
+              _confirmSplitEqually();
+            },
+          ),
+          const SizedBox(height: 12),
+          // Voice Command option
+          _buildQuickActionTile(
+            icon: Icons.mic_rounded,
+            title: 'voice_command'.tr(),
+            subtitle: 'voice_command_subtitle'.tr(),
+            gradientColors: [const Color(0xFF7209B7), const Color(0xFF560BAD)],
+            badge: 'voice_command_cost'.tr(),
+            onTap: () {
+              Navigator.pop(context);
+              _showVoiceOverlay();
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required List<Color> gradientColors,
+    required VoidCallback onTap,
+    String? badge,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: gradientColors
+                      .map((c) => c.withValues(alpha: 0.15))
+                      .toList(),
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: gradientColors[0], size: 26),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      if (badge != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            badge,
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 13,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.chevron_right_rounded, color: Colors.grey.shade300),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showVoiceOverlay() async {
+    if (participants.length < 2) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('add_participants_first').tr()));
+      return;
+    }
+
+    // Warm up ad in case it's needed
+    RewardedAdHelper.warmUpIfEligible();
+
+    final result = await Navigator.push<Map<String, List<String>>>(
+      context,
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, _, __) => VoiceCommandOverlay(
+          receiptData: widget.receiptData,
+          participants: participants,
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        itemAssignments.clear();
+        quantityAssignments.clear();
+        result.forEach((itemIdStr, userIds) {
+          int? index = int.tryParse(itemIdStr);
+          if (index != null) {
+            itemAssignments[index] = List.from(userIds);
+          }
+        });
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('voice_assignment_applied').tr(),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  void _pickGroup() {
+    PremiumBottomSheet.show(
+      context: context,
+      child: GroupSelectionSheet(
+        groupService: _groupService,
+        onGroupSelected: (members) {
+          _showSelectGroupMembersDialog(members);
+        },
+      ),
     );
   }
 
@@ -480,14 +661,10 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         addedCount++;
       }
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'added_members_count'.tr(
-            namedArgs: {'count': addedCount.toString()},
-          ),
+          'added_members_count'.tr(namedArgs: {'count': addedCount.toString()}),
         ),
       ),
     );
@@ -495,10 +672,9 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
 
   // --- ADD MEMBERS MODAL ---
   void _showAddMembersModal() {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AddMembersSheet(
+      child: AddMembersSheet(
         onScanQR: () {
           Navigator.pop(context);
           _scanAndAddFriend();
@@ -529,22 +705,19 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
 
   void _showSimpleAssignDialog(int itemIndex) {
     List<String> currentSelection = List.from(itemAssignments[itemIndex] ?? []);
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return SimpleAssignmentSheet(
-          participants: participants,
-          currentSelection: currentSelection,
-          onConfirm: (selectedIds) {
-            setState(() {
-              itemAssignments[itemIndex] = selectedIds;
-              quantityAssignments.remove(itemIndex);
-            });
-            Navigator.pop(context);
-          },
-        );
-      },
+      child: SimpleAssignmentSheet(
+        participants: participants,
+        currentSelection: currentSelection,
+        onConfirm: (selectedIds) {
+          setState(() {
+            itemAssignments[itemIndex] = selectedIds;
+            quantityAssignments.remove(itemIndex);
+          });
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 
@@ -553,24 +726,20 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       quantityAssignments[itemIndex] ?? {},
     );
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return ComplexAssignmentSheet(
-          participants: participants,
-          initialMap: currentMap,
-          maxQty: maxQty,
-          onConfirm: (confirmedMap) {
-            setState(() {
-              quantityAssignments[itemIndex] = confirmedMap;
-              itemAssignments.remove(itemIndex);
-            });
-            Navigator.pop(context);
-          },
-        );
-      },
+      child: ComplexAssignmentSheet(
+        participants: participants,
+        initialMap: currentMap,
+        maxQty: maxQty,
+        onConfirm: (confirmedMap) {
+          setState(() {
+            quantityAssignments[itemIndex] = confirmedMap;
+            itemAssignments.remove(itemIndex);
+          });
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 
@@ -632,23 +801,36 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildMoneyInput('tax_vat'.tr(), tempTax, (v) => tempTax = v),
+                _buildMoneyInput(
+                  context,
+                  'tax_vat'.tr(),
+                  tempTax,
+                  (v) => tempTax = v,
+                ),
                 const SizedBox(height: 12),
                 _buildMoneyInput(
+                  context,
                   'service_charge'.tr(),
                   tempService,
                   (v) => tempService = v,
                 ),
                 const SizedBox(height: 12),
-                _buildMoneyInput('tip'.tr(), tempTip, (v) => tempTip = v),
+                _buildMoneyInput(
+                  context,
+                  'tip'.tr(),
+                  tempTip,
+                  (v) => tempTip = v,
+                ),
                 const SizedBox(height: 12),
                 _buildMoneyInput(
+                  context,
                   'delivery_fee'.tr(),
                   tempDelivery,
                   (v) => tempDelivery = v,
                 ),
                 const SizedBox(height: 12),
                 _buildMoneyInput(
+                  context,
                   'discount'.tr(),
                   tempDiscount,
                   (v) => tempDiscount = v,
@@ -659,7 +841,10 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
+              child: Text(
+                'common_cancel',
+                style: TextStyle(color: Colors.grey),
+              ).tr(),
             ),
             ElevatedButton(
               onPressed: () {
@@ -712,16 +897,29 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
   }
 
   Widget _buildMoneyInput(
+    BuildContext context,
     String label,
     double initial,
     Function(double) onChanged,
   ) {
+    final currencyCode = context.read<AppSettingsProvider>().currencyCode;
     return TextFormField(
       initialValue: initial == 0 ? "" : initial.toStringAsFixed(2),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(
         labelText: 'add_label'.tr(namedArgs: {'label': label}),
-        prefixIcon: const Icon(Icons.attach_money_rounded, size: 18),
+        prefixIcon: Container(
+          width: 50,
+          alignment: Alignment.center,
+          child: Text(
+            currencyCode,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 12,
+            ),
+          ),
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
         fillColor: Colors.grey[50],
@@ -732,6 +930,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currencyCode = context.watch<AppSettingsProvider>().currencyCode;
     List items = widget.receiptData['items'];
 
     return Scaffold(
@@ -765,14 +964,15 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                     child: Column(
                       children: [
                         Text(
-                          widget.receiptData['storeName'] ?? "Split Bill",
+                          widget.receiptData['storeName'] ?? 'split_bill'.tr(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Text('assign_items',
+                        Text(
+                          'assign_items',
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 12,
@@ -840,14 +1040,18 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                                 boxShadow: isHost
                                     ? [
                                         BoxShadow(
-                                          color: p['color'].withValues(alpha: 0.6),
+                                          color: p['color'].withValues(
+                                            alpha: 0.6,
+                                          ),
                                           blurRadius: 12,
                                           spreadRadius: 2,
                                         ),
                                       ]
                                     : [
                                         BoxShadow(
-                                          color: p['color'].withValues(alpha: 0.2),
+                                          color: p['color'].withValues(
+                                            alpha: 0.2,
+                                          ),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -986,18 +1190,27 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      "\$$price",
+                                      CurrencyUtils.format(
+                                        price,
+                                        currencyCode: currencyCode,
+                                        decimalDigits: 1,
+                                      ),
                                       style: const TextStyle(
                                         color: Colors.black54,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 14,
                                       ),
                                     ),
-                                    Text('equals_sign',
+                                    Text(
+                                      'equals_sign',
                                       style: TextStyle(color: Colors.grey),
                                     ).tr(),
                                     Text(
-                                      "\$${total.toStringAsFixed(1)}",
+                                      CurrencyUtils.format(
+                                        total,
+                                        currencyCode: currencyCode,
+                                        decimalDigits: 1,
+                                      ),
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w800,
@@ -1040,11 +1253,11 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             FloatingActionButton(
-              heroTag: "split_equally_fab",
-              onPressed: _confirmSplitEqually,
+              heroTag: "quick_actions_fab",
+              onPressed: _showQuickActionsSheet,
               backgroundColor: Colors.white,
               child: Icon(
-                Icons.groups_rounded,
+                Icons.auto_awesome_rounded,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
@@ -1160,7 +1373,8 @@ class BillSummaryScreen extends StatelessWidget {
               size: 80,
             ),
             const SizedBox(height: 20),
-            Text('bill_sent',
+            Text(
+              'bill_sent',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 30,
@@ -1168,7 +1382,8 @@ class BillSummaryScreen extends StatelessWidget {
               ),
             ).tr(),
             const SizedBox(height: 10),
-            Text('your_friends_have_been_notified',
+            Text(
+              'your_friends_have_been_notified',
               style: TextStyle(color: Colors.white70),
             ).tr(),
             const SizedBox(height: 40),

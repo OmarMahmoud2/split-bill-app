@@ -9,6 +9,7 @@ import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/empty_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});
@@ -47,128 +48,117 @@ class _GroupsScreenState extends State<GroupsScreen> {
     final nameController = TextEditingController();
     List<Map<String, dynamic>> selectedMembers = [];
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
+      child: StatefulBuilder(
         builder: (context, setModalState) {
-          return Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              left: 20,
-              right: 20,
-              top: 20,
-            ),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text('create_new_group',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-                ).tr(),
-                const SizedBox(height: 24),
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'group_name'.tr(),
-                    prefixIcon: const Icon(Icons.group_work_rounded),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+          final theme = Theme.of(context);
+          final colorScheme = theme.colorScheme;
 
-                // Add Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildActionBtn(
-                        icon: Icons.contacts_rounded,
-                        label: "Contacts",
-                        onTap: () async {
-                          final result = await _contactService
-                              .pickAndFindUser();
-                          if (result != null) {
-                            final data = result['data'];
-                            if (!selectedMembers.any(
-                              (m) => m['id'] == data['uid'],
-                            )) {
-                              setModalState(() {
-                                selectedMembers.add({
-                                  'id': data['uid'],
-                                  'name': data['displayName'] ?? "Unknown",
-                                  'photoUrl': data['photoUrl'],
-                                  'phoneNumber': data['phoneNumber'],
-                                  'isGuest': result['type'] == 'guest',
-                                });
-                              });
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildActionBtn(
-                        icon: Icons.qr_code_scanner_rounded,
-                        label: "Scan QR",
-                        onTap: () => _openQRScanner((data) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('create_new_group',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+              ).tr(),
+              const SizedBox(height: 24),
+              TextField(
+                controller: nameController,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  labelText: 'group_name'.tr(),
+                  prefixIcon: Icon(Icons.group_work_rounded, color: colorScheme.primary),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Add Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildActionBtn(
+                      icon: Icons.contacts_rounded,
+                      label: "Contacts",
+                      onTap: () async {
+                        final result = await _contactService
+                            .pickAndFindUser();
+                        if (result != null) {
+                          final data = result['data'];
                           if (!selectedMembers.any(
                             (m) => m['id'] == data['uid'],
                           )) {
                             setModalState(() {
                               selectedMembers.add({
                                 'id': data['uid'],
-                                'name': data['displayName'] ?? "User",
+                                'name': data['displayName'] ?? "Unknown",
                                 'photoUrl': data['photoUrl'],
                                 'phoneNumber': data['phoneNumber'],
-                                'isGuest': false,
+                                'isGuest': result['type'] == 'guest',
                               });
                             });
                           }
-                        }),
-                      ),
+                        }
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildActionBtn(
+                      icon: Icons.qr_code_scanner_rounded,
+                      label: "Scan QR",
+                      onTap: () => _openQRScanner((data) {
+                        if (!selectedMembers.any(
+                          (m) => m['id'] == data['uid'],
+                        )) {
+                          setModalState(() {
+                            selectedMembers.add({
+                              'id': data['uid'],
+                              'name': data['displayName'] ?? "User",
+                              'photoUrl': data['photoUrl'],
+                              'phoneNumber': data['phoneNumber'],
+                              'isGuest': false,
+                            });
+                          });
+                        }
+                      }),
+                    ),
+                  ),
+                ],
+              ),
 
-                const SizedBox(height: 20),
-                // Selected Members Horizontal List
-                if (selectedMembers.isNotEmpty) ...[
-                  SizedBox(
-                    height: 90,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: selectedMembers.length,
-                      itemBuilder: (context, index) {
-                        final m = selectedMembers[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: Stack(
-                            children: [
-                              Column(
-                                children: [
-                                  CircleAvatar(
+              const SizedBox(height: 20),
+              // Selected Members Horizontal List
+              if (selectedMembers.isNotEmpty) ...[
+                SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: selectedMembers.length,
+                    itemBuilder: (context, index) {
+                      final m = selectedMembers[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: Stack(
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+                                  ),
+                                  child: CircleAvatar(
                                     radius: 28,
                                     backgroundImage: ImageUtils.getAvatarImage(
                                       m['photoUrl'],
@@ -181,83 +171,88 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                         ? const Icon(Icons.person)
                                         : null,
                                   ),
-                                  const SizedBox(height: 4),
-                                  SizedBox(
-                                    width: 60,
-                                    child: Text(
-                                      m['name'],
-                                      style: const TextStyle(fontSize: 10),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 6),
+                                SizedBox(
+                                  width: 60,
+                                  child: Text(
+                                    m['name'],
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
                                     ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ],
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: GestureDetector(
-                                  onTap: () => setModalState(
-                                    () => selectedMembers.removeAt(index),
+                                ),
+                              ],
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: GestureDetector(
+                                onTap: () => setModalState(
+                                  () => selectedMembers.removeAt(index),
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
                                   ),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 12,
-                                    ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 10,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (nameController.text.isNotEmpty &&
-                          selectedMembers.isNotEmpty) {
-                        HapticFeedback.mediumImpact();
-                        Navigator.pop(context);
-                        setState(() => _isCreating = true);
-                        await _groupService.createGroup(
-                          nameController.text.trim(),
-                          selectedMembers,
-                        );
-                        setState(() => _isCreating = false);
-                        HapticFeedback.heavyImpact();
-                      }
+                            ),
+                          ],
+                        ),
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                    ),
-                    child: Text('create_group',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ).tr(),
                   ),
                 ),
               ],
-            ),
+
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (nameController.text.isNotEmpty &&
+                        selectedMembers.isNotEmpty) {
+                      HapticFeedback.mediumImpact();
+                      Navigator.pop(context);
+                      setState(() => _isCreating = true);
+                      await _groupService.createGroup(
+                        nameController.text.trim(),
+                        selectedMembers,
+                      );
+                      setState(() => _isCreating = false);
+                      HapticFeedback.heavyImpact();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    elevation: 4,
+                    shadowColor: colorScheme.primary.withValues(alpha: 0.3),
+                  ),
+                  child: Text('create_group',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                      letterSpacing: 0.5,
+                    ),
+                  ).tr(),
+                ),
+              ),
+            ],
           );
         },
       ),
@@ -265,52 +260,55 @@ class _GroupsScreenState extends State<GroupsScreen> {
   }
 
   void _openQRScanner(Function(Map<String, dynamic>) onUserFound) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.black,
-      builder: (context) => SizedBox(
+      padding: EdgeInsets.zero,
+      showPullHandle: false,
+      child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.7,
-        child: Stack(
-          children: [
-            MobileScanner(
-              onDetect: (capture) async {
-                final List<Barcode> barcodes = capture.barcodes;
-                if (barcodes.isNotEmpty) {
-                  final String? code = barcodes.first.rawValue;
-                  if (code != null) {
-                    HapticFeedback.mediumImpact();
-                    Navigator.pop(context);
-                    // Fetch user details from Firestore
-                    final doc = await FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(code)
-                        .get();
-                    if (doc.exists) {
-                      final data = doc.data()!;
-                      data['uid'] = code;
-                      onUserFound(data);
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: Stack(
+            children: [
+              MobileScanner(
+                onDetect: (capture) async {
+                  final List<Barcode> barcodes = capture.barcodes;
+                  if (barcodes.isNotEmpty) {
+                    final String? code = barcodes.first.rawValue;
+                    if (code != null) {
+                      HapticFeedback.mediumImpact();
+                      Navigator.pop(context);
+                      // Fetch user details from Firestore
+                      final doc = await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(code)
+                          .get();
+                      if (doc.exists) {
+                        final data = doc.data()!;
+                        data['uid'] = code;
+                        onUserFound(data);
+                      }
                     }
                   }
-                }
-              },
-            ),
-            Positioned(
-              top: 20,
-              right: 20,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30),
-                onPressed: () => Navigator.pop(context),
+                },
               ),
-            ),
-            const Center(
-              child: Icon(
-                Icons.qr_code_scanner_rounded,
-                color: Colors.white54,
-                size: 200,
+              Positioned(
+                top: 20,
+                right: 20,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
-            ),
-          ],
+              const Center(
+                child: Icon(
+                  Icons.qr_code_scanner_rounded,
+                  color: Colors.white54,
+                  size: 200,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -319,131 +317,116 @@ class _GroupsScreenState extends State<GroupsScreen> {
   void _showGroupDetails(String groupId, Map<String, dynamic> data) {
     List members = data['members'] ?? [];
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+      padding: EdgeInsets.zero,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 8),
+          Text(
+            data['name'],
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
+          Text(
+            'members_count'.tr(
+              namedArgs: {'count': members.length.toString()},
             ),
-            const SizedBox(height: 24),
-            Text(
-              data['name'],
-              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 22),
-            ),
-            Text(
-              'members_count'.tr(
-                namedArgs: {'count': members.length.toString()},
-              ),
-              style: TextStyle(color: Colors.grey[500]),
-            ),
-            const SizedBox(height: 24),
+            style: TextStyle(color: Colors.grey[500]),
+          ),
+          const SizedBox(height: 24),
 
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                itemCount: members.length,
-                itemBuilder: (context, index) {
-                  final m = members[index];
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundImage: ImageUtils.getAvatarImage(m['photoUrl']),
-                      child: ImageUtils.getAvatarImage(m['photoUrl']) == null
-                          ? const Icon(Icons.person)
-                          : null,
-                    ),
-                    title: Text(
-                      m['name'],
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      m['phoneNumber'] ?? "No phone",
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    trailing: m['id'] == FirebaseAuth.instance.currentUser?.uid
-                        ? Chip(
-                            label: Text('owner',
-                              style: TextStyle(fontSize: 10),
-                            ).tr(),
-                            backgroundColor: Colors.blueGrey,
-                            labelStyle: TextStyle(color: Colors.white),
-                          )
+          ListView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              itemCount: members.length,
+              itemBuilder: (context, index) {
+                final m = members[index];
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: CircleAvatar(
+                    backgroundImage: ImageUtils.getAvatarImage(m['photoUrl']),
+                    child: ImageUtils.getAvatarImage(m['photoUrl']) == null
+                        ? const Icon(Icons.person)
                         : null,
-                  );
-                },
-              ),
+                  ),
+                  title: Text(
+                    m['name'],
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    m['phoneNumber'] ?? "No phone",
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                  trailing: m['id'] == FirebaseAuth.instance.currentUser?.uid
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.blueGrey.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text('owner',
+                            style: TextStyle(fontSize: 10, color: Colors.blueGrey, fontWeight: FontWeight.bold),
+                          ).tr(),
+                        )
+                      : null,
+                );
+              },
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        HapticFeedback.heavyImpact();
-                        Navigator.pop(context);
-                        _deleteGroup(groupId);
-                      },
-                      icon: const Icon(
-                        Icons.delete_outline_rounded,
-                        color: Colors.red,
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.heavyImpact();
+                      Navigator.pop(context);
+                      _deleteGroup(groupId);
+                    },
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: Colors.red,
+                    ),
+                    label: Text('delete_group',
+                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    ).tr(),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      label: Text('delete_group',
-                        style: TextStyle(color: Colors.red),
-                      ).tr(),
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        side: const BorderSide(color: Colors.red),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
+                      side: const BorderSide(color: Colors.red),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showEditModal(groupId, data);
-                      },
-                      icon: const Icon(Icons.edit_rounded, color: Colors.white),
-                      label: Text('edit_members',
-                        style: TextStyle(color: Colors.white),
-                      ).tr(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showEditModal(groupId, data);
+                    },
+                    icon: const Icon(Icons.edit_rounded, color: Colors.white),
+                    label: Text('edit_members',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ).tr(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -453,136 +436,130 @@ class _GroupsScreenState extends State<GroupsScreen> {
       data['members'] ?? [],
     );
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
+      child: StatefulBuilder(
         builder: (context, setEditState) {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.85,
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child: Column(
-              children: [
-                Text('edit_group_members',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-                ).tr(),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildActionBtn(
-                        icon: Icons.person_add_rounded,
-                        label: "Add Contacts",
-                        onTap: () async {
-                          final result = await _contactService
-                              .pickAndFindUser();
-                          if (result != null) {
-                            final userData = result['data'];
-                            if (!editedMembers.any(
-                              (m) => m['id'] == userData['uid'],
-                            )) {
-                              setEditState(() {
-                                editedMembers.add({
-                                  'id': userData['uid'],
-                                  'name': userData['displayName'] ?? "Unknown",
-                                  'photoUrl': userData['photoUrl'],
-                                  'phoneNumber': userData['phoneNumber'],
-                                  'isGuest': result['type'] == 'guest',
-                                });
-                              });
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildActionBtn(
-                        icon: Icons.qr_code_scanner_rounded,
-                        label: "Add via QR",
-                        onTap: () => _openQRScanner((userData) {
+          final theme = Theme.of(context);
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('edit_group_members',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+              ).tr(),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildActionBtn(
+                      icon: Icons.person_add_rounded,
+                      label: "Add Contacts",
+                      onTap: () async {
+                        final result = await _contactService
+                            .pickAndFindUser();
+                        if (result != null) {
+                          final userData = result['data'];
                           if (!editedMembers.any(
                             (m) => m['id'] == userData['uid'],
                           )) {
                             setEditState(() {
                               editedMembers.add({
                                 'id': userData['uid'],
-                                'name': userData['displayName'] ?? "User",
+                                'name': userData['displayName'] ?? "Unknown",
                                 'photoUrl': userData['photoUrl'],
                                 'phoneNumber': userData['phoneNumber'],
-                                'isGuest': false,
+                                'isGuest': result['type'] == 'guest',
                               });
                             });
                           }
-                        }),
-                      ),
+                        }
+                      },
                     ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: editedMembers.length,
-                    itemBuilder: (context, index) {
-                      final m = editedMembers[index];
-                      bool isSameAsMe =
-                          m['id'] == FirebaseAuth.instance.currentUser?.uid;
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: ImageUtils.getAvatarImage(
-                            m['photoUrl'],
-                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildActionBtn(
+                      icon: Icons.qr_code_scanner_rounded,
+                      label: "Add via QR",
+                      onTap: () => _openQRScanner((userData) {
+                        if (!editedMembers.any(
+                          (m) => m['id'] == userData['uid'],
+                        )) {
+                          setEditState(() {
+                            editedMembers.add({
+                              'id': userData['uid'],
+                              'name': userData['displayName'] ?? "User",
+                              'photoUrl': userData['photoUrl'],
+                              'phoneNumber': userData['phoneNumber'],
+                              'isGuest': false,
+                            });
+                          });
+                        }
+                      }),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: editedMembers.length,
+                  itemBuilder: (context, index) {
+                    final m = editedMembers[index];
+                    bool isSameAsMe =
+                        m['id'] == FirebaseAuth.instance.currentUser?.uid;
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        backgroundImage: ImageUtils.getAvatarImage(
+                          m['photoUrl'],
                         ),
-                        title: Text(m['name']),
-                        trailing: isSameAsMe
-                            ? null
-                            : IconButton(
-                                icon: const Icon(
-                                  Icons.remove_circle_outline,
-                                  color: Colors.orange,
-                                ),
-                                onPressed: () => setEditState(
-                                  () => editedMembers.removeAt(index),
-                                ),
+                      ),
+                      title: Text(m['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                      trailing: isSameAsMe
+                          ? null
+                          : IconButton(
+                              icon: const Icon(
+                                Icons.remove_circle_outline,
+                                color: Colors.orange,
                               ),
-                      );
-                    },
-                  ),
+                              onPressed: () => setEditState(
+                                () => editedMembers.removeAt(index),
+                              ),
+                            ),
+                    );
+                  },
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      HapticFeedback.mediumImpact();
-                      Navigator.pop(context);
-                      await _groupService.updateGroup(groupId, editedMembers);
-                      HapticFeedback.heavyImpact();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    HapticFeedback.mediumImpact();
+                    Navigator.pop(context);
+                    await _groupService.updateGroup(groupId, editedMembers);
+                    HapticFeedback.heavyImpact();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Text('scan_save_changes',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ).tr(),
                   ),
+                  child: Text('scan_save_changes',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                    ),
+                  ).tr(),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),
@@ -839,23 +816,37 @@ class _GroupsScreenState extends State<GroupsScreen> {
     required String label,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Material(
-      color: Colors.grey[100],
+      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colorScheme.outline.withValues(alpha: 0.08)),
+          ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: Theme.of(context).primaryColor),
-              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: colorScheme.primary, size: 20),
+              ),
+              const SizedBox(height: 8),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],

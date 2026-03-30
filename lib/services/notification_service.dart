@@ -6,14 +6,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:split_bill_app/config/backend_config.dart';
+import 'dart:async';
 
-class NotificationService {
+class NotificationService with WidgetsBindingObserver {
+  NotificationService._internal();
+
+  static final NotificationService _instance = NotificationService._internal();
+
+  factory NotificationService() => _instance;
+
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
+  StreamSubscription<User?>? _authSubscription;
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  bool _initialized = false;
+  bool _isSyncingToken = false;
+  String? _lastSyncedUid;
+  String? _lastSyncedToken;
 
   Future<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
+    WidgetsBinding.instance.addObserver(this);
+
     // 1. Request Permission
     NotificationSettings settings = await _fcm.requestPermission(
       alert: true,
@@ -75,29 +93,29 @@ class NotificationService {
     }
 
     // Listen for Auth Changes to Ensure Token Save
-    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+    _authSubscription?.cancel();
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
+      User? user,
+    ) async {
       if (user != null) {
-        // User just logged in or app started with signed-in user
-        String? token = await _fcm.getToken();
-        if (token != null) {
-          await _saveTokenToDatabase(token);
-        }
+        await syncTokenForCurrentUser(force: true);
+      } else if (_lastSyncedUid != null) {
+        await clearStoredTokenForCurrentUser();
       }
     });
 
     // Fetch FCM Token (Initial fetch, will be updated by authStateChanges if user logs in later)
     try {
-      String? token = await _fcm.getToken();
-      if (token != null) {
-        await _saveTokenToDatabase(token);
-      }
+      await syncTokenForCurrentUser(force: true);
     } catch (e) {
       debugPrint("Error getting FCM token: $e");
     }
 
     // 4. Listen for Token Refreshes
-    _fcm.onTokenRefresh.listen((newToken) {
-      _saveTokenToDatabase(newToken);
+    _tokenRefreshSubscription?.cancel();
+    _tokenRefreshSubscription = _fcm.onTokenRefresh.listen((newToken) {
+      _lastSyncedToken = newToken;
+      syncTokenForCurrentUser(force: true, tokenOverride: newToken);
     });
 
     // 5. Listen for Foreground Messages
@@ -108,12 +126,87 @@ class NotificationService {
     });
   }
 
-  Future<void> _saveTokenToDatabase(String token) async {
-    String? uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid != null) {
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'fcmToken': token,
-      }, SetOptions(merge: true));
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(syncTokenForCurrentUser());
+    }
+  }
+
+  Future<void> syncTokenForCurrentUser({
+    bool force = false,
+    String? tokenOverride,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || _isSyncingToken) return;
+
+    _isSyncingToken = true;
+    try {
+      String? apnsToken;
+      if (!kIsWeb && Platform.isIOS) {
+        apnsToken = await _fcm.getAPNSToken();
+      }
+
+      final token = tokenOverride ?? await _fcm.getToken();
+      if (token == null || token.isEmpty) return;
+
+      if (!force && _lastSyncedUid == user.uid && _lastSyncedToken == token) {
+        return;
+      }
+
+      await _saveTokenToDatabase(
+        uid: user.uid,
+        token: token,
+        apnsToken: apnsToken,
+      );
+
+      _lastSyncedUid = user.uid;
+      _lastSyncedToken = token;
+    } catch (e) {
+      debugPrint("Error syncing FCM token: $e");
+    } finally {
+      _isSyncingToken = false;
+    }
+  }
+
+  Future<void> _saveTokenToDatabase({
+    required String uid,
+    required String token,
+    String? apnsToken,
+  }) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'fcmToken': token,
+      'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+      'notificationsEnabled': true,
+      'fcmPlatform': kIsWeb ? 'web' : Platform.operatingSystem,
+      if (apnsToken != null && apnsToken.isNotEmpty) 'apnsToken': apnsToken,
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> clearStoredTokenForCurrentUser() async {
+    final uid = _lastSyncedUid;
+    final token = _lastSyncedToken;
+    if (uid == null || token == null || token.isEmpty) {
+      _lastSyncedUid = null;
+      _lastSyncedToken = null;
+      return;
+    }
+
+    try {
+      final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      final snapshot = await userRef.get();
+      final currentStoredToken = snapshot.data()?['fcmToken'] as String?;
+      if (currentStoredToken == token) {
+        await userRef.set({
+          'fcmToken': FieldValue.delete(),
+          'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      debugPrint("Error clearing FCM token: $e");
+    } finally {
+      _lastSyncedUid = null;
+      _lastSyncedToken = null;
     }
   }
 
@@ -187,6 +280,10 @@ class NotificationService {
     required String body,
     String? targetUid,
     Map<String, dynamic>? data,
+    String? historyTitleKey,
+    String? historyBodyKey,
+    Map<String, String>? historyTitleArgs,
+    Map<String, String>? historyBodyArgs,
   }) async {
     // 1. SAVE TO HISTORY FIRST (Ensures history works even if push fails)
     if (targetUid != null) {
@@ -198,6 +295,10 @@ class NotificationService {
             .add({
               'title': title,
               'body': body,
+              if (historyTitleKey != null) 'titleKey': historyTitleKey,
+              if (historyBodyKey != null) 'bodyKey': historyBodyKey,
+              if (historyTitleArgs != null) 'titleArgs': historyTitleArgs,
+              if (historyBodyArgs != null) 'bodyArgs': historyBodyArgs,
               'date': FieldValue.serverTimestamp(),
               'read': false,
               'data': data,

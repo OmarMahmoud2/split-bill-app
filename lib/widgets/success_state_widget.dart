@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
 import '../theme/app_typography.dart';
 import '../theme/app_spacing.dart';
@@ -45,7 +46,7 @@ class SuccessStateWidget extends StatelessWidget {
               const SizedBox(height: AppSpacing.xxl),
               ElevatedButton(
                 onPressed: onAction,
-                child: Text(actionLabel ?? 'Continue'),
+                child: Text(actionLabel ?? 'common_continue'.tr()),
               ),
             ],
           ],

@@ -17,8 +17,12 @@ class ReceiptResultView extends StatelessWidget {
   final TextEditingController deliveryController;
   final ValueChanged<String?> onEditingSectionChanged;
   final VoidCallback onSave;
-  final VoidCallback onAddItem;
+  final void Function(String name, String qtyText, String priceText) onAddItem;
+  final void Function(int index, String name, String qtyText, String priceText)
+  onUpdateItem;
   final void Function(int index) onDeleteItem;
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateChanged;
 
   const ReceiptResultView({
     super.key,
@@ -36,7 +40,10 @@ class ReceiptResultView extends StatelessWidget {
     required this.onEditingSectionChanged,
     required this.onSave,
     required this.onAddItem,
+    required this.onUpdateItem,
     required this.onDeleteItem,
+    required this.selectedDate,
+    required this.onDateChanged,
   });
 
   @override
@@ -61,7 +68,6 @@ class ReceiptResultView extends StatelessWidget {
       receiptData['confidence_scores'] ?? const {},
     );
     final isEditingHeader = editingSection == 'header';
-    final isEditingItems = editingSection == 'items';
     final isEditingCharges = editingSection == 'charges';
 
     double currentSubtotal = 0;
@@ -71,8 +77,8 @@ class ReceiptResultView extends StatelessWidget {
       currentSubtotal += qty * price;
     }
 
-    final dateStr = DateTime.now().toString().substring(0, 10);
-    final timeStr = TimeOfDay.now().format(context);
+    final dateStr = selectedDate.toString().substring(0, 10);
+    final timeStr = TimeOfDay.fromDateTime(selectedDate).format(context);
     final theme = Theme.of(context);
     final surface = theme.colorScheme.surface;
     final onSurface = theme.colorScheme.onSurface;
@@ -110,16 +116,18 @@ class ReceiptResultView extends StatelessWidget {
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  Expanded(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 52),
                     child: isEditingHeader
                         ? _buildSmallEditField(
                             controller: restaurantController,
                             label: 'receipt_store_name'.tr(),
                             isBold: true,
                             fontSize: 20,
+                            textAlign: TextAlign.center,
                           )
                         : Text(
                             receiptData['restaurant_name']
@@ -134,27 +142,68 @@ class ReceiptResultView extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: onSurface,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                   ),
-                  const SizedBox(width: 8),
-                  _buildSectionEditButton(
-                    isEditing: isEditingHeader,
-                    onTap: () {
-                      if (isEditingHeader) {
-                        onSave();
-                        onEditingSectionChanged(null);
-                      } else {
-                        onEditingSectionChanged('header');
-                      }
-                    },
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _buildSectionEditButton(
+                      isEditing: isEditingHeader,
+                      onTap: () {
+                        if (isEditingHeader) {
+                          onSave();
+                          onEditingSectionChanged(null);
+                        } else {
+                          onEditingSectionChanged('header');
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              "$dateStr  |  $timeStr",
-              style: TextStyle(color: muted, fontSize: 13),
+            InkWell(
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime.now(),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: Theme.of(context).colorScheme.copyWith(
+                              primary: Theme.of(context).colorScheme.primary, // header background color
+                              onPrimary: Colors.white, // header text color
+                              onSurface: Theme.of(context).colorScheme.onSurface, // body text color
+                            ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+                if (picked != null) {
+                  onDateChanged(picked);
+                }
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.calendar_today_rounded, size: 14, color: muted),
+                    const SizedBox(width: 8),
+                    Text(
+                      "$dateStr  |  $timeStr",
+                      style: TextStyle(color: muted, fontSize: 13),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(Icons.edit_rounded, size: 12, color: muted),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 32),
             Padding(
@@ -195,33 +244,15 @@ class ReceiptResultView extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  _buildSectionEditButton(
-                    isEditing: isEditingItems,
-                    onTap: () {
-                      if (isEditingItems) {
-                        onSave();
-                        onEditingSectionChanged(null);
-                      } else {
-                        onEditingSectionChanged('items');
-                      }
-                    },
+                  _buildActionPillButton(
+                    icon: Icons.add_rounded,
+                    label: 'receipt_add_item'.tr(),
+                    onTap: () => _showItemEditorDialog(context),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-            if (isEditingItems)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: onAddItem,
-                    icon: const Icon(Icons.add_rounded),
-                    label: Text('receipt_add_item'.tr()),
-                  ),
-                ),
-              ),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -235,19 +266,9 @@ class ReceiptResultView extends StatelessWidget {
                     ? receiptItems[idx]
                     : const <String, dynamic>{};
 
-                if (isEditingItems) {
-                  return _buildEditableItemCard(
-                    context,
-                    itemData: itemData,
-                    nameController: nameController,
-                    qtyController: qtyController,
-                    priceController: priceController,
-                    onDelete: () => onDeleteItem(idx),
-                  );
-                }
-
                 return _buildReadOnlyItemCard(
                   context,
+                  index: idx,
                   itemData: itemData,
                   nameController: nameController,
                   qtyController: qtyController,
@@ -402,135 +423,9 @@ class ReceiptResultView extends StatelessWidget {
     );
   }
 
-  Widget _buildEditableItemCard(
-    BuildContext context, {
-    required Map<String, dynamic> itemData,
-    required TextEditingController nameController,
-    required TextEditingController qtyController,
-    required TextEditingController priceController,
-    required VoidCallback onDelete,
-  }) {
-    final score = _score(itemData['confidence_score']);
-    final palette = _confidencePalette(score);
-    final badge = _buildConfidenceChip(score);
-    final note = itemData['confidence_note']?.toString().trim() ?? '';
-    final qty = double.tryParse(qtyController.text) ?? 0.0;
-    final price = double.tryParse(priceController.text) ?? 0.0;
-    final lineTotal = qty * price;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: palette.background,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: palette.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSmallEditField(
-                      controller: nameController,
-                      label: 'receipt_item'.tr(),
-                    ),
-                    if (badge != null || (note.isNotEmpty && _shouldHighlight(score))) ...[
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          if (badge != null) badge,
-                          if (note.isNotEmpty && _shouldHighlight(score))
-                            Container(
-                              constraints: const BoxConstraints(maxWidth: 230),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 7,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: palette.border),
-                              ),
-                              child: Text(
-                                note,
-                                style: TextStyle(
-                                  color: palette.accent,
-                                  fontSize: 11,
-                                  height: 1.35,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                onPressed: onDelete,
-                tooltip: 'receipt_delete_item'.tr(),
-                icon: const Icon(Icons.delete_outline_rounded),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: _fieldWidthFor(
-                  qtyController.text,
-                  minWidth: 82,
-                  maxWidth: 110,
-                  charWidth: 16,
-                ),
-                child: _buildSmallEditField(
-                  controller: qtyController,
-                  label: 'receipt_qty'.tr(),
-                  isNumber: true,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: _buildInfoPill(
-                    label:
-                        "${'receipt_line_total'.tr()}: ${CurrencyUtils.format(lineTotal, currencyCode: currencyCode)}",
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildSmallEditField(
-            controller: priceController,
-            label: 'receipt_price'.tr(),
-            isNumber: true,
-            isBold: true,
-            fontSize: 16,
-            textAlign: TextAlign.right,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildReadOnlyItemCard(
     BuildContext context, {
+    required int index,
     required Map<String, dynamic> itemData,
     required TextEditingController nameController,
     required TextEditingController qtyController,
@@ -578,6 +473,18 @@ class ReceiptResultView extends StatelessWidget {
                   fontWeight: FontWeight.w800,
                   fontSize: 15,
                   color: Colors.black87,
+                ),
+              ),
+              const SizedBox(width: 8),
+              _buildSectionEditButton(
+                isEditing: false,
+                onTap: () => _showItemEditorDialog(
+                  context,
+                  index: index,
+                  nameController: nameController,
+                  qtyController: qtyController,
+                  priceController: priceController,
+                  itemData: itemData,
                 ),
               ),
             ],
@@ -660,6 +567,228 @@ class ReceiptResultView extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 15,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showItemEditorDialog(
+    BuildContext context, {
+    int? index,
+    TextEditingController? nameController,
+    TextEditingController? qtyController,
+    TextEditingController? priceController,
+    Map<String, dynamic>? itemData,
+  }) async {
+    final localName = TextEditingController(text: nameController?.text ?? '');
+    final localQty = TextEditingController(text: qtyController?.text ?? '1');
+    final localPrice = TextEditingController(text: priceController?.text ?? '0');
+    final isExistingItem = index != null;
+    final note = itemData?['confidence_note']?.toString().trim() ?? '';
+    final score = _score(itemData?['confidence_score']);
+    final palette = _confidencePalette(score);
+    final badge = itemData == null ? null : _buildConfidenceChip(score);
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            24 + MediaQuery.of(dialogContext).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 58,
+                height: 58,
+                decoration: BoxDecoration(
+                  color: palette.background,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: palette.border),
+                ),
+                child: Icon(
+                  Icons.edit_note_rounded,
+                  color: palette.accent,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                index == null ? 'receipt_add_item'.tr() : 'receipt_edit_item'.tr(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              if (badge != null || (note.isNotEmpty && _shouldHighlight(score)))
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    if (badge != null) badge,
+                    if (note.isNotEmpty && _shouldHighlight(score))
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 240),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: palette.background,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: palette.border),
+                        ),
+                        child: Text(
+                          note,
+                          style: TextStyle(
+                            color: palette.accent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            height: 1.35,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
+                ),
+              const SizedBox(height: 20),
+              _buildSmallEditField(
+                controller: localName,
+                label: 'receipt_item'.tr(),
+                isBold: true,
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 108,
+                    child: _buildSmallEditField(
+                      controller: localQty,
+                      label: 'receipt_qty'.tr(),
+                      isNumber: true,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildSmallEditField(
+                      controller: localPrice,
+                      label: 'receipt_price'.tr(),
+                      isNumber: true,
+                      isBold: true,
+                      fontSize: 16,
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 22),
+              if (isExistingItem) ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      onDeleteItem(index);
+                      Navigator.of(dialogContext).pop();
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.red.shade600,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    icon: const Icon(Icons.delete_outline_rounded),
+                    label: Text('receipt_delete_item'.tr()),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      child: Text('cancel'.tr()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final name = localName.text.trim();
+                        if (name.isEmpty) return;
+                        if (index == null) {
+                          onAddItem(name, localQty.text, localPrice.text);
+                        } else {
+                          onUpdateItem(index, name, localQty.text, localPrice.text);
+                        }
+                        Navigator.of(dialogContext).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00B365),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text('save_changes'.tr()),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionPillButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.grey.shade100,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 16, color: Colors.grey.shade700),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.grey.shade800,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

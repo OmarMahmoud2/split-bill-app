@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/widgets/custom_app_header.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -42,30 +43,56 @@ class SettingsScreen extends StatelessWidget {
               context,
             ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
           ),
+          const SizedBox(height: 150),
         ],
       ),
     );
   }
 
+
   void _showLocaleSheet(
     BuildContext context,
     AppSettingsProvider settings,
   ) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return ListView.builder(
-          itemCount: supportedLocaleOptions.length,
-          itemBuilder: (context, index) {
-            final option = supportedLocaleOptions[index];
-            final isSelected = option.code == settings.locale.languageCode;
-
-            return ListTile(
-              leading: CircleAvatar(
-                child: Text(option.nativeName.characters.first),
+      isScrollable: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Text(
+              'app_language',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.6,
               ),
-              title: Text(option.englishName),
+            ).tr(),
+          ),
+          ...supportedLocaleOptions.map((option) {
+            final isSelected = option.code == settings.locale.languageCode;
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                backgroundColor: isSelected
+                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                    : Colors.grey[100],
+                child: Text(
+                  option.nativeName.characters.first,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey[700],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              title: Text(
+                option.englishName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(option.nativeName),
               trailing: isSelected
                   ? Icon(
@@ -83,9 +110,9 @@ class SettingsScreen extends StatelessWidget {
                 }
               },
             );
-          },
-        );
-      },
+          }),
+        ],
+      ),
     );
   }
 
@@ -93,46 +120,62 @@ class SettingsScreen extends StatelessWidget {
     BuildContext context,
     AppSettingsProvider settings,
   ) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.85,
-          maxChildSize: 0.95,
-          minChildSize: 0.5,
-          builder: (context, scrollController) {
-            return ListView.builder(
-              controller: scrollController,
-              itemCount: supportedCurrencyOptions.length,
-              itemBuilder: (context, index) {
-                final option = supportedCurrencyOptions[index];
-                final isSelected = option.code == settings.currencyCode;
-
-                return ListTile(
-                  leading: CircleAvatar(child: Text(option.symbol)),
-                  title: Text('${option.code} • ${option.name}'),
-                  subtitle: Text(option.region),
-                  trailing: isSelected
-                      ? Icon(
-                          Icons.check_circle_rounded,
-                          color: Theme.of(context).colorScheme.primary,
-                        )
-                      : null,
-                  onTap: () async {
-                    await settings.updateCurrencyCode(option.code);
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
-                );
+      isScrollable: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Text(
+              'default_currency',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.6,
+              ),
+            ).tr(),
+          ),
+          ...supportedCurrencyOptions.map((option) {
+            final isSelected = option.code == settings.currencyCode;
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                backgroundColor: isSelected
+                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                    : Colors.grey[100],
+                child: Text(
+                  option.symbol,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey[700],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              title: Text(
+                '${option.code} • ${option.name}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(option.region),
+              trailing: isSelected
+                  ? Icon(
+                      Icons.check_circle_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                    )
+                  : null,
+              onTap: () async {
+                await settings.updateCurrencyCode(option.code);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               },
             );
-          },
-        );
-      },
+          }),
+        ],
+      ),
     );
   }
 }

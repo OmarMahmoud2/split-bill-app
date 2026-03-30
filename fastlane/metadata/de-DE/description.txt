@@ -1,0 +1,11 @@
+Müde vom Rechnen nach dem Essen? Split Bill macht es einfach.
+
+Funktionen:
+- KI-Belegscanning: Einfach ein Foto machen. Wir extrahieren Artikel & Preise automatisch.
+- Einfaches Teilen: Artikel Freunden mit einem Fingertipp zuweisen.
+- Steuern & Trinkgeld: Automatisch für jeden berechnet.
+- Sofort teilen: Aufschlüsselungs-Links an Freunde senden.
+- Mehrere Währungen: Rechnungen auf Reisen teilen? Wir unterstützen Sie.
+- Verlauf: Behalten Sie alle vergangenen Teilungen im Blick.
+
+Jetzt herunterladen und nie wieder über die Rechnung streiten!

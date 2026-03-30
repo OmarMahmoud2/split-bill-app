@@ -1,0 +1,11 @@
+Lelah menghitung tagihan setelah makan? Split Bill memudahkannya.
+
+Fitur:
+- AI Struk Scanning: Cukup ambil foto. Kami ekstrak item & harga otomatis.
+- Pembagian Mudah: Berikan item ke teman dengan satu sentuhan.
+- Pajak & Tip: Dihitung otomatis untuk semua orang.
+- Bagikan Instan: Kirim link rincian tagihan ke teman.
+- Berbagai Mata Uang: Traveling? Kami mendukung pembagian mata uang asing.
+- Riwayat: Pantau semua pembagian yang lalu dan siapa yang berhutang.
+
+Unduh sekarang dan jangan pernah bertengkar karena tagihan lagi!

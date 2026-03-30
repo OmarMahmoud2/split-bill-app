@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class BillDetailsModals {
   static String _currencyCode(Map<String, dynamic> billData) =>
@@ -19,32 +20,18 @@ class BillDetailsModals {
   ) {
     final List<dynamic> items = data['items'] ?? [];
     final Map<String, dynamic> charges = data['charges'] ?? {};
-    final String storeName = data['storeName'] ?? "Bill Details";
+    final String storeName = data['storeName'] ?? 'bill_details'.tr();
     final String currencyCode = _currencyCode(data);
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
+      padding: EdgeInsets.zero,
+      child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.76,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
-        ),
         child: Column(
           children: [
-            Container(
-              width: 50,
-              height: 5,
-              margin: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
               child: Row(
                 children: [
                   Expanded(
@@ -127,7 +114,9 @@ class BillDetailsModals {
                             ],
                           ),
                           child: Text(
-                            "${item['qty'] ?? 1}x",
+                            'quantity_suffix'.tr(
+                              namedArgs: {'qty': (item['qty'] ?? 1).toString()},
+                            ),
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               color: Colors.blue[900],
@@ -141,7 +130,7 @@ class BillDetailsModals {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item['name'] ?? "Unknown Item",
+                                item['name'] ?? 'unknown_item'.tr(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 15,
@@ -149,7 +138,9 @@ class BillDetailsModals {
                               ),
                               if (splitCount > 1)
                                 Text(
-                                  "Split between $splitCount people",
+                                  'split_between_people'.tr(
+                                    namedArgs: {'count': splitCount.toString()},
+                                  ),
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: Colors.grey[500],
@@ -237,7 +228,9 @@ class BillDetailsModals {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "${participant['name']}'s Details",
+                  'participant_details_title'.tr(
+                    namedArgs: {'name': participant['name'].toString()},
+                  ),
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
@@ -281,7 +274,12 @@ class BillDetailsModals {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                "${item['name']} (1/$assignedCount)",
+                                'item_assignment_ratio'.tr(
+                                  namedArgs: {
+                                    'name': item['name'].toString(),
+                                    'count': assignedCount.toString(),
+                                  },
+                                ),
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -409,31 +407,31 @@ class BillDetailsModals {
         child: Column(
           children: [
             if (tax > 0)
-              _buildChargeRow("Tax", tax, currencyCode: currencyCode),
+              _buildChargeRow('receipt_tax'.tr(), tax, currencyCode: currencyCode),
             if (service > 0)
               _buildChargeRow(
-                "Service Charge",
+                'receipt_service_charge'.tr(),
                 service,
                 currencyCode: currencyCode,
               ),
             if (tip > 0)
-              _buildChargeRow("Tip", tip, currencyCode: currencyCode),
+              _buildChargeRow('receipt_tip'.tr(), tip, currencyCode: currencyCode),
             if (delivery > 0)
               _buildChargeRow(
-                "Delivery Fee",
+                'receipt_delivery_fee'.tr(),
                 delivery,
                 currencyCode: currencyCode,
               ),
             ...otherCharges.map(
               (charge) => _buildChargeRow(
-                (charge['label'] ?? 'Other Charge').toString(),
+                (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
                 ((charge['amount'] as num?)?.toDouble() ?? 0.0),
                 currencyCode: currencyCode,
               ),
             ),
             if (discount > 0)
               _buildChargeRow(
-                "Discount",
+                'receipt_discount'.tr(),
                 -discount,
                 isDiscount: true,
                 currencyCode: currencyCode,
@@ -510,28 +508,28 @@ class BillDetailsModals {
       children: [
         if (tax > 0)
           _buildChargeRow(
-            "Tax Portion",
+            'tax_portion'.tr(),
             tax,
             small: true,
             currencyCode: currencyCode,
           ),
         if (service > 0)
           _buildChargeRow(
-            "Service Portion",
+            'service_portion'.tr(),
             service,
             small: true,
             currencyCode: currencyCode,
           ),
         if (tip > 0)
           _buildChargeRow(
-            "Tip Portion",
+            'tip_portion'.tr(),
             tip,
             small: true,
             currencyCode: currencyCode,
           ),
         if (delivery > 0)
           _buildChargeRow(
-            "Delivery Portion",
+            'delivery_portion'.tr(),
             delivery,
             small: true,
             currencyCode: currencyCode,
@@ -547,7 +545,11 @@ class BillDetailsModals {
                 return null;
               }
               return _buildChargeRow(
-                "${(charge['label'] ?? 'Other Charge')} Portion",
+                'charge_portion'.tr(
+                  namedArgs: {
+                    'label': (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+                  },
+                ),
                 share,
                 small: true,
                 currencyCode: currencyCode,
@@ -556,7 +558,7 @@ class BillDetailsModals {
             .whereType<Widget>(),
         if (discount > 0)
           _buildChargeRow(
-            "Discount Portion",
+            'discount_portion'.tr(),
             -discount,
             small: true,
             isDiscount: true,

@@ -9,81 +9,105 @@ class ImageSourceSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 24),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'scan_receipt',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.6,
+          ),
+        ).tr(),
+        const SizedBox(height: 8),
+        Text(
+          'choose_where_to_import_your_receipt_from',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withValues(alpha: 0.6),
+            height: 1.4,
+          ),
+        ).tr(),
+
+        const SizedBox(height: 32),
+        
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildSourceOption(
+              context,
+              icon: Icons.photo_library_rounded,
+              label: 'gallery'.tr(),
+              color: const Color(0xFF007AFF),
+              onTap: () {
+                Navigator.pop(context);
+                onPickImage(ImageSource.gallery);
+              },
             ),
-          ),
-          Text('scan_receipt',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ).tr(),
-          const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildSourceOption(
-                icon: Icons.photo_library_rounded,
-                label: 'gallery'.tr(),
-                color: Colors.blueAccent,
-                onTap: () {
-                  Navigator.pop(context);
-                  onPickImage(ImageSource.gallery);
-                },
-              ),
-              _buildSourceOption(
-                icon: Icons.camera_alt_rounded,
-                label: 'camera'.tr(),
-                color: Colors.purpleAccent,
-                onTap: () {
-                  Navigator.pop(context);
-                  onPickImage(ImageSource.camera);
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
+            const SizedBox(width: 24),
+            _buildSourceOption(
+              context,
+              icon: Icons.camera_alt_rounded,
+              label: 'camera'.tr(),
+              color: const Color(0xFF5856D6),
+              onTap: () {
+                Navigator.pop(context);
+                onPickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
-  Widget _buildSourceOption({
+  Widget _buildSourceOption(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required Color color,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: color.withValues(alpha: 0.2)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-          ],
+    final theme = Theme.of(context);
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+          width: 120,
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 28, color: color),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                label, 
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,0 +1,11 @@
+Tired of doing math after dinner? Split Bill makes it easy.
+
+Features:
+- AI Receipt Scanning: Just snap a photo. We extract items & prices automatically.
+- Easy Splitting: Assign items to friends with a tap.
+- Tax & Tip: Auto-calculated for everyone.
+- Share Instantly: Send breakdown links to friends.
+- Multiple Currencies: Splitting bills while traveling? We've got you covered.
+- History: Keep track of all your past splits and who owes what.
+
+Download now and never fight over the bill again!

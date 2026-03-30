@@ -11,6 +11,7 @@ import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'services/notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class ParticipantBillScreen extends StatefulWidget {
   final String billId;
@@ -87,19 +88,21 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
         .toDouble();
     double delivery = ((billData['charges']['deliveryFeeAmount'] ?? 0) as num)
         .toDouble();
-    final participantCount =
-        (billData['participants'] as List?)?.length ?? 1;
-    final otherChargeShares = _otherCharges(billData).map((charge) {
-      final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
-      final splitMethod = charge['splitMethod'] ?? charge['split_method'];
-      final share = splitMethod == 'equal'
-          ? amount / participantCount
-          : amount * myRatio;
+    final participantCount = (billData['participants'] as List?)?.length ?? 1;
+    final otherChargeShares = _otherCharges(billData)
+        .map((charge) {
+          final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
+          final splitMethod = charge['splitMethod'] ?? charge['split_method'];
+          final share = splitMethod == 'equal'
+              ? amount / participantCount
+              : amount * myRatio;
       return {
-        'label': (charge['label'] ?? 'Other Charge').toString(),
-        'amount': share,
-      };
-    }).where((charge) => (charge['amount'] as double) > 0).toList();
+            'label': (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+            'amount': share,
+          };
+        })
+        .where((charge) => (charge['amount'] as double) > 0)
+        .toList();
     final otherChargesTotal = otherChargeShares.fold<double>(
       0.0,
       (runningTotal, charge) => runningTotal + (charge['amount'] as double),
@@ -157,7 +160,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           .doc(widget.billId);
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot snapshot = await transaction.get(billRef);
-        if (!snapshot.exists) throw Exception("Bill not found");
+        if (!snapshot.exists) throw Exception('bill_not_found'.tr());
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
         hostId = data['hostId'];
@@ -181,25 +184,52 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
         if (hostDoc.exists) {
           String? hostToken = hostDoc.get('fcmToken');
           if (hostToken != null) {
-            String methodText = _selectedMethod != null
-                ? "via ${_getPrettyMethodName(_selectedMethod!)}"
-                : "";
             final currentBillData =
                 (await billRef.get()).data() as Map<String, dynamic>;
             double myTotal = _calculateMyShare(currentBillData)['myTotal'];
+            final payerName = user?.displayName ?? 'a_friend'.tr();
+            final formattedAmount = CurrencyUtils.format(
+              myTotal,
+              currencyCode: _currencyCode(currentBillData),
+            );
+            final methodName = _selectedMethod != null
+                ? _getPrettyMethodName(_selectedMethod!)
+                : '';
 
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId!,
               title: 'payment_received'.tr(),
-              body:
-                  "${user?.displayName ?? 'A friend'} paid ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(currentBillData))} $methodText for $storeName.",
+              body: 'payment_received_body'.tr(
+                namedArgs: {
+                  'payer': payerName,
+                  'amount': formattedAmount,
+                  'store': storeName ?? '',
+                  'method_suffix': methodName.isEmpty
+                      ? ''
+                      : 'notification_via_method'.tr(
+                          namedArgs: {'method': methodName},
+                        ),
+                },
+              ),
+              historyTitleKey: 'payment_received',
+              historyBodyKey: 'payment_received_body',
+              historyBodyArgs: {
+                'payer': payerName,
+                'amount': formattedAmount,
+                'store': storeName ?? '',
+                'method_suffix': methodName.isEmpty
+                    ? ''
+                    : 'notification_via_method'.tr(
+                        namedArgs: {'method': methodName},
+                      ),
+              },
               data: {
                 'billId': widget.billId,
                 'type': 'payment_proof',
                 'amount': myTotal.toString(),
                 'method': _selectedMethod ?? 'unknown',
-                'paymentValue': _selectedMethodValue ?? 'n/a',
+                'paymentValue': _selectedMethodValue ?? 'not_available_short'.tr(),
                 'click_action': 'FLUTTER_NOTIFICATION_CLICK',
               },
             );
@@ -215,7 +245,12 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       setState(() => _isLoading = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(
+            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -231,7 +266,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           .doc(widget.billId);
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot snapshot = await transaction.get(billRef);
-        if (!snapshot.exists) throw Exception("Bill not found");
+        if (!snapshot.exists) throw Exception('bill_not_found'.tr());
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
         hostId = data['hostId'];
@@ -258,13 +293,22 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             final currentBillData =
                 (await billRef.get()).data() as Map<String, dynamic>;
             double myTotal = _calculateMyShare(currentBillData)['myTotal'];
+            final payerName = user?.displayName ?? 'a_friend'.tr();
+            final formattedAmount = CurrencyUtils.format(
+              myTotal,
+              currencyCode: _currencyCode(currentBillData),
+            );
 
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId!,
               title: 'payment_marked_as_sent'.tr(),
-              body:
-                  "${user?.displayName ?? 'A friend'} marked ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(currentBillData))} as paid (No Proof).",
+              body: 'payment_marked_as_sent_body'.tr(
+                namedArgs: {'payer': payerName, 'amount': formattedAmount},
+              ),
+              historyTitleKey: 'payment_marked_as_sent',
+              historyBodyKey: 'payment_marked_as_sent_body',
+              historyBodyArgs: {'payer': payerName, 'amount': formattedAmount},
               data: {
                 'billId': widget.billId,
                 'type': 'payment_proof', // Keep same type for handler
@@ -282,84 +326,128 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       setState(() => _isLoading = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(
+            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
   void _showPaymentActionSheet() {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'confirm_payment',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+          ).tr(),
+          const SizedBox(height: 8),
+          Text(
+            'help_the_host_verify_your_payment_faster',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              fontWeight: FontWeight.w500,
             ),
-            Text('confirm_payment',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ).tr(),
-            const SizedBox(height: 8),
-            Text('help_the_host_verify_your_payment_faster',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ).tr(),
-            const SizedBox(height: 32),
-            ListTile(
-              leading: Container(
+          ).tr(),
+          const SizedBox(height: 32),
+          _buildPaymentOption(
+            icon: Icons.image_rounded,
+            color: Colors.blue,
+            title: 'upload_screenshot'.tr(),
+            subtitle: 'recommended_for_digital_wallets'.tr(),
+            onTap: () {
+              Navigator.pop(context);
+              _uploadPaymentProof();
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildPaymentOption(
+            icon: Icons.check_circle_outline_rounded,
+            color: Colors.orange,
+            title: 'i_paid_skip_proof'.tr(),
+            subtitle: 'host_will_verify_manually'.tr(),
+            onTap: () {
+              Navigator.pop(context);
+              _markAsPaidNoProof();
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Material(
+      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1)),
+          ),
+          child: Row(
+            children: [
+              Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.image_rounded, color: Colors.blue),
+                child: Icon(icon, color: color),
               ),
-              title: Text('upload_screenshot',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ).tr(),
-              subtitle: Text('recommended_for_digital_wallets').tr(),
-              onTap: () {
-                Navigator.pop(context);
-                _uploadPaymentProof();
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_circle_outline_rounded,
-                  color: Colors.orange,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              title: Text('i_paid_skip_proof',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ).tr(),
-              subtitle: Text('host_will_verify_manually').tr(),
-              onTap: () {
-                Navigator.pop(context);
-                _markAsPaidNoProof();
-              },
-            ),
-            const SizedBox(height: 16),
-          ],
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: colorScheme.onSurface.withValues(alpha: 0.2),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -391,7 +479,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           Expanded(
             child: Column(
               children: [
-                Text('bill_details',
+                Text(
+                  'bill_details',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
@@ -426,8 +515,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
         ? Colors.green
         : (status == 'REVIEW' ? Colors.orange : Colors.blue[800]!);
     String statusLabel = status == 'PAID'
-        ? "PAID"
-        : (status == 'REVIEW' ? "IN REVIEW" : "YOU OWE");
+        ? 'status_paid'.tr()
+        : (status == 'REVIEW' ? 'in_review'.tr() : 'you_owe'.tr());
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -448,12 +537,14 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('you_owe_to',
+              Text(
+                'you_owe_to',
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontWeight: FontWeight.w600,
                 ),
               ).tr(),
+              const Text(' '),
               Text(
                 hostName,
                 style: const TextStyle(
@@ -509,7 +600,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 15),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 15,
+              ),
             ],
           ),
           child: Column(
@@ -529,7 +623,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text('receipt_breakdown',
+                    Text(
+                      'receipt_breakdown',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w900,
@@ -544,7 +639,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       children: [
                         SizedBox(
                           width: 40,
-                          child: Text('receipt_qty',
+                          child: Text(
+                            'receipt_qty',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
@@ -552,14 +648,16 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                           ).tr(),
                         ),
                         Expanded(
-                          child: Text('item_s',
+                          child: Text(
+                            'item_s',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                             ),
                           ).tr(),
                         ),
-                        Text('receipt_price',
+                        Text(
+                          'receipt_price',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -581,7 +679,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                             SizedBox(
                               width: 40,
                               child: Text(
-                                "${item['qty']}",
+                                item['qty'].toString(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 13,
@@ -601,7 +699,13 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                                   ),
                                   if (item['isShared'])
                                     Text(
-                                      "Shared with ${item['sharedCount']}",
+                                      'split_with_others'.tr(
+                                        namedArgs: {
+                                          'count': (((item['sharedCount'] as num?)?.toInt() ?? 1) - 1)
+                                              .clamp(1, 999)
+                                              .toString(),
+                                        },
+                                      ),
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: Colors.grey[500],
@@ -631,33 +735,37 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       child: Divider(thickness: 1, height: 1),
                     ),
 
-                    _buildBillRow("Subtotal", calc['myItemsTotal'], currencyCode),
+                    _buildBillRow(
+                      'receipt_subtotal'.tr(),
+                      calc['myItemsTotal'],
+                      currencyCode,
+                    ),
                     if (calc['myTax'] > 0)
-                      _buildBillRow("Tax Share", calc['myTax'], currencyCode),
+                      _buildBillRow('tax_share'.tr(), calc['myTax'], currencyCode),
                     if (calc['myService'] > 0)
                       _buildBillRow(
-                        "Service Share",
+                        'service_share'.tr(),
                         calc['myService'],
                         currencyCode,
                       ),
                     if (calc['myTip'] > 0)
-                      _buildBillRow("Tip Share", calc['myTip'], currencyCode),
+                      _buildBillRow('tip_share'.tr(), calc['myTip'], currencyCode),
                     if (calc['myDelivery'] > 0)
                       _buildBillRow(
-                        "Delivery Share",
+                        'delivery_share'.tr(),
                         calc['myDelivery'],
                         currencyCode,
                       ),
                     ...(calc['otherChargeShares'] as List<dynamic>).map(
                       (charge) => _buildBillRow(
-                        (charge['label'] ?? 'Other Charge').toString(),
+                        (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
                         charge['amount'] as double,
                         currencyCode,
                       ),
                     ),
                     if (calc['myDiscount'] > 0)
                       _buildBillRow(
-                        "Discount Share",
+                        'discount_share'.tr(),
                         -calc['myDiscount'],
                         currencyCode,
                         isDiscount: true,
@@ -671,7 +779,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('total',
+                        Text(
+                          'total',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 20,
@@ -777,9 +886,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       future: FirebaseFirestore.instance.collection('users').doc(hostId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return LoadingStateWidget(
-            message: 'retrieving_payment_methods'.tr(),
-          );
+          return LoadingStateWidget(message: 'retrieving_payment_methods'.tr());
         }
 
         if (snapshot.hasError) {
@@ -800,7 +907,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Text('select_payment_method',
+                child: Text(
+                  'select_payment_method',
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
@@ -812,7 +920,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
               ...rawList.map((item) {
                 final map = item as Map<String, dynamic>;
                 return _buildPaymentCard(
-                  map['name'] ?? 'Method',
+                  map['name'] ?? 'payment_method_other'.tr(),
                   map['value'] ?? '',
                 );
               }),
@@ -837,7 +945,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.orange),
             ),
-            child: Text('host_hasn_t_added_payment_methods_yet',
+            child: Text(
+              'host_hasn_t_added_payment_methods_yet',
               style: TextStyle(
                 color: Colors.black87,
                 fontWeight: FontWeight.w600,
@@ -852,7 +961,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Text('select_payment_method',
+              child: Text(
+                'select_payment_method',
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
@@ -940,9 +1050,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             messenger.showSnackBar(
               SnackBar(
                 content: Text(
-                  'selection_copied'.tr(
-                    namedArgs: {'label': displayTitle},
-                  ),
+                  'selection_copied'.tr(namedArgs: {'label': displayTitle}),
                 ),
                 behavior: SnackBarBehavior.floating,
                 duration: const Duration(seconds: 2),
@@ -1023,13 +1131,16 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? Colors.white24
-                          : Colors.blue.withValues(alpha: 0.1), // Fixed opacity usage
+                          : Colors.blue.withValues(
+                              alpha: 0.1,
+                            ), // Fixed opacity usage
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('pay',
+                        Text(
+                          'pay',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -1080,9 +1191,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return LoadingStateWidget(
-                  message: 'checking_payments'.tr(),
-                );
+                return LoadingStateWidget(message: 'checking_payments'.tr());
               }
               if (!snapshot.hasData || !snapshot.data!.exists) {
                 return Center(child: Text('bill_not_found').tr());
@@ -1157,7 +1266,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _showPaymentActionSheet,
                   icon: const Icon(Icons.check_circle_rounded),
-                  label: Text('i_ve_paid',
+                  label: Text(
+                    'i_ve_paid',
                     style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
                   ).tr(),
                   style: ElevatedButton.styleFrom(

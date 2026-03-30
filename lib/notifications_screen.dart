@@ -18,6 +18,124 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final user = FirebaseAuth.instance.currentUser;
 
+  ({String title, String body}) _localizedNotificationCopy(
+    Map<String, dynamic> data,
+  ) {
+    final rawTitle = (data['title'] as String?) ?? 'notification'.tr();
+    final rawBody = (data['body'] as String?) ?? '';
+    final titleKey = data['titleKey'] as String?;
+    final bodyKey = data['bodyKey'] as String?;
+    final titleArgs = Map<String, String>.from(
+      (data['titleArgs'] as Map?)?.map(
+            (key, value) => MapEntry(key.toString(), value.toString()),
+          ) ??
+          const {},
+    );
+    final bodyArgs = Map<String, String>.from(
+      (data['bodyArgs'] as Map?)?.map(
+            (key, value) => MapEntry(key.toString(), value.toString()),
+          ) ??
+          const {},
+    );
+
+    if ((titleKey == null || titleKey.isEmpty) &&
+        (bodyKey == null || bodyKey.isEmpty)) {
+      final legacyCopy = _legacyLocalizedNotificationCopy(rawTitle, rawBody);
+      if (legacyCopy != null) {
+        return legacyCopy;
+      }
+    }
+
+    final title = titleKey != null && titleKey.isNotEmpty
+        ? titleKey.tr(namedArgs: titleArgs)
+        : rawTitle;
+    final body = bodyKey != null && bodyKey.isNotEmpty
+        ? bodyKey.tr(namedArgs: bodyArgs)
+        : rawBody;
+
+    return (title: title, body: body);
+  }
+
+  ({String title, String body})? _legacyLocalizedNotificationCopy(
+    String title,
+    String body,
+  ) {
+    final splitMatch = RegExp(
+      r'^Split Bill:\s*(.+)$',
+      caseSensitive: false,
+    ).firstMatch(title);
+    final splitBodyMatch = RegExp(
+      r'^Your share is\s+(.+?)\.\s+Tap to view details\.$',
+      caseSensitive: false,
+    ).firstMatch(body);
+    if (splitMatch != null && splitBodyMatch != null) {
+      return (
+        title: 'split_bill_notification_title'.tr(
+          namedArgs: {'store': splitMatch.group(1)!},
+        ),
+        body: 'split_bill_notification_body'.tr(
+          namedArgs: {'amount': splitBodyMatch.group(1)!},
+        ),
+      );
+    }
+
+    final paidMatch = RegExp(
+      r'^(.*?) paid (.+?)(?: via (.*?))? for (.+)\.$',
+      caseSensitive: false,
+    ).firstMatch(body);
+    if (title.toLowerCase().startsWith('payment received') && paidMatch != null) {
+      final methodName = paidMatch.group(3);
+      return (
+        title: 'payment_received'.tr(),
+        body: 'payment_received_body'.tr(
+          namedArgs: {
+            'payer': paidMatch.group(1)!,
+            'amount': paidMatch.group(2)!,
+            'store': paidMatch.group(4)!,
+            'method_suffix': methodName == null || methodName.isEmpty
+                ? ''
+                : 'notification_via_method'.tr(
+                    namedArgs: {'method': methodName},
+                  ),
+          },
+        ),
+      );
+    }
+
+    final markedMatch = RegExp(
+      r'^(.*?) marked (.+?) as paid \(No Proof\)\.$',
+      caseSensitive: false,
+    ).firstMatch(body);
+    if (title.toLowerCase().startsWith('payment marked as sent') &&
+        markedMatch != null) {
+      return (
+        title: 'payment_marked_as_sent'.tr(),
+        body: 'payment_marked_as_sent_body'.tr(
+          namedArgs: {
+            'payer': markedMatch.group(1)!,
+            'amount': markedMatch.group(2)!,
+          },
+        ),
+      );
+    }
+
+    final acceptedMatch = RegExp(
+      r'^Your payment for "(.+)" has been approved by the host\.$',
+      caseSensitive: false,
+    ).firstMatch(body);
+    if (title.toLowerCase().startsWith('payment accepted') &&
+        acceptedMatch != null) {
+      return (
+        title: 'payment_accepted'.tr(),
+        body: 'payment_accepted_body'.tr(
+          namedArgs: {'bill_name': acceptedMatch.group(1)!},
+        ),
+      );
+    }
+
+    return null;
+  }
+
   Future<void> _clearAll() async {
     if (user == null) return;
 
@@ -153,8 +271,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   itemBuilder: (context, index) {
                     var doc = snapshot.data!.docs[index];
                     var data = doc.data() as Map<String, dynamic>;
-                    String title = data['title'] ?? 'notification'.tr();
-                    String body = data['body'] ?? '';
+                    final localizedCopy = _localizedNotificationCopy(data);
+                    String title = localizedCopy.title;
+                    String body = localizedCopy.body;
                     bool read = data['read'] ?? false;
                     Timestamp? ts = data['date'] as Timestamp?;
                     String timeAgo = ts != null
@@ -266,7 +385,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 bool amIHost =
                                     billData['hostId'] == currentUser?.uid;
                                 String billName =
-                                    billData['storeName'] ?? 'Bill';
+                                    billData['storeName'] ?? 'bill'.tr();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -336,6 +455,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (diff.inDays < 7) {
       return 'days_ago'.tr(namedArgs: {'count': diff.inDays.toString()});
     }
-    return '${date.day}/${date.month}/${date.year}';
+    return DateFormat.yMd(context.locale.toLanguageTag()).format(date);
   }
 }

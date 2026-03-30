@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:split_bill_app/widgets/ad_modal.dart';
 import 'package:split_bill_app/widgets/premium_modal.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class NoPointsDialog extends StatelessWidget {
   final Future<void> Function() onWatchAd;
@@ -12,101 +13,68 @@ class NoPointsDialog extends StatelessWidget {
     BuildContext context, {
     required Future<void> Function() onWatchAd,
   }) {
-    return showModalBottomSheet(
+    return PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.75,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (_, controller) => NoPointsDialog(onWatchAd: onWatchAd),
-      ),
+      child: NoPointsDialog(onWatchAd: onWatchAd),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 20,
-            offset: Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 16),
-          // Drag Handle
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 32),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-          // Icon
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.orange.shade50,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.stars_rounded,
-              size: 64,
-              color: Colors.orange.shade400,
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Icon
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
           ),
+          child: Icon(
+            Icons.stars_rounded,
+            size: 64,
+            color: Colors.orange.shade400,
+          ),
+        ),
 
-          const SizedBox(height: 24),
+        const SizedBox(height: 24),
 
-          // Title
-          Text('running_low_on_points',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-              letterSpacing: -0.5,
+        // Title
+        Text(
+          'running_low_on_points',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.6,
+          ),
+          textAlign: TextAlign.center,
+        ).tr(),
+
+        const SizedBox(height: 12),
+
+        // Subtitle
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text(
+            'you_need_1_point_to_use_this_feature_nwatch_a_quick_ad_or_go_premium_to_continue',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+              height: 1.4,
             ),
             textAlign: TextAlign.center,
           ).tr(),
+        ),
 
-          const SizedBox(height: 12),
+        const SizedBox(height: 40),
 
-          // Subtitle
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Text('you_need_1_point_to_use_this_feature_nwatch_a_quick_ad_or_go_premium_to_continue',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey.shade600,
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ).tr(),
-          ),
+        // Options
+        _buildPremiumOptions(context),
 
-          const SizedBox(height: 40),
-
-          // Options
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _buildPremiumOptions(context),
-          ),
-
-          const SizedBox(height: 40), // Safety spacing
-        ],
-      ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 

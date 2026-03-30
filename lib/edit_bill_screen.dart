@@ -16,6 +16,7 @@ import 'screens/edit_bill/widgets/participant_options_sheet.dart';
 import 'screens/edit_bill/widgets/edit_bill_summary_dialog.dart';
 import 'screens/split_bill/widgets/add_members_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class EditBillScreen extends StatefulWidget {
   final String billId;
@@ -438,10 +439,9 @@ class _EditBillScreenState extends State<EditBillScreen> {
   }
 
   void _showAddMembersModal() {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AddMembersSheet(
+      child: AddMembersSheet(
         onScanQR: _scanQr,
         onPickContacts: _pickContact,
         onPickGroups: null, // EditBillScreen doesn't support groups yet

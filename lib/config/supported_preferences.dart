@@ -4,11 +4,13 @@ class LocaleOption {
   final Locale locale;
   final String englishName;
   final String nativeName;
+  final String flag;
 
   const LocaleOption({
     required this.locale,
     required this.englishName,
     required this.nativeName,
+    required this.flag,
   });
 
   String get code => locale.languageCode;
@@ -33,76 +35,91 @@ const supportedLocaleOptions = <LocaleOption>[
     locale: Locale('en'),
     englishName: 'English',
     nativeName: 'English',
+    flag: '🇺🇸',
   ),
   LocaleOption(
     locale: Locale('ar'),
     englishName: 'Arabic',
     nativeName: 'العربية',
+    flag: '🇪🇬',
   ),
   LocaleOption(
     locale: Locale('fr'),
     englishName: 'French',
     nativeName: 'Français',
+    flag: '🇫🇷',
   ),
   LocaleOption(
     locale: Locale('de'),
     englishName: 'German',
     nativeName: 'Deutsch',
+    flag: '🇩🇪',
   ),
   LocaleOption(
     locale: Locale('ru'),
     englishName: 'Russian',
     nativeName: 'Русский',
+    flag: '🇷🇺',
   ),
   LocaleOption(
     locale: Locale('id'),
     englishName: 'Indonesian',
     nativeName: 'Bahasa Indonesia',
+    flag: '🇮🇩',
   ),
   LocaleOption(
     locale: Locale('ur'),
     englishName: 'Urdu',
     nativeName: 'اردو',
+    flag: '🇵🇰',
   ),
   LocaleOption(
     locale: Locale('hi'),
     englishName: 'Hindi',
     nativeName: 'हिन्दी',
+    flag: '🇮🇳',
   ),
   LocaleOption(
     locale: Locale('pl'),
     englishName: 'Polish',
     nativeName: 'Polski',
+    flag: '🇵🇱',
   ),
   LocaleOption(
     locale: Locale('es'),
     englishName: 'Spanish',
     nativeName: 'Español',
+    flag: '🇪🇸',
   ),
   LocaleOption(
     locale: Locale('it'),
     englishName: 'Italian',
     nativeName: 'Italiano',
+    flag: '🇮🇹',
   ),
   LocaleOption(
     locale: Locale('pt'),
     englishName: 'Portuguese',
     nativeName: 'Português',
+    flag: '🇵🇹',
   ),
   LocaleOption(
     locale: Locale('zh'),
     englishName: 'Chinese',
     nativeName: '中文',
+    flag: '🇨🇳',
   ),
   LocaleOption(
     locale: Locale('ko'),
     englishName: 'Korean',
     nativeName: '한국어',
+    flag: '🇰🇷',
   ),
   LocaleOption(
     locale: Locale('ja'),
     englishName: 'Japanese',
     nativeName: '日本語',
+    flag: '🇯🇵',
   ),
 ];
 

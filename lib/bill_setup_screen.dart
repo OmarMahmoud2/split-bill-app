@@ -10,8 +10,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:split_bill_app/services/contact_service.dart';
-import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class BillSetupScreen extends StatefulWidget {
   const BillSetupScreen({super.key});
@@ -36,74 +37,60 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
 
   // --- HELPER METHODS ---
   ImageProvider? _getAvatarImage(String? url) {
-    if (url == null || url.isEmpty) return null;
-    if (url.startsWith('data:image')) {
-      try {
-        return MemoryImage(base64Decode(url.split(',').last));
-      } catch (e) {
-        return null; // Fallback or handle error
-      }
-    }
-    return NetworkImage(url);
+    return ImageUtils.getAvatarImage(url);
   }
 
   // --- ADD METHODS ---
 
   void _showAddParticipantsModal() {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('add_people',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ).tr(),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildAddOption(
-                  icon: Icons.contacts_rounded,
-                  label: "Contacts",
-                  color: Colors.blue,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickContactsHelper();
-                  },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'add_people',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
                 ),
-                _buildAddOption(
-                  icon: Icons.groups_rounded,
-                  label: "Groups",
-                  color: Colors.purple,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showGroupPicker();
-                  },
-                ),
-                _buildAddOption(
-                  icon: Icons.qr_code_rounded,
-                  label: "Scan QR",
-                  color: Colors.orange,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _scanFriendQR();
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ).tr(),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildAddOption(
+                icon: Icons.contacts_rounded,
+                label: 'contacts'.tr(),
+                color: Colors.blue,
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickContactsHelper();
+                },
+              ),
+              _buildAddOption(
+                icon: Icons.groups_rounded,
+                label: 'groups'.tr(),
+                color: Colors.purple,
+                onTap: () {
+                  Navigator.pop(context);
+                  _showGroupPicker();
+                },
+              ),
+              _buildAddOption(
+                icon: Icons.qr_code_rounded,
+                label: 'scan_qr'.tr(),
+                color: Colors.orange,
+                onTap: () {
+                  Navigator.pop(context);
+                  _scanFriendQR();
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
@@ -245,76 +232,103 @@ class _BillSetupScreenState extends State<BillSetupScreen> {
 
   // 3. Pick Group
   void _showGroupPicker() {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('select_a_group',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ).tr(),
-              const SizedBox(height: 16),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: _groupService.getMyGroups(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return Center(
-                        child: Text('no_groups_found_create_one_first').tr(),
-                      );
-                    }
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'select_a_group',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+          ).tr(),
+          const SizedBox(height: 20),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _groupService.getMyGroups(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Text(
+                        'no_groups_found_create_one_first',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ).tr(),
+                    ),
+                  );
+                }
 
-                    final groups = snapshot.data!.docs;
+                final groups = snapshot.data!.docs;
 
-                    return ListView.separated(
-                      itemCount: groups.length,
-                      separatorBuilder: (c, i) => const Divider(),
-                      itemBuilder: (context, index) {
-                        final groupData =
-                            groups[index].data() as Map<String, dynamic>;
-                        final members = groupData['members'] as List<dynamic>;
+                return ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: groups.length,
+                  separatorBuilder: (c, i) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final groupData =
+                        groups[index].data() as Map<String, dynamic>;
+                    final members = groupData['members'] as List<dynamic>;
 
-                        return ListTile(
-                          leading: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.purple.shade50,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.group,
-                              color: Colors.purple,
-                            ),
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey.shade100),
+                      ),
+                      child: ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.purple.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
                           ),
-                          title: Text(groupData['name'] ?? "Unnamed Group"),
-                          subtitle: Text(
-                            'members_count'.tr(
-                              namedArgs: {'count': members.length.toString()},
-                            ),
+                          child: const Icon(
+                            Icons.group_rounded,
+                            color: Colors.purple,
+                            size: 24,
                           ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _addMembersFromGroup(members);
-                          },
-                        );
-                      },
+                        ),
+                        title: Text(
+                          groupData['name'] ?? "Unnamed Group",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          'members_count'.tr(
+                            namedArgs: {'count': members.length.toString()},
+                          ),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 13,
+                          ),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _addMembersFromGroup(members);
+                        },
+                      ),
                     );
                   },
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
-        );
-      },
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 

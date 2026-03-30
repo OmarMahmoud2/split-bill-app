@@ -18,43 +18,45 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
   late AnimationController _particleController;
   late AnimationController _gradientController;
 
-  final List<OnboardingPageData> _pages = [
-    OnboardingPageData(
-      image:
-          'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
-      title: 'scan_receipts_ninstantly'.tr(),
-      description: 'onboarding_scan_description'.tr(),
-      gradientColors: [Color(0xFF667EEA), Color(0xFF764BA2)],
-    ),
-    OnboardingPageData(
-      image:
-          'assets/onboarding/onboarding_split_bill_1767296158711-removebg-preview.png',
-      title: 'split_bills_nfairly'.tr(),
-      description: 'onboarding_split_description'.tr(),
-      gradientColors: [Color(0xFFEC008C), Color(0xFFFC6767)],
-    ),
-    OnboardingPageData(
-      image:
-          'assets/onboarding/onboarding_track_payments_1767296176070-removebg-preview.png',
-      title: 'track_payments_neasily'.tr(),
-      description: 'onboarding_track_description'.tr(),
-      gradientColors: [Color(0xFF11998E), Color(0xFF38EF7D)],
-    ),
-    OnboardingPageData(
-      image:
-          'assets/onboarding/onboarding_notifications_1767296191753-removebg-preview.png',
-      title: 'stay_updated_nalways'.tr(),
-      description: 'onboarding_notifications_description'.tr(),
-      gradientColors: [Color(0xFFFF6B6B), Color(0xFFFFA500)],
-    ),
-    OnboardingPageData(
-      image:
-          'assets/onboarding/onboarding_ready_1767296205493-removebg-preview.png',
-      title: 'ready_to_nget_started'.tr(),
-      description: 'onboarding_ready_description'.tr(),
-      gradientColors: [Color(0xFF667EEA), Color(0xFF4FACFE)],
-    ),
-  ];
+  List<OnboardingPageData> _localizedPages() {
+    return [
+      OnboardingPageData(
+        image:
+            'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
+        title: 'scan_receipts_ninstantly'.tr(),
+        description: 'onboarding_scan_description'.tr(),
+        gradientColors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+      ),
+      OnboardingPageData(
+        image:
+            'assets/onboarding/onboarding_split_bill_1767296158711-removebg-preview.png',
+        title: 'split_bills_nfairly'.tr(),
+        description: 'onboarding_split_description'.tr(),
+        gradientColors: [Color(0xFFEC008C), Color(0xFFFC6767)],
+      ),
+      OnboardingPageData(
+        image:
+            'assets/onboarding/onboarding_track_payments_1767296176070-removebg-preview.png',
+        title: 'track_payments_neasily'.tr(),
+        description: 'onboarding_track_description'.tr(),
+        gradientColors: [Color(0xFF11998E), Color(0xFF38EF7D)],
+      ),
+      OnboardingPageData(
+        image:
+            'assets/onboarding/onboarding_notifications_1767296191753-removebg-preview.png',
+        title: 'stay_updated_nalways'.tr(),
+        description: 'onboarding_notifications_description'.tr(),
+        gradientColors: [Color(0xFFFF6B6B), Color(0xFFFFA500)],
+      ),
+      OnboardingPageData(
+        image:
+            'assets/onboarding/onboarding_ready_1767296205493-removebg-preview.png',
+        title: 'ready_to_nget_started'.tr(),
+        description: 'onboarding_ready_description'.tr(),
+        gradientColors: [Color(0xFF667EEA), Color(0xFF4FACFE)],
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -100,7 +102,8 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final currentGradient = _pages[_currentPage].gradientColors;
+    final pages = _localizedPages();
+    final currentGradient = pages[_currentPage].gradientColors;
 
     return Scaffold(
       body: Stack(
@@ -192,9 +195,9 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
                     onPageChanged: (index) {
                       setState(() => _currentPage = index);
                     },
-                    itemCount: _pages.length,
+                    itemCount: pages.length,
                     itemBuilder: (context, index) {
-                      return _buildPage(_pages[index], index);
+                      return _buildPage(pages[index], index);
                     },
                   ),
                 ),
@@ -205,7 +208,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                      _pages.length,
+                      pages.length,
                       (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -230,7 +233,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_currentPage == _pages.length - 1) {
+                        if (_currentPage == pages.length - 1) {
                           _completeOnboarding();
                         } else {
                           _pageController.nextPage(
@@ -249,7 +252,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
                         ),
                       ),
                       child: Text(
-                        _currentPage == _pages.length - 1
+                        _currentPage == pages.length - 1
                             ? 'get_started_rocket'.tr()
                             : 'next'.tr(),
                         style: const TextStyle(

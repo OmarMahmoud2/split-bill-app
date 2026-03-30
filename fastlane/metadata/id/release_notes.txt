@@ -1,0 +1,1 @@
+Alur ditingkatkan, perbaikan bug, penambahan lebih banyak bahasa and mata uang (1.1.0=8)

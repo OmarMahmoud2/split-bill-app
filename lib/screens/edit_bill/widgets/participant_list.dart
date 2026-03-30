@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:split_bill_app/utils/image_utils.dart';
 
 class ParticipantList extends StatelessWidget {
   final List<Map<String, dynamic>> participants;
@@ -17,15 +17,7 @@ class ParticipantList extends StatelessWidget {
   });
 
   ImageProvider? _getAvatarImage(String? url) {
-    if (url == null || url.isEmpty) return null;
-    if (url.startsWith('data:image')) {
-      try {
-        return MemoryImage(base64Decode(url.split(',').last));
-      } catch (e) {
-        return null;
-      }
-    }
-    return NetworkImage(url);
+    return ImageUtils.getAvatarImage(url);
   }
 
   @override

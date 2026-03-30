@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:split_bill_app/config/api_keys.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
 
 class BannerAdWidget extends StatefulWidget {
   const BannerAdWidget({super.key});
@@ -14,6 +15,7 @@ class BannerAdWidget extends StatefulWidget {
 class _BannerAdWidgetState extends State<BannerAdWidget> {
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;
+  bool _isPremiumUser = false;
 
   final String _adUnitId = Platform.isAndroid
       ? ApiKeys.adMobAndroidBanner
@@ -22,6 +24,19 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   @override
   void initState() {
     super.initState();
+    _checkPremiumAndLoadAd();
+  }
+
+  Future<void> _checkPremiumAndLoadAd() async {
+    final isPremium = await RevenueCatService.isPremium();
+    if (isPremium) {
+      if (mounted) {
+        setState(() {
+          _isPremiumUser = true;
+        });
+      }
+      return;
+    }
     _loadAd();
   }
 
@@ -54,6 +69,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isPremiumUser) return const SizedBox.shrink();
     if (_isAdLoaded && _bannerAd != null) {
       return Container(
         alignment: Alignment.center,

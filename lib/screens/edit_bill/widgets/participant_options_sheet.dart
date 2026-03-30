@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class ParticipantOptionsSheet extends StatelessWidget {
   final Map<String, dynamic> participant;
@@ -19,12 +20,9 @@ class ParticipantOptionsSheet extends StatelessWidget {
     required VoidCallback onTogglePaid,
     required VoidCallback onRemove,
   }) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      builder: (context) => ParticipantOptionsSheet(
+      child: ParticipantOptionsSheet(
         participant: participant,
         onTogglePaid: onTogglePaid,
         onRemove: onRemove,
@@ -34,81 +32,105 @@ class ParticipantOptionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final bool isHost = participant['isHost'] == true;
     final String status = participant['status'] ?? 'PENDING';
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 50,
-            height: 5,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.only(bottom: 24),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          participant['name'] ?? "Participant",
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.6,
           ),
-          Text(
-            participant['name'] ?? "Participant",
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 24),
+        ),
+        const SizedBox(height: 24),
+        
+        _buildActionItem(
+          context,
+          icon: status == 'PAID'
+              ? Icons.undo_rounded
+              : Icons.check_circle_rounded,
+          color: status == 'PAID' ? Colors.orange : Colors.green,
+          label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
+          onTap: () {
+            Navigator.pop(context);
+            onTogglePaid();
+          },
+        ),
+        
+        if (!isHost) ...[
+          const SizedBox(height: 12),
           _buildActionItem(
-            icon: status == 'PAID'
-                ? Icons.undo_rounded
-                : Icons.check_circle_rounded,
-            color: status == 'PAID' ? Colors.orange : Colors.green,
-            label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
+            context,
+            icon: Icons.person_remove_rounded,
+            color: Colors.redAccent,
+            label: "Remove from Bill",
             onTap: () {
               Navigator.pop(context);
-              onTogglePaid();
+              _confirmRemove(context, participant, onRemove);
             },
           ),
-          if (!isHost)
-            _buildActionItem(
-              icon: Icons.person_remove_rounded,
-              color: Colors.red,
-              label: "Remove from Bill",
-              onTap: () {
-                Navigator.pop(context);
-                _confirmRemove(context, participant, onRemove);
-              },
-            ),
-          const SizedBox(height: 10),
         ],
-      ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
-  Widget _buildActionItem({
+  Widget _buildActionItem(
+    BuildContext context, {
     required IconData icon,
     required Color color,
     required String label,
     required VoidCallback onTap,
   }) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
+    final theme = Theme.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: color.withValues(alpha: 0.15),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: color.withValues(alpha: 0.4),
+              ),
+            ],
+          ),
         ),
-        child: Icon(icon, color: color, size: 22),
       ),
-      title: Text(
-        label,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-      onTap: onTap,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
     );
   }
 

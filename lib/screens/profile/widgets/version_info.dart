@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class VersionInfo extends StatelessWidget {
   final String version;
@@ -11,13 +10,26 @@ class VersionInfo extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Text('made_with_for_smart_spenders',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-              color: Colors.grey,
-            ),
-          ).tr(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Made with ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+              const Icon(Icons.favorite, color: Colors.red, size: 14),
+              Text(' for smart spenders',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 4),
           Text(
             "Version $version",
@@ -28,3 +40,4 @@ class VersionInfo extends StatelessWidget {
     );
   }
 }
+

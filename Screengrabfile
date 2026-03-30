@@ -1,0 +1,4 @@
+locales ["en-US", "ar", "de", "es", "fr", "hi", "id", "it", "ja", "ko", "pl", "pt", "ru", "ur", "zh"]
+clear_previous_screenshots true
+app_apk_path "build/app/outputs/flutter-apk/app-debug.apk"
+tests_apk_path "build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk"

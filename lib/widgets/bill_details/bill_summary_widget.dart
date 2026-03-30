@@ -110,9 +110,11 @@ class BillSummaryWidget extends StatelessWidget {
                         color: Colors.grey[400],
                       ),
                       const SizedBox(width: 8),
-                      Text('created_by',
+                      Text(
+                        'created_by',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ).tr(),
+                      const SizedBox(width: 5),
                       Text(
                         hostName!,
                         style: TextStyle(

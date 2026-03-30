@@ -1,0 +1,11 @@
+Cansado de fazer contas depois de jantar? Split Bill facilita tudo.
+
+Funcionalidades:
+- Escaneamento de Recibos por IA: Tire uma foto. Extraímos itens e preços automaticamente.
+- Divisão Fácil: Atribua itens aos amigos com um toque.
+- Impostos e Gorjetas: Calculados automaticamente para todos.
+- Compartilhe Instantaneamente: Envie links de detalhamento aos amigos.
+- Múltiplas Moedas: Dividindo contas em viagens? Nós cuidamos disso.
+- Histórico: Acompanhe todas as divisões passadas e quem deve o quê.
+
+Baixe agora e nunca mais discuta pela conta!

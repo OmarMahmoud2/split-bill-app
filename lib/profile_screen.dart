@@ -6,6 +6,7 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
+import 'package:flutter/services.dart';
 import 'package:split_bill_app/login_screen.dart';
 import 'package:split_bill_app/payment_settings_screen.dart';
 import 'package:split_bill_app/groups_screen.dart';
@@ -22,6 +23,8 @@ import 'package:split_bill_app/screens/profile/widgets/profile_menu_widgets.dart
 import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
 import 'package:split_bill_app/screens/profile/widgets/version_info.dart';
 import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
+import 'package:split_bill_app/screens/admin/admin_dashboard_screen.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -41,80 +44,137 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _shareApp(BuildContext context) async {
-    await showModalBottomSheet(
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    await PremiumBottomSheet.show(
       context: context,
-      showDragHandle: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'share_split_bill',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.6,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('share_split_bill',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.4,
+          ).tr(),
+          const SizedBox(height: 8),
+          Text(
+            'choose_the_store_link_you_want_to_send_so_your_friend_lands_on_the_right_download_page',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+              height: 1.4,
+            ),
+          ).tr(),
+          
+          const SizedBox(height: 24),
+          
+          // Primary Share Options
+          Row(
+            children: [
+              Expanded(
+                child: _StoreShareCard(
+                  icon: Icons.android_rounded,
+                  title: 'share_to_android'.tr(),
+                  subtitle: 'google_play_link'.tr(),
+                  colors: const [Color(0xFF00C853), Color(0xFF009624)],
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await SharePlus.instance.share(
+                      ShareParams(
+                        text: 'download_split_bill_for_android'.tr(
+                          namedArgs: {'url': AppLinks.playStoreUrl},
+                        ),
+                        subject: 'split_bill_on_google_play'.tr(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _StoreShareCard(
+                  icon: Icons.apple_rounded,
+                  title: 'share_to_iphone'.tr(),
+                  subtitle: 'app_store_link'.tr(),
+                  colors: const [Color(0xFF007AFF), Color(0xFF0055FF)],
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await SharePlus.instance.share(
+                      ShareParams(
+                        text: 'download_split_bill_for_iphone'.tr(
+                          namedArgs: {'url': AppLinks.appStoreUrl},
+                        ),
+                        subject: 'split_bill_on_the_app_store'.tr(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Copy Link Option (Classy row)
+          Material(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(18),
+            child: InkWell(
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: AppLinks.playStoreUrl));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('link_copied_to_clipboard').tr(),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ).tr(),
-                const SizedBox(height: 8),
-                Text('choose_the_store_link_you_want_to_send_so_your_friend_lands_on_the_right_download_page',
-                  style: TextStyle(color: Colors.grey.shade600, height: 1.45),
-                ).tr(),
-                const SizedBox(height: 18),
-                Row(
+                );
+              },
+              borderRadius: BorderRadius.circular(18),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
                   children: [
-                    Expanded(
-                      child: _StoreShareCard(
-                        icon: Icons.android_rounded,
-                        title: 'share_to_android'.tr(),
-                        subtitle: 'google_play_link'.tr(),
-                        colors: const [Color(0xFF34A853), Color(0xFF0F9D58)],
-                        onTap: () async {
-                          Navigator.pop(sheetContext);
-                          await SharePlus.instance.share(
-                            ShareParams(
-                              text:
-                                  "Download Split Bill for Android\n\n${AppLinks.playStoreUrl}",
-                              subject: "Split Bill on Google Play",
-                            ),
-                          );
-                        },
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.link_rounded,
+                        color: colorScheme.primary,
+                        size: 20,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 14),
                     Expanded(
-                      child: _StoreShareCard(
-                        icon: Icons.apple_rounded,
-                        title: 'share_to_iphone'.tr(),
-                        subtitle: 'app_store_link'.tr(),
-                        colors: const [Color(0xFF5E5CE6), Color(0xFF0A84FF)],
-                        onTap: () async {
-                          Navigator.pop(sheetContext);
-                          await SharePlus.instance.share(
-                            ShareParams(
-                              text:
-                                  "Download Split Bill for iPhone\n\n${AppLinks.appStoreUrl}",
-                              subject: "Split Bill on the App Store",
-                            ),
-                          );
-                        },
-                      ),
+                      child: Text(
+                        'copy_app_link',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ).tr(),
+                    ),
+                    Icon(
+                      Icons.copy_rounded,
+                      size: 18,
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        );
-      },
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 
@@ -148,104 +208,114 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showDeleteAccountDialog() => ProfileDialogs.showDeleteAccount(context);
 
+  Color _getFlagColor(String code) {
+    switch (code) {
+      case 'en': return Colors.blue;
+      case 'ar': return Colors.green;
+      case 'fr': return Colors.blueAccent;
+      case 'de': return Colors.black87;
+      case 'ru': return Colors.red;
+      case 'id': return Colors.redAccent;
+      case 'ur': return Colors.green;
+      case 'hi': return Colors.orange;
+      case 'pl': return Colors.red;
+      case 'es': return Colors.yellow;
+      case 'it': return Colors.green;
+      case 'pt': return Colors.green;
+      case 'zh': return Colors.red;
+      case 'ko': return Colors.blue;
+      case 'ja': return Colors.red;
+      default: return Colors.blueGrey;
+    }
+  }
+
   void _showLocaleSheet(AppSettingsProvider settings) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return SearchableSelectionSheet<LocaleOption>(
-          title: 'choose_language'.tr(),
-          searchHint: 'search_languages'.tr(),
-          items: supportedLocaleOptions
-              .map(
-                (option) => SearchableSheetItem<LocaleOption>(
-                  value: option,
-                  title: option.englishName,
-                  subtitle: option.nativeName,
-                  searchTerms: [option.code, option.englishName, option.nativeName],
-                  leading: Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFEEF4FF), Color(0xFFF5F7FF)],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      option.nativeName.characters.first,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 18,
-                      ),
-                    ),
+      padding: EdgeInsets.zero,
+      child: SearchableSelectionSheet<LocaleOption>(
+        title: 'choose_language'.tr(),
+        searchHint: 'search_languages'.tr(),
+        items: supportedLocaleOptions
+            .map(
+              (option) => SearchableSheetItem<LocaleOption>(
+                value: option,
+                title: option.englishName,
+                subtitle: option.nativeName,
+                searchTerms: [option.code, option.englishName, option.nativeName],
+                leading: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: _getFlagColor(option.code).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    option.flag,
+                    style: const TextStyle(fontSize: 22),
                   ),
                 ),
-              )
-              .toList(),
-          isSelected: (option) => option.code == settings.locale.languageCode,
-          onSelected: (option) async {
-            await settings.updateLocale(option.locale);
-            if (context.mounted) {
-              await context.setLocale(option.locale);
-            }
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          },
-        );
-      },
+              ),
+            )
+            .toList(),
+        isSelected: (option) => option.code == settings.locale.languageCode,
+        onSelected: (option) async {
+          await settings.updateLocale(option.locale);
+          if (context.mounted) {
+            await context.setLocale(option.locale);
+          }
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        },
+      ),
     );
   }
 
   void _showCurrencySheet(AppSettingsProvider settings) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return SearchableSelectionSheet<CurrencyOption>(
-          title: 'choose_currency'.tr(),
-          searchHint: 'search_currencies'.tr(),
-          items: supportedCurrencyOptions
-              .map(
-                (option) => SearchableSheetItem<CurrencyOption>(
-                  value: option,
-                  title: '${option.code} • ${option.name}',
-                  subtitle: option.region,
-                  searchTerms: [option.code, option.name, option.region, option.symbol],
-                  leading: Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFFF7E8), Color(0xFFFFF1CC)],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
+      padding: EdgeInsets.zero,
+      child: SearchableSelectionSheet<CurrencyOption>(
+        title: 'choose_currency'.tr(),
+        searchHint: 'search_currencies'.tr(),
+        items: supportedCurrencyOptions
+            .map(
+              (option) => SearchableSheetItem<CurrencyOption>(
+                value: option,
+                title: '${option.code} • ${option.name}',
+                subtitle: option.region,
+                searchTerms: [option.code, option.name, option.region, option.symbol],
+                leading: Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFF7E8), Color(0xFFFFF1CC)],
                     ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      option.symbol,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 18,
-                      ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    option.symbol,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
                     ),
                   ),
                 ),
-              )
-              .toList(),
-          isSelected: (option) => option.code == settings.currencyCode,
-          onSelected: (option) async {
-            await settings.updateCurrencyCode(option.code);
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          },
-        );
-      },
+              ),
+            )
+            .toList(),
+        isSelected: (option) => option.code == settings.currencyCode,
+        onSelected: (option) async {
+          await settings.updateCurrencyCode(option.code);
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        },
+      ),
     );
   }
 
@@ -263,7 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .snapshots(),
       builder: (context, snapshot) {
         var data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
-        String name = data['displayName'] ?? user?.displayName ?? "User";
+        String name = data['displayName'] ?? user?.displayName ?? 'user'.tr();
         String? photoUrl = data['photoUrl'];
 
         return Scaffold(
@@ -423,7 +493,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       isDestructive: true,
                       onTap: _showDeleteAccountDialog,
                     ),
-
                     if (kDebugMode) ...[
                       const SizedBox(height: 20),
                       ProfileSectionTitle(title: 'developer'.tr()),
@@ -448,9 +517,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
 
+                    if (data['isAdmin'] == true) ...[
+                      const SizedBox(height: 20),
+                      ProfileSectionTitle(title: 'administration'.tr()),
+                      ProfileCoolTile(
+                        icon: Icons.admin_panel_settings_rounded,
+                        title: 'admin_dashboard'.tr(),
+                        subtitle: 'manage_users_fcm_and_bills'.tr(),
+                        color: Colors.blueGrey,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminDashboardScreen(),
+                          ),
+                        ),
+                      ),
+                    ],
+
                     const SizedBox(height: 40),
                     const VersionInfo(),
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 150),
                   ]),
                 ),
               ),
@@ -510,10 +596,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context: context,
             builder: (context) => AlertDialog(
               title: Text('ad_not_available').tr(),
-              content: const Text(
-                "We're having trouble reaching the ad server right now. "
-                "Please ensure you have an active internet connection or try again later.",
-              ),
+              content: Text('ad_server_connection_issue_try_again_later').tr(),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -802,15 +885,19 @@ class _StoreShareCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
         child: Ink(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: colors),
+            gradient: LinearGradient(
+              colors: colors,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: colors.first.withValues(alpha: 0.35),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
+                color: colors.first.withValues(alpha: 0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
@@ -818,27 +905,32 @@ class _StoreShareCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, color: Colors.white, size: 28),
+                child: Icon(icon, color: Colors.white, size: 24),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 24),
               Text(
                 title,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
-                  fontSize: 16,
+                  fontSize: 15,
+                  letterSpacing: -0.3,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),

@@ -44,20 +44,26 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
           border: Border.all(color: colorScheme.outline.withValues(alpha: 0.15)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: Row(
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            // Leading (Back Button)
-            IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                size: 20,
-                color: colorScheme.onSurface,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 20,
+                    color: colorScheme.onSurface,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
-              onPressed: () => Navigator.of(context).pop(),
             ),
-
-            // Center (Title)
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 76),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -86,33 +92,39 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
                 ],
               ),
             ),
-
-            // Trailing (Action)
-            if (trailing != null)
-              trailing!
-            else if (onInfoTap != null || infoMessage != null)
-              Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  shape: BoxShape.circle,
+            Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                width: 92,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: trailing != null
+                      ? trailing!
+                      : (onInfoTap != null || infoMessage != null)
+                          ? Container(
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.info_outline_rounded,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  if (infoMessage != null) {
+                                    _showInfoDialog(context, title, infoMessage!);
+                                  } else if (onInfoTap != null) {
+                                    onInfoTap!();
+                                  }
+                                },
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                 ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.info_outline_rounded,
-                    size: 20,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    if (infoMessage != null) {
-                      _showInfoDialog(context, title, infoMessage!);
-                    } else if (onInfoTap != null) {
-                      onInfoTap!();
-                    }
-                  },
-                ),
-              )
-            else
-              const SizedBox(width: 48), // Spacer to balance leading
+              ),
+            ),
           ],
         ),
       ),

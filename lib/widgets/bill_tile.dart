@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lottie/lottie.dart';
-import 'package:intl/intl.dart';
 import 'package:split_bill_app/bill_details_screen.dart';
 import 'package:split_bill_app/participant_bill_screen.dart';
 import 'package:split_bill_app/scan_receipt_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/utils/currency_utils.dart';
 
 class BillTile extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -18,9 +23,73 @@ class BillTile extends StatelessWidget {
     required this.currentUserId,
   });
 
+  Future<void> _deleteDraftBill(BuildContext context) async {
+    final localImagePath = data['localImagePath']?.toString();
+
+    try {
+      if (localImagePath != null && localImagePath.isNotEmpty) {
+        final file = File(localImagePath);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+
+      await FirebaseFirestore.instance.collection('bills').doc(billId).delete();
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('bill_deleted').tr(),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'error_saving'.tr(namedArgs: {'error': e.toString()}),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _confirmDeleteDraft(BuildContext context) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('delete_saved_draft').tr(),
+        content: Text('delete_saved_draft_message').tr(),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('common_cancel').tr(),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text('common_delete').tr(),
+          ),
+        ],
+      ),
+    );
+
+    if (!context.mounted) return;
+    if (shouldDelete == true) {
+      await _deleteDraftBill(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     bool amIHost = data['hostId'] == currentUserId;
+    final isDraft = data['status'] == 'UNATTEMPTED';
     String storeName = data['storeName'] ?? "Bill";
     double totalAmount = (data['total'] as num?)?.toDouble() ?? 0.0;
 
@@ -48,7 +117,7 @@ class BillTile extends StatelessWidget {
 
     // Determine Category for Coloring
     Color tileColor;
-    if (data['status'] == 'UNATTEMPTED') {
+    if (isDraft) {
       tileColor = Colors.amber.shade50;
     } else {
       bool isSettled = false;
@@ -83,7 +152,7 @@ class BillTile extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        if (data['status'] == 'UNATTEMPTED') {
+        if (isDraft) {
           // Resume Scan
           Navigator.push(
             context,
@@ -206,34 +275,53 @@ class BillTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  "\$${totalAmount.toStringAsFixed(2)}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                if (isDraft)
+                  IconButton(
+                    onPressed: () => _confirmDeleteDraft(context),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: Colors.redAccent,
+                    ),
+                    tooltip: 'common_delete'.tr(),
+                  )
+                else ...[
+                  Text(
+                    CurrencyUtils.format(
+                      totalAmount,
+                      currencyCode:
+                          data['currencyCode'] ??
+                          Provider.of<AppSettingsProvider>(
+                            context,
+                            listen: false,
+                          ).currencyCode,
+                    ),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      value: progress,
-                      strokeWidth: 4,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation(
-                        amIHost ? Colors.green : Colors.blue,
+                  const SizedBox(height: 8),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 4,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation(
+                          amIHost ? Colors.green : Colors.blue,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "$percentage%",
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        "$percentage%",
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ],

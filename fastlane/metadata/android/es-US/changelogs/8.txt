@@ -1,0 +1,1 @@
+Flujo mejorado, corrección de errores, más idiomas y monedas añadidos (1.1.0=8)

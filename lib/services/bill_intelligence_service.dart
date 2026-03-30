@@ -28,8 +28,15 @@ class BillIntelligenceService {
             'Authorization': 'Bearer $authToken',
         },
         body: jsonEncode({
-          'receiptItems': receiptItems,
-          'participants': participants,
+          'receiptItems': receiptItems.map((item) => {
+            'name': item['name'],
+            'price': item['price'],
+            'qty': item['qty'],
+          }).toList(),
+          'participants': participants.map((p) => {
+            'id': p['id'],
+            'name': p['name'],
+          }).toList(),
           'transcript': transcript,
         }),
       );

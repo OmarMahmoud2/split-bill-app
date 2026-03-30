@@ -57,17 +57,16 @@ class RevenueCatService {
   }
 
   /// Get available premium packages
-  static Future<Package?> getPremiumPackage() async {
+  static Future<List<Package>> getPremiumPackages() async {
     try {
       final offerings = await Purchases.getOfferings();
       if (offerings.current != null) {
-        // Return the first package (should be our $4.99 lifetime)
-        return offerings.current!.availablePackages.first;
+        return offerings.current!.availablePackages;
       }
-      return null;
+      return [];
     } catch (e) {
       if (kDebugMode) debugPrint('Error fetching packages: $e');
-      return null;
+      return [];
     }
   }
 

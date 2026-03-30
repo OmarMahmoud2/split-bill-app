@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:split_bill_app/split_bill_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/utils/currency_utils.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 
 class ManualEntryScreen extends StatefulWidget {
@@ -20,6 +23,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   final _qtyController = TextEditingController(text: "1");
   final _priceController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  DateTime _selectedDate = DateTime.now();
 
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   final List<Map<String, dynamic>> _items = [];
@@ -121,14 +125,17 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       (sum, item) => sum + ((item['price'] as double) * (item['qty'] as int)),
     );
 
+    final currencyCode =
+        Provider.of<AppSettingsProvider>(context, listen: false).currencyCode;
     final manualReceiptData = {
       'storeName': _storeController.text.trim(),
       'total': total,
       'items': List.from(_items),
-      'date': DateTime.now().toString(),
+      'date': _selectedDate.toString(),
       'taxAmount': 0.0,
       'serviceChargeAmount': 0.0,
       'discountAmount': 0.0,
+      'currencyCode': currencyCode,
     };
 
     Navigator.push(
@@ -151,7 +158,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final fieldFill = colorScheme.surfaceContainerHighest.withValues(alpha: 0.7);
+    final fieldFill = colorScheme.surfaceContainerHighest.withValues(
+      alpha: 0.7,
+    );
+    final currencyCode = context.watch<AppSettingsProvider>().currencyCode;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -177,7 +187,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(
-                        alpha: theme.brightness == Brightness.dark ? 0.18 : 0.08,
+                        alpha: theme.brightness == Brightness.dark
+                            ? 0.18
+                            : 0.08,
                       ),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
@@ -211,8 +223,68 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                           ),
                         ),
                         validator: (val) => (val == null || val.trim().isEmpty)
-                            ? "Store name required"
+                            ? 'store_name_required'.tr()
                             : null,
+                      ),
+                      const SizedBox(height: 16),
+                      // DATE PICKER
+                      InkWell(
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: _selectedDate,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now(),
+                            builder: (context, child) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: Theme.of(context).colorScheme.copyWith(
+                                        primary: Theme.of(context).colorScheme.primary, // header background color
+                                        onPrimary: Colors.white, // header text color
+                                        onSurface: Theme.of(context).colorScheme.onSurface, // body text color
+                                      ),
+                                ),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (picked != null) {
+                            setState(() {
+                              _selectedDate = picked;
+                            });
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: fieldFill,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today_rounded,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  DateFormat.yMMMd().format(_selectedDate),
+                                  style: theme.textTheme.titleMedium,
+                                ),
+                              ),
+                              Icon(
+                                Icons.edit_calendar_rounded,
+                                color: theme.hintColor,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -236,7 +308,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                                   size: 18,
                                 ),
                                 border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
@@ -297,9 +369,17 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                               ),
                               decoration: InputDecoration(
                                 labelText: 'receipt_price'.tr(),
-                                prefixIcon: const Icon(
-                                  Icons.attach_money_rounded,
-                                  size: 18,
+                                prefixIcon: Container(
+                                  width: 45,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    currencyCode,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.primary,
+                                      fontSize: 10,
+                                    ),
+                                  ),
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -319,7 +399,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                         child: ElevatedButton.icon(
                           onPressed: _addItem,
                           icon: const Icon(Icons.add_circle_outline_rounded),
-                          label: Text('add_to_list',
+                          label: Text(
+                            'add_to_list',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -347,13 +428,18 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                               errorBuilder: (c, e, s) => Icon(
                                 Icons.receipt_long_rounded,
                                 size: 80,
-                                color: colorScheme.outline.withValues(alpha: 0.4),
+                                color: colorScheme.outline.withValues(
+                                  alpha: 0.4,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 12),
-                            Text('your_list_is_empty',
+                            Text(
+                              'your_list_is_empty',
                               style: theme.textTheme.bodyLarge?.copyWith(
-                                color: colorScheme.onSurface.withValues(alpha: 0.54),
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.54,
+                                ),
                                 fontWeight: FontWeight.w500,
                               ),
                             ).tr(),
@@ -399,7 +485,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             ),
           ],
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.12)),
+          border: Border.all(
+            color: colorScheme.outline.withValues(alpha: 0.12),
+          ),
         ),
         child: SafeArea(
           child: Row(
@@ -408,7 +496,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('total_estimate',
+                  Text(
+                    'total_estimate',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurface.withValues(alpha: 0.54),
                       fontWeight: FontWeight.bold,
@@ -417,7 +506,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   ).tr(),
                   const SizedBox(height: 4),
                   Text(
-                    "\$${_currentTotal.toStringAsFixed(2)}",
+                    CurrencyUtils.format(
+                      _currentTotal,
+                      currencyCode: currencyCode,
+                    ),
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: colorScheme.primary,
@@ -444,7 +536,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 ),
                 child: Row(
                   children: [
-                    Text('common_continue',
+                    Text(
+                      'common_continue',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -470,8 +563,11 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final fieldFill = colorScheme.surfaceContainerHighest.withValues(alpha: 0.7);
+    final fieldFill = colorScheme.surfaceContainerHighest.withValues(
+      alpha: 0.7,
+    );
     double lineTotal = (item['price'] as double) * (item['qty'] as int);
+    final currencyCode = context.read<AppSettingsProvider>().currencyCode;
 
     return SizeTransition(
       sizeFactor: animation,
@@ -565,18 +661,31 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                "x${item['qty']}",
+                                'quantity_times'.tr(
+                                  namedArgs: {'qty': item['qty'].toString()},
+                                ),
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: colorScheme.onSurface.withValues(alpha: 0.8),
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.8,
+                                  ),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              "@ \$${item['price']}",
+                              'unit_price_at'.tr(
+                                namedArgs: {
+                                  'price': CurrencyUtils.format(
+                                    (item['price'] as num).toDouble(),
+                                    currencyCode: currencyCode,
+                                  ),
+                                },
+                              ),
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurface.withValues(alpha: 0.58),
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.58,
+                                ),
                               ),
                             ),
                           ],
@@ -587,7 +696,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
                   // Price
                   Text(
-                    "\$${lineTotal.toStringAsFixed(2)}",
+                    CurrencyUtils.format(lineTotal, currencyCode: currencyCode),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: colorScheme.primary,

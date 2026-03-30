@@ -1,0 +1,11 @@
+Fatigué de calculer après le dîner ? Split Bill vous facilite la vie.
+
+Fonctionnalités :
+- Scan de reçus par IA : Prenez une photo. Nous extrayons articles et prix automatiquement.
+- Division facile : Attribuez les articles aux amis d'une simple pression.
+- Taxes et pourboires : Calculés automatiquement pour tout le monde.
+- Partage instantané : Envoyez des liens de répartition à vos amis.
+- Plusieurs devises : Vous divisez les comptes en voyage ? Nous avons ce qu'il vous faut.
+- Historique : Gardez une trace de vos partages passés.
+
+Téléchargez maintenant et ne vous disputez plus jamais pour l'addition !

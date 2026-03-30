@@ -30,23 +30,7 @@ class VoiceCommandOverlay extends StatefulWidget {
 
 class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     with SingleTickerProviderStateMixin {
-  static const Map<String, String> _languageFlags = {
-    'ar': '🇪🇬',
-    'en': '🇺🇸',
-    'fr': '🇫🇷',
-    'de': '🇩🇪',
-    'ru': '🇷🇺',
-    'id': '🇮🇩',
-    'ur': '🇵🇰',
-    'hi': '🇮🇳',
-    'pl': '🇵🇱',
-    'es': '🇪🇸',
-    'it': '🇮🇹',
-    'pt': '🇵🇹',
-    'zh': '🇨🇳',
-    'ko': '🇰🇷',
-    'ja': '🇯🇵',
-  };
+
 
   final VoiceService _voiceService = VoiceService();
   final BillIntelligenceService _aiService = BillIntelligenceService();
@@ -66,8 +50,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
 
   // Transcript Logic
   String? _transcript;
-  String _statusText = "Tap to Speak";
-  String _subStatusText = "Try: \"Split the appetizers between me and John\"";
+  String _statusText = '';
+  String _subStatusText = '';
   String _selectedLanguage = 'en';
 
   int _recordDuration = 0;
@@ -95,6 +79,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       _selectedLanguage = localeCode;
     }
     _languageInitialized = true;
+    _statusText = 'voice_tap_to_speak'.tr();
+    _subStatusText = 'voice_try_example'.tr();
   }
 
   @override
@@ -265,7 +251,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           setState(() {
             _transcript = text;
             _isProcessingTranscript = false;
-            _statusText = "Did you say?";
+            _statusText = 'voice_did_you_say'.tr();
             // The transcript is shown in the special UI, so subtext can be simpler or hidden
             _subStatusText = "";
           });
@@ -273,18 +259,18 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       } else {
         setState(() {
           _isProcessingTranscript = false;
-          _statusText = "Error";
-          _subStatusText = "No audio recorded";
+          _statusText = 'voice_error'.tr();
+          _subStatusText = 'voice_no_audio'.tr();
         });
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isProcessingTranscript = false;
-        _statusText = "Error";
+        _statusText = 'voice_error'.tr();
         _subStatusText = _messageFromError(
           e,
-          fallback: "Could not understand audio",
+          fallback: 'voice_could_not_understand'.tr(),
         );
       });
       debugPrint("Voice Error: $e");
@@ -301,8 +287,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     setState(() {
       _isProcessingAssignment = true;
       _hasError = false; // Reset error state
-      _statusText = "Assigning Items...";
-      _subStatusText = "Applying your command...";
+      _statusText = 'voice_assigning_items'.tr();
+      _subStatusText = 'voice_applying_command'.tr();
     });
 
     Map<String, List<String>>? assignments;
@@ -322,8 +308,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         setState(() {
           _isProcessingAssignment = false;
           _isSuccess = true;
-          _statusText = "Done!";
-          _subStatusText = "Assignments updated";
+          _statusText = 'voice_done'.tr();
+          _subStatusText = 'voice_assignments_updated'.tr();
         });
         HapticFeedback.lightImpact();
         await _deductPoint(); // Deduct point on success
@@ -334,10 +320,10 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         setState(() {
           _isProcessingAssignment = false;
           _hasError = true;
-          _statusText = "Failed to Assign";
+          _statusText = 'voice_failed_to_assign'.tr();
           _subStatusText = _messageFromError(
             e,
-            fallback: "Please try again.",
+            fallback: 'voice_please_try_again'.tr(),
           );
         });
       }
@@ -573,7 +559,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
               color: Colors.white,
               bgColor: Colors.grey.withValues(alpha: 0.8),
               onTap: _retryRecording,
-              label: "Re-record",
+              label: 're_record'.tr(),
             ),
             const SizedBox(width: 40),
             // Confirm Button
@@ -583,7 +569,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
               bgColor: const Color(0xFF00B365),
               onTap: _confirmAssignment,
               size: 70,
-              label: "Confirm",
+              label: 'confirm'.tr(),
             ),
           ],
         ),
@@ -675,11 +661,11 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         });
       },
       child: Container(
-        width: 118,
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        width: 90,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -692,29 +678,21 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         child: Column(
           children: [
             Text(
-              _languageFlags[option.code] ?? '🌐',
-              style: const TextStyle(fontSize: 32),
+              option.flag,
+              style: const TextStyle(fontSize: 26),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               option.nativeName,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            if (option.nativeName != option.englishName) ...[
-              const SizedBox(height: 4),
-              Text(
-                option.englishName,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
           ],
         ),
       ),

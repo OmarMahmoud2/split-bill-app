@@ -41,7 +41,7 @@ class RewardedAdHelper {
     if (_isLoading || _isAdReady) return;
     if (_lastLoadAttempt != null &&
         DateTime.now().difference(_lastLoadAttempt!) <
-            const Duration(seconds: 45)) {
+            const Duration(seconds: 15)) {
       return;
     }
 

@@ -1,0 +1,6 @@
+app_identifier("com.example.splitBillApp") # If your iOS bundle ID is different, change this!
+apple_id("omarmali306@gmail.com") # Replace with the email for your Apple ID
+
+# Android specific configuration
+json_key_file(ENV["SUPPLY_JSON_KEY"])
+package_name("net.omarmali.splitapp")

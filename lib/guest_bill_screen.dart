@@ -11,6 +11,7 @@ import 'screens/guest_bill/widgets/download_section.dart';
 import 'screens/guest_bill/guest_selector_view.dart';
 import 'utils/currency_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class GuestBillScreen extends StatefulWidget {
   final String billId;
@@ -107,7 +108,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
           ? amount / participantCount
           : amount * myRatio;
       return {
-        'label': (charge['label'] ?? 'Other Charge').toString(),
+        'label': (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
         'amount': share,
       };
     }).where((charge) => (charge['amount'] as double) > 0).toList();
@@ -159,216 +160,230 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     );
     final currencyCode = breakdown['currencyCode'] as String;
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            // Handle
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'participant_bill_title'.tr(
+                  namedArgs: {'name': participantName},
+                ),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
               ),
-            ),
+              const SizedBox(height: 4),
+              Text(
+                billData['storeName'] ?? 'receipt'.tr(),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
 
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 24),
+
+          // Scrollable Content
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Items Section
                   Text(
-                    "$participantName's Bill",
-                    style: const TextStyle(
-                      fontSize: 22,
+                    'your_items',
+                    style: TextStyle(
                       fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                      letterSpacing: 1.2,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    billData['storeName'] ?? 'Receipt',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
+                  ).tr(),
+                  const SizedBox(height: 16),
 
-            const Divider(height: 1),
-
-            // Scrollable Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Items Section
-                    Text('your_items',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 12,
-                        letterSpacing: 1.5,
-                        color: Colors.black54,
-                      ),
-                    ).tr(),
-                    const SizedBox(height: 12),
-
-                    if (myItems.isEmpty)
-                      Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('no_items_assigned_to_you',
-                          style: TextStyle(color: Colors.grey),
-                        ).tr(),
-                      )
-                    else
-                      ...myItems.map(
-                        (item) => Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[200]!),
+                  if (myItems.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text(
+                          'no_items_assigned_to_you',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontWeight: FontWeight.w600,
                           ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[100],
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "${item['qty']}x",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue[900],
-                                    ),
+                        ).tr(),
+                      ),
+                    )
+                  else
+                    ...myItems.map(
+                      (item) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.shade100),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'quantity_suffix'.tr(
+                                    namedArgs: {'qty': item['qty'].toString()},
+                                  ),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    color: Theme.of(context).colorScheme.primary,
+                                    fontSize: 13,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item['name'],
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  if (item['isShared'])
                                     Text(
-                                      item['name'],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: Colors.black,
+                                      'shared_with_people_count'.tr(
+                                        namedArgs: {
+                                          'count': item['sharedCount'].toString(),
+                                        },
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    if (item['isShared'])
-                                      Text(
-                                        "Shared with ${item['sharedCount']} people",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                  ],
-                                ),
+                                ],
                               ),
-                              Text(
-                                CurrencyUtils.format(
-                                  item['mySplit'] as double,
-                                  currencyCode: currencyCode,
-                                ),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
+                            ),
+                            Text(
+                              CurrencyUtils.format(
+                                item['mySplit'] as double,
+                                currencyCode: currencyCode,
                               ),
-                            ],
-                          ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                    ),
 
-                    const SizedBox(height: 24),
-                    const Divider(),
-                    const SizedBox(height: 16),
+                  const SizedBox(height: 24),
+                  const Divider(),
+                  const SizedBox(height: 24),
 
-                    // Charges Breakdown
+                  // Charges Breakdown
+                  _buildRow(
+                    'items_subtotal'.tr(),
+                    breakdown['myItemsTotal'],
+                    currencyCode,
+                  ),
+                  if (breakdown['myTax'] > 0) ...[
+                    const SizedBox(height: 12),
                     _buildRow(
-                      "Items Subtotal",
-                      breakdown['myItemsTotal'],
+                      'tax_share'.tr(),
+                      breakdown['myTax'],
                       currencyCode,
                     ),
-                    if (breakdown['myTax'] > 0) ...[
-                      const SizedBox(height: 8),
-                      _buildRow(
-                        "Tax Share",
-                        breakdown['myTax'],
-                        currencyCode,
-                      ),
-                    ],
-                    if (breakdown['myService'] > 0) ...[
-                      const SizedBox(height: 8),
-                      _buildRow(
-                        "Service Charge",
-                        breakdown['myService'],
-                        currencyCode,
-                      ),
-                    ],
-                    if (breakdown['myTip'] > 0) ...[
-                      const SizedBox(height: 8),
-                      _buildRow("Tip Share", breakdown['myTip'], currencyCode),
-                    ],
-                    if (breakdown['myDelivery'] > 0) ...[
-                      const SizedBox(height: 8),
-                      _buildRow(
-                        "Delivery Share",
-                        breakdown['myDelivery'],
-                        currencyCode,
-                      ),
-                    ],
-                    ...(breakdown['otherChargeShares'] as List<dynamic>).expand(
-                      (charge) => [
-                        const SizedBox(height: 8),
-                        _buildRow(
-                          (charge['label'] ?? 'Other Charge').toString(),
-                          (charge['amount'] as num).toDouble(),
-                          currencyCode,
-                        ),
-                      ],
+                  ],
+                  if (breakdown['myService'] > 0) ...[
+                    const SizedBox(height: 12),
+                    _buildRow(
+                      'receipt_service_charge'.tr(),
+                      breakdown['myService'],
+                      currencyCode,
                     ),
-                    if (breakdown['myDiscount'] > 0) ...[
-                      const SizedBox(height: 8),
+                  ],
+                  if (breakdown['myTip'] > 0) ...[
+                    const SizedBox(height: 12),
+                    _buildRow('tip_share'.tr(), breakdown['myTip'], currencyCode),
+                  ],
+                  if (breakdown['myDelivery'] > 0) ...[
+                    const SizedBox(height: 12),
+                    _buildRow(
+                      'delivery_share'.tr(),
+                      breakdown['myDelivery'],
+                      currencyCode,
+                    ),
+                  ],
+                  ...(breakdown['otherChargeShares'] as List<dynamic>).expand(
+                    (charge) => [
+                      const SizedBox(height: 12),
                       _buildRow(
-                        "Discount",
-                        -breakdown['myDiscount'],
+                        (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+                        (charge['amount'] as num).toDouble(),
                         currencyCode,
-                        isDiscount: true,
                       ),
                     ],
+                  ),
+                  if (breakdown['myDiscount'] > 0) ...[
+                    const SizedBox(height: 12),
+                    _buildRow(
+                      'receipt_discount'.tr(),
+                      -breakdown['myDiscount'],
+                      currencyCode,
+                      isDiscount: true,
+                    ),
+                  ],
 
-                    const SizedBox(height: 16),
-                    const Divider(thickness: 2),
-                    const SizedBox(height: 16),
-
-                    // Total
-                    Row(
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('total_due',
+                        Text(
+                          'total_due',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 18,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ).tr(),
                         Text(
@@ -379,17 +394,18 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 22,
-                            color: Colors.blue[900],
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
@@ -446,7 +462,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
 
       // Get current data
       DocumentSnapshot snapshot = await billRef.get();
-      if (!snapshot.exists) throw Exception("Bill not found");
+      if (!snapshot.exists) throw Exception('bill_not_found'.tr());
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       List<dynamic> participants = List.from(data['participants']);
@@ -472,12 +488,30 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
         if (hostDoc.exists) {
           String? hostToken = hostDoc.get('fcmToken');
           if (hostToken != null) {
+            final formattedAmount = CurrencyUtils.format(
+              myTotal,
+              currencyCode: _currencyCode(data),
+            );
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId,
               title: 'payment_received'.tr(),
-              body:
-                  "$participantName paid ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(data))} for $storeName.",
+              body: 'payment_received_body'.tr(
+                namedArgs: {
+                  'payer': participantName,
+                  'amount': formattedAmount,
+                  'store': storeName,
+                  'method_suffix': '',
+                },
+              ),
+              historyTitleKey: 'payment_received',
+              historyBodyKey: 'payment_received_body',
+              historyBodyArgs: {
+                'payer': participantName,
+                'amount': formattedAmount,
+                'store': storeName,
+                'method_suffix': '',
+              },
               data: {
                 'billId': billId,
                 'type': 'payment_proof',
@@ -498,7 +532,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Error: $e"),
+            content: Text(
+              'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
           ),
@@ -522,7 +558,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
           .doc(billId);
 
       DocumentSnapshot snapshot = await billRef.get();
-      if (!snapshot.exists) throw Exception("Bill not found");
+      if (!snapshot.exists) throw Exception('bill_not_found'.tr());
 
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       List<dynamic> participants = List.from(data['participants']);
@@ -546,12 +582,26 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
         if (hostDoc.exists) {
           String? hostToken = hostDoc.get('fcmToken');
           if (hostToken != null) {
+            final formattedAmount = CurrencyUtils.format(
+              myTotal,
+              currencyCode: _currencyCode(data),
+            );
             await NotificationService().sendNotification(
               targetToken: hostToken,
               targetUid: hostId,
               title: 'payment_marked_as_sent'.tr(),
-              body:
-                  "$participantName marked ${CurrencyUtils.format(myTotal, currencyCode: _currencyCode(data))} as paid (No Proof).",
+              body: 'payment_marked_as_sent_body'.tr(
+                namedArgs: {
+                  'payer': participantName,
+                  'amount': formattedAmount,
+                },
+              ),
+              historyTitleKey: 'payment_marked_as_sent',
+              historyBodyKey: 'payment_marked_as_sent_body',
+              historyBodyArgs: {
+                'payer': participantName,
+                'amount': formattedAmount,
+              },
               data: {
                 'billId': billId,
                 'type': 'payment_proof',
@@ -572,7 +622,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Error: $e"),
+            content: Text(
+              'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
           ),
@@ -588,91 +640,93 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     double myTotal,
     String participantName,
   ) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'confirm_payment',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+          ).tr(),
+          const SizedBox(height: 8),
+          Text(
+            'help_the_host_verify_your_payment_faster',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              fontWeight: FontWeight.w500,
+            ),
+          ).tr(),
+          const SizedBox(height: 32),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: Container(
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                color: Colors.blue.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
+              child: const Icon(Icons.image_rounded, color: Colors.blue),
             ),
-            Text('confirm_payment',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            title: Text(
+              'upload_screenshot',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ).tr(),
-            const SizedBox(height: 8),
-            Text('help_the_host_verify_your_payment_faster',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+            subtitle: Text(
+              'recommended_for_digital_wallets',
+              style: TextStyle(color: Colors.grey[600]),
             ).tr(),
-            const SizedBox(height: 32),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.image_rounded, color: Colors.blue),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            onTap: () {
+              Navigator.pop(context);
+              _uploadPaymentProof(
+                billId,
+                hostId,
+                storeName,
+                myTotal,
+                participantName,
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          const Divider(),
+          const SizedBox(height: 8),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              title: Text('upload_screenshot',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ).tr(),
-              subtitle: Text('recommended_for_digital_wallets').tr(),
-              onTap: () {
-                Navigator.pop(context);
-                _uploadPaymentProof(
-                  billId,
-                  hostId,
-                  storeName,
-                  myTotal,
-                  participantName,
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_circle_outline_rounded,
-                  color: Colors.orange,
-                ),
+              child: const Icon(
+                Icons.check_circle_outline_rounded,
+                color: Colors.orange,
               ),
-              title: Text('i_paid_skip_proof',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ).tr(),
-              subtitle: Text('host_will_verify_manually').tr(),
-              onTap: () {
-                Navigator.pop(context);
-                _markAsPaidNoProof(
-                  billId,
-                  hostId,
-                  storeName,
-                  myTotal,
-                  participantName,
-                );
-              },
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
+            title: Text(
+              'i_paid_skip_proof',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ).tr(),
+            subtitle: Text(
+              'host_will_verify_manually',
+              style: TextStyle(color: Colors.grey[600]),
+            ).tr(),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            onTap: () {
+              Navigator.pop(context);
+              _markAsPaidNoProof(
+                billId,
+                hostId,
+                storeName,
+                myTotal,
+                participantName,
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
@@ -739,6 +793,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     fontSize: 16,
                   ),
                 ).tr(),
+                const Text(' '),
                 Text(
                   hostName,
                   style: const TextStyle(
@@ -996,7 +1051,13 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             .get(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            return Center(
+              child: Text(
+                'error_with_details'.tr(
+                  namedArgs: {'error': snapshot.error.toString()},
+                ),
+              ),
+            );
           }
           if (!snapshot.hasData) {
             return Center(
@@ -1010,7 +1071,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
 
           final billData = snapshot.data!.data() as Map<String, dynamic>;
           final participants = billData['participants'] as List<dynamic>? ?? [];
-          final String storeName = billData['storeName'] ?? "Unknown Store";
+          final String storeName = billData['storeName'] ?? 'unknown_store'.tr();
 
           // Auto-select logic (only once)
           if (widget.initialParticipantId != null &&
@@ -1219,7 +1280,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     ).tr(),
                     const SizedBox(height: 8),
                     Text(
-                      (participant['name'] ?? "Guest").toUpperCase(),
+                      (participant['name'] ?? 'guest'.tr()).toUpperCase(),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 24,

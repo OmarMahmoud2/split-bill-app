@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,9 +13,13 @@ import 'success_screen.dart';
 import 'services/notification_service.dart';
 import 'services/revenue_cat_service.dart';
 import 'utils/currency_utils.dart';
+import 'utils/image_utils.dart';
 import 'widgets/bill_summary_widgets.dart';
 import 'widgets/custom_app_header.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class BillSummaryConfirmScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -54,6 +57,7 @@ class BillSummaryConfirmScreen extends StatefulWidget {
 class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   bool _isCreating = false;
   Map<String, double> _finalShares = {};
+  final Map<String, double> _manualShareOverrides = {};
   InterstitialAd? _interstitialAd;
   bool _isAdLoaded = false;
   final NotificationService _notificationService = NotificationService();
@@ -67,7 +71,10 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   late TextEditingController _discountController;
   late TextEditingController _deliveryFeeController;
 
-  String get _currencyCode => widget.receiptData['currency_code'] ?? 'USD';
+  String get _currencyCode =>
+      widget.receiptData['currency_code'] ??
+      widget.receiptData['currencyCode'] ??
+      Provider.of<AppSettingsProvider>(context, listen: false).currencyCode;
 
   List<Map<String, dynamic>> get _otherCharges => List<Map<String, dynamic>>.from(
     widget.receiptData['other_charges'] ?? const [],
@@ -82,6 +89,18 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   int get _participantCount => widget.participants.isEmpty
       ? 1
       : widget.participants.length;
+
+  double get _grandTotalFromCharges =>
+      _calculateTotalItemCost() +
+      (double.tryParse(_taxController.text) ?? 0.0) +
+      (double.tryParse(_serviceController.text) ?? 0.0) +
+      (double.tryParse(_tipController.text) ?? 0.0) +
+      (double.tryParse(_deliveryFeeController.text) ?? 0.0) +
+      _otherChargesTotal -
+      (double.tryParse(_discountController.text) ?? 0.0);
+
+  double get _grandTotalFromShares =>
+      _finalShares.values.fold(0.0, (runningTotal, value) => runningTotal + value);
 
   double _shareForCharge(Map<String, dynamic> charge, double proportion) {
     final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
@@ -216,10 +235,10 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               runningTotal + ((charge['amount'] as num?)?.toDouble() ?? 0.0),
         );
 
-    _finalShares = {};
+    final calculatedShares = <String, double>{};
     shares.forEach((uid, amount) {
       double userProportion = amount / totalItemsCost;
-      _finalShares[uid] =
+      calculatedShares[uid] =
           amount +
           (tax * userProportion) +
           (service * userProportion) +
@@ -229,6 +248,27 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
           (equalOtherCharges / _participantCount) -
           (discount * userProportion);
     });
+
+    if (_rouletteWinnerId != null &&
+        calculatedShares.containsKey(_rouletteWinnerId)) {
+      final rouletteTotal = calculatedShares.values.fold(
+        0.0,
+        (runningTotal, value) => runningTotal + value,
+      );
+      calculatedShares.updateAll(
+        (participantId, _) => participantId == _rouletteWinnerId
+            ? rouletteTotal
+            : 0.0,
+      );
+    }
+
+    for (final entry in _manualShareOverrides.entries) {
+      if (calculatedShares.containsKey(entry.key)) {
+        calculatedShares[entry.key] = entry.value;
+      }
+    }
+
+    _finalShares = calculatedShares;
   }
 
   Future<void> _createBill() async {
@@ -241,7 +281,6 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     double service = double.tryParse(_serviceController.text) ?? 0.0;
     double tip = double.tryParse(_tipController.text) ?? 0.0;
     double discount = double.tryParse(_discountController.text) ?? 0.0;
-    double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
 
     final billData = {
       'hostId': user.uid,
@@ -249,15 +288,12 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       'storeName':
           widget.receiptData['restaurant_name'] ??
           widget.receiptData['storeName'],
-      'date': FieldValue.serverTimestamp(),
-      'total':
-          _calculateTotalItemCost() +
-          tax +
-          service +
-          tip +
-          delivery +
-          _otherChargesTotal -
-          discount,
+      'date': widget.receiptData['date'] != null 
+          ? Timestamp.fromDate(DateTime.tryParse(widget.receiptData['date'].toString()) ?? DateTime.now()) 
+          : FieldValue.serverTimestamp(),
+      'total': _grandTotalFromShares > 0
+          ? _grandTotalFromShares
+          : _grandTotalFromCharges,
       'currencyCode': _currencyCode,
       'charges': {
         'taxAmount': tax,
@@ -420,9 +456,13 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error saving: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'error_saving'.tr(namedArgs: {'error': e.toString()}),
+          ),
+        ),
+      );
       setState(() => _isCreating = false);
     }
   }
@@ -471,12 +511,24 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       final token = userDoc.data()?['fcmToken'];
 
       if (token != null) {
+        final formattedAmount = CurrencyUtils.format(
+          _finalShares[uid] ?? 0.0,
+          currencyCode: _currencyCode,
+          decimalDigits: 1,
+        );
         await _notificationService.sendNotification(
           targetToken: token,
           targetUid: uid,
-          title: "Split Bill: $store",
-          body:
-              "Your share is ${CurrencyUtils.format(_finalShares[uid] ?? 0.0, currencyCode: _currencyCode, decimalDigits: 1)}. Tap to view details.",
+          title: 'split_bill_notification_title'.tr(
+            namedArgs: {'store': store},
+          ),
+          body: 'split_bill_notification_body'.tr(
+            namedArgs: {'amount': formattedAmount},
+          ),
+          historyTitleKey: 'split_bill_notification_title',
+          historyBodyKey: 'split_bill_notification_body',
+          historyTitleArgs: {'store': store},
+          historyBodyArgs: {'amount': formattedAmount},
           data: {"type": "new_bill", "uid": uid, "billId": billId},
         );
       }
@@ -486,16 +538,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   }
 
   ImageProvider? _getAvatarImage(String? url) {
-    if (url == null || url.isEmpty) return null;
-    if (url.startsWith('data:image')) {
-      try {
-        final base64String = url.split(',').last;
-        return MemoryImage(base64Decode(base64String));
-      } catch (e) {
-        return null;
-      }
-    }
-    return NetworkImage(url);
+    return ImageUtils.getAvatarImage(url);
   }
 
   void _showUserBreakdown(Map<String, dynamic> participant) {
@@ -517,7 +560,12 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
           itemTotal += userCost;
           userItems.add({
             'name': item['name'],
-            'detail': "Got $assignedQty of $totalQty",
+            'detail': 'got_qty_of_total'.tr(
+              namedArgs: {
+                'assigned': assignedQty.toString(),
+                'total': totalQty.toString(),
+              },
+            ),
             'cost': userCost,
           });
         }
@@ -530,8 +578,12 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
           userItems.add({
             'name': item['name'],
             'detail': assigned.length > 1
-                ? "Split with ${assigned.length - 1} others"
-                : "Full Item",
+                ? 'split_with_others'.tr(
+                    namedArgs: {
+                      'count': (assigned.length - 1).toString(),
+                    },
+                  )
+                : 'full_item'.tr(),
             'cost': splitPrice,
           });
         }
@@ -547,149 +599,164 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
     final deliveryShare = delivery / _participantCount;
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.75,
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: participant['color'] ?? Colors.blue,
+                backgroundImage: _getAvatarImage(participant['photoUrl']),
+                child:
+                    (_getAvatarImage(participant['photoUrl']) == null &&
+                        participant['name'].isNotEmpty)
+                    ? Text(
+                        participant['name'][0],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      participant['name'],
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    Text(
+                      'final_share_amount'.tr(
+                        namedArgs: {
+                          'amount': CurrencyUtils.format(
+                            finalShare,
+                            currencyCode: _currencyCode,
+                            decimalDigits: 1,
+                          ),
+                        },
+                      ),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: participant['color'] ?? Colors.blue,
-                  backgroundImage: _getAvatarImage(participant['photoUrl']),
-                  child:
-                      (_getAvatarImage(participant['photoUrl']) == null &&
-                          participant['name'].isNotEmpty)
-                      ? Text(
-                          participant['name'][0],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        )
-                      : null,
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showAdjustParticipantShareDialog(participant);
+                },
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.edit_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                tooltip: 'common_edit'.tr(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 16),
+          Text(
+            'item_breakdown',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+          ).tr(),
+          const SizedBox(height: 16),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.4,
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: userItems.length,
+              itemBuilder: (context, index) {
+                final uItem = userItems[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        participant['name'],
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              uItem['name'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              uItem['detail'],
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Text(
-                        "Total Share: ${CurrencyUtils.format(finalShare, currencyCode: _currencyCode, decimalDigits: 1)}",
-                        style: TextStyle(
+                        CurrencyUtils.format(
+                          (uItem['cost'] as double),
+                          currencyCode: _currencyCode,
+                          decimalDigits: 1,
+                        ),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
                           fontSize: 16,
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
                   ),
+                );
+              },
+            ),
+          ),
+          const Divider(height: 32),
+          _buildAmountRow('tax_vat'.tr(), tax * proportion),
+          _buildAmountRow('service_charge'.tr(), service * proportion),
+          _buildAmountRow('tip'.tr(), tip * proportion),
+          _buildAmountRow('delivery_fee'.tr(), deliveryShare),
+          ..._otherCharges
+              .map(
+                (charge) => _buildAmountRow(
+                  (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                      .toString(),
+                  _shareForCharge(charge, proportion),
                 ),
-              ],
-            ),
-            const Divider(height: 48),
-            Text('item_breakdown',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ).tr(),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: userItems.length,
-                itemBuilder: (context, index) {
-                  final uItem = userItems[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                uItem['name'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                uItem['detail'],
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          CurrencyUtils.format(
-                            (uItem['cost'] as double),
-                            currencyCode: _currencyCode,
-                            decimalDigits: 1,
-                          ),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
               ),
-            ),
-            const Divider(height: 32),
-            _buildAmountRow("Tax / VAT", tax * proportion),
-            _buildAmountRow("Service Charge", service * proportion),
-            _buildAmountRow("Tip", tip * proportion),
-            _buildAmountRow("Delivery Fee", deliveryShare),
-            ..._otherCharges
-                .map(
-                  (charge) => _buildAmountRow(
-                    (charge['label'] ?? 'Other Charge').toString(),
-                    _shareForCharge(charge, proportion),
-                  ),
-                )
-                .whereType<Widget>(),
-            _buildAmountRow(
-              "Discount",
-              discount * proportion,
-              isNegative: true,
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          _buildAmountRow(
+            'discount'.tr(),
+            discount * proportion,
+            isNegative: true,
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
@@ -732,10 +799,10 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   }
 
   void _showRouletteModal() {
-    if (widget.participants.isEmpty) {
+    if (widget.participants.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('add_participants_to_play_bill_roulette').tr(),
+          content: Text('need_at_least_two_people_for_bill_roulette').tr(),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -760,104 +827,90 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
 
     bool isSpinning = false;
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
+      child: StatefulBuilder(
         builder: (context, setModalState) {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.75,
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 24),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'bill_roulette_2',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+              ).tr(),
+              const SizedBox(height: 8),
+              Text(
+                'one_lucky_person_pays_the_whole_bill',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w500,
                 ),
-                Text('bill_roulette_2',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ).tr(),
-                const SizedBox(height: 12),
-                Text('one_lucky_person_pays_the_whole_bill',
-                  style: TextStyle(color: Colors.grey[600]),
-                ).tr(),
-                const SizedBox(height: 24),
-                Expanded(
-                  child: FortuneWheel(
-                    selected: selected.stream,
-                    animateFirst: false,
-                    items: [
-                      for (int i = 0; i < participants.length; i++)
-                        FortuneItem(
-                          child: Text(
-                            participants[i]['name'],
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: FortuneItemStyle(
-                            color: participants[i]['color'] ?? Colors.blue,
-                            borderColor: Colors.white,
-                            borderWidth: 2,
+              ).tr(),
+              const SizedBox(height: 32),
+              SizedBox(
+                height: 300,
+                child: FortuneWheel(
+                  selected: selected.stream,
+                  animateFirst: false,
+                  items: [
+                    for (int i = 0; i < participants.length; i++)
+                      FortuneItem(
+                        child: Text(
+                          participants[i]['name'],
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                    ],
-                  ),
+                        style: FortuneItemStyle(
+                          color: participants[i]['color'] ?? Colors.blue,
+                          borderColor: Colors.white,
+                          borderWidth: 2,
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: isSpinning
-                      ? null
-                      : () async {
-                          setModalState(() => isSpinning = true);
-                          final int randomIndex = Fortune.randomInt(
-                            0,
-                            participants.length,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: isSpinning
+                    ? null
+                    : () async {
+                        setModalState(() => isSpinning = true);
+                        final int randomIndex = Fortune.randomInt(
+                          0,
+                          participants.length,
+                        );
+                        selected.add(randomIndex);
+                        await Future.delayed(const Duration(seconds: 5));
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          _showWinnerDialog(
+                            participants[randomIndex],
+                            totalBill,
                           );
-                          selected.add(randomIndex);
-                          await Future.delayed(const Duration(seconds: 5));
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            _showWinnerDialog(
-                              participants[randomIndex],
-                              totalBill,
-                            );
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    minimumSize: const Size(double.infinity, 60),
-                    elevation: 0,
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  child: Text(
-                    isSpinning ? "SPINNING..." : "SPIN THE WHEEL!",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  minimumSize: const Size(double.infinity, 56),
+                  elevation: 0,
+                ),
+                child: Text(
+                  isSpinning ? "SPINNING..." : "SPIN THE WHEEL!",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16),
+            ],
           );
         },
       ),
@@ -973,30 +1026,109 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
 
   void _applyRouletteResult(String winnerId) {
     setState(() {
+      _manualShareOverrides.clear();
       _rouletteWinnerId = winnerId;
-      double tax = double.tryParse(_taxController.text) ?? 0.0;
-      double service = double.tryParse(_serviceController.text) ?? 0.0;
-      double tip = double.tryParse(_tipController.text) ?? 0.0;
-      double discount = double.tryParse(_discountController.text) ?? 0.0;
-      double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
-      double grandTotal =
-          _calculateTotalItemCost() +
-          tax +
-          service +
-          tip +
-          delivery +
-          _otherChargesTotal -
-          discount;
-
-      _finalShares.forEach((id, _) {
-        _finalShares[id] = (id == winnerId) ? grandTotal : 0.0;
-      });
+      _calculateFinalShares();
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('bill_successfully_assigned_to_the_loser').tr(),
         backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+    );
+  }
+
+  Future<void> _showAdjustParticipantShareDialog(
+    Map<String, dynamic> participant,
+  ) async {
+    final participantId = participant['id'] as String;
+    final controller = TextEditingController(
+      text: (_finalShares[participantId] ?? 0.0).toStringAsFixed(1),
+    );
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'edit_final_share'.tr(),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'final_share_for_name'.tr(
+                namedArgs: {'name': participant['name'].toString()},
+              ),
+              style: TextStyle(
+                color: Colors.grey[700],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'enter_final_amount'.tr(),
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                prefixText: '$_currencyCode ',
+                filled: true,
+                fillColor: Colors.grey[50],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('common_cancel').tr(),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final parsedValue = double.tryParse(controller.text.trim());
+              if (parsedValue == null || parsedValue < 0) {
+                return;
+              }
+
+              setState(() {
+                _rouletteWinnerId = null;
+                _manualShareOverrides[participantId] = parsedValue;
+                _calculateFinalShares();
+              });
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: Text('update_total').tr(),
+          ),
+        ],
       ),
     );
   }
@@ -1009,8 +1141,9 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     double tip = double.tryParse(_tipController.text) ?? 0.0;
     double discount = double.tryParse(_discountController.text) ?? 0.0;
     double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
-    double grandTotal =
-        subTotal + tax + service + tip + delivery + _otherChargesTotal - discount;
+    double grandTotal = _grandTotalFromShares > 0
+        ? _grandTotalFromShares
+        : subTotal + tax + service + tip + delivery + _otherChargesTotal - discount;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -1054,7 +1187,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               child: Column(
                 children: [
                   BillSummaryRow(
-                    label: "Grand Total",
+                    label: 'grand_total'.tr(),
                     amount: grandTotal,
                     isBold: true,
                     fontSize: 26,
@@ -1063,54 +1196,59 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                   ),
                   const Divider(height: 40),
                   BillSummaryRow(
-                    label: "Sub Total",
+                    label: 'sub_total'.tr(),
                     amount: subTotal,
                     currency: _currencyCode,
                   ),
                   const SizedBox(height: 12),
                   if (_isEditing) ...[
-                    _buildEditChargeField("Tax", _taxController),
-                    _buildEditChargeField("Service Charge", _serviceController),
-                    _buildEditChargeField("Tip", _tipController),
-                    _buildEditChargeField("Discount", _discountController),
+                    _buildEditChargeField('tax_vat'.tr(), _taxController),
                     _buildEditChargeField(
-                      "Delivery Fee",
+                      'service_charge'.tr(),
+                      _serviceController,
+                    ),
+                    _buildEditChargeField('tip'.tr(), _tipController),
+                    _buildEditChargeField('discount'.tr(), _discountController),
+                    _buildEditChargeField(
+                      'delivery_fee'.tr(),
                       _deliveryFeeController,
                     ),
                   ] else ...[
                     BillSummaryRow(
-                      label: "Tax",
+                      label: 'tax_vat'.tr(),
                       amount: tax,
                       currency: _currencyCode,
                     ),
                     const SizedBox(height: 12),
                     BillSummaryRow(
-                      label: "Service Charge",
+                      label: 'service_charge'.tr(),
                       amount: service,
                       currency: _currencyCode,
                     ),
                     const SizedBox(height: 12),
                     BillSummaryRow(
-                      label: "Tip",
+                      label: 'tip'.tr(),
                       amount: tip,
                       currency: _currencyCode,
                     ),
                     const SizedBox(height: 12),
                     BillSummaryRow(
-                      label: "Discount",
+                      label: 'discount'.tr(),
                       amount: discount,
                       currency: _currencyCode,
                     ),
                     const SizedBox(height: 12),
                     BillSummaryRow(
-                      label: "Delivery Fee",
+                      label: 'delivery_fee'.tr(),
                       amount: delivery,
                       currency: _currencyCode,
                     ),
                     ..._otherCharges.expand((charge) => [
                       const SizedBox(height: 12),
                       BillSummaryRow(
-                        label: (charge['label'] ?? 'Other Charge').toString(),
+                        label:
+                            (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                                .toString(),
                         amount: ((charge['amount'] as num?)?.toDouble() ?? 0.0),
                         currency: _currencyCode,
                       ),
@@ -1120,27 +1258,30 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: _showRouletteModal,
-                icon: const Icon(Icons.casino_rounded, color: Colors.redAccent),
-                label: Text('bill_roulette',
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ).tr(),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: Colors.redAccent, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+            if (widget.participants.length > 1) ...[
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _showRouletteModal,
+                  icon: const Icon(Icons.casino_rounded, color: Colors.redAccent),
+                  label: Text('bill_roulette',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ).tr(),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
+            ] else
+              const SizedBox(height: 12),
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -1153,6 +1294,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                   share: _finalShares[p['id']] ?? 0.0,
                   isWinner: _rouletteWinnerId == p['id'],
                   onTap: () => _showUserBreakdown(p),
+                  onEdit: () => _showAdjustParticipantShareDialog(p),
                   getAvatarImage: _getAvatarImage,
                   currency: _currencyCode,
                 );

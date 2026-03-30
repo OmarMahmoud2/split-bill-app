@@ -15,6 +15,7 @@ import 'package:split_bill_app/utils/share_link_utils.dart';
 import 'services/notification_service.dart';
 import 'package:split_bill_app/widgets/custom_app_header.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class BillDetailsScreen extends StatefulWidget {
   final String billId;
@@ -52,7 +53,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text('no_proof_submitted').tr(),
-          content: Text('this_participant_marked_their_share_as_paid_but_didn_t_upload_a_screenshot_do_you_want_to_approve_it',
+          content: Text(
+            'this_participant_marked_their_share_as_paid_but_didn_t_upload_a_screenshot_do_you_want_to_approve_it',
           ).tr(),
           actions: [
             TextButton(
@@ -97,7 +99,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('common_cancel',
+                      child: Text(
+                        'common_cancel',
                         style: TextStyle(
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
@@ -200,8 +203,12 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           targetToken: token,
           targetUid: participantUid,
           title: 'payment_accepted'.tr(),
-          body:
-              "Your payment for \"${widget.billName}\" has been approved by the host.",
+          body: 'payment_accepted_body'.tr(
+            namedArgs: {'bill_name': widget.billName},
+          ),
+          historyTitleKey: 'payment_accepted',
+          historyBodyKey: 'payment_accepted_body',
+          historyBodyArgs: {'bill_name': widget.billName},
           data: {
             'billId': widget.billId,
             'type': 'payment_accepted',
@@ -236,12 +243,20 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           ],
         ),
         content: Text(
-          "This will send a notification to \"$name\" about their remaining ${CurrencyUtils.format(amount, currencyCode: currencyCode)} share.",
+          'send_reminder_confirmation'.tr(
+            namedArgs: {
+              'name': name,
+              'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
+            },
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
+            child: Text(
+              'common_cancel',
+              style: TextStyle(color: Colors.grey),
+            ).tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -281,9 +296,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         await NotificationService().sendNotification(
           targetToken: token,
           targetUid: targetUid,
-          title: 'reminder_title'.tr(
-            namedArgs: {'bill_name': widget.billName},
-          ),
+          title: 'reminder_title'.tr(namedArgs: {'bill_name': widget.billName}),
           body: 'reminder_body'.tr(
             namedArgs: {
               'amount': CurrencyUtils.format(
@@ -292,14 +305,18 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               ),
             },
           ),
+          historyTitleKey: 'reminder_title',
+          historyBodyKey: 'reminder_body',
+          historyTitleArgs: {'bill_name': widget.billName},
+          historyBodyArgs: {
+            'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
+          },
           data: {'billId': widget.billId},
         );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                'reminder_sent_to'.tr(namedArgs: {'name': name}),
-              ),
+              content: Text('reminder_sent_to'.tr(namedArgs: {'name': name})),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.blue[800],
             ),
@@ -317,10 +334,12 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: Text('delete_bill',
+        title: Text(
+          'delete_bill',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
         ).tr(),
-        content: Text('this_action_is_irreversible_all_participants_will_lose_access_to_this_bill_data',
+        content: Text(
+          'this_action_is_irreversible_all_participants_will_lose_access_to_this_bill_data',
         ).tr(),
         actions: [
           TextButton(
@@ -368,112 +387,93 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     final double share = (participant['share'] as num? ?? 0.0).toDouble();
     final String status = participant['status'] ?? 'PENDING';
 
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              margin: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            participant['name'] ?? "Participant",
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
             ),
-            Text(
-              participant['name'] ?? "Participant",
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 24),
+          ),
+          const SizedBox(height: 24),
+          _buildActionItem(
+            icon: status == 'PAID'
+                ? Icons.undo_rounded
+                : Icons.check_circle_rounded,
+            color: status == 'PAID' ? Colors.orange : Colors.green,
+            label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
+            onTap: () {
+              Navigator.pop(context);
+              _markAsPaid(allParticipants, index);
+            },
+          ),
+          if (isAppUser)
             _buildActionItem(
-              icon: status == 'PAID'
-                  ? Icons.undo_rounded
-                  : Icons.check_circle_rounded,
-              color: status == 'PAID' ? Colors.orange : Colors.green,
-              label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
+              icon: Icons.notifications_active_rounded,
+              color: Colors.blue,
+              label: "Send Reminder",
               onTap: () {
                 Navigator.pop(context);
-                _markAsPaid(allParticipants, index);
+                _confirmReminder(
+                  participant['id'],
+                  participant['name'],
+                  share,
+                  (billData['currencyCode'] ??
+                          billData['currency_code'] ??
+                          'USD')
+                      .toString(),
+                );
               },
-            ),
-            if (isAppUser)
-              _buildActionItem(
-                icon: Icons.notifications_active_rounded,
-                color: Colors.blue,
-                label: "Send Reminder",
-                onTap: () {
-                  Navigator.pop(context);
-                  _confirmReminder(
-                    participant['id'],
-                    participant['name'],
-                    share,
-                    (billData['currencyCode'] ??
-                            billData['currency_code'] ??
-                            'USD')
-                        .toString(),
-                  );
-                },
-              )
-            else
-              _buildActionItem(
-                icon: Icons.share_rounded,
-                color: Colors.blue,
-                label: "Share via Link",
-                onTap: () {
-                  Navigator.pop(context);
-                  _shareUserLink(
-                    context,
-                    participant['name'],
-                    share,
-                    participant['id'],
-                    (billData['currencyCode'] ??
-                            billData['currency_code'] ??
-                            'USD')
-                        .toString(),
-                  );
-                },
-              ),
+            )
+          else
             _buildActionItem(
-              icon: Icons.receipt_long_rounded,
-              color: Colors.deepPurple,
-              label: "Show Personal Breakdown",
+              icon: Icons.share_rounded,
+              color: Colors.blue,
+              label: "Share via Link",
               onTap: () {
                 Navigator.pop(context);
-                BillDetailsModals.showUserShareDetails(
+                _shareUserLink(
                   context,
-                  participant,
-                  billData,
+                  participant['name'],
+                  share,
+                  participant['id'],
+                  (billData['currencyCode'] ??
+                          billData['currency_code'] ??
+                          'USD')
+                      .toString(),
                 );
               },
             ),
-            if (participant['paymentProof'] != null)
-              _buildActionItem(
-                icon: Icons.image_rounded,
-                color: Colors.orange[800]!,
-                label: "Review Proof",
-                onTap: () {
-                  Navigator.pop(context);
-                  _viewProof(participant, allParticipants, index);
-                },
-              ),
-            const SizedBox(height: 10),
-          ],
-        ),
+          _buildActionItem(
+            icon: Icons.receipt_long_rounded,
+            color: Colors.deepPurple,
+            label: "Show Personal Breakdown",
+            onTap: () {
+              Navigator.pop(context);
+              BillDetailsModals.showUserShareDetails(
+                context,
+                participant,
+                billData,
+              );
+            },
+          ),
+          if (participant['paymentProof'] != null)
+            _buildActionItem(
+              icon: Icons.image_rounded,
+              color: Colors.orange[800]!,
+              label: "Review Proof",
+              onTap: () {
+                Navigator.pop(context);
+                _viewProof(participant, allParticipants, index);
+              },
+            ),
+          const SizedBox(height: 10),
+        ],
       ),
     );
   }
@@ -505,99 +505,83 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
 
   // 7. FAB Actions Sheet
   void _showManagementSheet(Map<String, dynamic> data) {
-    showModalBottomSheet(
+    PremiumBottomSheet.show(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              margin: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'management_actions',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
             ),
-            Text('management_actions',
+          ).tr(),
+          const SizedBox(height: 24),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.edit_rounded,
+                color: Colors.blue,
+                size: 22,
+              ),
+            ),
+            title: Text(
+              'edit_bill_info',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ).tr(),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      EditBillScreen(billId: widget.billId, billData: data),
+                ),
+              );
+            },
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.delete_forever_rounded,
+                color: Colors.red,
+                size: 22,
+              ),
+            ),
+            title: Text(
+              'delete_entire_bill',
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.5,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.red,
               ),
             ).tr(),
-            const SizedBox(height: 24),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.edit_rounded,
-                  color: Colors.blue,
-                  size: 22,
-                ),
-              ),
-              title: Text('edit_bill_info',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ).tr(),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        EditBillScreen(billId: widget.billId, billData: data),
-                  ),
-                );
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
+            onTap: () {
+              Navigator.pop(context);
+              _confirmDelete();
+            },
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
             ),
-            const SizedBox(height: 8),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.delete_forever_rounded,
-                  color: Colors.red,
-                  size: 22,
-                ),
-              ),
-              title: Text('delete_entire_bill',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.red,
-                ),
-              ).tr(),
-              onTap: () {
-                Navigator.pop(context);
-                _confirmDelete();
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+        ],
       ),
     );
   }
@@ -681,8 +665,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         double total = (data['total'] as num).toDouble();
         bool amIHost = data['hostId'] == user?.uid;
         final currencyCode =
-            (data['currencyCode'] ?? data['currency_code'] ?? 'USD')
-                .toString();
+            (data['currencyCode'] ?? data['currency_code'] ?? 'USD').toString();
 
         // PRECISION PERCENTAGE FIX:
         // Calculate percentages based on sum of shares if total is mismatching
@@ -732,7 +715,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
 
                     Padding(
                       padding: EdgeInsets.fromLTRB(20, 32, 20, 12),
-                      child: Text('participants',
+                      child: Text(
+                        'participants',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
@@ -822,14 +806,16 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('full_bill_details',
+                      Text(
+                        'full_bill_details',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
                           color: Colors.black87,
                         ),
                       ).tr(),
-                      Text('items_and_charges_breakdown',
+                      Text(
+                        'items_and_charges_breakdown',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[500],
