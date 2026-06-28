@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_menu_widgets.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
@@ -21,7 +20,8 @@ class UserAdminDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String name = (userData['displayName'] as String?) ?? 'unknown_user'.tr();
+    final String name =
+        (userData['displayName'] as String?) ?? 'unknown_user'.tr();
     final isPremium = userData['isPremium'] ?? false;
     final isAdmin = userData['isAdmin'] ?? false;
     final int points = userData['points'] ?? 0;
@@ -78,7 +78,10 @@ class UserAdminDetailScreen extends StatelessWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_active_rounded, color: Colors.blue),
+            icon: const Icon(
+              Icons.notifications_active_rounded,
+              color: Colors.blue,
+            ),
             onPressed: () => _sendNotification(context),
           ),
         ],
@@ -113,7 +116,9 @@ class UserAdminDetailScreen extends StatelessWidget {
                           backgroundImage: imageProvider,
                           child: imageProvider == null
                               ? Text(
-                                  name.isNotEmpty ? name.characters.first.toUpperCase() : '?',
+                                  name.isNotEmpty
+                                      ? name.characters.first.toUpperCase()
+                                      : '?',
                                   style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.w900,
@@ -197,7 +202,7 @@ class UserAdminDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // User Bills List
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -249,28 +254,27 @@ class UserAdminDetailScreen extends StatelessWidget {
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final billDoc = bills[index];
-                      final billData = billDoc.data() as Map<String, dynamic>;
-                      final storeName = billData['storeName'] ?? 'unknown_store'.tr();
-                      final total = (billData['total'] as num? ?? 0.0).toDouble();
-                      final currency = billData['currencyCode'] ?? 'USD';
-                      final date = (billData['date'] as Timestamp).toDate();
-                      final status = billData['status'] ?? 'PENDING';
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final billDoc = bills[index];
+                    final billData = billDoc.data() as Map<String, dynamic>;
+                    final storeName =
+                        billData['storeName'] ?? 'unknown_store'.tr();
+                    final total = (billData['total'] as num? ?? 0.0).toDouble();
+                    final currency = billData['currencyCode'] ?? 'USD';
+                    final date = (billData['date'] as Timestamp).toDate();
+                    final status = billData['status'] ?? 'PENDING';
 
-                      return ProfileCoolTile(
-                        icon: Icons.receipt_long_rounded,
-                        title: storeName,
-                        subtitle: '${CurrencyUtils.format(total, currencyCode: currency)} • ${DateFormat.yMMMd().format(date)}',
-                        color: status == 'PAID' ? Colors.green : Colors.orange,
-                        onTap: () {
-                          _showBillSummarySheet(context, billData);
-                        },
-                      );
-                    },
-                    childCount: bills.length,
-                  ),
+                    return ProfileCoolTile(
+                      icon: Icons.receipt_long_rounded,
+                      title: storeName,
+                      subtitle:
+                          '${CurrencyUtils.format(total, currencyCode: currency)} • ${DateFormat.yMMMd().format(date)}',
+                      color: status == 'PAID' ? Colors.green : Colors.orange,
+                      onTap: () {
+                        _showBillSummarySheet(context, billData);
+                      },
+                    );
+                  }, childCount: bills.length),
                 ),
               );
             },
@@ -336,7 +340,10 @@ class UserAdminDetailScreen extends StatelessWidget {
     );
   }
 
-  void _showBillSummarySheet(BuildContext context, Map<String, dynamic> billData) {
+  void _showBillSummarySheet(
+    BuildContext context,
+    Map<String, dynamic> billData,
+  ) {
     PremiumBottomSheet.show(
       context: context,
       isScrollable: true,
@@ -400,7 +407,9 @@ class _BillSummarySheet extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: (isPaid ? Colors.green : Colors.grey).withValues(alpha: 0.1),
+                    color: (isPaid ? Colors.green : Colors.grey).withValues(
+                      alpha: 0.1,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

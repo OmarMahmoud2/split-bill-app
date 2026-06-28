@@ -473,6 +473,47 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     );
   }
 
+  Future<Map<String, dynamic>> _updateSelectedParticipantPayment({
+    required String billId,
+    required String? paymentProof,
+  }) async {
+    final selectedParticipantId = _selectedParticipantId;
+    if (selectedParticipantId == null) {
+      throw Exception('guest'.tr());
+    }
+
+    final billRef = FirebaseFirestore.instance.collection('bills').doc(billId);
+
+    return FirebaseFirestore.instance.runTransaction<Map<String, dynamic>>((
+      transaction,
+    ) async {
+      final snapshot = await transaction.get(billRef);
+      if (!snapshot.exists) throw Exception('bill_not_found'.tr());
+
+      final data = snapshot.data() as Map<String, dynamic>;
+      final participants = (data['participants'] as List<dynamic>? ?? const [])
+          .map((participant) => Map<String, dynamic>.from(participant as Map))
+          .toList();
+
+      final myIndex = participants.indexWhere(
+        (participant) => participant['id'] == selectedParticipantId,
+      );
+      if (myIndex == -1) {
+        throw Exception('guest'.tr());
+      }
+
+      participants[myIndex] = {
+        ...participants[myIndex],
+        'paymentProof': paymentProof,
+        'status': 'REVIEW',
+        'paymentTime': Timestamp.now(),
+      };
+
+      transaction.update(billRef, {'participants': participants});
+      return data;
+    });
+  }
+
   // --- UPLOAD PROOF (FIXED FOR PERMISSIONS) ---
   Future<void> _uploadPaymentProof(
     String billId,
@@ -496,29 +537,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       List<int> imageBytes = await image.readAsBytes();
       String base64Image = "data:image/jpeg;base64,${base64Encode(imageBytes)}";
 
-      // FIX: Use plain update instead of transaction to avoid permission issues
-      DocumentReference billRef = FirebaseFirestore.instance
-          .collection('bills')
-          .doc(billId);
-
-      // Get current data
-      DocumentSnapshot snapshot = await billRef.get();
-      if (!snapshot.exists) throw Exception('bill_not_found'.tr());
-
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      List<dynamic> participants = List.from(data['participants']);
-
-      int myIndex = participants.indexWhere(
-        (p) => p['id'] == _selectedParticipantId,
+      final data = await _updateSelectedParticipantPayment(
+        billId: billId,
+        paymentProof: base64Image,
       );
-      if (myIndex != -1) {
-        participants[myIndex]['paymentProof'] = base64Image;
-        participants[myIndex]['status'] = 'REVIEW';
-        participants[myIndex]['paymentTime'] = Timestamp.now();
-      }
-
-      // Update only the participants field
-      await billRef.update({'participants': participants});
 
       // Notify Host
       if (hostId.isNotEmpty) {
@@ -564,13 +586,14 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
         }
       }
 
+      if (!mounted) return;
       setState(() {
         _isUploading = false;
         _showSuccess = true;
       });
     } catch (e) {
-      setState(() => _isUploading = false);
       if (mounted) {
+        setState(() => _isUploading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -594,26 +617,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     setState(() => _isUploading = true);
 
     try {
-      DocumentReference billRef = FirebaseFirestore.instance
-          .collection('bills')
-          .doc(billId);
-
-      DocumentSnapshot snapshot = await billRef.get();
-      if (!snapshot.exists) throw Exception('bill_not_found'.tr());
-
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      List<dynamic> participants = List.from(data['participants']);
-
-      int myIndex = participants.indexWhere(
-        (p) => p['id'] == _selectedParticipantId,
+      final data = await _updateSelectedParticipantPayment(
+        billId: billId,
+        paymentProof: null,
       );
-      if (myIndex != -1) {
-        participants[myIndex]['paymentProof'] = null; // No proof
-        participants[myIndex]['status'] = 'REVIEW';
-        participants[myIndex]['paymentTime'] = Timestamp.now();
-      }
-
-      await billRef.update({'participants': participants});
 
       if (hostId.isNotEmpty) {
         DocumentSnapshot hostDoc = await FirebaseFirestore.instance
@@ -654,13 +661,14 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
         }
       }
 
+      if (!mounted) return;
       setState(() {
         _isUploading = false;
         _showSuccess = true;
       });
     } catch (e) {
-      setState(() => _isUploading = false);
       if (mounted) {
+        setState(() => _isUploading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

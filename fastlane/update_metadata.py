@@ -22,12 +22,13 @@ Features:
 
 Download now and never fight over the bill again!"""
 BASE_KEYWORDS = "split, bill, receipts, scanner, expense, sharing, group, dinner, ai, finance"
-BASE_CHANGELOG = "Improved flow, Bug Fixes, more languages and currencies added (1.1.0=8)"
+BASE_CHANGELOG = "Bug fixes, UI improvements"
+RELEASE_VERSION_CODE = "11"
 
-# Mandatory URLs for iOS
-SUPPORT_URL = "https://omarmali.net/split-app-terms/"
-PRIVACY_URL = "https://omarmali.net/split-app-terms/"
-MARKETING_URL = "https://omarmali.net/" # Often same as support
+# Updated URLs (as per user request)
+SUPPORT_URL = "https://omarmali.net/split-bill/"
+MARKETING_URL = "https://omarmali.net/split-bill/"
+PRIVACY_URL = "https://omarmali.net/split-bill/privacy/"
 
 # Localized Content
 # IMPORTANT: Android titles MUST be 30 characters or less.
@@ -35,7 +36,7 @@ locales = {
     'en': {
         'title': "Split Bill - Receipt Scanner",
         'short': "Scan receipts & split fairly with AI. No more math after dinner!",
-        'promo': "Split bills instantly with AI! No more awkward math at dinner.",
+        'promo': BASE_PROMO,
         'desc': BASE_DESC,
         'keywords': BASE_KEYWORDS,
         'changelog': BASE_CHANGELOG
@@ -56,7 +57,7 @@ locales = {
 
 حمل التطبيق الآن ولا تختلف مع أصدقائك على الفاتورة أبدًا!""",
         'keywords': "تقسيم, فاتورة, إيصالات, ماسح, مصاريف, مشاركة, مجموعة, عشاء, ذكاء اصطناعي",
-        'changelog': "تحسين التدفق، إصلاح الأخطاء، إضافة المزيد من اللغات والعملات (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'de': {
         'title': "Split Bill - Belegscanner",
@@ -74,7 +75,7 @@ Funktionen:
 
 Jetzt herunterladen und nie wieder über die Rechnung streiten!""",
         'keywords': "teilen, rechnung, beleg, scanner, ausgaben, gruppe, essen, ki, finanzen",
-        'changelog': "Verbesserter Ablauf, Fehlerbehebungen, weitere Sprachen und Währungen hinzugefügt (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'es': {
         'title': "Split Bill - Escáner Recibos",
@@ -92,7 +93,7 @@ Características:
 
 ¡Descárgalo ahora y no vuelvas a discutir por la cuenta!""",
         'keywords': "dividir, cuenta, recibo, escáner, gastos, grupo, cena, ia, finanzas",
-        'changelog': "Flujo mejorado, corrección de errores, más idiomas y monedas añadidos (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'fr': {
         'title': "Split Bill - Scanner Reçus",
@@ -110,7 +111,7 @@ Fonctionnalités :
 
 Téléchargez maintenant et ne vous disputez plus jamais pour l'addition !""",
         'keywords': "diviser, addition, reçu, scanner, dépenses, groupe, dîner, ia, finance",
-        'changelog': "Flux amélioré, corrections de bugs, ajout de nouvelles langues et devises (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'hi': {
         'title': "Split Bill - रसीद स्कैनर",
@@ -128,7 +129,7 @@ Téléchargez maintenant et ne vous disputez plus jamais pour l'addition !""",
 
 अभी डाउनलोड करें और बिल को लेकर कभी झगड़ा न करें!""",
         'keywords': "विभाजित, बिल, रसीद, स्कैनर, खर्च, साझाकरण, समूह, भोजन, एआई, वित्त",
-        'changelog': "बेहतर प्रवाह, बग फिक्स, अधिक भाषाएं और मुद्राएं जोड़ी गईं (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'id': {
         'title': "Split Bill - Pemindai Struk",
@@ -146,7 +147,7 @@ Fitur:
 
 Unduh sekarang dan jangan pernah bertengkar karena tagihan lagi!""",
         'keywords': "bagi, tagihan, struk, pemindai, pengeluaran, grup, makan, ai, keuangan",
-        'changelog': "Alur ditingkatkan, perbaikan bug, penambahan lebih banyak bahasa and mata uang (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'it': {
         'title': "Split Bill - Scanner Ricevute",
@@ -164,7 +165,7 @@ Funzionalità:
 
 Scarica ora e non lititare mai più per il conto!""",
         'keywords': "dividere, conto, ricevuta, scanner, spese, gruppo, cena, ia, finanza",
-        'changelog': "Flusso migliorato, correzioni di bug, aggiunte nuove lingue e valute (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'ja': {
         'title': "Split Bill - レシート読取",
@@ -182,7 +183,7 @@ Scarica ora e non lititare mai più per il conto!""",
 
 今すぐダウンロードして、支払いのトラブルをなくしましょう！""",
         'keywords': "分割, 割り勘, レシート, スキャナー, 経費, グループ, 食事, ai, 金融",
-        'changelog': "フローの改善、バグ修正、新しい言語と通貨の追加 (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'ko': {
         'title': "Split Bill - 영수증 스캐너",
@@ -200,7 +201,7 @@ Scarica ora e non lititare mai più per il conto!""",
 
 지금 다운로드하고 결제 걱정 없이 식사를 즐기세요!""",
         'keywords': "분할, 영수증, 스캐너, 비용, 공유, 그룹, 식사, ai, 금융, 더치페이",
-        'changelog': "흐름 개선, 버그 수정, 더 많은 언어와 통화 추가 (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'pl': {
         'title': "Split Bill - Skaner Paragon",
@@ -218,7 +219,7 @@ Cechy:
 
 Pobierz teraz i nigdy więcej nie kłóć się o rachunek!""",
         'keywords': "dzielenie, rachunek, paragon, skaner, wydatki, grupa, kolacja, ai, finanse",
-        'changelog': "Ulepszony przepływ, poprawki błędów, dodano więcej języków i walut (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'pt': {
         'title': "Split Bill - Scanner Recibos",
@@ -236,7 +237,7 @@ Funcionalidades:
 
 Baixe agora e nunca mais discuta pela conta!""",
         'keywords': "dividir, conta, recibo, scanner, despesas, grupo, jantar, ia, finanças",
-        'changelog': "Fluxo melhorado, corrections de bugs, mais idiomas and moedas adicionados (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'ru': {
         'title': "Split Bill - Сканер Чеков",
@@ -254,7 +255,7 @@ Baixe agora e nunca mais discuta pela conta!""",
 
 Скачайте сейчас и забудьте о спорах из-за счетов!""",
         'keywords': "разделить, счет, чек, сканер, расходы, группа, ужин, ии, финансы",
-        'changelog': "Улучшенный интерфейс, исправления ошибок, добавлено больше языков и валют (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'ur': {
         'title': "Split Bill - رسید اسکینر",
@@ -272,7 +273,7 @@ Baixe agora e nunca mais discuta pela conta!""",
 
  ابھی ڈاؤن لوڈ کریں اور بل کو لے کر کبھی جھگڑا نہ کریں!""",
         'keywords': "تقسیم, بل, رسید, اسکینر, اخراجات, شیئرنگ, گروپ, کھانا, اے آئی, فنانس",
-        'changelog': "بہتر روانی، بگ فکسز، مزید زبانیں اور کرنسیاں شامل کی گئیں (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     },
     'zh': {
         'title': "Split Bill - 收据扫描分摊",
@@ -290,7 +291,7 @@ Baixe agora e nunca mais discuta pela conta!""",
 
 立即下载，再也不用为买单争吵！""",
         'keywords': "分账, 账单, 收据, 扫描, 费用, 分担, 聚餐, ai, 金融, 扫码",
-        'changelog': "改进了流程，修复了错误，添加了更多语言 and 货币 (1.1.0=8)"
+        'changelog': BASE_CHANGELOG
     }
 }
 
@@ -349,7 +350,7 @@ for lang, config in locales.items():
             write_file(ios_base, locale, 'promotional_text.txt', config['promo'])
             write_file(ios_base, locale, 'keywords.txt', config['keywords'])
             write_file(ios_base, locale, 'release_notes.txt', config['changelog'])
-            # ADDING MISSING URLs
+            # URLs
             write_file(ios_base, locale, 'support_url.txt', SUPPORT_URL)
             write_file(ios_base, locale, 'privacy_url.txt', PRIVACY_URL)
             write_file(ios_base, locale, 'marketing_url.txt', MARKETING_URL)
@@ -365,7 +366,7 @@ for lang, config in locales.items():
             # Android changelogs are per-version
             changelog_dir = os.path.join(android_base, locale, "changelogs")
             os.makedirs(changelog_dir, exist_ok=True)
-            with open(os.path.join(changelog_dir, "8.txt"), 'w', encoding='utf-8') as f:
+            with open(os.path.join(changelog_dir, f"{RELEASE_VERSION_CODE}.txt"), 'w', encoding='utf-8') as f:
                 f.write(config['changelog'])
 
-print("✅ Metadata generation (with URLs) completed for ALL locales!")
+print("✅ Metadata generation completed for ALL locales!")

@@ -8,7 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -33,10 +33,16 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   debugPrint("🚀 App Launch: Widgets Initialized");
 
+  Object? firebaseInitializationError;
+
   try {
-    if (DefaultFirebaseOptions.shouldUseExplicitOptions) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
+    final firebaseOptions = DefaultFirebaseOptions.currentPlatformOrNull;
+
+    if (firebaseOptions != null) {
+      await Firebase.initializeApp(options: firebaseOptions);
+    } else if (kIsWeb) {
+      throw StateError(
+        'Firebase web options are missing. Build with FIREBASE_WEB_* dart-defines.',
       );
     } else {
       await Firebase.initializeApp();
@@ -44,6 +50,7 @@ void main() async {
     debugPrint("✅ App Launch: Firebase Initialized");
   } catch (e) {
     debugPrint("❌ App Launch: Firebase Error: $e");
+    firebaseInitializationError = e;
   }
 
   // Initialize notifications without awaiting (non-blocking).
@@ -87,16 +94,76 @@ void main() async {
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       useOnlyLangCode: true,
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => AppSettingsProvider()..initialize(),
-          ),
-        ],
-        child: const MyApp(),
-      ),
+      child: firebaseInitializationError == null
+          ? MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                  create: (_) => AppSettingsProvider()..initialize(),
+                ),
+              ],
+              child: const MyApp(),
+            )
+          : FirebaseStartupErrorApp(error: firebaseInitializationError),
     ),
   );
+}
+
+class FirebaseStartupErrorApp extends StatelessWidget {
+  const FirebaseStartupErrorApp({super.key, required this.error});
+
+  final Object error;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Split Bill',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.cloud_off_rounded,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'We could not start Split Bill',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Please refresh the page. If this keeps happening, contact support.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    if (kDebugMode) ...[
+                      const SizedBox(height: 16),
+                      SelectableText(
+                        error.toString(),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {

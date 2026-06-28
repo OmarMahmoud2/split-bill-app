@@ -68,9 +68,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 1.4,
             ),
           ).tr(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Primary Share Options
           Row(
             children: [
@@ -115,9 +115,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Copy Link Option (Classy row)
           Material(
             color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
@@ -138,7 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               borderRadius: BorderRadius.circular(18),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
                     Container(
@@ -187,7 +190,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('in_app_rating_is_not_available_in_development_mode',
+              content: Text(
+                'in_app_rating_is_not_available_in_development_mode',
               ).tr(),
             ),
           );
@@ -210,22 +214,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Color _getFlagColor(String code) {
     switch (code) {
-      case 'en': return Colors.blue;
-      case 'ar': return Colors.green;
-      case 'fr': return Colors.blueAccent;
-      case 'de': return Colors.black87;
-      case 'ru': return Colors.red;
-      case 'id': return Colors.redAccent;
-      case 'ur': return Colors.green;
-      case 'hi': return Colors.orange;
-      case 'pl': return Colors.red;
-      case 'es': return Colors.yellow;
-      case 'it': return Colors.green;
-      case 'pt': return Colors.green;
-      case 'zh': return Colors.red;
-      case 'ko': return Colors.blue;
-      case 'ja': return Colors.red;
-      default: return Colors.blueGrey;
+      case 'en':
+        return Colors.blue;
+      case 'ar':
+        return Colors.green;
+      case 'fr':
+        return Colors.blueAccent;
+      case 'de':
+        return Colors.black87;
+      case 'ru':
+        return Colors.red;
+      case 'id':
+        return Colors.redAccent;
+      case 'ur':
+        return Colors.green;
+      case 'hi':
+        return Colors.orange;
+      case 'pl':
+        return Colors.red;
+      case 'es':
+        return Colors.yellow;
+      case 'it':
+        return Colors.green;
+      case 'pt':
+        return Colors.green;
+      case 'zh':
+        return Colors.red;
+      case 'ko':
+        return Colors.blue;
+      case 'ja':
+        return Colors.red;
+      default:
+        return Colors.blueGrey;
     }
   }
 
@@ -242,7 +262,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 value: option,
                 title: option.englishName,
                 subtitle: option.nativeName,
-                searchTerms: [option.code, option.englishName, option.nativeName],
+                searchTerms: [
+                  option.code,
+                  option.englishName,
+                  option.nativeName,
+                ],
                 leading: Container(
                   width: 42,
                   height: 42,
@@ -261,13 +285,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .toList(),
         isSelected: (option) => option.code == settings.locale.languageCode,
         onSelected: (option) async {
+          final navigator = Navigator.of(context);
+          final localization = EasyLocalization.of(context);
+
           await settings.updateLocale(option.locale);
-          if (context.mounted) {
-            await context.setLocale(option.locale);
-          }
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
+          await localization?.setLocale(option.locale);
+          if (!mounted) return;
+          navigator.pop();
         },
       ),
     );
@@ -286,7 +310,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 value: option,
                 title: '${option.code} • ${option.name}',
                 subtitle: option.region,
-                searchTerms: [option.code, option.name, option.region, option.symbol],
+                searchTerms: [
+                  option.code,
+                  option.name,
+                  option.region,
+                  option.symbol,
+                ],
                 leading: Container(
                   width: 46,
                   height: 46,
@@ -310,10 +339,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .toList(),
         isSelected: (option) => option.code == settings.currencyCode,
         onSelected: (option) async {
+          final navigator = Navigator.of(context);
+
           await settings.updateCurrencyCode(option.code);
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
+          if (!mounted) return;
+          navigator.pop();
         },
       ),
     );
@@ -415,9 +445,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 20),
-                              ProfileSectionTitle(
-                                title: 'premium_status'.tr(),
-                              ),
+                              ProfileSectionTitle(title: 'premium_status'.tr()),
                               const PremiumStatusCard(),
                             ],
                           );
@@ -561,7 +589,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!RewardedAdHelper.isReady) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('ad_is_initializing_please_try_again_in_a_few_seconds',
+          content: Text(
+            'ad_is_initializing_please_try_again_in_a_few_seconds',
           ).tr(),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.blueAccent,

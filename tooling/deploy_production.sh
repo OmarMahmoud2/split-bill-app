@@ -8,7 +8,7 @@
 
 set -e # Exit on error
 
-echo "🚀 Starting Production Deployment for 1.1.0+8 (Internal Note: 1.1.0=8)"
+echo "🚀 Starting Production Deployment for 1.1.3+11 (Internal Note: 1.1.3=11)"
 
 # 1. Prepare Metadata (Full Localization for 15+ Locales)
 echo "📝 Generating full localized metadata (Titles, Descriptions, Promo, etc.)..."

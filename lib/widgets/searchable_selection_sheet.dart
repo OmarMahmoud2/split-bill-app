@@ -85,7 +85,7 @@ class _SearchableSelectionSheetState<T>
                 ),
               ),
               const SizedBox(height: 18),
-              
+
               // Refined Search Field
               Container(
                 decoration: BoxDecoration(
@@ -142,7 +142,7 @@ class _SearchableSelectionSheetState<T>
               : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                   itemCount: filteredItems.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final item = filteredItems[index];
                     final selected = widget.isSelected(item.value);
@@ -196,7 +196,7 @@ class _SearchableSelectionSheetState<T>
               // Iconic Leading
               item.leading,
               const SizedBox(width: 16),
-              
+
               // Text Content
               Expanded(
                 child: Column(
@@ -219,9 +219,9 @@ class _SearchableSelectionSheetState<T>
                   ],
                 ),
               ),
-              
+
               const SizedBox(width: 8),
-              
+
               // Status Indicator
               if (selected)
                 Icon(Icons.check_circle_rounded, color: colorScheme.primary)

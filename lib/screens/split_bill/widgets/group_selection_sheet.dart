@@ -39,7 +39,7 @@ class GroupSelectionSheet extends StatelessWidget {
             ],
           ),
         ),
-        
+
         ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.5,
@@ -79,11 +79,12 @@ class GroupSelectionSheet extends StatelessWidget {
                 shrinkWrap: true,
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
                 itemCount: snapshot.data!.docs.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  var data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                  var data =
+                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
                   final memberCount = (data['members'] as List).length;
-                  
+
                   return Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[50],
@@ -91,7 +92,10 @@ class GroupSelectionSheet extends StatelessWidget {
                       border: Border.all(color: Colors.grey.shade100),
                     ),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       onTap: () {
                         Navigator.pop(context); // Close sheet
                         onGroupSelected(data['members']);
@@ -116,7 +120,9 @@ class GroupSelectionSheet extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        "members_count".tr(namedArgs: {'count': memberCount.toString()}),
+                        "members_count".tr(
+                          namedArgs: {'count': memberCount.toString()},
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface.withValues(alpha: 0.5),
                         ),

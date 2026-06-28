@@ -36,6 +36,7 @@ migrate_working_dir/
 /ios/Pods/
 /macos/Pods/
 /android/.gradle/
+/android/build/
 /android/local.properties
 /android/key.properties
 /android/app/google-services.json

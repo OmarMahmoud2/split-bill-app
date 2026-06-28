@@ -589,7 +589,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       context,
       PageRouteBuilder(
         opaque: false,
-        pageBuilder: (context, _, __) => VoiceCommandOverlay(
+        pageBuilder: (context, _, _) => VoiceCommandOverlay(
           receiptData: widget.receiptData,
           participants: participants,
         ),

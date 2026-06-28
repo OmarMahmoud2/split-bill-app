@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -118,7 +117,8 @@ class _SignUpModalState extends State<SignUpModal>
               position: _slideAnimation,
               child: FadeTransition(
                 opacity: _fadeAnimation,
-                child: Text('create_account',
+                child: Text(
+                  'create_account',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     letterSpacing: -0.5,
@@ -131,7 +131,8 @@ class _SignUpModalState extends State<SignUpModal>
               position: _slideAnimation,
               child: FadeTransition(
                 opacity: _fadeAnimation,
-                child: Text('join_the_squad_and_split_bills_seamlessly',
+                child: Text(
+                  'join_the_squad_and_split_bills_seamlessly',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
@@ -215,7 +216,8 @@ class _SignUpModalState extends State<SignUpModal>
                                 strokeWidth: 2,
                               ),
                             )
-                          : Text('let_s_go',
+                          : Text(
+                              'let_s_go',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -289,7 +291,9 @@ class _SignUpModalState extends State<SignUpModal>
           filled: false,
           fillColor: Colors.transparent,
           labelText: label,
-          labelStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5)),
+          labelStyle: TextStyle(
+            color: colorScheme.onSurface.withValues(alpha: 0.5),
+          ),
           prefixIcon: Icon(icon, color: colorScheme.primary),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,

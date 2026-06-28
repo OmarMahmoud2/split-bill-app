@@ -75,42 +75,58 @@ class DefaultFirebaseOptions {
       appId: _windowsAppId,
       messagingSenderId: _windowsMessagingSenderId,
       projectId: _windowsProjectId,
-      authDomain:
-          _windowsAuthDomain.isEmpty ? null : _windowsAuthDomain,
-      storageBucket:
-          _windowsStorageBucket.isEmpty ? null : _windowsStorageBucket,
-      measurementId:
-          _windowsMeasurementId.isEmpty ? null : _windowsMeasurementId,
+      authDomain: _windowsAuthDomain.isEmpty ? null : _windowsAuthDomain,
+      storageBucket: _windowsStorageBucket.isEmpty
+          ? null
+          : _windowsStorageBucket,
+      measurementId: _windowsMeasurementId.isEmpty
+          ? null
+          : _windowsMeasurementId,
     );
   }
 
   static const String _webApiKey = String.fromEnvironment(
     'FIREBASE_WEB_API_KEY',
-    defaultValue: '',
+    defaultValue: String.fromEnvironment('FIREBASE_API_KEY', defaultValue: ''),
   );
   static const String _webAppId = String.fromEnvironment(
     'FIREBASE_WEB_APP_ID',
-    defaultValue: '',
+    defaultValue: String.fromEnvironment('FIREBASE_APP_ID', defaultValue: ''),
   );
   static const String _webMessagingSenderId = String.fromEnvironment(
     'FIREBASE_WEB_MESSAGING_SENDER_ID',
-    defaultValue: '',
+    defaultValue: String.fromEnvironment(
+      'FIREBASE_MESSAGING_SENDER_ID',
+      defaultValue: '',
+    ),
   );
   static const String _webProjectId = String.fromEnvironment(
     'FIREBASE_WEB_PROJECT_ID',
-    defaultValue: '',
+    defaultValue: String.fromEnvironment(
+      'FIREBASE_PROJECT_ID',
+      defaultValue: '',
+    ),
   );
   static const String _webAuthDomain = String.fromEnvironment(
     'FIREBASE_WEB_AUTH_DOMAIN',
-    defaultValue: '',
+    defaultValue: String.fromEnvironment(
+      'FIREBASE_AUTH_DOMAIN',
+      defaultValue: '',
+    ),
   );
   static const String _webStorageBucket = String.fromEnvironment(
     'FIREBASE_WEB_STORAGE_BUCKET',
-    defaultValue: '',
+    defaultValue: String.fromEnvironment(
+      'FIREBASE_STORAGE_BUCKET',
+      defaultValue: '',
+    ),
   );
   static const String _webMeasurementId = String.fromEnvironment(
     'FIREBASE_WEB_MEASUREMENT_ID',
-    defaultValue: '',
+    defaultValue: String.fromEnvironment(
+      'FIREBASE_MEASUREMENT_ID',
+      defaultValue: '',
+    ),
   );
 
   static const String _windowsApiKey = String.fromEnvironment(
