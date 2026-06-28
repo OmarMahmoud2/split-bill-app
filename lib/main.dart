@@ -46,17 +46,21 @@ void main() async {
     debugPrint("❌ App Launch: Firebase Error: $e");
   }
 
-  // Initialize notifications without awaiting (non-blocking)
-  NotificationService().init();
-  debugPrint("✅ App Launch: Notifications Init Triggered");
+  // Initialize notifications without awaiting (non-blocking).
+  if (!kIsWeb) {
+    unawaited(NotificationService().init());
+    debugPrint("✅ App Launch: Notifications Init Triggered");
+  }
 
   // Initialize Google Mobile Ads SDK early so rewarded ads can preload
   if (!kIsWeb) {
-    unawaited(MobileAds.instance.initialize().then((_) {
-      debugPrint('✅ App Launch: Google Mobile Ads Initialized');
-      // Preload a rewarded ad for free users as soon as SDK is ready
-      RewardedAdHelper.warmUpIfEligible();
-    }));
+    unawaited(
+      MobileAds.instance.initialize().then((_) {
+        debugPrint('✅ App Launch: Google Mobile Ads Initialized');
+        // Preload a rewarded ad for free users as soon as SDK is ready
+        RewardedAdHelper.warmUpIfEligible();
+      }),
+    );
   }
 
   if (!kIsWeb) {
@@ -77,7 +81,9 @@ void main() async {
   debugPrint("🚀 App Launch: Calling runApp()");
   runApp(
     EasyLocalization(
-      supportedLocales: supportedLocaleOptions.map((option) => option.locale).toList(),
+      supportedLocales: supportedLocaleOptions
+          .map((option) => option.locale)
+          .toList(),
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       useOnlyLangCode: true,
@@ -108,8 +114,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Initialize AppLinks logic
-    _initDeepLinks();
+    // Web guest links are handled from Uri.base in build().
+    if (!kIsWeb) {
+      _initDeepLinks();
+    }
   }
 
   @override
@@ -231,20 +239,25 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    const String forcedLocale = String.fromEnvironment('LOCALE', defaultValue: '');
+    const String forcedLocale = String.fromEnvironment(
+      'LOCALE',
+      defaultValue: '',
+    );
     final initialWebLink = kIsWeb ? _extractBillLinkData(Uri.base) : null;
     final billIdFromUrl = initialWebLink?['billId'];
     final uidFromUrl = initialWebLink?['uid'];
 
     return Consumer<AppSettingsProvider>(
       builder: (context, appSettings, child) {
-        if (forcedLocale.isNotEmpty && context.locale.languageCode != forcedLocale.split('-')[0]) {
+        if (forcedLocale.isNotEmpty &&
+            context.locale.languageCode != forcedLocale.split('-')[0]) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               context.setLocale(Locale(forcedLocale.split('-')[0]));
             }
           });
-        } else if (forcedLocale.isEmpty && context.locale.languageCode != appSettings.locale.languageCode) {
+        } else if (forcedLocale.isEmpty &&
+            context.locale.languageCode != appSettings.locale.languageCode) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               context.setLocale(appSettings.locale);

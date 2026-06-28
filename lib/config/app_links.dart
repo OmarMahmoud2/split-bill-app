@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 
 class AppLinks {
   // 1. Android Package Name (Application ID)
@@ -14,7 +15,10 @@ class AppLinks {
 
   static String get appStoreUrl => 'https://apps.apple.com/app/id$appleAppId';
 
-  static String get storeUrl => Platform.isIOS ? appStoreUrl : playStoreUrl;
+  static String get storeUrl =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
+      ? appStoreUrl
+      : playStoreUrl;
 
   // 4. Support Email
   static const String supportEmail = 'omar.mahmoud1@yahoo.com';

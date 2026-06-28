@@ -54,6 +54,9 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final allParticipantIds = widget.participants
+        .map<String>((participant) => participant['id'] as String)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,11 +77,11 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
           ),
         ).tr(),
         const SizedBox(height: 20),
-        
+
         ...widget.participants.map((p) {
           final isSelected = _tempSelection.contains(p['id']);
           final avatarColor = p['color'] as Color? ?? colorScheme.primary;
-          
+
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Material(
@@ -97,11 +100,16 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
                 borderRadius: BorderRadius.circular(20),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? avatarColor.withValues(alpha: 0.08)
-                        : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                        : colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.3,
+                          ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isSelected
@@ -116,7 +124,9 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isSelected ? avatarColor : Colors.transparent,
+                            color: isSelected
+                                ? avatarColor
+                                : Colors.transparent,
                             width: 2,
                           ),
                         ),
@@ -140,8 +150,12 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
                         child: Text(
                           p['name'],
                           style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                            color: isSelected ? avatarColor : colorScheme.onSurface,
+                            fontWeight: isSelected
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                            color: isSelected
+                                ? avatarColor
+                                : colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -155,7 +169,9 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
                               )
                             : Icon(
                                 Icons.circle_outlined,
-                                color: colorScheme.outline.withValues(alpha: 0.3),
+                                color: colorScheme.outline.withValues(
+                                  alpha: 0.3,
+                                ),
                                 key: const ValueKey('unselected'),
                               ),
                       ),
@@ -166,31 +182,70 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
             ),
           );
         }),
-        
+
         const SizedBox(height: 24),
-        
-        // Confirm Button
-        ElevatedButton(
-          onPressed: () {
-            widget.onConfirm(_tempSelection);
-            Navigator.pop(context);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            minimumSize: const Size(double.infinity, 58),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
+
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  widget.onConfirm(allParticipantIds);
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.groups_rounded),
+                label: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'for_all',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: colorScheme.primary,
+                    ),
+                  ).tr(),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                  minimumSize: const Size(double.infinity, 58),
+                  side: BorderSide(
+                    color: colorScheme.primary.withValues(alpha: 0.55),
+                    width: 1.5,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+              ),
             ),
-          ),
-          child: Text(
-            'confirm_selection',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-              color: colorScheme.onPrimary,
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  widget.onConfirm(_tempSelection);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  minimumSize: const Size(double.infinity, 58),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'confirm_selection',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: colorScheme.onPrimary,
+                    ),
+                  ).tr(),
+                ),
+              ),
             ),
-          ).tr(),
+          ],
         ),
         const SizedBox(height: 16),
       ],

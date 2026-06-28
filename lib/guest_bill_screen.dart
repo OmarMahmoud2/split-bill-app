@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,13 +33,34 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   bool _isUploading = false;
   bool _showSuccess = false;
   String? _selectedMethod;
+  late Future<DocumentSnapshot> _billFuture;
 
   @override
   void initState() {
     super.initState();
+    _billFuture = _fetchBill();
     if (widget.initialParticipantId != null) {
       _selectedParticipantId = widget.initialParticipantId;
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant GuestBillScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.billId != widget.billId) {
+      _billFuture = _fetchBill();
+      _selectedParticipantId = widget.initialParticipantId;
+      _selectedMethod = null;
+      _showSuccess = false;
+    }
+  }
+
+  Future<DocumentSnapshot> _fetchBill() {
+    return FirebaseFirestore.instance
+        .collection('bills')
+        .doc(widget.billId)
+        .get()
+        .timeout(const Duration(seconds: 12));
   }
 
   String _currencyCode(Map<String, dynamic> billData) =>
@@ -99,19 +121,22 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     double tip = ((charges?['tipAmount'] ?? 0) as num).toDouble();
     double discount = ((charges?['discountAmount'] ?? 0) as num).toDouble();
     double delivery = ((charges?['deliveryFeeAmount'] ?? 0) as num).toDouble();
-    final participantCount =
-        (billData['participants'] as List?)?.length ?? 1;
-    final otherChargeShares = _otherCharges(billData).map((charge) {
-      final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
-      final splitMethod = charge['splitMethod'] ?? charge['split_method'];
-      final share = splitMethod == 'equal'
-          ? amount / participantCount
-          : amount * myRatio;
-      return {
-        'label': (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
-        'amount': share,
-      };
-    }).where((charge) => (charge['amount'] as double) > 0).toList();
+    final participantCount = (billData['participants'] as List?)?.length ?? 1;
+    final otherChargeShares = _otherCharges(billData)
+        .map((charge) {
+          final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
+          final splitMethod = charge['splitMethod'] ?? charge['split_method'];
+          final share = splitMethod == 'equal'
+              ? amount / participantCount
+              : amount * myRatio;
+          return {
+            'label': (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                .toString(),
+            'amount': share,
+          };
+        })
+        .where((charge) => (charge['amount'] as double) > 0)
+        .toList();
     final otherChargesTotal = otherChargeShares.fold<double>(
       0.0,
       (runningTotal, charge) => runningTotal + (charge['amount'] as double),
@@ -184,7 +209,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               Text(
                 billData['storeName'] ?? 'receipt'.tr(),
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                 ),
@@ -246,7 +273,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                               width: 36,
                               height: 36,
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Center(
@@ -256,7 +285,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                                   ),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -279,7 +310,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                                     Text(
                                       'shared_with_people_count'.tr(
                                         namedArgs: {
-                                          'count': item['sharedCount'].toString(),
+                                          'count': item['sharedCount']
+                                              .toString(),
                                         },
                                       ),
                                       style: TextStyle(
@@ -335,7 +367,11 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   ],
                   if (breakdown['myTip'] > 0) ...[
                     const SizedBox(height: 12),
-                    _buildRow('tip_share'.tr(), breakdown['myTip'], currencyCode),
+                    _buildRow(
+                      'tip_share'.tr(),
+                      breakdown['myTip'],
+                      currencyCode,
+                    ),
                   ],
                   if (breakdown['myDelivery'] > 0) ...[
                     const SizedBox(height: 12),
@@ -349,7 +385,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     (charge) => [
                       const SizedBox(height: 12),
                       _buildRow(
-                        (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+                        (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                            .toString(),
                         (charge['amount'] as num).toDouble(),
                         currencyCode,
                       ),
@@ -369,10 +406,14 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1),
                       ),
                     ),
                     child: Row(
@@ -654,13 +695,18 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
           Text(
             'help_the_host_verify_your_payment_faster',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w500,
             ),
           ).tr(),
           const SizedBox(height: 32),
           ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
             leading: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -677,7 +723,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               'recommended_for_digital_wallets',
               style: TextStyle(color: Colors.grey[600]),
             ).tr(),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             onTap: () {
               Navigator.pop(context);
               _uploadPaymentProof(
@@ -693,7 +741,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
           const Divider(),
           const SizedBox(height: 8),
           ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
             leading: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -713,7 +764,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               'host_will_verify_manually',
               style: TextStyle(color: Colors.grey[600]),
             ).tr(),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             onTap: () {
               Navigator.pop(context);
               _markAsPaidNoProof(
@@ -740,18 +793,22 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     String participantName,
   ) {
     final currencyCode = _currencyCode(billData);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final width = MediaQuery.of(context).size.width;
+    final isNarrow = width < 380;
     String statusLabel = status == 'PAID'
-        ? "PAID ✓"
-        : (status == 'REVIEW' ? "IN REVIEW" : "PENDING");
+        ? 'status_paid'.tr()
+        : (status == 'REVIEW' ? 'in_review'.tr() : 'PENDING');
 
     return InkWell(
       onTap: () => _showBreakdownModal(context, billData, participantName),
       borderRadius: BorderRadius.circular(24),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isNarrow ? 22 : 28),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -778,41 +835,42 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   color: statusColor,
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
-                  letterSpacing: 1.5,
+                  letterSpacing: 0,
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('you_owe_to',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ).tr(),
-                const Text(' '),
-                Text(
-                  hostName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+            Text.rich(
+              TextSpan(
+                text: '${'you_owe_to'.tr()} ',
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
                 ),
-              ],
+                children: [
+                  TextSpan(
+                    text: hostName,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 12),
             Text(
               CurrencyUtils.format(myTotal, currencyCode: currencyCode),
               style: TextStyle(
-                fontSize: 48,
+                fontSize: isNarrow ? 38 : 48,
                 fontWeight: FontWeight.w900,
-                letterSpacing: -1,
-                color: Colors.blue[900],
+                letterSpacing: 0,
+                color: colorScheme.primary,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 12),
             Row(
@@ -824,7 +882,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   color: Colors.grey[400],
                 ),
                 const SizedBox(width: 6),
-                Text('tap_to_see_breakdown',
+                Text(
+                  'tap_to_see_breakdown',
                   style: TextStyle(color: Colors.grey[500], fontSize: 13),
                 ).tr(),
               ],
@@ -1040,26 +1099,36 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.billId.isEmpty) {
-      return Scaffold(body: Center(child: Text('invalid_bill_id').tr()));
+      return Scaffold(
+        body: _buildCenteredState(
+          icon: Icons.link_off_rounded,
+          title: 'invalid_bill_id'.tr(),
+        ),
+      );
     }
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: colorScheme.surfaceContainerHighest,
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('bills')
-            .doc(widget.billId)
-            .get(),
+        future: _billFuture,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'error_with_details'.tr(
-                  namedArgs: {'error': snapshot.error.toString()},
-                ),
-              ),
+            final isTimeout = snapshot.error is TimeoutException;
+            return _buildCenteredState(
+              icon: Icons.cloud_off_rounded,
+              title: isTimeout
+                  ? 'error_loading_bills'.tr()
+                  : 'error_with_details'.tr(
+                      namedArgs: {'error': snapshot.error.toString()},
+                    ),
+              subtitle: isTimeout
+                  ? 'Please check your connection and refresh this page.'
+                  : null,
             );
           }
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              !snapshot.hasData) {
             return Center(
               child: Lottie.asset(
                 'assets/animations/loading.json',
@@ -1069,9 +1138,18 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             );
           }
 
-          final billData = snapshot.data!.data() as Map<String, dynamic>;
+          final rawBillData = snapshot.data!.data();
+          if (!snapshot.data!.exists || rawBillData is! Map<String, dynamic>) {
+            return _buildCenteredState(
+              icon: Icons.receipt_long_rounded,
+              title: 'bill_not_found'.tr(),
+            );
+          }
+
+          final billData = rawBillData;
           final participants = billData['participants'] as List<dynamic>? ?? [];
-          final String storeName = billData['storeName'] ?? 'unknown_store'.tr();
+          final String storeName =
+              billData['storeName'] ?? 'unknown_store'.tr();
 
           // Auto-select logic (only once)
           if (widget.initialParticipantId != null &&
@@ -1119,11 +1197,71 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     );
   }
 
+  Widget _buildCenteredState({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return SafeArea(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: colorScheme.outline.withValues(alpha: 0.12),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 44, color: colorScheme.primary),
+                  const SizedBox(height: 18),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: colorScheme.onSurface,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      subtitle,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface.withValues(alpha: 0.62),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDashboardView(
     Map<String, dynamic> billData,
     List<dynamic> participants,
     String storeName,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     // 1. Success State
     if (_showSuccess) {
       return Center(
@@ -1144,12 +1282,14 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              Text('payment_proof_uploaded',
+              Text(
+                'payment_proof_uploaded',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900),
                 textAlign: TextAlign.center,
               ).tr(),
               const SizedBox(height: 12),
-              Text('the_host_has_been_notified_and_will_review_your_payment_soon',
+              Text(
+                'the_host_has_been_notified_and_will_review_your_payment_soon',
                 style: TextStyle(color: Colors.grey, fontSize: 15),
                 textAlign: TextAlign.center,
               ).tr(),
@@ -1157,7 +1297,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               ElevatedButton(
                 onPressed: () => setState(() => _showSuccess = false),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[700],
+                  backgroundColor: colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
@@ -1167,7 +1307,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text('back_to_bill',
+                child: Text(
+                  'back_to_bill',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ).tr(),
               ),
@@ -1189,7 +1330,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               errorBuilder: (c, e, s) => const CircularProgressIndicator(),
             ),
             const SizedBox(height: 24),
-            Text('uploading_proof',
+            Text(
+              'uploading_proof',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ).tr(),
           ],
@@ -1206,7 +1348,12 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => _selectedParticipantId = null);
       });
-      return const SizedBox();
+      return GuestSelectorView(
+        participants: participants,
+        storeName: storeName,
+        onParticipantSelected: (id) =>
+            setState(() => _selectedParticipantId = id),
+      );
     }
 
     final breakdown = _calculateDetailedShare(
@@ -1236,7 +1383,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                       child: IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios_new_rounded,
-                          color: Colors.blue[800],
+                          color: colorScheme.primary,
                           size: 24,
                         ),
                         onPressed: () {
@@ -1258,11 +1405,11 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blue.withValues(alpha: 0.05),
+                      color: colorScheme.shadow.withValues(alpha: 0.06),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -1270,22 +1417,23 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 ),
                 child: Column(
                   children: [
-                    Text('welcome_back',
+                    Text(
+                      'welcome_back',
                       style: TextStyle(
                         fontSize: 12,
-                        letterSpacing: 2,
+                        letterSpacing: 0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[400],
+                        color: colorScheme.onSurface.withValues(alpha: 0.46),
                       ),
                     ).tr(),
                     const SizedBox(height: 8),
                     Text(
                       (participant['name'] ?? 'guest'.tr()).toUpperCase(),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -1320,7 +1468,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                       Expanded(child: Divider(color: Colors.grey[300])),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text('pay_with',
+                        child: Text(
+                          'pay_with',
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontWeight: FontWeight.bold,
@@ -1355,14 +1504,15 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                       participant['name'] ?? "Guest",
                     ),
                     icon: const Icon(Icons.check_circle_rounded, size: 24),
-                    label: Text('i_ve_paid',
+                    label: Text(
+                      'i_ve_paid',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ).tr(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[700],
+                      backgroundColor: colorScheme.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(
