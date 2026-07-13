@@ -1,1 +1,1 @@
-Scan receipts & split fairly
+Scan & split bills with AI

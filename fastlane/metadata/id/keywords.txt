@@ -1,1 +1,1 @@
-bagi,tagihan,struk,pemindai,pengeluaran,grup,makan,ai,keuangan
+bagi, tagihan, struk, pemindai, pengeluaran, grup, makan, ai, keuangan

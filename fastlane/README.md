@@ -31,6 +31,14 @@ Push iOS localized text (metadata) to App Store Connect
 
 Deploy a new version to the App Store (IPA + Release Notes)
 
+### ios list_languages
+
+```sh
+[bundle exec] fastlane ios list_languages
+```
+
+List all languages currently active on App Store Connect
+
 ----
 
 

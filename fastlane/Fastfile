@@ -13,7 +13,7 @@ platform :ios do
 
     deliver(
       api_key: api_key,
-      app_version: "1.1.3",           # New version for metadata update
+      app_version: "1.1.5",           # New version for metadata update
       skip_screenshots: true,
       skip_metadata: false,          # ENSURE THIS IS FALSE TO PUSH ALL METADATA
       overwrite_screenshots: false,
@@ -37,12 +37,15 @@ platform :ios do
     deliver(
       api_key: api_key,
       ipa: "build/ios/ipa/split_bill_app.ipa",
-      app_version: "1.1.3",           # New version for 1.1.3
+      app_version: "1.1.5",           # New version for 1.1.5
       skip_screenshots: true,
       skip_metadata: false,          # ENSURE THIS IS FALSE TO PUSH ALL METADATA
       force: true,
       submit_for_review: true,       # Automatically submit for review
       run_precheck_before_submit: false,         # Fixes API Key compatibility error
+      ignore_language_directory_validation: true, # Fix validation error for unsupported 'ur' directory
+      submission_information: { export_compliance_uses_encryption: false }, # Fix export compliance error
+      release_notes: { "default" => "Bug fixes and UI improvements." }, # Fallback to prevent missing 'whatsNew' error for any language
     )
   end
 end

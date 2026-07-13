@@ -63,7 +63,8 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                   Icon(Icons.warning_amber_rounded, color: Colors.orange),
                   SizedBox(width: 12),
                   Expanded(
-                    child: Text('phone_number_already_exists',
+                    child: Text(
+                      'phone_number_already_exists',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ).tr(),
                   ),
@@ -112,7 +113,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         'displayName': user.displayName ?? "User",
         'email': user.email,
         'points': 7, // 🎁 Start with 7 free points
-        'isPremium': false, // Default to free tier
         'localeCode': localeCode,
         'currencyCode': UserPreferencesService.defaultCurrencyCode,
       }, SetOptions(merge: true));
@@ -147,11 +147,13 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('let_s_verify_your_number',
+            Text(
+              'let_s_verify_your_number',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ).tr(),
             const SizedBox(height: 10),
-            Text('this_allows_friends_to_find_you_by_your_contact_details',
+            Text(
+              'this_allows_friends_to_find_you_by_your_contact_details',
               style: TextStyle(color: Colors.grey),
             ).tr(),
             const SizedBox(height: 30),

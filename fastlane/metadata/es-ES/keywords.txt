@@ -1,1 +1,1 @@
-dividir,cuenta,recibo,escáner,gastos,grupo,cena,ia,finanzas
+dividir, cuenta, recibo, escáner, gastos, grupo, cena, ia, finanzas

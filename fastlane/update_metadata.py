@@ -23,7 +23,7 @@ Features:
 Download now and never fight over the bill again!"""
 BASE_KEYWORDS = "split, bill, receipts, scanner, expense, sharing, group, dinner, ai, finance"
 BASE_CHANGELOG = "Bug fixes, UI improvements"
-RELEASE_VERSION_CODE = "11"
+RELEASE_VERSION_CODE = "13"
 
 # Updated URLs (as per user request)
 SUPPORT_URL = "https://omarmali.net/split-bill/"
@@ -35,7 +35,7 @@ PRIVACY_URL = "https://omarmali.net/split-bill/privacy/"
 locales = {
     'en': {
         'title': "Split Bill - Receipt Scanner",
-        'short': "Scan receipts & split fairly with AI. No more math after dinner!",
+        'short': "Scan & split bills with AI",
         'promo': BASE_PROMO,
         'desc': BASE_DESC,
         'keywords': BASE_KEYWORDS,
@@ -43,7 +43,7 @@ locales = {
     },
     'ar': {
         'title': "تقسيم الفاتورة - مسح الإيصالات",
-        'short': "امسح الفاتورة وقسمها بالذكاء الاصطناعي. وداعاً لحسابات العشاء المعقدة!",
+        'short': "قسم الفواتير بالذكاء الاصطناعي",
         'promo': "قسم الفاتورة فوراً بالذكاء الاصطناعي! لا مزيد من الحسابات المحرجة.",
         'desc': """تعبت من الحسابات بعد العشاء؟ تطبيق تقسيم الفاتورة يسهل عليك الأمر.
 
@@ -57,11 +57,11 @@ locales = {
 
 حمل التطبيق الآن ولا تختلف مع أصدقائك على الفاتورة أبدًا!""",
         'keywords': "تقسيم, فاتورة, إيصالات, ماسح, مصاريف, مشاركة, مجموعة, عشاء, ذكاء اصطناعي",
-        'changelog': BASE_CHANGELOG
+        'changelog': "إصلاح الأخطاء وتحسينات واجهة المستخدم"
     },
     'de': {
         'title': "Split Bill - Belegscanner",
-        'short': "Belege scannen & fair teilen mit KI. Schluss mit Rechnen nach dem Essen!",
+        'short': "Belege mit KI teilen",
         'promo': "Rechnungen sofort per KI teilen! Kein peinliches Rechnen mehr.",
         'desc': """Müde vom Rechnen nach dem Essen? Split Bill macht es einfach.
 
@@ -75,11 +75,11 @@ Funktionen:
 
 Jetzt herunterladen und nie wieder über die Rechnung streiten!""",
         'keywords': "teilen, rechnung, beleg, scanner, ausgaben, gruppe, essen, ki, finanzen",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Fehlerbehebungen, UI-Verbesserungen"
     },
     'es': {
         'title': "Split Bill - Escáner Recibos",
-        'short': "Escanea recibos y divide con IA. ¡Se acabó calcular tras la cena!",
+        'short': "Divide cuentas con IA",
         'promo': "¡Divide cuentas al instante con IA! No más cuentas incómodas.",
         'desc': """¿Cansado de calcular después de cenar? Split Bill lo hace fácil.
 
@@ -93,11 +93,11 @@ Características:
 
 ¡Descárgalo ahora y no vuelvas a discutir por la cuenta!""",
         'keywords': "dividir, cuenta, recibo, escáner, gastos, grupo, cena, ia, finanzas",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Corrección de errores, mejoras de la interfaz"
     },
     'fr': {
         'title': "Split Bill - Scanner Reçus",
-        'short': "Scannez les reçus et divisez avec l'IA. Fini les calculs après le dîner !",
+        'short': "Divisez les notes avec l'IA",
         'promo': "Divisez les comptes instantanément with l'IA！Plus de calculs gênants.",
         'desc': """Fatigué de calculer après le dîner ? Split Bill vous facilite la vie.
 
@@ -111,11 +111,11 @@ Fonctionnalités :
 
 Téléchargez maintenant et ne vous disputez plus jamais pour l'addition !""",
         'keywords': "diviser, addition, reçu, scanner, dépenses, groupe, dîner, ia, finance",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Corrections de bugs, améliorations de l'interface"
     },
     'hi': {
         'title': "Split Bill - रसीद स्कैनर",
-        'short': "AI के साथ रसीदें स्कैन करें और सटीक विभाजित करें। भोजन के बाद गणित की ज़रूरत नहीं!",
+        'short': "AI से बिल विभाजित करें",
         'promo': "AI के साथ बिल तुरंत विभाजित करें! अब कोई अजीब गणित नहीं।",
         'desc': """भोजन के बाद गणित करने से थक गए हैं? Split Bill इसे आसान बनाता है।
 
@@ -129,11 +129,11 @@ Téléchargez maintenant et ne vous disputez plus jamais pour l'addition !""",
 
 अभी डाउनलोड करें और बिल को लेकर कभी झगड़ा न करें!""",
         'keywords': "विभाजित, बिल, रसीद, स्कैनर, खर्च, साझाकरण, समूह, भोजन, एआई, वित्त",
-        'changelog': BASE_CHANGELOG
+        'changelog': "बग फिक्स, यूआई सुधार"
     },
     'id': {
         'title': "Split Bill - Pemindai Struk",
-        'short': "Pindai struk & bagi adil dengan AI. Tidak ada lagi hitungan rumit!",
+        'short': "Bagi tagihan dengan AI",
         'promo': "Bagi tagihan instan dengan AI! Tidak ada lagi hitungan canggung.",
         'desc': """Lelah menghitung tagihan setelah makan? Split Bill memudahkannya.
 
@@ -147,11 +147,11 @@ Fitur:
 
 Unduh sekarang dan jangan pernah bertengkar karena tagihan lagi!""",
         'keywords': "bagi, tagihan, struk, pemindai, pengeluaran, grup, makan, ai, keuangan",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Perbaikan bug, peningkatan UI"
     },
     'it': {
         'title': "Split Bill - Scanner Ricevute",
-        'short': "Scansiona ricevute e dividi con l'IA. Basta conti dopo cena!",
+        'short': "Dividi il conto con l'IA",
         'promo': "Dividi i conti istantaneamente con l'IA! Niente più calcoli imbarazzanti.",
         'desc': """Stanco di fare calcoli dopo cena? Split Bill rende tutto semplice.
 
@@ -165,11 +165,11 @@ Funzionalità:
 
 Scarica ora e non lititare mai più per il conto!""",
         'keywords': "dividere, conto, ricevuta, scanner, spese, gruppo, cena, ia, finanza",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Correzioni di bug, miglioramenti dell'interfaccia"
     },
     'ja': {
         'title': "Split Bill - レシート読取",
-        'short': "AIでレシートをスキャンして公平に分割。食後の暗算はもう不要！",
+        'short': "AIでレシートを分割",
         'promo': "AIで即座に割り勘！面倒な計算から解放されます。",
         'desc': """食後の計算に疲れていませんか？Split Billが解決します。
 
@@ -183,11 +183,11 @@ Scarica ora e non lititare mai più per il conto!""",
 
 今すぐダウンロードして、支払いのトラブルをなくしましょう！""",
         'keywords': "分割, 割り勘, レシート, スキャナー, 経費, グループ, 食事, ai, 金融",
-        'changelog': BASE_CHANGELOG
+        'changelog': "バグ修正、UIの改善"
     },
     'ko': {
         'title': "Split Bill - 영수증 스캐너",
-        'short': "AI로 영수증을 스캔하고 공정하게 분할하세요. 식사 후 복잡한 계산은 이제 그만!",
+        'short': "AI로 영수증 분할",
         'promo': "AI로 즉석에서 더치페이! 어색한 계산 시간이 필요 없습니다.",
         'desc': """식사 후 영수증 계산이 스트레스인가요? Split Bill이 도와드립니다.
 
@@ -201,11 +201,11 @@ Scarica ora e non lititare mai più per il conto!""",
 
 지금 다운로드하고 결제 걱정 없이 식사를 즐기세요!""",
         'keywords': "분할, 영수증, 스캐너, 비용, 공유, 그룹, 식사, ai, 금융, 더치페이",
-        'changelog': BASE_CHANGELOG
+        'changelog': "버그 수정, UI 개선"
     },
     'pl': {
         'title': "Split Bill - Skaner Paragon",
-        'short': "Skanuj paragony i dziel rachunki z AI. Koniec z liczeniem po kolacji!",
+        'short': "Dziel rachunki z AI",
         'promo': "Dziel rachunki natychmiast z AI! Koniec z niezręcznymi obliczeniami.",
         'desc': """Masz dość liczenia po kolacji? Split Bill ułatwia sprawę.
 
@@ -219,11 +219,11 @@ Cechy:
 
 Pobierz teraz i nigdy więcej nie kłóć się o rachunek!""",
         'keywords': "dzielenie, rachunek, paragon, skaner, wydatki, grupa, kolacja, ai, finanse",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Poprawki błędów, ulepszenia interfejsu"
     },
     'pt': {
         'title': "Split Bill - Scanner Recibos",
-        'short': "Escaneie recibos e divida com IA. Chega de cálculos após o jantar!",
+        'short': "Divida contas com IA",
         'promo': "Divida contas instantaneamente com IA！Sem contas constrangedoras.",
         'desc': """Cansado de fazer contas depois de jantar? Split Bill facilita tudo.
 
@@ -237,11 +237,11 @@ Funcionalidades:
 
 Baixe agora e nunca mais discuta pela conta!""",
         'keywords': "dividir, conta, recibo, scanner, despesas, grupo, jantar, ia, finanças",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Correções de bugs, melhorias na interface"
     },
     'ru': {
         'title': "Split Bill - Сканер Чеков",
-        'short': "Сканируйте чеки и делите счет с ИИ. Забудьте о математике после ужина!",
+        'short': "Делите счета с ИИ",
         'promo': "Делите счет мгновенно с ИИ! Никаких неловких расчетов.",
         'desc': """Устали считать после ужина? Split Bill сделает это за вас.
 
@@ -255,11 +255,11 @@ Baixe agora e nunca mais discuta pela conta!""",
 
 Скачайте сейчас и забудьте о спорах из-за счетов!""",
         'keywords': "разделить, счет, чек, сканер, расходы, группа, ужин, ии, финансы",
-        'changelog': BASE_CHANGELOG
+        'changelog': "Исправления ошибок, улучшения интерфейса"
     },
     'ur': {
         'title': "Split Bill - رسید اسکینر",
-        'short': "AI کے ساتھ رسیدیں اسکین کریں اور درست تقسیم کریں۔ کھانے کے بعد حساب کی ضرورت نہیں!",
+        'short': "AI کے ساتھ بل تقسیم کریں",
         'promo': "AI کے ساتھ بل فوری تقسیم کریں! اب کوئی عجیب حساب کتاب نہیں۔",
         'desc': """کھانے کے بعد حساب کتاب کرنے سے تھک گئے ہیں؟ Split Bill اسے آسان بناتا ہے۔
 
@@ -273,11 +273,11 @@ Baixe agora e nunca mais discuta pela conta!""",
 
  ابھی ڈاؤن لوڈ کریں اور بل کو لے کر کبھی جھگڑا نہ کریں!""",
         'keywords': "تقسیم, بل, رسید, اسکینر, اخراجات, شیئرنگ, گروپ, کھانا, اے آئی, فنانس",
-        'changelog': BASE_CHANGELOG
+        'changelog': "بگ فکس، یوزر انٹرفیس میں بہتری"
     },
     'zh': {
         'title': "Split Bill - 收据扫描分摊",
-        'short': "AI扫描收据，公平分账。用餐后无需再心算！",
+        'short': "AI扫描收据，公平分账",
         'promo': "AI瞬间分账！告别尴尬的计算时间。",
         'desc': """聚餐后还在为谁该付多少钱烦恼吗？Split Bill 来帮你。
 
@@ -291,7 +291,7 @@ Baixe agora e nunca mais discuta pela conta!""",
 
 立即下载，再也不用为买单争吵！""",
         'keywords': "分账, 账单, 收据, 扫描, 费用, 分担, 聚餐, ai, 金融, 扫码",
-        'changelog': BASE_CHANGELOG
+        'changelog': "错误修复，UI界面改进"
     }
 }
 

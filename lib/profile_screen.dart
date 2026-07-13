@@ -25,6 +25,7 @@ import 'package:split_bill_app/screens/profile/widgets/version_info.dart';
 import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 import 'package:split_bill_app/screens/admin/admin_dashboard_screen.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -447,6 +448,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const SizedBox(height: 20),
                               ProfileSectionTitle(title: 'premium_status'.tr()),
                               const PremiumStatusCard(),
+                              ProfileCoolTile(
+                                icon: Icons.manage_accounts_rounded,
+                                title: 'manage_subscription'.tr(),
+                                subtitle: 'manage_subscription_subtitle'.tr(),
+                                color: Colors.amber,
+                                onTap: _manageSubscription,
+                              ),
+                              ProfileCoolTile(
+                                icon: Icons.sync_rounded,
+                                title: 'refresh_premium_status'.tr(),
+                                subtitle: 'refresh_premium_status_subtitle'
+                                    .tr(),
+                                color: Colors.teal,
+                                onTap: _refreshPremiumStatus,
+                              ),
                             ],
                           );
                         }
@@ -473,6 +489,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               subtitle: 'unlimited_scans_no_ads_lifetime'.tr(),
                               color: Colors.blue,
                               onTap: _showPremiumDialog,
+                            ),
+                            ProfileCoolTile(
+                              icon: Icons.sync_rounded,
+                              title: 'refresh_premium_status'.tr(),
+                              subtitle: 'refresh_premium_status_subtitle'.tr(),
+                              color: Colors.teal,
+                              onTap: _refreshPremiumStatus,
                             ),
                           ],
                         );
@@ -645,6 +668,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Premium purchased successfully, UI will auto-update via StreamBuilder
       setState(() {}); // Refresh to show premium status
     }
+  }
+
+  Future<void> _refreshPremiumStatus() async {
+    final success = await RevenueCatService.syncCurrentUser();
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? 'premium_status_refreshed'
+              : 'premium_status_refresh_failed',
+        ).tr(),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: success ? Colors.green : Colors.orange,
+      ),
+    );
+  }
+
+  Future<void> _manageSubscription() async {
+    final opened = await RevenueCatService.openSubscriptionManagement();
+    if (!mounted || opened) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('subscription_settings_unavailable').tr(),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 
   Future<void> _seedTransactions() async {

@@ -23,4 +23,7 @@ class BackendConfig {
 
   static Uri get voiceAssignmentUri =>
       Uri.parse('$baseUrl/api/split-bill/voice/assign/');
+
+  static Uri get premiumSyncUri =>
+      Uri.parse('$baseUrl/api/split-bill/premium/sync/');
 }

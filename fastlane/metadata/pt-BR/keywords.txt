@@ -1,1 +1,1 @@
-dividir,conta,recibo,scanner,despesas,grupo,jantar,ia,finanças
+dividir, conta, recibo, scanner, despesas, grupo, jantar, ia, finanças

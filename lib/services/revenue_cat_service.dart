@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/config/api_keys.dart';
+import 'package:split_bill_app/config/backend_config.dart';
 
 /// Service to manage RevenueCat integration and premium status
 class RevenueCatService {
@@ -37,9 +40,12 @@ class RevenueCatService {
     _isConfigured = true;
 
     _authSubscription?.cancel();
-    _authSubscription = FirebaseAuth.instance.authStateChanges().listen(
-      _handleAuthChange,
-    );
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+      unawaited(_handleAuthChange(user));
+    });
+    Purchases.addCustomerInfoUpdateListener((_) {
+      unawaited(syncPremiumStatus());
+    });
     await _handleAuthChange(FirebaseAuth.instance.currentUser);
   }
 
@@ -81,7 +87,7 @@ class RevenueCatService {
           customerInfo.entitlements.all[_entitlementId]?.isActive ?? false;
 
       if (isPremiumActive) {
-        await _syncPremiumStatus();
+        await syncPremiumStatus();
         return true;
       }
       return false;
@@ -101,7 +107,7 @@ class RevenueCatService {
       final isPremiumActive =
           customerInfo.entitlements.all[_entitlementId]?.isActive ?? false;
 
-      await _syncPremiumStatus();
+      await syncPremiumStatus();
       return isPremiumActive;
     } catch (e) {
       if (kDebugMode) debugPrint('Error restoring purchases: $e');
@@ -109,40 +115,52 @@ class RevenueCatService {
     }
   }
 
-  /// Sync premium status between RevenueCat and Firestore
-  static Future<void> _syncPremiumStatus([User? currentUser]) async {
+  /// Ask the backend to sync premium status from RevenueCat into Firestore.
+  static Future<bool> syncPremiumStatus([User? currentUser]) async {
     try {
       final user = currentUser ?? FirebaseAuth.instance.currentUser;
-      if (user == null) return;
+      if (user == null || kIsWeb) return false;
 
-      final isPremiumActive = await isPremium();
+      final idToken = await user.getIdToken();
+      if (idToken == null || idToken.isEmpty) return false;
 
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'isPremium': isPremiumActive,
-      }, SetOptions(merge: true));
+      final response = await http.post(
+        BackendConfig.premiumSyncUri,
+        headers: {
+          'Authorization': 'Bearer $idToken',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
 
-      if (kDebugMode) debugPrint('✅ Synced premium status: $isPremiumActive');
+      final success = response.statusCode >= 200 && response.statusCode < 300;
+      if (kDebugMode) {
+        debugPrint('✅ Backend premium sync status: ${response.statusCode}');
+      }
+      return success;
     } catch (e) {
       if (kDebugMode) debugPrint('Error syncing premium status: $e');
+      return false;
     }
   }
 
-  static Future<void> _handleAuthChange(User? user) async {
-    if (!_isConfigured) return;
+  static Future<bool> _handleAuthChange(User? user) async {
+    if (!_isConfigured) return false;
 
     try {
       if (user == null) {
         await Purchases.logOut();
-        return;
+        return false;
       }
 
       await Purchases.logIn(user.uid);
       if (user.email != null && user.email!.isNotEmpty) {
         await Purchases.setEmail(user.email!);
       }
-      await _syncPremiumStatus(user);
+      return syncPremiumStatus(user);
     } catch (e) {
       if (kDebugMode) debugPrint('RevenueCat auth sync error: $e');
+      return false;
     }
   }
 
@@ -153,7 +171,7 @@ class RevenueCatService {
         await initialize();
       }
       await Purchases.logIn(userId);
-      await _syncPremiumStatus();
+      await syncPremiumStatus();
     } catch (e) {
       if (kDebugMode) debugPrint('Error logging in to RevenueCat: $e');
     }
@@ -169,7 +187,40 @@ class RevenueCatService {
     }
   }
 
-  static Future<void> syncCurrentUser() async {
-    await _handleAuthChange(FirebaseAuth.instance.currentUser);
+  static Future<bool> syncCurrentUser() async {
+    return _handleAuthChange(FirebaseAuth.instance.currentUser);
+  }
+
+  static Future<Uri?> subscriptionManagementUri() async {
+    if (kIsWeb) return null;
+
+    try {
+      final customerInfo = await Purchases.getCustomerInfo();
+      final managementUrl = customerInfo.managementURL;
+      if (managementUrl != null && managementUrl.trim().isNotEmpty) {
+        return Uri.tryParse(managementUrl.trim());
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error loading subscription management URL: $e');
+      }
+    }
+
+    if (Platform.isIOS) {
+      return Uri.parse('https://apps.apple.com/account/subscriptions');
+    }
+    if (Platform.isAndroid) {
+      return Uri.parse(
+        'https://play.google.com/store/account/subscriptions'
+        '?package=${AppLinks.androidPackageName}',
+      );
+    }
+    return null;
+  }
+
+  static Future<bool> openSubscriptionManagement() async {
+    final uri = await subscriptionManagementUri();
+    if (uri == null) return false;
+    return launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 }
