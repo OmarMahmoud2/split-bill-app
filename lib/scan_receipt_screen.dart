@@ -13,6 +13,7 @@ import 'package:lottie/lottie.dart';
 import 'widgets/receipt_result_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'config/feature_costs.dart';
 import 'helpers/rewarded_ad_helper.dart';
 import 'providers/app_settings_provider.dart';
 import 'widgets/custom_app_header.dart';
@@ -227,7 +228,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
     try {
       final localImagePath =
-          widget.initialLocalImagePath ?? _image?.path ?? _receiptData?['localImagePath'];
+          widget.initialLocalImagePath ??
+          _image?.path ??
+          _receiptData?['localImagePath'];
       if (localImagePath is String && localImagePath.isNotEmpty) {
         final file = File(localImagePath);
         if (await file.exists()) {
@@ -249,9 +252,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'error_saving'.tr(namedArgs: {'error': e.toString()}),
-          ),
+          content: Text('error_saving'.tr(namedArgs: {'error': e.toString()})),
           backgroundColor: Colors.red,
         ),
       );
@@ -353,7 +354,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         (_receiptData?['other_charges_total'] as num?)?.toDouble() ?? 0.0;
 
     double finalTotal =
-        subtotal + tax + service + tip + delivery + otherChargesTotal - discount;
+        subtotal +
+        tax +
+        service +
+        tip +
+        delivery +
+        otherChargesTotal -
+        discount;
 
     setState(() {
       _totalController.text = finalTotal.toStringAsFixed(2);
@@ -422,12 +429,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             : <String, dynamic>{};
         final wasEdited =
             originalItem.isEmpty ||
-            _didItemChange(
-              originalItem,
-              name: name,
-              qty: qty,
-              price: price,
-            );
+            _didItemChange(originalItem, name: name, qty: qty, price: price);
         final confidenceScore = wasEdited
             ? 1.0
             : _confidenceValue(originalItem['confidence_score']);
@@ -471,14 +473,16 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         ),
       ).map((charge) => _confidenceValue(charge['confidence_score'])).toList();
 
-      final totalScore = _averageScores(
-        [subtotalScore, ...chargeScores],
-        fallback: 1.0,
-      );
-      final overallScore = _averageScores(
-        [...updatedItemScores, ...chargeScores, ...otherChargeScores, totalScore],
-        fallback: 1.0,
-      );
+      final totalScore = _averageScores([
+        subtotalScore,
+        ...chargeScores,
+      ], fallback: 1.0);
+      final overallScore = _averageScores([
+        ...updatedItemScores,
+        ...chargeScores,
+        ...otherChargeScores,
+        totalScore,
+      ], fallback: 1.0);
 
       updatedConfidence.addAll({
         'overall': overallScore,
@@ -565,9 +569,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         return;
       }
 
-      final points = userData?['points'] ?? 0;
-      if (points <= 0) {
-        await _showNoPointsDialog();
+      final points = (userData?['points'] as num?)?.toInt() ?? 0;
+      if (points < FeatureCosts.receiptScanPoints) {
+        await _showNoPointsDialog(FeatureCosts.receiptScanPoints);
         return;
       }
 
@@ -600,8 +604,12 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     }
   }
 
-  Future<void> _showNoPointsDialog() async {
-    await NoPointsDialog.show(context, onWatchAd: _watchAdForPoint);
+  Future<void> _showNoPointsDialog(int requiredPoints) async {
+    await NoPointsDialog.show(
+      context,
+      requiredPoints: requiredPoints,
+      onWatchAd: _watchAdForPoint,
+    );
   }
 
   Future<void> _watchAdForPoint() async {
@@ -626,7 +634,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('you_earned_1_point_you_can_now_use_the_scanner',
+              content: Text(
+                'you_earned_1_point_you_can_now_use_the_scanner',
               ).tr(),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.green,
@@ -640,7 +649,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             context: context,
             builder: (context) => AlertDialog(
               title: Text('notice').tr(),
-              content: Text('ads_are_currently_unavailable_please_try_again_later',
+              content: Text(
+                'ads_are_currently_unavailable_please_try_again_later',
               ).tr(),
               actions: [
                 TextButton(
@@ -666,7 +676,10 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           initAspectRatio: CropAspectRatioPreset.original,
           lockAspectRatio: false,
         ),
-        IOSUiSettings(title: 'adjust_receipt'.tr(), aspectRatioLockEnabled: false),
+        IOSUiSettings(
+          title: 'adjust_receipt'.tr(),
+          aspectRatioLockEnabled: false,
+        ),
       ],
     );
 
@@ -676,30 +689,6 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         _receiptData = null;
       });
       _analyzeImage();
-    }
-  }
-
-  Future<void> _deductPointAfterSuccessfulScan() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      final userData = userDoc.data();
-      final isPremium = userData?['isPremium'] ?? false;
-
-      if (!isPremium) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({'points': FieldValue.increment(-1)});
-      }
-    } catch (e) {
-      debugPrint("Error deducting point: $e");
     }
   }
 
@@ -729,7 +718,6 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         });
 
         HapticFeedback.mediumImpact();
-        await _deductPointAfterSuccessfulScan();
       }
     } catch (e) {
       setState(() => _isLoading = false);
@@ -756,7 +744,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: CustomAppHeader(
-        title: _receiptData == null ? 'scan_receipt'.tr() : 'scan_completed'.tr(),
+        title: _receiptData == null
+            ? 'scan_receipt'.tr()
+            : 'scan_completed'.tr(),
         trailing: _buildHeaderTrailing(),
       ),
       body: AnimatedSwitcher(
@@ -768,8 +758,6 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       floatingActionButton: null,
     );
   }
-
-
 
   Widget _buildHeaderTrailing() {
     final canDeleteDraft = widget.billId != null;
@@ -800,7 +788,10 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
               IconButton(
                 onPressed: _isLoading ? null : _confirmDeleteSavedDraft,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+                constraints: const BoxConstraints.tightFor(
+                  width: 40,
+                  height: 40,
+                ),
                 icon: const Icon(
                   Icons.delete_outline_rounded,
                   color: Colors.redAccent,
@@ -831,7 +822,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         children: [
           Icon(Icons.workspace_premium, color: Colors.white, size: 16),
           SizedBox(width: 4),
-          Text('pro',
+          Text(
+            'pro',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -904,7 +896,8 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             ),
           ),
           const SizedBox(height: 12),
-          Text('pulling_the_details_from_your_receipt',
+          Text(
+            'pulling_the_details_from_your_receipt',
             style: TextStyle(color: Colors.grey[500], fontSize: 14),
           ).tr(),
           const SizedBox(height: 50),

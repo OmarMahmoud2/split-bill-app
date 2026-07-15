@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:split_bill_app/config/feature_costs.dart';
 import 'package:split_bill_app/services/voice_service.dart';
 import 'package:split_bill_app/services/bill_intelligence_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,8 +31,6 @@ class VoiceCommandOverlay extends StatefulWidget {
 
 class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     with SingleTickerProviderStateMixin {
-
-
   final VoiceService _voiceService = VoiceService();
   final BillIntelligenceService _aiService = BillIntelligenceService();
 
@@ -118,13 +117,17 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           .get();
       final data = doc.data();
       final isPremium = data?['isPremium'] ?? false;
-      final points = data?['points'] ?? 0;
+      final points = (data?['points'] as num?)?.toInt() ?? 0;
 
       if (isPremium) return true;
 
-      if (points <= 0) {
+      if (points < FeatureCosts.voiceCommandPoints) {
         if (mounted) {
-          await NoPointsDialog.show(context, onWatchAd: _watchAdForPoint);
+          await NoPointsDialog.show(
+            context,
+            requiredPoints: FeatureCosts.voiceCommandPoints,
+            onWatchAd: _watchAdForPoint,
+          );
         }
         return false;
       }
@@ -134,28 +137,13 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     }
   }
 
-  Future<void> _deductPoint() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      if ((doc.data()?['isPremium'] ?? false) == false) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({'points': FieldValue.increment(-1)});
-      }
-    } catch (_) {}
-  }
-
   Future<void> _watchAdForPoint() async {
     if (!RewardedAdHelper.isReady) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('ad_is_still_loading_please_try_again_in_a_moment').tr(),
+          content: Text(
+            'ad_is_still_loading_please_try_again_in_a_moment',
+          ).tr(),
           backgroundColor: Colors.blue,
         ),
       );
@@ -204,14 +192,10 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       _startTimer();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'error_with_details'.tr(
-              namedArgs: {'error': _messageFromError(e)},
-            ),
+            'error_with_details'.tr(namedArgs: {'error': _messageFromError(e)}),
           ),
         ),
       );
@@ -312,7 +296,6 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           _subStatusText = 'voice_assignments_updated'.tr();
         });
         HapticFeedback.lightImpact();
-        await _deductPoint(); // Deduct point on success
       }
     } catch (e) {
       // 3. Handle API Errors Only
@@ -507,7 +490,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           ),
           child: Column(
             children: [
-              Text('you_said',
+              Text(
+                'you_said',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
@@ -531,13 +515,13 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         if (_hasError)
           Padding(
             padding: const EdgeInsets.only(top: 16.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.redAccent.withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.redAccent.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
                 _subStatusText, // "Please try again"
                 style: const TextStyle(
                   color: Colors.white,
@@ -626,7 +610,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('select_language',
+        Text(
+          'select_language',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 24,
@@ -634,7 +619,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           ),
         ).tr(),
         const SizedBox(height: 8),
-        Text('choose_the_language_you_will_speak',
+        Text(
+          'choose_the_language_you_will_speak',
           style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
         ).tr(),
         const SizedBox(height: 32),
@@ -642,9 +628,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           spacing: 16,
           runSpacing: 16,
           alignment: WrapAlignment.center,
-          children: supportedLocaleOptions
-              .map(_buildLanguageCard)
-              .toList(),
+          children: supportedLocaleOptions.map(_buildLanguageCard).toList(),
         ),
         const SizedBox(height: 20),
       ],
@@ -677,10 +661,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         ),
         child: Column(
           children: [
-            Text(
-              option.flag,
-              style: const TextStyle(fontSize: 26),
-            ),
+            Text(option.flag, style: const TextStyle(fontSize: 26)),
             const SizedBox(height: 6),
             Text(
               option.nativeName,
@@ -790,7 +771,10 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     return [const Color(0xFF448AFF), const Color(0xFF2979FF)]; // Idle Blue
   }
 
-  String _messageFromError(Object error, {String fallback = 'Something went wrong'}) {
+  String _messageFromError(
+    Object error, {
+    String fallback = 'Something went wrong',
+  }) {
     final message = error.toString().replaceFirst('Exception: ', '').trim();
     if (message.isEmpty) {
       return fallback;

@@ -6,16 +6,25 @@ import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class NoPointsDialog extends StatelessWidget {
   final Future<void> Function() onWatchAd;
+  final int requiredPoints;
 
-  const NoPointsDialog({super.key, required this.onWatchAd});
+  const NoPointsDialog({
+    super.key,
+    required this.onWatchAd,
+    required this.requiredPoints,
+  });
 
   static Future<void> show(
     BuildContext context, {
+    required int requiredPoints,
     required Future<void> Function() onWatchAd,
   }) {
     return PremiumBottomSheet.show(
       context: context,
-      child: NoPointsDialog(onWatchAd: onWatchAd),
+      child: NoPointsDialog(
+        requiredPoints: requiredPoints,
+        onWatchAd: onWatchAd,
+      ),
     );
   }
 
@@ -59,13 +68,13 @@ class NoPointsDialog extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Text(
-            'you_need_1_point_to_use_this_feature_nwatch_a_quick_ad_or_go_premium_to_continue',
+            'you_need_points_to_use_this_feature_watch_a_quick_ad_or_go_premium_to_continue',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface.withValues(alpha: 0.6),
               height: 1.4,
             ),
             textAlign: TextAlign.center,
-          ).tr(),
+          ).tr(namedArgs: {'points': requiredPoints.toString()}),
         ),
 
         const SizedBox(height: 40),
@@ -125,7 +134,8 @@ class NoPointsDialog extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('watch_a_quick_ad',
+                      Text(
+                        'watch_a_quick_ad',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -133,7 +143,8 @@ class NoPointsDialog extends StatelessWidget {
                         ),
                       ).tr(),
                       SizedBox(height: 4),
-                      Text('plus_1_point_instantly',
+                      Text(
+                        'plus_1_point_instantly',
                         style: TextStyle(
                           color: Colors.purple,
                           fontSize: 13,
@@ -197,7 +208,8 @@ class NoPointsDialog extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('split_bill_premium',
+                      Text(
+                        'split_bill_premium',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -205,7 +217,8 @@ class NoPointsDialog extends StatelessWidget {
                         ),
                       ).tr(),
                       SizedBox(height: 4),
-                      Text('unlimited_scans_and_no_ads',
+                      Text(
+                        'unlimited_scans_and_no_ads',
                         style: TextStyle(color: Colors.white70, fontSize: 13),
                       ).tr(),
                     ],

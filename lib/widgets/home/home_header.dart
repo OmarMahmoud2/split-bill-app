@@ -102,7 +102,8 @@ class HomeHeader extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('welcome_back_2',
+                          Text(
+                            'welcome_back_2',
                             style: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 13,
@@ -170,7 +171,9 @@ class HomeHeader extends StatelessWidget {
                           title: 'net_balance'.tr(),
                           value:
                               '${(owedToMe - iOwe) >= 0 ? "+" : "-"}${CurrencyUtils.format((owedToMe - iOwe).abs(), currencyCode: currencyCode, decimalDigits: 1)}',
-                          color: (owedToMe - iOwe) >= 0 ? Colors.blue : Colors.red,
+                          color: (owedToMe - iOwe) >= 0
+                              ? Colors.blue
+                              : Colors.red,
                           icon: Icons.account_balance_wallet_rounded,
                         ),
                       ),
@@ -279,7 +282,7 @@ class HomeHeader extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -292,86 +295,77 @@ class HomeHeader extends StatelessWidget {
               ),
             ],
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Leading Icon
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: color, size: 18),
-              ),
-              const SizedBox(width: 8),
-              
-              // Middle Content (Title and Subtitle)
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: color, size: 18),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
                       title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      overflow: TextOverflow.visible,
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                        height: 1.15,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    if (footerLabel != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        footerLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: 4),
-              
-              // Trailing Amount & Icon
-              Container(
-                constraints: const BoxConstraints(maxWidth: 65),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          value,
-                          style: TextStyle(
-                            color: color,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                      ),
+                  ),
+                  if (hasNavigation) ...[
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 13,
+                      color: Colors.grey[400],
                     ),
-                    if (hasNavigation) ...[
-                      const SizedBox(width: 2),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 12,
-                        color: Colors.grey[400],
-                      ),
-                    ],
                   ],
+                ],
+              ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Text(
+                    value,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: color,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
               ),
+              if (footerLabel != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  footerLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

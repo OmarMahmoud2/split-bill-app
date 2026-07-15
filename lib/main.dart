@@ -24,6 +24,7 @@ import 'services/revenue_cat_service.dart'; // Premium purchases
 import 'helpers/rewarded_ad_helper.dart';
 import 'config/supported_preferences.dart';
 import 'providers/app_settings_provider.dart';
+import 'web_download_screen.dart';
 
 // Global Navigator Key for Deep Linking
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -348,6 +349,8 @@ class _MyAppState extends State<MyApp> {
                     billId: billIdFromUrl,
                     initialParticipantId: uidFromUrl,
                   )
+                : kIsWeb
+                ? const WebDownloadScreen()
                 : const AuthWrapper(),
           ),
         );

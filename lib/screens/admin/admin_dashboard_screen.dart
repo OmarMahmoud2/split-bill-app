@@ -26,7 +26,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       appBar: AppBar(
         title: Text(
           'admin_dashboard'.tr(),
-          style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.5),
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -41,7 +44,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'search_by_name_or_email'.tr(),
+                hintText: 'search_by_name_email_phone_or_uid'.tr(),
                 prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
@@ -79,21 +82,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Text('no_users_found'.tr()),
-                  );
+                  return Center(child: Text('no_users_found'.tr()));
                 }
 
                 final allUsers = snapshot.data!.docs;
                 final filteredUsers = allUsers.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
-                  final name = (data['displayName'] ?? '').toString().toLowerCase();
+                  final name = (data['displayName'] ?? '')
+                      .toString()
+                      .toLowerCase();
                   final email = (data['email'] ?? '').toString().toLowerCase();
-                  final phone = (data['phoneNumber'] ?? '').toString().toLowerCase();
-                  
-                  return name.contains(_searchQuery) || 
-                         email.contains(_searchQuery) ||
-                         phone.contains(_searchQuery);
+                  final phone = (data['phoneNumber'] ?? '')
+                      .toString()
+                      .toLowerCase();
+                  final uid = doc.id.toLowerCase();
+
+                  return name.contains(_searchQuery) ||
+                      email.contains(_searchQuery) ||
+                      phone.contains(_searchQuery) ||
+                      uid.contains(_searchQuery);
                 }).toList();
 
                 return ListView.builder(
@@ -104,15 +111,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     final userData = userDoc.data() as Map<String, dynamic>;
                     final uid = userDoc.id;
                     final name = userData['displayName'] ?? 'unknown_user'.tr();
-                    final email = userData['email'] ?? userData['phoneNumber'] ?? 'no_contact_info'.tr();
+                    final email =
+                        userData['email'] ??
+                        userData['phoneNumber'] ??
+                        'no_contact_info'.tr();
+                    final subtitle = '$email\nUID: $uid';
                     final isPremium = userData['isPremium'] ?? false;
                     final isAdmin = userData['isAdmin'] ?? false;
 
                     return ProfileCoolTile(
-                      icon: isAdmin ? Icons.admin_panel_settings_rounded : Icons.person_rounded,
+                      icon: isAdmin
+                          ? Icons.admin_panel_settings_rounded
+                          : Icons.person_rounded,
                       title: name,
-                      subtitle: email,
-                      color: isAdmin ? Colors.blueGrey : (isPremium ? Colors.amber : Colors.blue),
+                      subtitle: subtitle,
+                      color: isAdmin
+                          ? Colors.blueGrey
+                          : (isPremium ? Colors.amber : Colors.blue),
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(

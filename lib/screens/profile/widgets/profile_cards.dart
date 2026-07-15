@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/config/feature_costs.dart';
 
 class PremiumStatusCard extends StatelessWidget {
   const PremiumStatusCard({super.key});
@@ -43,7 +44,8 @@ class PremiumStatusCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('premium_active',
+                Text(
+                  'premium_active',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 19,
@@ -51,7 +53,8 @@ class PremiumStatusCard extends StatelessWidget {
                   ),
                 ).tr(),
                 SizedBox(height: 4),
-                Text('unlimited_scans_ad_free_forever',
+                Text(
+                  'unlimited_scans_ad_free_forever',
                   style: TextStyle(color: Colors.white70, fontSize: 13),
                 ).tr(),
               ],
@@ -95,7 +98,8 @@ class ScanPointsCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('scan_points',
+                Text(
+                  'scan_points',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 13,
@@ -104,7 +108,7 @@ class ScanPointsCard extends StatelessWidget {
                 ).tr(),
                 const SizedBox(height: 4),
                 Text(
-                  "$points points",
+                  "$points ${'points'.tr()}",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -114,9 +118,21 @@ class ScanPointsCard extends StatelessWidget {
               ],
             ),
           ),
-          Text('1_point_1_scan',
-            style: TextStyle(color: Colors.white70, fontSize: 12),
-          ).tr(),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 120),
+            child:
+                Text(
+                  'points_per_receipt_scan',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ).tr(
+                  namedArgs: {
+                    'points': FeatureCosts.receiptScanPoints.toString(),
+                  },
+                ),
+          ),
         ],
       ),
     );

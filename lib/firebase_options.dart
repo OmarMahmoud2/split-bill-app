@@ -9,7 +9,8 @@ import 'package:flutter/foundation.dart'
 /// - ios/Runner/GoogleService-Info.plist
 /// - macos/Runner/GoogleService-Info.plist
 ///
-/// Web and Windows can be configured with dart-defines when needed.
+/// Web can use the public Firebase client config below, or be overridden with
+/// dart-defines when needed. Windows can be configured with dart-defines.
 class DefaultFirebaseOptions {
   static FirebaseOptions? get currentPlatformOrNull {
     if (kIsWeb) {
@@ -87,38 +88,44 @@ class DefaultFirebaseOptions {
 
   static const String _webApiKey = String.fromEnvironment(
     'FIREBASE_WEB_API_KEY',
-    defaultValue: String.fromEnvironment('FIREBASE_API_KEY', defaultValue: ''),
+    defaultValue: String.fromEnvironment(
+      'FIREBASE_API_KEY',
+      defaultValue: 'AIzaSyAzzwAa0jA2c5dNqcpHvsSPAHE8Y-qTfuQ',
+    ),
   );
   static const String _webAppId = String.fromEnvironment(
     'FIREBASE_WEB_APP_ID',
-    defaultValue: String.fromEnvironment('FIREBASE_APP_ID', defaultValue: ''),
+    defaultValue: String.fromEnvironment(
+      'FIREBASE_APP_ID',
+      defaultValue: '1:179122801456:web:5209ece49c30ee0f8fd6f5',
+    ),
   );
   static const String _webMessagingSenderId = String.fromEnvironment(
     'FIREBASE_WEB_MESSAGING_SENDER_ID',
     defaultValue: String.fromEnvironment(
       'FIREBASE_MESSAGING_SENDER_ID',
-      defaultValue: '',
+      defaultValue: '179122801456',
     ),
   );
   static const String _webProjectId = String.fromEnvironment(
     'FIREBASE_WEB_PROJECT_ID',
     defaultValue: String.fromEnvironment(
       'FIREBASE_PROJECT_ID',
-      defaultValue: '',
+      defaultValue: 'splitbillapp-ffc39',
     ),
   );
   static const String _webAuthDomain = String.fromEnvironment(
     'FIREBASE_WEB_AUTH_DOMAIN',
     defaultValue: String.fromEnvironment(
       'FIREBASE_AUTH_DOMAIN',
-      defaultValue: '',
+      defaultValue: 'splitbillapp-ffc39.firebaseapp.com',
     ),
   );
   static const String _webStorageBucket = String.fromEnvironment(
     'FIREBASE_WEB_STORAGE_BUCKET',
     defaultValue: String.fromEnvironment(
       'FIREBASE_STORAGE_BUCKET',
-      defaultValue: '',
+      defaultValue: 'splitbillapp-ffc39.firebasestorage.app',
     ),
   );
   static const String _webMeasurementId = String.fromEnvironment(
