@@ -16,7 +16,12 @@ SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUIL
 ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
 IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
 IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata")
+IOS_FILTERED_METADATA_PATH = File.join(PROJECT_ROOT, "build", "fastlane", "ios_metadata")
 IOS_APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.example.splitBillApp")
+IOS_APP_STORE_LOCALES = %w[
+  ar-SA de-DE en-AU en-CA en-GB en-US es-ES es-MX fr-CA fr-FR
+  hi id it ja ko pl pt-BR pt-PT ru zh-Hans zh-Hant
+]
 
 def app_store_api_key
   app_store_connect_api_key(
@@ -71,14 +76,25 @@ def option_enabled?(value)
 end
 
 def ios_locales
-  Dir.children(IOS_METADATA_PATH).select do |entry|
-    path = File.join(IOS_METADATA_PATH, entry)
-    File.directory?(path) && entry != "android"
-  end.sort
+  IOS_APP_STORE_LOCALES.select { |locale| File.directory?(File.join(IOS_METADATA_PATH, locale)) }
 end
 
 def ios_release_notes
   ios_locales.to_h { |locale| [locale, RELEASE_NOTES] }
+end
+
+def prepare_ios_metadata_path
+  FileUtils.rm_rf(IOS_FILTERED_METADATA_PATH)
+  FileUtils.mkdir_p(IOS_FILTERED_METADATA_PATH)
+
+  ios_locales.each do |locale|
+    FileUtils.cp_r(
+      File.join(IOS_METADATA_PATH, locale),
+      File.join(IOS_FILTERED_METADATA_PATH, locale)
+    )
+  end
+
+  IOS_FILTERED_METADATA_PATH
 end
 
 def ios_submission_information
@@ -96,7 +112,7 @@ def ios_deliver_options(api_key)
     force: true,
     run_precheck_before_submit: false,
     ignore_language_directory_validation: true,
-    metadata_path: IOS_METADATA_PATH,
+    metadata_path: prepare_ios_metadata_path,
     release_notes: ios_release_notes
   }
 end
@@ -169,6 +185,8 @@ platform :ios do
       ios_deliver_options(api_key).merge(
         build_number: BUILD_NUMBER,
         skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: true,
         submit_for_review: true,
         automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
         submission_information: ios_submission_information
@@ -196,6 +214,8 @@ platform :ios do
       ios_deliver_options(api_key).merge(
         build_number: BUILD_NUMBER,
         skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: true,
         submit_for_review: true,
         automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
         submission_information: ios_submission_information
