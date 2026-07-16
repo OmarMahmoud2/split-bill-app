@@ -149,7 +149,7 @@ class RevenueCatService {
 
     try {
       if (user == null) {
-        await Purchases.logOut();
+        await _logOutIfIdentified();
         return false;
       }
 
@@ -181,9 +181,16 @@ class RevenueCatService {
   static Future<void> logoutUser() async {
     try {
       if (!_isConfigured) return;
-      await Purchases.logOut();
+      await _logOutIfIdentified();
     } catch (e) {
       if (kDebugMode) debugPrint('Error logging out from RevenueCat: $e');
+    }
+  }
+
+  static Future<void> _logOutIfIdentified() async {
+    final isAnonymous = await Purchases.isAnonymous;
+    if (!isAnonymous) {
+      await Purchases.logOut();
     }
   }
 
