@@ -15,13 +15,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios build_ipa
+
+```sh
+[bundle exec] fastlane ios build_ipa
+```
+
+Build the obfuscated iOS IPA for the current pubspec version
+
 ### ios upload_metadata
 
 ```sh
 [bundle exec] fastlane ios upload_metadata
 ```
 
-Push iOS localized text (metadata) to App Store Connect
+Push iOS localized metadata and What's New text to App Store Connect
 
 ### ios release
 
@@ -29,20 +37,20 @@ Push iOS localized text (metadata) to App Store Connect
 [bundle exec] fastlane ios release
 ```
 
-Deploy a new version to the App Store (IPA + Release Notes)
-
-### ios list_languages
-
-```sh
-[bundle exec] fastlane ios list_languages
-```
-
-List all languages currently active on App Store Connect
+Build, upload, and submit the iOS app version for App Store review
 
 ----
 
 
 ## Android
+
+### android build_aab
+
+```sh
+[bundle exec] fastlane android build_aab
+```
+
+Build the obfuscated Android App Bundle for the current pubspec version
 
 ### android upload_metadata
 
@@ -50,7 +58,15 @@ List all languages currently active on App Store Connect
 [bundle exec] fastlane android upload_metadata
 ```
 
-Push Android localized text (metadata) to Google Play Console
+Push Android localized metadata to Google Play Console
+
+### android release
+
+```sh
+[bundle exec] fastlane android release
+```
+
+Build, upload, and submit the Android app bundle to Google Play
 
 ### android deploy
 
@@ -58,7 +74,7 @@ Push Android localized text (metadata) to Google Play Console
 [bundle exec] fastlane android deploy
 ```
 
-
+Alias for android release
 
 ----
 
