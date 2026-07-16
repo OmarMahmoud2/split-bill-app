@@ -1,10 +1,10 @@
 import os
 
-RELEASE_NOTES = "Bug fixes, UI improvements"
+RELEASE_NOTES = "UI Improvements and Bug Fixes"
 
 # Android Changelogs (Requires a folder called changelogs with the version code .txt inside)
-# versionCode from pubspec is 11
-VERSION_CODE = "11"
+# versionCode from pubspec is 13
+VERSION_CODE = "13"
 android_path = "fastlane/metadata/android"
 
 if os.path.exists(android_path):

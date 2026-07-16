@@ -22,7 +22,7 @@ Features:
 
 Download now and never fight over the bill again!"""
 BASE_KEYWORDS = "split, bill, receipts, scanner, expense, sharing, group, dinner, ai, finance"
-BASE_CHANGELOG = "Bug fixes, UI improvements"
+BASE_CHANGELOG = "UI Improvements and Bug Fixes"
 RELEASE_VERSION_CODE = "13"
 
 # Updated URLs (as per user request)
@@ -349,7 +349,7 @@ for lang, config in locales.items():
             write_file(ios_base, locale, 'subtitle.txt', config['short'])
             write_file(ios_base, locale, 'promotional_text.txt', config['promo'])
             write_file(ios_base, locale, 'keywords.txt', config['keywords'])
-            write_file(ios_base, locale, 'release_notes.txt', config['changelog'])
+            write_file(ios_base, locale, 'release_notes.txt', BASE_CHANGELOG)
             # URLs
             write_file(ios_base, locale, 'support_url.txt', SUPPORT_URL)
             write_file(ios_base, locale, 'privacy_url.txt', PRIVACY_URL)
@@ -367,6 +367,6 @@ for lang, config in locales.items():
             changelog_dir = os.path.join(android_base, locale, "changelogs")
             os.makedirs(changelog_dir, exist_ok=True)
             with open(os.path.join(changelog_dir, f"{RELEASE_VERSION_CODE}.txt"), 'w', encoding='utf-8') as f:
-                f.write(config['changelog'])
+                f.write(BASE_CHANGELOG)
 
 print("✅ Metadata generation completed for ALL locales!")

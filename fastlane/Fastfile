@@ -1,77 +1,160 @@
+require "fileutils"
+require "shellwords"
+
 default_platform(:ios)
 
-platform :ios do
-  desc "Push iOS localized text (metadata) to App Store Connect"
-  lane :upload_metadata do
-    # Force Fastlane to authenticate via the API Key instead of Apple ID Password
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"],
-      in_house: false
-    )
+PROJECT_ROOT = File.expand_path("..", __dir__)
+PUBSPEC_PATH = File.join(PROJECT_ROOT, "pubspec.yaml")
+VERSION_MATCH = File.read(PUBSPEC_PATH).match(/^version:\s*([0-9A-Za-z.\-]+)\+(\d+)\s*$/)
 
+UI.user_error!("Could not read app version from #{PUBSPEC_PATH}") unless VERSION_MATCH
+
+APP_VERSION = VERSION_MATCH[1]
+BUILD_NUMBER = VERSION_MATCH[2]
+RELEASE_NOTES = "UI Improvements and Bug Fixes"
+SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUILD_NUMBER}")
+ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
+IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
+
+def app_store_api_key
+  app_store_connect_api_key(
+    key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+    issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+    key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"],
+    in_house: false
+  )
+end
+
+def run_flutter_build(args)
+  FileUtils.mkdir_p(SYMBOLS_DIR)
+  Dir.chdir(PROJECT_ROOT) do
+    sh(args.shelljoin)
+  end
+end
+
+def build_android_aab
+  run_flutter_build([
+    "flutter",
+    "build",
+    "aab",
+    "--release",
+    "--obfuscate",
+    "--split-debug-info=#{SYMBOLS_DIR}",
+    "--build-name=#{APP_VERSION}",
+    "--build-number=#{BUILD_NUMBER}"
+  ])
+  ensure_file_exists!(ANDROID_AAB, "Android App Bundle was not produced.")
+end
+
+def build_ios_ipa
+  run_flutter_build([
+    "flutter",
+    "build",
+    "ipa",
+    "--release",
+    "--obfuscate",
+    "--split-debug-info=#{SYMBOLS_DIR}",
+    "--build-name=#{APP_VERSION}",
+    "--build-number=#{BUILD_NUMBER}"
+  ])
+  ensure_file_exists!(IOS_IPA, "iOS IPA was not produced.")
+end
+
+def ensure_file_exists!(path, message)
+  UI.user_error!("#{message} Missing: #{path}") unless File.exist?(path)
+end
+
+def option_enabled?(value)
+  [true, "true", "1", "yes", "y"].include?(value)
+end
+
+platform :ios do
+  desc "Build the obfuscated iOS IPA for the current pubspec version"
+  lane :build_ipa do
+    build_ios_ipa
+    UI.success("Built IPA for #{APP_VERSION}+#{BUILD_NUMBER}: #{IOS_IPA}")
+  end
+
+  desc "Push iOS localized metadata and What's New text to App Store Connect"
+  lane :upload_metadata do
     deliver(
-      api_key: api_key,
-      app_version: "1.1.5",           # New version for metadata update
+      api_key: app_store_api_key,
+      app_version: APP_VERSION,
       skip_screenshots: true,
-      skip_metadata: false,          # ENSURE THIS IS FALSE TO PUSH ALL METADATA
+      skip_metadata: false,
       overwrite_screenshots: false,
-      submit_for_review: false,      # Push metadata first, then link build in UI
+      submit_for_review: false,
       force: true,
       skip_binary_upload: true,
-      ignore_language_directory_validation: true, # Safety catch for unsupported folders
-      run_precheck_before_submit: false,         # Fixes API Key compatibility error
+      ignore_language_directory_validation: true,
+      run_precheck_before_submit: false,
+      release_notes: { "default" => RELEASE_NOTES }
     )
   end
 
-  desc "Deploy a new version to the App Store (IPA + Release Notes)"
-  lane :release do
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"],
-      in_house: false
-    )
+  desc "Build, upload, and submit the iOS app version for App Store review"
+  lane :release do |options|
+    build_ios_ipa unless option_enabled?(options[:skip_build])
+    ensure_file_exists!(IOS_IPA, "Run `fastlane ios build_ipa` first, or omit skip_build.")
 
     deliver(
-      api_key: api_key,
-      ipa: "build/ios/ipa/split_bill_app.ipa",
-      app_version: "1.1.5",           # New version for 1.1.5
+      api_key: app_store_api_key,
+      ipa: IOS_IPA,
+      app_version: APP_VERSION,
       skip_screenshots: true,
-      skip_metadata: false,          # ENSURE THIS IS FALSE TO PUSH ALL METADATA
+      skip_metadata: false,
       force: true,
-      submit_for_review: true,       # Automatically submit for review
-      run_precheck_before_submit: false,         # Fixes API Key compatibility error
-      ignore_language_directory_validation: true, # Fix validation error for unsupported 'ur' directory
-      submission_information: { export_compliance_uses_encryption: false }, # Fix export compliance error
-      release_notes: { "default" => "Bug fixes and UI improvements." }, # Fallback to prevent missing 'whatsNew' error for any language
+      submit_for_review: true,
+      automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
+      run_precheck_before_submit: false,
+      ignore_language_directory_validation: true,
+      submission_information: {
+        export_compliance_uses_encryption: false
+      },
+      release_notes: { "default" => RELEASE_NOTES }
     )
   end
 end
 
 platform :android do
-  desc "Push Android localized text (metadata) to Google Play Console"
+  desc "Build the obfuscated Android App Bundle for the current pubspec version"
+  lane :build_aab do
+    build_android_aab
+    UI.success("Built AAB for #{APP_VERSION}+#{BUILD_NUMBER}: #{ANDROID_AAB}")
+  end
+
+  desc "Push Android localized metadata to Google Play Console"
   lane :upload_metadata do
     supply(
-      skip_upload_apk: true,          # Don't upload an app bundle right now
+      skip_upload_apk: true,
       skip_upload_aab: true,
-      skip_upload_images: true,       # Don't overwrite graphic assets
-      skip_upload_screenshots: true,  # Don't overwrite existing localized screenshots
-      skip_upload_changelogs: true,   # Prevent supply from requiring a version_code block
-      metadata_path: "fastlane/metadata/android" # Point to the Android translation folder
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true,
+      metadata_path: "fastlane/metadata/android"
     )
   end
-  lane :deploy do
-    desc "Deploy a new version to the Google Play Store (Production Track) with translated Release Notes"
+
+  desc "Build, upload, and submit the Android app bundle to Google Play"
+  lane :release do |options|
+    build_android_aab unless option_enabled?(options[:skip_build])
+    ensure_file_exists!(ANDROID_AAB, "Run `fastlane android build_aab` first, or omit skip_build.")
+
     supply(
-      track: "production",
-      aab: "build/app/outputs/bundle/release/app-release.aab",
+      track: ENV.fetch("ANDROID_TRACK", "production"),
+      aab: ANDROID_AAB,
       metadata_path: "fastlane/metadata/android",
-      skip_upload_metadata: false,     # ENSURE THIS IS FALSE TO PUSH NEW DESCRIPTIONS
-      skip_upload_images: true,        # Don't push graphic assets
-      skip_upload_screenshots: true,   # Don't push screenshots
-      skip_upload_changelogs: false,   # Push changelogs
+      skip_upload_metadata: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: false,
+      release_status: ENV.fetch("ANDROID_RELEASE_STATUS", "completed"),
+      changes_not_sent_for_review: false
     )
+  end
+
+  desc "Alias for android release"
+  lane :deploy do |options|
+    release(skip_build: options[:skip_build])
   end
 end

@@ -1,1 +1,1 @@
-Poprawki błędów, ulepszenia interfejsu
+UI Improvements and Bug Fixes

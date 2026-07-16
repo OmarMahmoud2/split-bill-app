@@ -1,1 +1,1 @@
-バグ修正、UIの改善
+UI Improvements and Bug Fixes

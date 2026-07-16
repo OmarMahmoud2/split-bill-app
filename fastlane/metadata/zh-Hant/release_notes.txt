@@ -1,1 +1,1 @@
-错误修复，UI界面改进
+UI Improvements and Bug Fixes
