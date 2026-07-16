@@ -134,26 +134,20 @@ end
 def ensure_ios_whats_new!
   version = ios_app_store_version
   localizations = version.get_app_store_version_localizations
-  by_locale = localizations.each_with_object({}) { |localization, result| result[localization.locale] = localization }
+  notes_by_locale = ios_release_notes
 
   updated = []
-  missing = []
 
-  ios_release_notes.each do |locale, notes|
-    localization = by_locale[locale]
-    if localization
-      next if localization.whats_new.to_s.strip == notes
+  localizations.each do |localization|
+    notes = notes_by_locale.fetch(localization.locale, RELEASE_NOTES)
+    next if localization.whats_new.to_s.strip == notes
 
-      localization.update(attributes: { whats_new: notes })
-      updated << locale
-    else
-      missing << locale
-    end
+    localization.update(attributes: { whats_new: notes })
+    updated << localization.locale
   end
 
   UI.success("Updated iOS What's New for #{updated.size} locale(s).") if updated.any?
   UI.important("No iOS What's New changes were needed.") if updated.empty?
-  UI.important("Locale(s) not currently on the App Store version: #{missing.join(', ')}") if missing.any?
 end
 
 platform :ios do
