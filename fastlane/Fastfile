@@ -15,6 +15,8 @@ RELEASE_NOTES = "UI Improvements and Bug Fixes"
 SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUILD_NUMBER}")
 ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
 IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
+IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata")
+IOS_APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.example.splitBillApp")
 
 def app_store_api_key
   app_store_connect_api_key(
@@ -68,6 +70,76 @@ def option_enabled?(value)
   [true, "true", "1", "yes", "y"].include?(value)
 end
 
+def ios_locales
+  Dir.children(IOS_METADATA_PATH).select do |entry|
+    path = File.join(IOS_METADATA_PATH, entry)
+    File.directory?(path) && entry != "android"
+  end.sort
+end
+
+def ios_release_notes
+  ios_locales.to_h { |locale| [locale, RELEASE_NOTES] }
+end
+
+def ios_submission_information
+  {
+    export_compliance_uses_encryption: false
+  }
+end
+
+def ios_deliver_options(api_key)
+  {
+    api_key: api_key,
+    app_version: APP_VERSION,
+    skip_screenshots: true,
+    skip_metadata: false,
+    force: true,
+    run_precheck_before_submit: false,
+    ignore_language_directory_validation: true,
+    metadata_path: IOS_METADATA_PATH,
+    release_notes: ios_release_notes
+  }
+end
+
+def ios_app_store_version
+  app = Spaceship::ConnectAPI::App.find(IOS_APP_IDENTIFIER)
+  UI.user_error!("Could not find App Store Connect app for #{IOS_APP_IDENTIFIER}") unless app
+
+  versions = app.get_app_store_versions(
+    filter: { platform: Spaceship::ConnectAPI::Platform::IOS },
+    includes: "appStoreVersionLocalizations"
+  )
+  version = versions.find { |candidate| candidate.version_string == APP_VERSION }
+  UI.user_error!("Could not find iOS App Store version #{APP_VERSION}") unless version
+
+  version
+end
+
+def ensure_ios_whats_new!
+  version = ios_app_store_version
+  localizations = version.get_app_store_version_localizations
+  by_locale = localizations.each_with_object({}) { |localization, result| result[localization.locale] = localization }
+
+  updated = []
+  missing = []
+
+  ios_release_notes.each do |locale, notes|
+    localization = by_locale[locale]
+    if localization
+      next if localization.whats_new.to_s.strip == notes
+
+      localization.update(attributes: { whats_new: notes })
+      updated << locale
+    else
+      missing << locale
+    end
+  end
+
+  UI.success("Updated iOS What's New for #{updated.size} locale(s).") if updated.any?
+  UI.important("No iOS What's New changes were needed.") if updated.empty?
+  UI.important("Locale(s) not currently on the App Store version: #{missing.join(', ')}") if missing.any?
+end
+
 platform :ios do
   desc "Build the obfuscated iOS IPA for the current pubspec version"
   lane :build_ipa do
@@ -77,18 +149,30 @@ platform :ios do
 
   desc "Push iOS localized metadata and What's New text to App Store Connect"
   lane :upload_metadata do
+    api_key = app_store_api_key
     deliver(
-      api_key: app_store_api_key,
-      app_version: APP_VERSION,
-      skip_screenshots: true,
-      skip_metadata: false,
-      overwrite_screenshots: false,
-      submit_for_review: false,
-      force: true,
-      skip_binary_upload: true,
-      ignore_language_directory_validation: true,
-      run_precheck_before_submit: false,
-      release_notes: { "default" => RELEASE_NOTES }
+      ios_deliver_options(api_key).merge(
+        overwrite_screenshots: false,
+        submit_for_review: false,
+        skip_binary_upload: true
+      )
+    )
+    ensure_ios_whats_new!
+  end
+
+  desc "Patch What's New, select the uploaded build, and submit it for App Store review"
+  lane :submit_existing do
+    api_key = app_store_api_key
+    ensure_ios_whats_new!
+
+    deliver(
+      ios_deliver_options(api_key).merge(
+        build_number: BUILD_NUMBER,
+        skip_binary_upload: true,
+        submit_for_review: true,
+        automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
+        submission_information: ios_submission_information
+      )
     )
   end
 
@@ -97,21 +181,25 @@ platform :ios do
     build_ios_ipa unless option_enabled?(options[:skip_build])
     ensure_file_exists!(IOS_IPA, "Run `fastlane ios build_ipa` first, or omit skip_build.")
 
+    api_key = app_store_api_key
     deliver(
-      api_key: app_store_api_key,
-      ipa: IOS_IPA,
-      app_version: APP_VERSION,
-      skip_screenshots: true,
-      skip_metadata: false,
-      force: true,
-      submit_for_review: true,
-      automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
-      run_precheck_before_submit: false,
-      ignore_language_directory_validation: true,
-      submission_information: {
-        export_compliance_uses_encryption: false
-      },
-      release_notes: { "default" => RELEASE_NOTES }
+      ios_deliver_options(api_key).merge(
+        ipa: IOS_IPA,
+        overwrite_screenshots: false,
+        submit_for_review: false
+      )
+    )
+
+    ensure_ios_whats_new!
+
+    deliver(
+      ios_deliver_options(api_key).merge(
+        build_number: BUILD_NUMBER,
+        skip_binary_upload: true,
+        submit_for_review: true,
+        automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
+        submission_information: ios_submission_information
+      )
     )
   end
 end

@@ -31,6 +31,14 @@ Build the obfuscated iOS IPA for the current pubspec version
 
 Push iOS localized metadata and What's New text to App Store Connect
 
+### ios submit_existing
+
+```sh
+[bundle exec] fastlane ios submit_existing
+```
+
+Patch What's New, select the uploaded build, and submit it for App Store review
+
 ### ios release
 
 ```sh

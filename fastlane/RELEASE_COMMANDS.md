@@ -75,6 +75,14 @@ If the IPA is already built:
 fastlane ios release skip_build:true
 ```
 
+If the build already uploaded to App Store Connect but submit failed on missing
+What's New/release notes, patch the metadata and submit the existing uploaded
+build without uploading the IPA again:
+
+```sh
+fastlane ios submit_existing
+```
+
 Optional overrides:
 
 ```sh
