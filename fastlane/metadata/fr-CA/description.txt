@@ -9,3 +9,6 @@ Fonctionnalités :
 - Historique : Gardez une trace de vos partages passés.
 
 Téléchargez maintenant et ne vous disputez plus jamais pour l'addition !
+
+Privacy Policy: https://omarmali.net/split-bill/privacy/
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

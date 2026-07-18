@@ -18,10 +18,19 @@ IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
 IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata")
 IOS_FILTERED_METADATA_PATH = File.join(PROJECT_ROOT, "build", "fastlane", "ios_metadata")
 IOS_APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.example.splitBillApp")
+PRIVACY_POLICY_URL = "https://omarmali.net/split-bill/privacy/"
+TERMS_OF_USE_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
 IOS_APP_STORE_LOCALES = %w[
-  ar-SA de-DE en-AU en-CA en-GB en-US es-ES es-MX fr-CA fr-FR
+  ar-SA de-DE en-AU en-CA en-GB en-US es-ES es-MX fr-CA fr-FR hr
   hi id it ja ko pl pt-BR pt-PT ru zh-Hans zh-Hant
 ]
+APP_REVIEW_NOTES = [
+  "Guideline 3.1.2(c) update:",
+  "The Premium purchase flow now shows the selected subscription title, price, billing period, renewal/cancellation disclosure, Restore purchase, Privacy Policy, and Terms of Use (EULA) links before purchase.",
+  "To verify: open the app, sign in if needed, go to Profile > Go Premium, then review the Subscription details box below the plan selector.",
+  "Privacy Policy: #{PRIVACY_POLICY_URL}",
+  "Terms of Use (EULA): #{TERMS_OF_USE_URL}"
+].join("\n")
 
 def app_store_api_key
   app_store_connect_api_key(
@@ -113,6 +122,9 @@ def ios_deliver_options(api_key)
     run_precheck_before_submit: false,
     ignore_language_directory_validation: true,
     metadata_path: prepare_ios_metadata_path,
+    app_review_information: {
+      notes: APP_REVIEW_NOTES
+    },
     release_notes: ios_release_notes
   }
 end

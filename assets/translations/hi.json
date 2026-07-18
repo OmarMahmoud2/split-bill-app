@@ -690,5 +690,21 @@
   "your_friends_have_been_notified": "आपके दोस्तों को सूचित कर दिया गया है",
   "your_history_is_clean_for_now_any_alerts_will_appear_here": "अभी आपका इतिहास साफ़ है। कोई भी चेतावनी यहाँ दिखाई देगी.",
   "your_items": "आपकी वस्तुएँ",
-  "your_list_is_empty": "आपकी सूची खाली है"
+  "your_list_is_empty": "आपकी सूची खाली है",
+  "could_not_open_legal_link": "Could not open the legal link.",
+  "plan_annual": "Annual",
+  "plan_weekly": "Weekly",
+  "privacy_policy": "Privacy Policy",
+  "subscription_auto_renew_disclosure": "{title}: {price} per {period}. Auto-renews unless canceled at least 24 hours before the end of the current period.",
+  "subscription_details": "Subscription details",
+  "subscription_details_loading": "Plan details load from the App Store before purchase.",
+  "subscription_lifetime_disclosure": "{title}: {price}. One-time purchase. No auto-renewal.",
+  "subscription_period_billing_period": "billing period",
+  "subscription_period_month": "month",
+  "subscription_period_six_months": "6 months",
+  "subscription_period_three_months": "3 months",
+  "subscription_period_two_months": "2 months",
+  "subscription_period_week": "week",
+  "subscription_period_year": "year",
+  "terms_of_use_eula": "Terms of Use (EULA)"
 }

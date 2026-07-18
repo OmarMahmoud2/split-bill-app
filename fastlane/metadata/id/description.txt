@@ -9,3 +9,6 @@ Fitur:
 - Riwayat: Pantau semua pembagian yang lalu dan siapa yang berhutang.
 
 Unduh sekarang dan jangan pernah bertengkar karena tagihan lagi!
+
+Privacy Policy: https://omarmali.net/split-bill/privacy/
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

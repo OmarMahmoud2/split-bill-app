@@ -9,3 +9,6 @@ Funcionalidades:
 - Histórico: Acompanhe todas as divisões passadas e quem deve o quê.
 
 Baixe agora e nunca mais discuta pela conta!
+
+Privacy Policy: https://omarmali.net/split-bill/privacy/
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

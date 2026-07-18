@@ -9,3 +9,6 @@ Features:
 - History: Keep track of all your past splits and who owes what.
 
 Download now and never fight over the bill again!
+
+Privacy Policy: https://omarmali.net/split-bill/privacy/
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

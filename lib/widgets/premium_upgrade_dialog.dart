@@ -3,6 +3,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/subscription_legal_disclosure.dart';
 
 /// Bottom sheet for purchasing premium upgrade
 class PremiumUpgradeDialog extends StatefulWidget {
@@ -55,9 +56,9 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
 
   Future<void> _handlePurchase() async {
     if (_selectedPackage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('select_plan_to_continue').tr()),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('select_plan_to_continue').tr()));
       return;
     }
 
@@ -134,7 +135,9 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                     Navigator.pop(context, false);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('incorrect_answer_purchase_cancelled').tr(),
+                        content: Text(
+                          'incorrect_answer_purchase_cancelled',
+                        ).tr(),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -216,7 +219,8 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text('go_premium',
+                  Text(
+                    'go_premium',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -224,11 +228,9 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                     ),
                   ).tr(),
                   const SizedBox(height: 8),
-                  Text('unlock_unlimited_scans_and_ad_free_experience',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.white70,
-                    ),
+                  Text(
+                    'unlock_unlimited_scans_and_ad_free_experience',
+                    style: TextStyle(fontSize: 15, color: Colors.white70),
                     textAlign: TextAlign.center,
                   ).tr(),
                 ],
@@ -242,7 +244,8 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('what_s_included',
+                  Text(
+                    'what_s_included',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -292,8 +295,10 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
             else if (_premiumPackages.isNotEmpty) ...[
               Column(
                 children: _premiumPackages.map((package) {
-                  final isSelected = _selectedPackage?.identifier == package.identifier;
-                  final isLifetime = package.packageType == PackageType.lifetime;
+                  final isSelected =
+                      _selectedPackage?.identifier == package.identifier;
+                  final isLifetime =
+                      package.packageType == PackageType.lifetime;
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -304,9 +309,13 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF00B365).withValues(alpha: 0.1) : Colors.white,
+                        color: isSelected
+                            ? const Color(0xFF00B365).withValues(alpha: 0.1)
+                            : Colors.white,
                         border: Border.all(
-                          color: isSelected ? const Color(0xFF00B365) : Colors.grey[300]!,
+                          color: isSelected
+                              ? const Color(0xFF00B365)
+                              : Colors.grey[300]!,
                           width: 2,
                         ),
                         borderRadius: BorderRadius.circular(16),
@@ -314,8 +323,12 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                       child: Row(
                         children: [
                           Icon(
-                            isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                            color: isSelected ? const Color(0xFF00B365) : Colors.grey,
+                            isSelected
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_unchecked,
+                            color: isSelected
+                                ? const Color(0xFF00B365)
+                                : Colors.grey,
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -331,7 +344,9 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                                 ).tr(),
                                 const SizedBox(height: 4),
                                 Text(
-                                  isLifetime ? 'plan_lifetime_desc' : 'plan_monthly_desc',
+                                  isLifetime
+                                      ? 'plan_lifetime_desc'
+                                      : 'plan_monthly_desc',
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 13,
@@ -361,13 +376,13 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
               const SizedBox(height: 24),
               Column(
                 children: [
+                  SubscriptionLegalDisclosure(package: _selectedPackage),
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _isPurchasing
-                          ? null
-                          : _handlePurchase,
+                      onPressed: _isPurchasing ? null : _handlePurchase,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00B365),
                         foregroundColor: Colors.white,
@@ -376,7 +391,8 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                         ),
                         elevation: 0,
                       ),
-                      child: Text('upgrade_to_premium',
+                      child: Text(
+                        'upgrade_to_premium',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
@@ -387,11 +403,9 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: _isPurchasing ? null : _handleRestore,
-                    child: Text('restore_previous_purchase',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 14,
-                      ),
+                    child: Text(
+                      'restore_previous_purchase',
+                      style: TextStyle(color: Colors.black54, fontSize: 14),
                     ).tr(),
                   ),
                   const SizedBox(height: 16),
@@ -413,7 +427,8 @@ class _PremiumUpgradeDialogState extends State<PremiumUpgradeDialog> {
                   children: [
                     CircularProgressIndicator(color: Colors.white),
                     SizedBox(height: 16),
-                    Text('processing',
+                    Text(
+                      'processing',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

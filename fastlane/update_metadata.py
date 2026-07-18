@@ -23,12 +23,22 @@ Features:
 Download now and never fight over the bill again!"""
 BASE_KEYWORDS = "split, bill, receipts, scanner, expense, sharing, group, dinner, ai, finance"
 BASE_CHANGELOG = "UI Improvements and Bug Fixes"
-RELEASE_VERSION_CODE = "13"
+RELEASE_VERSION_CODE = "14"
 
 # Updated URLs (as per user request)
 SUPPORT_URL = "https://omarmali.net/split-bill/"
 MARKETING_URL = "https://omarmali.net/split-bill/"
 PRIVACY_URL = "https://omarmali.net/split-bill/privacy/"
+TERMS_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+
+def app_store_description(description):
+    legal_block = (
+        "\n\nPrivacy Policy: " + PRIVACY_URL +
+        "\nTerms of Use (EULA): " + TERMS_URL
+    )
+    if "Terms of Use (EULA):" in description:
+        return description
+    return description + legal_block
 
 # Localized Content
 # IMPORTANT: Android titles MUST be 30 characters or less.
@@ -297,7 +307,7 @@ Baixe agora e nunca mais discuta pela conta!""",
 
 # Mapping codes for iOS and Android
 ios_mappings = {
-    'en': ['en-US', 'en-GB', 'en-AU', 'en-CA'],
+    'en': ['en-US', 'en-GB', 'en-AU', 'en-CA', 'hr'],
     'ar': ['ar-SA'],
     'de': ['de-DE'],
     'es': ['es-ES', 'es-MX'],
@@ -345,7 +355,7 @@ for lang, config in locales.items():
     if lang in ios_mappings:
         for locale in ios_mappings[lang]:
             write_file(ios_base, locale, 'name.txt', config['title'])
-            write_file(ios_base, locale, 'description.txt', config['desc'])
+            write_file(ios_base, locale, 'description.txt', app_store_description(config['desc']))
             write_file(ios_base, locale, 'subtitle.txt', config['short'])
             write_file(ios_base, locale, 'promotional_text.txt', config['promo'])
             write_file(ios_base, locale, 'keywords.txt', config['keywords'])

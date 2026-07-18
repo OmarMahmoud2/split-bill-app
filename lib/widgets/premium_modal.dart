@@ -5,6 +5,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/subscription_legal_disclosure.dart';
 
 class PremiumModal extends StatefulWidget {
   const PremiumModal({super.key});
@@ -67,9 +68,9 @@ class _PremiumModalState extends State<PremiumModal>
 
   Future<void> _handlePurchase() async {
     if (_selectedPackage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('select_plan_to_continue').tr()),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('select_plan_to_continue').tr()));
       return;
     }
 
@@ -285,7 +286,8 @@ class _PremiumModalState extends State<PremiumModal>
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            Text('upgrade_to_pro',
+                            Text(
+                              'upgrade_to_pro',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
@@ -294,7 +296,8 @@ class _PremiumModalState extends State<PremiumModal>
                               ),
                             ).tr(),
                             const SizedBox(height: 8),
-                            Text('unlock_the_full_power_of_split_bill',
+                            Text(
+                              'unlock_the_full_power_of_split_bill',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white.withValues(alpha: 0.7),
@@ -319,7 +322,8 @@ class _PremiumModalState extends State<PremiumModal>
                             _buildPremiumFeature(
                               Icons.diamond_outlined,
                               'premium_feature_support_development_title'.tr(),
-                              'premium_feature_support_development_subtitle'.tr(),
+                              'premium_feature_support_development_subtitle'
+                                  .tr(),
                             ),
 
                             const SizedBox(height: 24),
@@ -334,45 +338,72 @@ class _PremiumModalState extends State<PremiumModal>
                                 children: [
                                   Column(
                                     children: _premiumPackages.map((package) {
-                                      final isSelected = _selectedPackage?.identifier == package.identifier;
-                                      final isLifetime = package.packageType == PackageType.lifetime;
+                                      final isSelected =
+                                          _selectedPackage?.identifier ==
+                                          package.identifier;
+                                      final isLifetime =
+                                          package.packageType ==
+                                          PackageType.lifetime;
                                       return GestureDetector(
                                         onTap: () {
-                                          setState(() => _selectedPackage = package);
+                                          setState(
+                                            () => _selectedPackage = package,
+                                          );
                                         },
                                         child: Container(
-                                          margin: const EdgeInsets.only(bottom: 12),
+                                          margin: const EdgeInsets.only(
+                                            bottom: 12,
+                                          ),
                                           padding: const EdgeInsets.all(16),
                                           decoration: BoxDecoration(
-                                            color: isSelected ? const Color(0xFFFFD700).withValues(alpha: 0.1) : Colors.white10,
+                                            color: isSelected
+                                                ? const Color(
+                                                    0xFFFFD700,
+                                                  ).withValues(alpha: 0.1)
+                                                : Colors.white10,
                                             border: Border.all(
-                                              color: isSelected ? const Color(0xFFFFD700) : Colors.white24,
+                                              color: isSelected
+                                                  ? const Color(0xFFFFD700)
+                                                  : Colors.white24,
                                               width: 2,
                                             ),
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
                                           ),
                                           child: Row(
                                             children: [
                                               Icon(
-                                                isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                                                color: isSelected ? const Color(0xFFFFD700) : Colors.white54,
+                                                isSelected
+                                                    ? Icons.radio_button_checked
+                                                    : Icons
+                                                          .radio_button_unchecked,
+                                                color: isSelected
+                                                    ? const Color(0xFFFFD700)
+                                                    : Colors.white54,
                                               ),
                                               const SizedBox(width: 16),
                                               Expanded(
                                                 child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      isLifetime ? 'plan_lifetime' : 'plan_monthly',
+                                                      isLifetime
+                                                          ? 'plan_lifetime'
+                                                          : 'plan_monthly',
                                                       style: const TextStyle(
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontSize: 16,
                                                         color: Colors.white,
                                                       ),
                                                     ).tr(),
                                                     const SizedBox(height: 4),
                                                     Text(
-                                                      isLifetime ? 'plan_lifetime_desc' : 'plan_monthly_desc',
+                                                      isLifetime
+                                                          ? 'plan_lifetime_desc'
+                                                          : 'plan_monthly_desc',
                                                       style: TextStyle(
                                                         color: Colors.white70,
                                                         fontSize: 13,
@@ -382,12 +413,16 @@ class _PremiumModalState extends State<PremiumModal>
                                                 ),
                                               ),
                                               Column(
-                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
                                                 children: [
                                                   Text(
-                                                    package.storeProduct.priceString,
+                                                    package
+                                                        .storeProduct
+                                                        .priceString,
                                                     style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontSize: 18,
                                                       color: Color(0xFFFFD700),
                                                     ),
@@ -399,6 +434,11 @@ class _PremiumModalState extends State<PremiumModal>
                                         ),
                                       );
                                     }).toList(),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  SubscriptionLegalDisclosure(
+                                    package: _selectedPackage,
+                                    dark: true,
                                   ),
                                   const SizedBox(height: 12),
 
@@ -466,7 +506,8 @@ class _PremiumModalState extends State<PremiumModal>
                                                         strokeWidth: 2,
                                                       ),
                                                 )
-                                              : Text('unlock_premium_now',
+                                              : Text(
+                                                  'unlock_premium_now',
                                                   style: TextStyle(
                                                     color: Colors.black,
                                                     fontWeight: FontWeight.w900,
@@ -480,14 +521,16 @@ class _PremiumModalState extends State<PremiumModal>
                                 ],
                               )
                             else
-                              Text('pricing_unavailable',
+                              Text(
+                                'pricing_unavailable',
                                 style: TextStyle(color: Colors.redAccent),
                               ).tr(),
 
                             const SizedBox(height: 16),
                             TextButton(
                               onPressed: _handleRestore,
-                              child: Text('restore_purchase',
+                              child: Text(
+                                'restore_purchase',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.5),
                                 ),
