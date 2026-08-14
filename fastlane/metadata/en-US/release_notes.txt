@@ -1,1 +1,1 @@
-UI Improvements and Bug Fixes
+Bug fixes and stability improvements.

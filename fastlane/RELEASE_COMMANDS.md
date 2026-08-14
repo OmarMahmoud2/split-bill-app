@@ -1,11 +1,11 @@
 # Store Release Commands
 
-Current app version is read from `pubspec.yaml`: `1.1.5+14`.
+Current app version is read from `pubspec.yaml`: `1.1.6+15`.
 
 All Android changelogs and iOS What's New text are:
 
 ```text
-UI Improvements and Bug Fixes
+Bug fixes and stability improvements.
 ```
 
 ## Android
@@ -44,7 +44,7 @@ ANDROID_PACKAGE_NAME=net.omarmali.splitapp fastlane android release
 The AAB is built with:
 
 ```sh
-flutter build aab --release --obfuscate --split-debug-info=build/symbols/1.1.5+14 --build-name=1.1.5 --build-number=14
+flutter build aab --release --obfuscate --split-debug-info=build/symbols/1.1.6+15 --build-name=1.1.6 --build-number=15
 ```
 
 ## iOS
@@ -94,7 +94,7 @@ IOS_AUTOMATIC_RELEASE=true fastlane ios release
 The IPA is built with:
 
 ```sh
-flutter build ipa --release --obfuscate --split-debug-info=build/symbols/1.1.5+14 --build-name=1.1.5 --build-number=14
+flutter build ipa --release --obfuscate --split-debug-info=build/symbols/1.1.6+15 --build-name=1.1.6 --build-number=15
 ```
 
 ## Notes

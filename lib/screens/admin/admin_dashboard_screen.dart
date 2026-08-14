@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:split_bill_app/screens/profile/widgets/profile_menu_widgets.dart';
+import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'user_admin_detail_screen.dart';
 
 enum _AdminUserStatusFilter { all, admins, premium, free }
@@ -260,28 +261,209 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             userData['email'] ??
             userData['phoneNumber'] ??
             'no_contact_info'.tr();
-        final subtitle = '$email\nUID: $uid';
-        final isPremium = userData['isPremium'] ?? false;
-        final isAdmin = userData['isAdmin'] ?? false;
+        final isPremium = RevenueCatService.isUserActivePremium(userData);
+        final isAdmin = userData['isAdmin'] == true;
+        final points = _intValue(userData['points']);
+        final photoUrl = userData['photoUrl'] as String?;
+        final avatarImage = ImageUtils.getAvatarImage(photoUrl);
 
-        return ProfileCoolTile(
-          icon: isAdmin
-              ? Icons.admin_panel_settings_rounded
-              : Icons.person_rounded,
-          title: name,
-          subtitle: subtitle,
-          color: isAdmin
-              ? Colors.blueGrey
-              : (isPremium ? Colors.amber : Colors.blue),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  UserAdminDetailScreen(uid: uid, userData: userData),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: (isAdmin
+                        ? Colors.blueGrey
+                        : (isPremium ? Colors.amber : Colors.blue))
+                    .withValues(alpha: 0.04),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      UserAdminDetailScreen(uid: uid, userData: userData),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    // Profile Image Avatar with Status Indicator
+                    Stack(
+                      children: [
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: isAdmin
+                                ? Colors.blueGrey[50]
+                                : (isPremium ? Colors.amber[50] : Colors.blue[50]),
+                            borderRadius: BorderRadius.circular(16),
+                            image: avatarImage != null
+                                ? DecorationImage(
+                                    image: avatarImage,
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: avatarImage == null
+                              ? Center(
+                                  child: Text(
+                                    name.isNotEmpty
+                                        ? name.characters.first.toUpperCase()
+                                        : '?',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 20,
+                                      color: isAdmin
+                                          ? Colors.blueGrey[700]
+                                          : (isPremium
+                                              ? Colors.amber[800]
+                                              : Colors.blue[700]),
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                        if (isAdmin || isPremium)
+                          Positioned(
+                            right: -2,
+                            bottom: -2,
+                            child: Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                color: isAdmin ? Colors.blueGrey[800] : Colors.amber[700],
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 1.5),
+                              ),
+                              child: Icon(
+                                isAdmin
+                                    ? Icons.admin_panel_settings_rounded
+                                    : Icons.star_rounded,
+                                size: 10,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(width: 14),
+
+                    // User Info & Badges
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 15,
+                                    color: Colors.black87,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              if (isAdmin) ...[
+                                _buildStatusBadge(
+                                  'admin'.tr(),
+                                  Colors.blueGrey[700]!,
+                                  Colors.blueGrey[50]!,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              if (isPremium)
+                                _buildStatusBadge(
+                                  'premium'.tr(),
+                                  Colors.amber[800]!,
+                                  Colors.amber[50]!,
+                                )
+                              else if (!isAdmin)
+                                _buildStatusBadge(
+                                  'admin_user_free'.tr(),
+                                  Colors.grey[600]!,
+                                  Colors.grey[100]!,
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            email,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 3),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.stars_rounded,
+                                size: 13,
+                                color: Colors.amber[700],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$points ${'points'.tr()}',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Trailing Arrow
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: Colors.grey[400],
+                      size: 22,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStatusBadge(String text, Color textColor, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          color: textColor,
+          fontSize: 9,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.3,
+        ),
+      ),
     );
   }
 

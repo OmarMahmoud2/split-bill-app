@@ -1,1 +1,1 @@
-UI Improvements and Bug Fixes
+Corrección de errores y mejoras de estabilidad.

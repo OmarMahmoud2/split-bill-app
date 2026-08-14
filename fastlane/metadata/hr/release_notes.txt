@@ -1,1 +1,1 @@
-UI Improvements and Bug Fixes
+Ispravci programskih pogrešaka i poboljšanja stabilnosti.

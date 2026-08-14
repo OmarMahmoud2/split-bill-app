@@ -11,7 +11,7 @@ UI.user_error!("Could not read app version from #{PUBSPEC_PATH}") unless VERSION
 
 APP_VERSION = VERSION_MATCH[1]
 BUILD_NUMBER = VERSION_MATCH[2]
-RELEASE_NOTES = "UI Improvements and Bug Fixes"
+RELEASE_NOTES = "Bug fixes and stability improvements."
 SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUILD_NUMBER}")
 ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
 IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
@@ -89,7 +89,11 @@ def ios_locales
 end
 
 def ios_release_notes
-  ios_locales.to_h { |locale| [locale, RELEASE_NOTES] }
+  ios_locales.to_h do |locale|
+    file_path = File.join(IOS_METADATA_PATH, locale, "release_notes.txt")
+    notes = File.exist?(file_path) ? File.read(file_path).strip : RELEASE_NOTES
+    [locale, notes.empty? ? RELEASE_NOTES : notes]
+  end
 end
 
 def prepare_ios_metadata_path
