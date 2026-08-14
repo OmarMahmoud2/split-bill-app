@@ -22,6 +22,7 @@ import 'screens/scan_receipt/widgets/no_points_dialog.dart';
 import 'screens/scan_receipt/widgets/image_source_sheet.dart';
 import 'screens/scan_receipt/widgets/participants_reference_list.dart';
 import 'screens/scan_receipt/widgets/scan_empty_state.dart';
+import 'services/revenue_cat_service.dart';
 
 class ScanReceiptScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? participants;
@@ -562,7 +563,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           .get();
 
       final userData = userDoc.data();
-      final isPremium = userData?['isPremium'] ?? false;
+      final isPremium = RevenueCatService.isUserActivePremium(userData);
 
       if (isPremium) {
         await _proceedWithImagePick(source);
@@ -771,7 +772,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         if (!snapshot.hasData) return const SizedBox(width: 48);
 
         final userData = snapshot.data!.data() as Map<String, dynamic>?;
-        final isPremium = userData?['isPremium'] ?? false;
+        final isPremium = RevenueCatService.isUserActivePremium(userData);
         final badge = isPremium
             ? _buildProBadge()
             : _buildPointsBadge(userData?['points'] ?? 0);

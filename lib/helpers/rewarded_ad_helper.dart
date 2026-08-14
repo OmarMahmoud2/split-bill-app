@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:split_bill_app/config/api_keys.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'dart:io' show Platform;
 
 /// Helper for loading and showing rewarded ads to earn points
@@ -97,7 +98,8 @@ class RewardedAdHelper {
           .collection('users')
           .doc(user.uid)
           .get();
-      final isPremium = userDoc.data()?['isPremium'] ?? false;
+      final isPremium =
+          RevenueCatService.isUserActivePremium(userDoc.data());
       if (!isPremium) {
         await loadAd();
       }

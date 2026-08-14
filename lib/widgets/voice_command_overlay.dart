@@ -14,6 +14,7 @@ import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/screens/scan_receipt/widgets/no_points_dialog.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
 
 class VoiceCommandOverlay extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -116,7 +117,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           .doc(user.uid)
           .get();
       final data = doc.data();
-      final isPremium = data?['isPremium'] ?? false;
+      final isPremium = RevenueCatService.isUserActivePremium(data);
       final points = (data?['points'] as num?)?.toInt() ?? 0;
 
       if (isPremium) return true;

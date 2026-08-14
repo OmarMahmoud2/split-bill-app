@@ -439,7 +439,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         final userData =
                             snapshot.data!.data() as Map<String, dynamic>?;
-                        final isPremium = userData?['isPremium'] ?? false;
+                        final isPremium =
+                            RevenueCatService.isUserActivePremium(userData);
 
                         if (isPremium) {
                           return Column(

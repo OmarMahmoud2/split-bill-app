@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
 
 /// Displays user's current points count with a coin icon
 class PointsDisplayWidget extends StatelessWidget {
@@ -44,7 +45,7 @@ class PointsDisplayWidget extends StatelessWidget {
 
         final userData = snapshot.data!.data() as Map<String, dynamic>?;
         final points = userData?['points'] ?? 0;
-        final isPremium = userData?['isPremium'] ?? false;
+        final isPremium = RevenueCatService.isUserActivePremium(userData);
 
         // Don't show points for premium users
         if (isPremium) return const SizedBox.shrink();

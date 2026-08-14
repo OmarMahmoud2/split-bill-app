@@ -115,6 +115,22 @@ class RevenueCatService {
     }
   }
 
+  static DateTime? _lastSyncTime;
+
+  /// Check if user has active premium based on Firestore user data (including expiration date).
+  static bool isUserActivePremium(Map<String, dynamic>? userData) {
+    if (userData == null) return false;
+    if (userData['isPremium'] != true) return false;
+    final expiresAtStr = userData['premiumExpiresAt'];
+    if (expiresAtStr is String && expiresAtStr.isNotEmpty) {
+      final expiresAt = DateTime.tryParse(expiresAtStr);
+      if (expiresAt != null && expiresAt.isBefore(DateTime.now().toUtc())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /// Ask the backend to sync premium status from RevenueCat into Firestore.
   static Future<bool> syncPremiumStatus([User? currentUser]) async {
     try {
@@ -134,6 +150,9 @@ class RevenueCatService {
       );
 
       final success = response.statusCode >= 200 && response.statusCode < 300;
+      if (success) {
+        _lastSyncTime = DateTime.now();
+      }
       if (kDebugMode) {
         debugPrint('✅ Backend premium sync status: ${response.statusCode}');
       }
@@ -142,6 +161,19 @@ class RevenueCatService {
       if (kDebugMode) debugPrint('Error syncing premium status: $e');
       return false;
     }
+  }
+
+  /// Throttled premium status sync (runs at most once every 5 minutes unless forced).
+  static Future<bool> syncPremiumStatusIfNeeded({bool force = false}) async {
+    if (kIsWeb) return false;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+
+    final now = DateTime.now();
+    if (!force && _lastSyncTime != null && now.difference(_lastSyncTime!).inMinutes < 5) {
+      return false;
+    }
+    return syncCurrentUser();
   }
 
   static Future<bool> _handleAuthChange(User? user) async {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,7 @@ import 'package:split_bill_app/widgets/home/qr_dialog.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final user = FirebaseAuth.instance.currentUser;
 
   // Navigation State
@@ -41,6 +43,9 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
+
     // 0 = Recent, 1 = Unfinished, 2 = Later
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
@@ -61,7 +66,15 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     super.dispose();
   }
@@ -275,7 +288,8 @@ class _HomeScreenState extends State<HomeScreen>
 
                     final userData =
                         snapshot.data!.data() as Map<String, dynamic>?;
-                    final isPremium = userData?['isPremium'] ?? false;
+                    final isPremium =
+                        RevenueCatService.isUserActivePremium(userData);
 
                     if (isPremium) return const SizedBox.shrink();
 
