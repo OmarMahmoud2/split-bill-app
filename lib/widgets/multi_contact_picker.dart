@@ -26,7 +26,24 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
   void initState() {
     super.initState();
     _selectedIds = widget.alreadySelectedIds.toSet();
-    _loadContacts();
+    if (ContactService.usesSystemContactPicker) {
+      _openSystemContactPicker();
+    } else {
+      _loadContacts();
+    }
+  }
+
+  Future<void> _openSystemContactPicker() async {
+    try {
+      final contacts = await _contactService.pickContacts(selectionLimit: 100);
+      if (mounted) {
+        Navigator.pop(context, contacts);
+      }
+    } catch (_) {
+      if (mounted) {
+        Navigator.pop(context, <Contact>[]);
+      }
+    }
   }
 
   Future<void> _loadContacts() async {
@@ -87,7 +104,8 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('select_contacts',
+            Text(
+              'select_contacts',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ).tr(),
             if (_selectedIds.isNotEmpty)
@@ -101,7 +119,8 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
           if (_selectedIds.isNotEmpty)
             TextButton(
               onPressed: _returnSelection,
-              child: Text('add',
+              child: Text(
+                'add',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ).tr(),
             ),

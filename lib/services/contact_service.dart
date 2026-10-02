@@ -1,12 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
 class ContactService {
+  static const MethodChannel _contactPickerChannel = MethodChannel(
+    'net.omarmali.splitapp/contact_picker',
+  );
+
+  static bool get usesSystemContactPicker =>
+      defaultTargetPlatform == TargetPlatform.android;
+
   Future<List<Contact>?> getAllContacts() async {
+    if (usesSystemContactPicker) {
+      return pickContacts();
+    }
     if (!await FlutterContacts.requestPermission(readonly: true)) {
       return null;
     }
     return await FlutterContacts.getContacts(withProperties: true);
+  }
+
+  Future<List<Contact>> pickContacts({int selectionLimit = 50}) async {
+    if (!usesSystemContactPicker) {
+      final contact = await FlutterContacts.openExternalPick();
+      return contact == null ? <Contact>[] : <Contact>[contact];
+    }
+
+    final result = await _contactPickerChannel.invokeListMethod<dynamic>(
+      'pickContacts',
+      <String, dynamic>{'selectionLimit': selectionLimit},
+    );
+
+    return (result ?? const <dynamic>[])
+        .whereType<Map<dynamic, dynamic>>()
+        .map(_contactFromPickerMap)
+        .where((contact) => contact.phones.isNotEmpty)
+        .toList();
   }
 
   Future<List<Map<String, dynamic>>> identifyUsers(
@@ -123,17 +153,11 @@ class ContactService {
   }
 
   Future<Map<String, dynamic>?> pickAndFindUser() async {
-    // 1. Request Permission
-    if (!await FlutterContacts.requestPermission(readonly: true)) {
-      return null;
-    }
+    final contacts = await pickContacts(selectionLimit: 1);
+    if (contacts.isEmpty || contacts.first.phones.isEmpty) return null;
 
-    // 2. Open Picker
-    final Contact? contact = await FlutterContacts.openExternalPick();
-    if (contact == null || contact.phones.isEmpty) return null;
-
-    String rawPhone = contact.phones.first.number;
-    String displayName = contact.displayName;
+    String rawPhone = contacts.first.phones.first.number;
+    String displayName = contacts.first.displayName;
 
     // 3. Normalize & Generate Search Variations
     List<String> variations = _generateSmartVariations(rawPhone);
@@ -195,5 +219,29 @@ class ContactService {
     }
 
     return variations.toList();
+  }
+
+  Contact _contactFromPickerMap(Map<dynamic, dynamic> data) {
+    final phones = _stringList(
+      data['phones'],
+    ).map((number) => Phone(number)).toList(growable: false);
+    final emails = _stringList(
+      data['emails'],
+    ).map((address) => Email(address)).toList(growable: false);
+
+    return Contact(
+      id: data['id']?.toString() ?? '',
+      displayName: data['displayName']?.toString() ?? '',
+      phones: phones,
+      emails: emails,
+    );
+  }
+
+  List<String> _stringList(Object? value) {
+    if (value is! List) return const <String>[];
+    return value
+        .map((item) => item?.toString().trim() ?? '')
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
   }
 }

@@ -2,7 +2,7 @@ name: split_bill_app
 description: "A new Flutter project."
 publish_to: 'none' 
 
-version: 1.1.6+15
+version: 1.1.7+16
 
 environment:
   sdk: ^3.10.1
@@ -23,7 +23,6 @@ dependencies:
   image_cropper: ^11.0.0
   qr_flutter: ^4.1.0       # To generate your QR
   mobile_scanner: ^7.1.4   # To scan friends' QRs
-  permission_handler: ^12.0.1 
   flutter_contacts: ^1.1.9
   share_plus: ^12.0.1
   google_mobile_ads: ^7.0.0
