@@ -1,1 +1,1 @@
-split, bill, receipts, scanner, expense, sharing, group, dinner, ai, finance
+bill splitter,receipt scanner,expense tracker,group bills,split payment,currency

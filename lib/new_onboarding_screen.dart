@@ -1,7 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'auth_wrapper.dart';
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:split_bill_app/auth_wrapper.dart';
+import 'package:split_bill_app/config/supported_preferences.dart';
+import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/services/user_preferences_service.dart';
 
 class NewOnboardingScreen extends StatefulWidget {
   const NewOnboardingScreen({super.key});
@@ -12,256 +19,870 @@ class NewOnboardingScreen extends StatefulWidget {
 
 class _NewOnboardingScreenState extends State<NewOnboardingScreen>
     with TickerProviderStateMixin {
-  final PageController _pageController = PageController();
+  static const _popularCurrencyCodes = <String>[
+    'USD',
+    'EUR',
+    'GBP',
+    'EGP',
+    'SAR',
+    'AED',
+    'INR',
+    'IDR',
+    'PHP',
+    'BRL',
+    'MXN',
+    'ZAR',
+  ];
+
+  final _pageController = PageController();
+  final _customCurrencyController = TextEditingController();
+  final _paymentNameController = TextEditingController();
+  final _paymentDetailController = TextEditingController();
+
+  late final AnimationController _gradientController;
+  late final AnimationController _floatingController;
+
   int _currentPage = 0;
-
-  late AnimationController _particleController;
-  late AnimationController _gradientController;
-
-  List<OnboardingPageData> _localizedPages() {
-    return [
-      OnboardingPageData(
-        image:
-            'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
-        title: 'scan_receipts_ninstantly'.tr(),
-        description: 'onboarding_scan_description'.tr(),
-        gradientColors: [Color(0xFF667EEA), Color(0xFF764BA2)],
-      ),
-      OnboardingPageData(
-        image:
-            'assets/onboarding/onboarding_split_bill_1767296158711-removebg-preview.png',
-        title: 'split_bills_nfairly'.tr(),
-        description: 'onboarding_split_description'.tr(),
-        gradientColors: [Color(0xFFEC008C), Color(0xFFFC6767)],
-      ),
-      OnboardingPageData(
-        image:
-            'assets/onboarding/onboarding_track_payments_1767296176070-removebg-preview.png',
-        title: 'track_payments_neasily'.tr(),
-        description: 'onboarding_track_description'.tr(),
-        gradientColors: [Color(0xFF11998E), Color(0xFF38EF7D)],
-      ),
-      OnboardingPageData(
-        image:
-            'assets/onboarding/onboarding_notifications_1767296191753-removebg-preview.png',
-        title: 'stay_updated_nalways'.tr(),
-        description: 'onboarding_notifications_description'.tr(),
-        gradientColors: [Color(0xFFFF6B6B), Color(0xFFFFA500)],
-      ),
-      OnboardingPageData(
-        image:
-            'assets/onboarding/onboarding_ready_1767296205493-removebg-preview.png',
-        title: 'ready_to_nget_started'.tr(),
-        description: 'onboarding_ready_description'.tr(),
-        gradientColors: [Color(0xFF667EEA), Color(0xFF4FACFE)],
-      ),
-    ];
-  }
+  bool _loadedProviderDefaults = false;
+  bool _isCompleting = false;
+  String _selectedCurrencyCode = UserPreferencesService.defaultCurrencyCode;
+  final List<Map<String, String>> _paymentMethods = [];
 
   @override
   void initState() {
     super.initState();
-
-    _particleController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 20),
-    )..repeat();
-
     _gradientController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat();
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+    _floatingController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 7),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_loadedProviderDefaults) return;
+    _loadedProviderDefaults = true;
+
+    final settings = context.read<AppSettingsProvider>();
+    _selectedCurrencyCode =
+        sanitizeCurrencyCode(settings.currencyCode) ??
+        UserPreferencesService.defaultCurrencyCode;
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _particleController.dispose();
+    _customCurrencyController.dispose();
+    _paymentNameController.dispose();
+    _paymentDetailController.dispose();
     _gradientController.dispose();
+    _floatingController.dispose();
     super.dispose();
   }
 
-  Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_complete', true);
+  List<_OnboardingPage> get _pages => [
+    _OnboardingPage(
+      title: 'onboarding_title_scan_split'.tr(),
+      description: 'onboarding_desc_scan_split'.tr(),
+      icon: Icons.receipt_long_rounded,
+      colors: const [Color(0xFF1677FF), Color(0xFF7C3AED)],
+      body: _buildIntroPage,
+    ),
+    _OnboardingPage(
+      title: 'onboarding_title_currency'.tr(),
+      description: 'onboarding_desc_currency'.tr(),
+      icon: Icons.payments_rounded,
+      colors: const [Color(0xFF0F9B8E), Color(0xFF2563EB)],
+      body: _buildCurrencyPage,
+    ),
+    _OnboardingPage(
+      title: 'onboarding_title_payments'.tr(),
+      description: 'onboarding_desc_payments'.tr(),
+      icon: Icons.account_balance_wallet_rounded,
+      colors: const [Color(0xFFF97316), Color(0xFFDB2777)],
+      body: _buildPaymentMethodsPage,
+    ),
+    _OnboardingPage(
+      title: 'onboarding_title_no_collection'.tr(),
+      description: 'onboarding_desc_no_collection'.tr(),
+      icon: Icons.verified_user_rounded,
+      colors: const [Color(0xFF475569), Color(0xFF0891B2)],
+      body: _buildTrustPage,
+    ),
+    _OnboardingPage(
+      title: 'onboarding_title_ready'.tr(),
+      description: 'onboarding_desc_ready'.tr(),
+      icon: Icons.check_circle_rounded,
+      colors: const [Color(0xFF16A34A), Color(0xFF0EA5E9)],
+      body: _buildReadyPage,
+    ),
+  ];
 
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const AuthWrapper(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 500),
-        ),
-        (route) => false,
+  Future<void> _completeOnboarding() async {
+    if (_isCompleting) return;
+
+    setState(() => _isCompleting = true);
+
+    final settings = context.read<AppSettingsProvider>();
+    final prefs = await SharedPreferences.getInstance();
+    final selectedCurrency =
+        sanitizeCurrencyCode(_selectedCurrencyCode) ??
+        UserPreferencesService.defaultCurrencyCode;
+
+    await prefs.setBool('onboarding_complete', true);
+    await prefs.setBool('onboarding_complete_v2', true);
+    await prefs.setString('currencyCode', selectedCurrency);
+
+    if (_paymentMethods.isNotEmpty) {
+      await prefs.setString(
+        UserPreferencesService.pendingPaymentMethodsKey,
+        jsonEncode(_paymentMethods),
       );
+    } else {
+      await prefs.remove(UserPreferencesService.pendingPaymentMethodsKey);
     }
+
+    await settings.updateCurrencyCode(selectedCurrency);
+
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const AuthWrapper(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 420),
+      ),
+      (route) => false,
+    );
+  }
+
+  void _goNextOrComplete() {
+    if (_currentPage == _pages.length - 1) {
+      _completeOnboarding();
+      return;
+    }
+
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 380),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  void _selectCurrency(String code) {
+    final normalized = sanitizeCurrencyCode(code);
+    if (normalized == null) return;
+    setState(() {
+      _selectedCurrencyCode = normalized;
+      _customCurrencyController.clear();
+    });
+  }
+
+  void _saveCustomCurrency() {
+    final normalized = sanitizeCurrencyCode(_customCurrencyController.text);
+    if (normalized == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('onboarding_custom_currency_error'.tr()),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _selectedCurrencyCode = normalized);
+    FocusScope.of(context).unfocus();
+  }
+
+  void _addPaymentMethod() {
+    final name = _paymentNameController.text.trim();
+    final value = _paymentDetailController.text.trim();
+
+    if (name.isEmpty || value.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('please_complete_all_required_fields'.tr()),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _paymentMethods.add({'name': name, 'value': value});
+      _paymentNameController.clear();
+      _paymentDetailController.clear();
+    });
+    FocusScope.of(context).unfocus();
   }
 
   @override
   Widget build(BuildContext context) {
-    final pages = _localizedPages();
-    final currentGradient = pages[_currentPage].gradientColors;
+    final theme = Theme.of(context);
+    final pages = _pages;
+    final currentPage = pages[_currentPage];
+    final colors = currentPage.colors;
 
     return Scaffold(
-      body: Stack(
+      body: AnimatedBuilder(
+        animation: Listenable.merge([_gradientController, _floatingController]),
+        builder: (context, child) {
+          final shift = _gradientController.value;
+          final lift = (_floatingController.value - 0.5) * 16;
+
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.lerp(colors.first, colors.last, shift)!,
+                  Color.lerp(colors.last, colors.first, shift)!,
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                    child: Row(
+                      children: [
+                        _ProgressDots(
+                          count: pages.length,
+                          activeIndex: _currentPage,
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: _isCompleting ? null : _completeOnboarding,
+                          child: Text(
+                            'skip'.tr(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (index) =>
+                          setState(() => _currentPage = index),
+                      itemCount: pages.length,
+                      itemBuilder: (context, index) {
+                        final page = pages[index];
+                        return LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              padding: const EdgeInsets.fromLTRB(
+                                24,
+                                16,
+                                24,
+                                24,
+                              ),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight - 40,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Transform.translate(
+                                      offset: Offset(0, lift),
+                                      child: _HeroIcon(
+                                        icon: page.icon,
+                                        colors: page.colors,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 26),
+                                    Text(
+                                      page.title,
+                                      textAlign: TextAlign.center,
+                                      style: theme.textTheme.headlineMedium
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900,
+                                            height: 1.08,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      page.description,
+                                      textAlign: TextAlign.center,
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                            color: Colors.white.withValues(
+                                              alpha: 0.86,
+                                            ),
+                                            height: 1.45,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 26),
+                                    page.body(context),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 58,
+                      child: ElevatedButton(
+                        onPressed: _isCompleting ? null : _goNextOrComplete,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: colors.first,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        child: _isCompleting
+                            ? SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.4,
+                                  color: colors.first,
+                                ),
+                              )
+                            : Text(
+                                _currentPage == pages.length - 1
+                                    ? 'get_started_rocket'.tr()
+                                    : 'next'.tr(),
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildIntroPage(BuildContext context) {
+    return _GlassPanel(
+      child: Column(
         children: [
-          // 🌈 ANIMATED GRADIENT BACKGROUND
-          AnimatedBuilder(
-            animation: _gradientController,
-            builder: (context, child) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color.lerp(
-                        currentGradient[0],
-                        currentGradient[1],
-                        (_gradientController.value * 2) % 1,
-                      )!,
-                      Color.lerp(
-                        currentGradient[1],
-                        currentGradient[0].withValues(alpha: 0.7),
-                        (_gradientController.value * 2) % 1,
-                      )!,
+          _FeatureRow(
+            icon: Icons.camera_alt_rounded,
+            title: 'scan_receipts_ninstantly'.tr(),
+            subtitle: 'onboarding_scan_description'.tr(),
+          ),
+          const SizedBox(height: 14),
+          _FeatureRow(
+            icon: Icons.groups_rounded,
+            title: 'split_bills_nfairly'.tr(),
+            subtitle: 'onboarding_split_description'.tr(),
+          ),
+          const SizedBox(height: 14),
+          _FeatureRow(
+            icon: Icons.notifications_active_rounded,
+            title: 'stay_updated_nalways'.tr(),
+            subtitle: 'onboarding_notifications_description'.tr(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurrencyPage(BuildContext context) {
+    final theme = Theme.of(context);
+    final selected = findCurrencyOption(_selectedCurrencyCode);
+
+    return _GlassPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: const Color(0xFFE0F2FE),
+                  foregroundColor: const Color(0xFF0369A1),
+                  child: Text(
+                    selected.symbol,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        selected.code,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      Text(
+                        '${selected.name} • ${selected.region}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.black.withValues(alpha: 0.56),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              );
-            },
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: Color(0xFF0F9B8E),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: 18),
+          Text(
+            'onboarding_popular_currencies'.tr(),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: _popularCurrencyCodes.map((code) {
+              final option = findCurrencyOption(code);
+              final isSelected = _selectedCurrencyCode == option.code;
+              return ChoiceChip(
+                selected: isSelected,
+                label: Text('${option.symbol} ${option.code}'),
+                onSelected: (_) => _selectCurrency(option.code),
+                selectedColor: Colors.white,
+                backgroundColor: Colors.white.withValues(alpha: 0.18),
+                labelStyle: TextStyle(
+                  color: isSelected ? const Color(0xFF0F766E) : Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+                side: BorderSide(
+                  color: Colors.white.withValues(alpha: isSelected ? 1 : 0.24),
+                ),
+                showCheckmark: false,
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 18),
+          _TextInputPanel(
+            controller: _customCurrencyController,
+            label: 'onboarding_custom_currency_label'.tr(),
+            hint: 'onboarding_custom_currency_hint'.tr(),
+            icon: Icons.edit_rounded,
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp('[A-Za-z]')),
+              LengthLimitingTextInputFormatter(6),
+            ],
+            action: IconButton(
+              tooltip: 'save_changes'.tr(),
+              onPressed: _saveCustomCurrency,
+              icon: const Icon(Icons.check_circle_rounded),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-          // ✨ FLOATING PARTICLES
-          ...List.generate(15, (index) {
-            return AnimatedBuilder(
-              animation: _particleController,
-              builder: (context, child) {
-                final offset = (_particleController.value + index * 0.1) % 1;
-                return Positioned(
-                  left: (index * 50.0) % MediaQuery.of(context).size.width,
-                  top: MediaQuery.of(context).size.height * offset,
-                  child: Opacity(
-                    opacity: 0.2,
-                    child: Container(
-                      width: 4 + (index % 3) * 2,
-                      height: 4 + (index % 3) * 2,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+  Widget _buildPaymentMethodsPage(BuildContext context) {
+    return _GlassPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _TextInputPanel(
+            controller: _paymentNameController,
+            label: 'onboarding_payment_name_label'.tr(),
+            hint: 'onboarding_payment_name_hint'.tr(),
+            icon: Icons.wallet_rounded,
+          ),
+          const SizedBox(height: 12),
+          _TextInputPanel(
+            controller: _paymentDetailController,
+            label: 'onboarding_payment_detail_label'.tr(),
+            hint: 'onboarding_payment_detail_hint'.tr(),
+            icon: Icons.alternate_email_rounded,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _addPaymentMethod(),
+          ),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            onPressed: _addPaymentMethod,
+            icon: const Icon(Icons.add_circle_rounded),
+            label: Text('onboarding_add_payment'.tr()),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white,
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.55)),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _paymentMethods.isEmpty
+                ? 'onboarding_no_payment_methods'.tr()
+                : 'onboarding_added_payment_methods'.tr(),
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.9),
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ..._paymentMethods.asMap().entries.map((entry) {
+            final method = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                child: ListTile(
+                  leading: const CircleAvatar(
+                    backgroundColor: Color(0xFFFFEDD5),
+                    foregroundColor: Color(0xFFEA580C),
+                    child: Icon(Icons.payments_rounded),
                   ),
-                );
-              },
+                  title: Text(
+                    method['name'] ?? '',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  subtitle: Text(method['value'] ?? ''),
+                  trailing: IconButton(
+                    onPressed: () =>
+                        setState(() => _paymentMethods.removeAt(entry.key)),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ),
+              ),
             );
           }),
+        ],
+      ),
+    );
+  }
 
-          // 📱 MAIN CONTENT
-          SafeArea(
+  Widget _buildTrustPage(BuildContext context) {
+    return _GlassPanel(
+      child: Column(
+        children: [
+          _FeatureRow(
+            icon: Icons.money_off_csred_rounded,
+            title: 'onboarding_no_collection_point_1'.tr(),
+            subtitle: 'onboarding_no_collection_point_1_desc'.tr(),
+          ),
+          const SizedBox(height: 14),
+          _FeatureRow(
+            icon: Icons.privacy_tip_rounded,
+            title: 'onboarding_no_collection_point_2'.tr(),
+            subtitle: 'onboarding_no_collection_point_2_desc'.tr(),
+          ),
+          const SizedBox(height: 14),
+          _FeatureRow(
+            icon: Icons.share_rounded,
+            title: 'onboarding_no_collection_point_3'.tr(),
+            subtitle: 'onboarding_no_collection_point_3_desc'.tr(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReadyPage(BuildContext context) {
+    final selected = findCurrencyOption(_selectedCurrencyCode);
+
+    return _GlassPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _SummaryTile(
+            icon: Icons.payments_rounded,
+            title: 'default_currency'.tr(),
+            value: '${selected.code} • ${selected.name}',
+          ),
+          const SizedBox(height: 12),
+          _SummaryTile(
+            icon: Icons.account_balance_wallet_rounded,
+            title: 'payment_methods'.tr(),
+            value: _paymentMethods.isEmpty
+                ? 'onboarding_no_payment_methods'.tr()
+                : '${_paymentMethods.length}',
+          ),
+          const SizedBox(height: 12),
+          _SummaryTile(
+            icon: Icons.security_rounded,
+            title: 'onboarding_title_no_collection'.tr(),
+            value: 'onboarding_no_collection_point_1'.tr(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OnboardingPage {
+  const _OnboardingPage({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.colors,
+    required this.body,
+  });
+
+  final String title;
+  final String description;
+  final IconData icon;
+  final List<Color> colors;
+  final Widget Function(BuildContext context) body;
+}
+
+class _ProgressDots extends StatelessWidget {
+  const _ProgressDots({required this.count, required this.activeIndex});
+
+  final int count;
+  final int activeIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(count, (index) {
+        final active = index == activeIndex;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 240),
+          width: active ? 28 : 8,
+          height: 8,
+          margin: const EdgeInsets.only(right: 6),
+          decoration: BoxDecoration(
+            color: active ? Colors.white : Colors.white.withValues(alpha: 0.32),
+            borderRadius: BorderRadius.circular(999),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _HeroIcon extends StatelessWidget {
+  const _HeroIcon({required this.icon, required this.colors});
+
+  final IconData icon;
+  final List<Color> colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 118,
+      height: 118,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.14),
+            blurRadius: 26,
+            offset: const Offset(0, 16),
+          ),
+        ],
+      ),
+      child: Center(
+        child: ShaderMask(
+          shaderCallback: (bounds) =>
+              LinearGradient(colors: colors).createShader(bounds),
+          child: Icon(icon, size: 58, color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassPanel extends StatelessWidget {
+  const _GlassPanel({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.26)),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _FeatureRow extends StatelessWidget {
+  const _FeatureRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.78),
+                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TextInputPanel extends StatelessWidget {
+  const _TextInputPanel({
+    required this.controller,
+    required this.label,
+    required this.hint,
+    required this.icon,
+    this.action,
+    this.inputFormatters,
+    this.textCapitalization = TextCapitalization.none,
+    this.textInputAction,
+    this.onSubmitted,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final String hint;
+  final IconData icon;
+  final Widget? action;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextCapitalization textCapitalization;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      inputFormatters: inputFormatters,
+      textCapitalization: textCapitalization,
+      textInputAction: textInputAction,
+      onSubmitted: onSubmitted,
+      style: const TextStyle(fontWeight: FontWeight.w800),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon),
+        suffixIcon: action,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}
+
+class _SummaryTile extends StatelessWidget {
+  const _SummaryTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // SKIP BUTTON
-                Align(
-                  alignment: Alignment.topRight,
-                  child: TextButton(
-                    onPressed: _completeOnboarding,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                    ),
-                    child: Text('skip',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ).tr(),
-                  ),
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
-
-                const SizedBox(height: 20),
-
-                // PAGE VIEW
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() => _currentPage = index);
-                    },
-                    itemCount: pages.length,
-                    itemBuilder: (context, index) {
-                      return _buildPage(pages[index], index);
-                    },
-                  ),
-                ),
-
-                // PAGE INDICATOR
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      pages.length,
-                      (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: _currentPage == index ? 32 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _currentPage == index
-                              ? Colors.white
-                              : Colors.white.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // NEXT/GET STARTED BUTTON
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 40),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_currentPage == pages.length - 1) {
-                          _completeOnboarding();
-                        } else {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeInOutCubic,
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: currentGradient[0],
-                        elevation: 8,
-                        shadowColor: Colors.black26,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        _currentPage == pages.length - 1
-                            ? 'get_started_rocket'.tr()
-                            : 'next'.tr(),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: Colors.black.withValues(alpha: 0.58),
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -271,99 +892,4 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen>
       ),
     );
   }
-
-  Widget _buildPage(OnboardingPageData page, int index) {
-    return TweenAnimationBuilder<double>(
-      key: ValueKey(index),
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeOutCubic,
-      builder: (context, value, child) {
-        return Opacity(
-          opacity: value,
-          child: Transform.translate(
-            offset: Offset(50 * (1 - value), 0),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // IMAGE
-                  Expanded(
-                    flex: 3,
-                    child: Center(
-                      child: Transform.scale(
-                        scale: 0.8 + (0.2 * value),
-                        child: Image.asset(
-                          page.image,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              Icons.image_not_supported_outlined,
-                              size: 150,
-                              color: Colors.white.withValues(alpha: 0.5),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // TITLE
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.white, Color(0xFFFFF3E0)],
-                    ).createShader(bounds),
-                    child: Text(
-                      page.title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        height: 1.2,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // DESCRIPTION
-                  Text(
-                    page.description,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withValues(alpha: 0.9),
-                      height: 1.6,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const Spacer(),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class OnboardingPageData {
-  final String image;
-  final String title;
-  final String description;
-  final List<Color> gradientColors;
-
-  OnboardingPageData({
-    required this.image,
-    required this.title,
-    required this.description,
-    required this.gradientColors,
-  });
 }

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
@@ -24,7 +25,8 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _SettingsCard(
             title: 'app_language'.tr(),
-            subtitle: '${selectedLocale.englishName} • ${selectedLocale.nativeName}',
+            subtitle:
+                '${selectedLocale.englishName} • ${selectedLocale.nativeName}',
             icon: Icons.language_rounded,
             onTap: () => _showLocaleSheet(context, settings),
           ),
@@ -49,11 +51,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-
-  void _showLocaleSheet(
-    BuildContext context,
-    AppSettingsProvider settings,
-  ) {
+  void _showLocaleSheet(BuildContext context, AppSettingsProvider settings) {
     PremiumBottomSheet.show(
       context: context,
       isScrollable: true,
@@ -77,7 +75,9 @@ class SettingsScreen extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
                 backgroundColor: isSelected
-                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1)
                     : Colors.grey[100],
                 child: Text(
                   option.nativeName.characters.first,
@@ -116,67 +116,143 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showCurrencySheet(
-    BuildContext context,
-    AppSettingsProvider settings,
-  ) {
+  void _showCurrencySheet(BuildContext context, AppSettingsProvider settings) {
+    final searchController = TextEditingController();
+    final customController = TextEditingController();
+
     PremiumBottomSheet.show(
       context: context,
       isScrollable: true,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Text(
-              'default_currency',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.6,
-              ),
-            ).tr(),
-          ),
-          ...supportedCurrencyOptions.map((option) {
-            final isSelected = option.code == settings.currencyCode;
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                backgroundColor: isSelected
-                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-                    : Colors.grey[100],
+      child: StatefulBuilder(
+        builder: (context, setModalState) {
+          final theme = Theme.of(context);
+          final colorScheme = theme.colorScheme;
+          final query = searchController.text.trim().toLowerCase();
+          final filteredOptions = supportedCurrencyOptions
+              .where((option) {
+                if (query.isEmpty) return true;
+                return option.code.toLowerCase().contains(query) ||
+                    option.name.toLowerCase().contains(query) ||
+                    option.region.toLowerCase().contains(query);
+              })
+              .toList(growable: false);
+
+          Future<void> applyCurrency(String code) async {
+            final normalized = sanitizeCurrencyCode(code);
+            if (normalized == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('onboarding_custom_currency_error'.tr()),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+              return;
+            }
+
+            await settings.updateCurrencyCode(normalized);
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          }
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
-                  option.symbol,
-                  style: TextStyle(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey[700],
-                    fontWeight: FontWeight.bold,
+                  'default_currency',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.6,
+                  ),
+                ).tr(),
+              ),
+              TextField(
+                controller: searchController,
+                onChanged: (_) => setModalState(() {}),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  hintText: 'settings_search_currency'.tr(),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.45,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
-              title: Text(
-                '${option.code} • ${option.name}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              const SizedBox(height: 12),
+              TextField(
+                controller: customController,
+                textCapitalization: TextCapitalization.characters,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp('[A-Za-z]')),
+                  LengthLimitingTextInputFormatter(6),
+                ],
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.edit_rounded),
+                  hintText: 'settings_custom_currency_hint'.tr(),
+                  labelText: 'settings_custom_currency'.tr(),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.45,
+                  ),
+                  suffixIcon: IconButton(
+                    tooltip: 'save_changes'.tr(),
+                    onPressed: () => applyCurrency(customController.text),
+                    icon: const Icon(Icons.check_circle_rounded),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
               ),
-              subtitle: Text(option.region),
-              trailing: isSelected
-                  ? Icon(
-                      Icons.check_circle_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                    )
-                  : null,
-              onTap: () async {
-                await settings.updateCurrencyCode(option.code);
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              },
-            );
-          }),
-        ],
+              const SizedBox(height: 16),
+              ...filteredOptions.map((option) {
+                final isSelected = option.code == settings.currencyCode;
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: CircleAvatar(
+                    backgroundColor: isSelected
+                        ? colorScheme.primary.withValues(alpha: 0.1)
+                        : colorScheme.surfaceContainerHighest,
+                    child: Text(
+                      option.symbol,
+                      style: TextStyle(
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurface.withValues(alpha: 0.72),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    '${option.code} • ${option.name}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(option.region),
+                  trailing: isSelected
+                      ? Icon(
+                          Icons.check_circle_rounded,
+                          color: colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () => applyCurrency(option.code),
+                );
+              }),
+            ],
+          );
+        },
       ),
-    );
+    ).whenComplete(() {
+      searchController.dispose();
+      customController.dispose();
+    });
   }
 }
 

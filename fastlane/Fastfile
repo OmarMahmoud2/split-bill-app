@@ -11,7 +11,12 @@ UI.user_error!("Could not read app version from #{PUBSPEC_PATH}") unless VERSION
 
 APP_VERSION = VERSION_MATCH[1]
 BUILD_NUMBER = VERSION_MATCH[2]
-RELEASE_NOTES = "Bug fixes and stability improvements."
+RELEASE_NOTES = [
+  "New setup onboarding for currency and optional payment methods.",
+  "Expanded currency support with custom currency codes.",
+  "Android now uses the system Contact Picker instead of contacts permission.",
+  "Stability improvements and polish."
+].join("\n")
 SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUILD_NUMBER}")
 ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
 IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")

@@ -12,7 +12,7 @@ if os.path.exists(PUBSPEC_PATH):
             version_code = match.group(1)
 
 NOTES_BY_LOCALE = {
-    'default': 'Bug fixes and stability improvements.',
+    'default': 'New onboarding, expanded currencies, Android Contact Picker, and stability improvements.',
     'en': 'Bug fixes and stability improvements.',
     'en-US': 'Bug fixes and stability improvements.',
     'en-GB': 'Bug fixes and stability improvements.',
@@ -52,6 +52,15 @@ NOTES_BY_LOCALE = {
     'zh-TW': '錯誤修復與穩定性改進。',
     'zh-Hant': '錯誤修復與穩定性改進。',
 }
+
+CURRENT_RELEASE_NOTES = (
+    "New setup onboarding for currency and optional payment methods.\n"
+    "Expanded currency support with custom currency codes.\n"
+    "Android now uses the system Contact Picker instead of contacts permission.\n"
+    "Stability improvements and polish."
+)
+NOTES_BY_LOCALE = {locale: CURRENT_RELEASE_NOTES for locale in NOTES_BY_LOCALE}
+NOTES_BY_LOCALE['default'] = CURRENT_RELEASE_NOTES
 
 # Android Changelogs
 android_path = os.path.join(PROJECT_ROOT, "fastlane", "metadata", "android")

@@ -24,10 +24,23 @@ void main() {
   });
 
   test('resolves device locale to the closest supported locale', () {
-    final locale = resolveSupportedLocale(
-      const [Locale('es', 'MX'), Locale('fr', 'FR')],
-    );
+    final locale = resolveSupportedLocale(const [
+      Locale('es', 'MX'),
+      Locale('fr', 'FR'),
+    ]);
 
     expect(locale.languageCode, 'es');
+  });
+
+  test('keeps supported and custom currency codes stable', () {
+    expect(sanitizeCurrencyCode(' egp '), 'EGP');
+    expect(sanitizeCurrencyCode('12'), isNull);
+
+    final supported = findCurrencyOption('EGP');
+    expect(supported.name, 'Egyptian Pound');
+
+    final custom = findCurrencyOption('sdgx');
+    expect(custom.code, 'SDGX');
+    expect(custom.region, 'Custom');
   });
 }

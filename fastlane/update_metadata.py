@@ -22,8 +22,8 @@ Features:
 
 Download now and never fight over the bill again!"""
 BASE_KEYWORDS = "split, bill, receipts, scanner, expense, sharing, group, dinner, ai, finance"
-BASE_CHANGELOG = "UI Improvements and Bug Fixes"
-RELEASE_VERSION_CODE = "14"
+BASE_CHANGELOG = "New onboarding, expanded currencies, Android Contact Picker, and stability improvements."
+RELEASE_VERSION_CODE = "17"
 
 # Updated URLs (as per user request)
 SUPPORT_URL = "https://omarmali.net/split-bill/"

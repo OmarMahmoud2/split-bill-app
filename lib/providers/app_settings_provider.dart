@@ -18,7 +18,8 @@ class AppSettingsProvider extends ChangeNotifier {
   String _currencyCode = UserPreferencesService.defaultCurrencyCode;
 
   StreamSubscription<User?>? _authSubscription;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _profileSubscription;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+  _profileSubscription;
 
   bool _initialized = false;
 
@@ -31,7 +32,9 @@ class AppSettingsProvider extends ChangeNotifier {
 
     await _loadLocalPreferences();
     await _bindUser(FirebaseAuth.instance.currentUser);
-    _authSubscription = FirebaseAuth.instance.authStateChanges().listen(_bindUser);
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen(
+      _bindUser,
+    );
   }
 
   Future<void> _loadLocalPreferences() async {
@@ -41,7 +44,7 @@ class AppSettingsProvider extends ChangeNotifier {
         ? resolveSupportedLocale(PlatformDispatcher.instance.locales)
         : findLocaleOption(savedLocaleCode).locale;
     _currencyCode =
-        prefs.getString('currencyCode') ??
+        sanitizeCurrencyCode(prefs.getString('currencyCode')) ??
         UserPreferencesService.defaultCurrencyCode;
     notifyListeners();
   }
@@ -77,7 +80,7 @@ class AppSettingsProvider extends ChangeNotifier {
             (data['localeCode'] as String?) ?? _locale.languageCode,
           ).locale;
           _currencyCode =
-              (data['currencyCode'] as String?) ??
+              sanitizeCurrencyCode(data['currencyCode'] as String?) ??
               UserPreferencesService.defaultCurrencyCode;
           _saveLocalPreferences();
           notifyListeners();
@@ -88,14 +91,19 @@ class AppSettingsProvider extends ChangeNotifier {
     _locale = locale;
     notifyListeners();
     await _saveLocalPreferences();
-    await _preferencesService.updatePreference('localeCode', locale.languageCode);
+    await _preferencesService.updatePreference(
+      'localeCode',
+      locale.languageCode,
+    );
   }
 
   Future<void> updateCurrencyCode(String currencyCode) async {
-    _currencyCode = currencyCode;
+    _currencyCode =
+        sanitizeCurrencyCode(currencyCode) ??
+        UserPreferencesService.defaultCurrencyCode;
     notifyListeners();
     await _saveLocalPreferences();
-    await _preferencesService.updatePreference('currencyCode', currencyCode);
+    await _preferencesService.updatePreference('currencyCode', _currencyCode);
   }
 
   @override

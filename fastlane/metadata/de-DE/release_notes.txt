@@ -1,1 +1,4 @@
-Fehlerbehebungen und Stabilitätsverbesserungen.
+New setup onboarding for currency and optional payment methods.
+Expanded currency support with custom currency codes.
+Android now uses the system Contact Picker instead of contacts permission.
+Stability improvements and polish.

@@ -48,7 +48,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Future<bool> _checkOnboardingStatus() async {
     final prefs = await SharedPreferences.getInstance();
     // Return true if onboarding is complete
-    return prefs.getBool('onboarding_complete') ?? false;
+    return (prefs.getBool('onboarding_complete_v2') ?? false) ||
+        (prefs.getBool('onboarding_complete') ?? false);
   }
 
   @override
