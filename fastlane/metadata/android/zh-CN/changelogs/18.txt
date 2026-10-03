@@ -1,0 +1,4 @@
+New setup onboarding for currency and optional payment methods.
+Expanded currency support with custom currency codes.
+Android uses the system Contact Picker instead of broad contacts permission.
+Stability improvements and polish.
