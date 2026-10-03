@@ -3,6 +3,8 @@ require "shellwords"
 
 default_platform(:ios)
 
+ENV["PATH"] = "/usr/local/lib/ruby/gems/4.0.0/bin:/usr/local/opt/ruby/bin:/opt/homebrew/bin:#{ENV['PATH']}"
+
 PROJECT_ROOT = File.expand_path("..", __dir__)
 PUBSPEC_PATH = File.join(PROJECT_ROOT, "pubspec.yaml")
 VERSION_MATCH = File.read(PUBSPEC_PATH).match(/^version:\s*([0-9A-Za-z.\-]+)\+(\d+)\s*$/)
@@ -20,6 +22,7 @@ RELEASE_NOTES = [
 SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUILD_NUMBER}")
 ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
 IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
+FLUTTER_BIN = ENV.fetch("FLUTTER_BIN", "/Users/omarmahmoud/FlutterDev/flutter/bin/flutter")
 IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata")
 IOS_FILTERED_METADATA_PATH = File.join(PROJECT_ROOT, "build", "fastlane", "ios_metadata")
 IOS_APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.example.splitBillApp")
@@ -55,7 +58,7 @@ end
 
 def build_android_aab
   run_flutter_build([
-    "flutter",
+    FLUTTER_BIN,
     "build",
     "aab",
     "--release",
@@ -69,7 +72,7 @@ end
 
 def build_ios_ipa
   run_flutter_build([
-    "flutter",
+    FLUTTER_BIN,
     "build",
     "ipa",
     "--release",
