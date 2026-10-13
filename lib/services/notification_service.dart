@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:split_bill_app/config/backend_config.dart';
 import 'dart:async';
 
@@ -174,13 +175,33 @@ class NotificationService with WidgetsBindingObserver {
     required String token,
     String? apnsToken,
   }) async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).set({
-      'fcmToken': token,
-      'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-      'notificationsEnabled': true,
-      'fcmPlatform': kIsWeb ? 'web' : Platform.operatingSystem,
-      if (apnsToken != null && apnsToken.isNotEmpty) 'apnsToken': apnsToken,
-    }, SetOptions(merge: true));
+    final notificationSettings = await _fcm.getNotificationSettings();
+    final permitted =
+        notificationSettings.authorizationStatus ==
+            AuthorizationStatus.authorized ||
+        notificationSettings.authorizationStatus ==
+            AuthorizationStatus.provisional;
+    String? timezone;
+    try {
+      timezone = (await FlutterTimezone.getLocalTimezone()).identifier;
+    } catch (_) {
+      // The server uses its documented fallback for older or unsupported clients.
+    }
+    final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      final current = await transaction.get(userRef);
+      final data = current.data() ?? <String, dynamic>{};
+      transaction.set(userRef, {
+        'fcmToken': token,
+        'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+        // A token refresh must never undo an explicit app-level opt-out.
+        if (!data.containsKey('notificationsEnabled') || !permitted)
+          'notificationsEnabled': permitted,
+        if (timezone != null && timezone.isNotEmpty) 'timezone': timezone,
+        'fcmPlatform': kIsWeb ? 'web' : Platform.operatingSystem,
+        if (apnsToken != null && apnsToken.isNotEmpty) 'apnsToken': apnsToken,
+      }, SetOptions(merge: true));
+    });
   }
 
   Future<void> clearStoredTokenForCurrentUser() async {
