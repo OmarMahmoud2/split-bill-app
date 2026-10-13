@@ -45,7 +45,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>We need access to your contacts to find friends to split bills with.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>We need microphone access for video.</string>
+	<string>Allow microphone access to assign receipt items using your voice.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need permission to save edited receipts.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
