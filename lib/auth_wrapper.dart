@@ -7,7 +7,6 @@ import 'package:split_bill_app/login_screen.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:split_bill_app/phone_input_screen.dart';
 import 'package:split_bill_app/new_onboarding_screen.dart';
-import 'package:split_bill_app/animated_splash_screen.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
@@ -20,18 +19,24 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  bool _showSplash = true;
+  late final Future<bool> _onboardingStatus;
+  bool _startupFinished = false;
 
   @override
   void initState() {
     super.initState();
-    // Show splash for a brief moment, then proceed
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    _onboardingStatus = _checkOnboardingStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _finishStartup());
+  }
+
+  Future<void> _finishStartup() async {
+    try {
       await _initAppTracking();
-      if (mounted) {
-        setState(() => _showSplash = false);
-      }
-    });
+    } catch (error) {
+      debugPrint('Tracking authorization unavailable: $error');
+    } finally {
+      if (mounted) setState(() => _startupFinished = true);
+    }
   }
 
   Future<void> _initAppTracking() async {
@@ -54,9 +59,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // Show animated splash first
-    if (_showSplash) {
-      return AnimatedSplashScreen(nextScreen: _buildMainContent());
+    if (!_startupFinished) {
+      return const Scaffold(
+        body: Center(
+          child: Image(
+            image: AssetImage('assets/logo.png'),
+            width: 96,
+            height: 96,
+          ),
+        ),
+      );
     }
 
     return _buildMainContent();
@@ -65,7 +77,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget _buildMainContent() {
     // Check onboarding status first
     return FutureBuilder<bool>(
-      future: _checkOnboardingStatus(),
+      future: _onboardingStatus,
       builder: (context, onboardingSnapshot) {
         if (onboardingSnapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(

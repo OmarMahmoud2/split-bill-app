@@ -29,7 +29,7 @@ import 'web_download_screen.dart';
 // Global Navigator Key for Deep Linking
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   debugPrint("🚀 App Launch: Widgets Initialized");

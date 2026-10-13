@@ -1,11 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/widgets/custom_app_header.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -117,142 +117,11 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showCurrencySheet(BuildContext context, AppSettingsProvider settings) {
-    final searchController = TextEditingController();
-    final customController = TextEditingController();
-
-    PremiumBottomSheet.show(
+    CurrencySelectionSheet.show(
       context: context,
-      isScrollable: true,
-      child: StatefulBuilder(
-        builder: (context, setModalState) {
-          final theme = Theme.of(context);
-          final colorScheme = theme.colorScheme;
-          final query = searchController.text.trim().toLowerCase();
-          final filteredOptions = supportedCurrencyOptions
-              .where((option) {
-                if (query.isEmpty) return true;
-                return option.code.toLowerCase().contains(query) ||
-                    option.name.toLowerCase().contains(query) ||
-                    option.region.toLowerCase().contains(query);
-              })
-              .toList(growable: false);
-
-          Future<void> applyCurrency(String code) async {
-            final normalized = sanitizeCurrencyCode(code);
-            if (normalized == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('onboarding_custom_currency_error'.tr()),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-              return;
-            }
-
-            await settings.updateCurrencyCode(normalized);
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          }
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  'default_currency',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.6,
-                  ),
-                ).tr(),
-              ),
-              TextField(
-                controller: searchController,
-                onChanged: (_) => setModalState(() {}),
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search_rounded),
-                  hintText: 'settings_search_currency'.tr(),
-                  filled: true,
-                  fillColor: colorScheme.surfaceContainerHighest.withValues(
-                    alpha: 0.45,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: customController,
-                textCapitalization: TextCapitalization.characters,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[A-Za-z]')),
-                  LengthLimitingTextInputFormatter(6),
-                ],
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.edit_rounded),
-                  hintText: 'settings_custom_currency_hint'.tr(),
-                  labelText: 'settings_custom_currency'.tr(),
-                  filled: true,
-                  fillColor: colorScheme.surfaceContainerHighest.withValues(
-                    alpha: 0.45,
-                  ),
-                  suffixIcon: IconButton(
-                    tooltip: 'save_changes'.tr(),
-                    onPressed: () => applyCurrency(customController.text),
-                    icon: const Icon(Icons.check_circle_rounded),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ...filteredOptions.map((option) {
-                final isSelected = option.code == settings.currencyCode;
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    backgroundColor: isSelected
-                        ? colorScheme.primary.withValues(alpha: 0.1)
-                        : colorScheme.surfaceContainerHighest,
-                    child: Text(
-                      option.symbol,
-                      style: TextStyle(
-                        color: isSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurface.withValues(alpha: 0.72),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    '${option.code} • ${option.name}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(option.region),
-                  trailing: isSelected
-                      ? Icon(
-                          Icons.check_circle_rounded,
-                          color: colorScheme.primary,
-                        )
-                      : null,
-                  onTap: () => applyCurrency(option.code),
-                );
-              }),
-            ],
-          );
-        },
-      ),
-    ).whenComplete(() {
-      searchController.dispose();
-      customController.dispose();
-    });
+      selectedCode: settings.currencyCode,
+      onSelected: settings.updateCurrencyCode,
+    );
   }
 }
 

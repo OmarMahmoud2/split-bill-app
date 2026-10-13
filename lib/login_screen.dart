@@ -7,9 +7,10 @@ import 'widgets/loading_state_widget.dart';
 import 'package:split_bill_app/services/auth_service.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
 import 'package:split_bill_app/widgets/sign_up_modal.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'auth_wrapper.dart';
 import 'package:easy_localization/easy_localization.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -22,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen>
   final AuthService _authService = AuthService();
   bool _isLoading = false;
 
-  static const _authText = Colors.black87;
   static const _authMuted = Color(0xFF6B7280);
 
   final _emailController = TextEditingController();
@@ -76,10 +76,7 @@ class _LoginScreenState extends State<LoginScreen>
     setState(() => _isLoading = true);
     try {
       final result = await _authService.signInWithGoogle();
-      if (result == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
+      if (result == null || !mounted) return;
       HapticFeedback.mediumImpact();
 
       if (!mounted) return;
@@ -90,10 +87,7 @@ class _LoginScreenState extends State<LoginScreen>
       if (mounted) {
         HapticFeedback.vibrate();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -107,10 +101,7 @@ class _LoginScreenState extends State<LoginScreen>
     setState(() => _isLoading = true);
     try {
       final result = await _authService.signInWithApple();
-      if (result == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
+      if (result == null || !mounted) return;
       HapticFeedback.mediumImpact();
 
       if (!mounted) return;
@@ -121,10 +112,7 @@ class _LoginScreenState extends State<LoginScreen>
       if (mounted) {
         HapticFeedback.vibrate();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -207,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen>
       data: authTheme,
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: Stack(
           children: [
             AnimatedBuilder(
@@ -283,7 +271,8 @@ class _LoginScreenState extends State<LoginScreen>
                         return Transform.translate(
                           offset: Offset(
                             0,
-                            math.sin(_floatingController.value * 2 * math.pi) * 6,
+                            math.sin(_floatingController.value * 2 * math.pi) *
+                                6,
                           ),
                           child: FadeTransition(
                             opacity: _fadeController,
@@ -311,7 +300,9 @@ class _LoginScreenState extends State<LoginScreen>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.1),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
                                       blurRadius: 15,
                                       offset: const Offset(0, 8),
                                     ),
@@ -400,7 +391,8 @@ class _LoginScreenState extends State<LoginScreen>
                                         MaterialTapTargetSize.shrinkWrap,
                                     foregroundColor: Colors.white70,
                                   ),
-                                  child: Text('forgot_password',
+                                  child: Text(
+                                    'forgot_password',
                                     style: TextStyle(fontSize: 12),
                                   ).tr(),
                                 ),
@@ -422,16 +414,21 @@ class _LoginScreenState extends State<LoginScreen>
                                 children: [
                                   Expanded(
                                     child: Divider(
-                                      color: Colors.white.withValues(alpha: 0.3),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.3,
+                                      ),
                                     ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 16,
                                     ),
-                                    child: Text('or',
+                                    child: Text(
+                                      'or',
                                       style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.6),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.6,
+                                        ),
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -439,33 +436,53 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                   Expanded(
                                     child: Divider(
-                                      color: Colors.white.withValues(alpha: 0.3),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.3,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              Row(
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Expanded(
-                                    child: _buildSocialButton(
-                                      label: 'google'.tr(),
-                                      iconWidget: const FaIcon(FontAwesomeIcons.google, size: 20, color: _authText),
-                                      onPressed: _signInWithGoogle,
-                                      bgColor: Colors.white,
-                                      textColor: _authText,
+                                  OutlinedButton.icon(
+                                    key: const ValueKey('sign-in-google'),
+                                    onPressed: _signInWithGoogle,
+                                    icon: Image.asset(
+                                      'assets/images/google_logo.png',
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                    label: Text('sign_in_with_google'.tr()),
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: const Color(0xFF1F1F1F),
+                                      side: const BorderSide(
+                                        color: Color(0xFF747775),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 16,
+                                      ),
+                                      textStyle: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
                                     ),
                                   ),
                                   if (Platform.isIOS) ...[
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: _buildSocialButton(
-                                        label: 'apple'.tr(),
-                                        iconWidget: const Icon(Icons.apple, size: 20, color: Colors.white),
-                                        onPressed: _signInWithApple,
-                                        bgColor: Colors.black,
-                                        textColor: Colors.white,
-                                      ),
+                                    const SizedBox(height: 12),
+                                    SignInWithAppleButton(
+                                      key: const ValueKey('sign-in-apple'),
+                                      text: 'sign_in_with_apple'.tr(),
+                                      onPressed: _signInWithApple,
+                                      height: 52,
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ],
                                 ],
@@ -479,7 +496,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   color: Colors.white.withValues(alpha: 0.6),
                                   size: 16,
                                 ),
-                                label: Text('need_help_contact_us',
+                                label: Text(
+                                  'need_help_contact_us',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.white.withValues(alpha: 0.6),
@@ -488,7 +506,8 @@ class _LoginScreenState extends State<LoginScreen>
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   minimumSize: const Size(0, 30),
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
                               ),
                             ],
@@ -500,13 +519,15 @@ class _LoginScreenState extends State<LoginScreen>
                     TextButton(
                       onPressed: _showSignUpModal,
                       child: RichText(
-                        text: TextSpan(text: 'don_t_have_an_account'.tr(),
+                        text: TextSpan(
+                          text: '${'don_t_have_an_account'.tr()} ',
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.7),
                             fontSize: 14,
                           ),
                           children: [
-                            TextSpan(text: 'sign_up'.tr(),
+                            TextSpan(
+                              text: 'sign_up'.tr(),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -592,6 +613,18 @@ class _LoginScreenState extends State<LoginScreen>
       child: TextField(
         controller: controller,
         obscureText: isPassword,
+        keyboardType: isPassword
+            ? TextInputType.visiblePassword
+            : TextInputType.emailAddress,
+        autofillHints: [
+          isPassword ? AutofillHints.password : AutofillHints.username,
+        ],
+        textInputAction: isPassword
+            ? TextInputAction.done
+            : TextInputAction.next,
+        autocorrect: false,
+        enableSuggestions: !isPassword,
+        onSubmitted: isPassword ? (_) => _signIn() : null,
         style: const TextStyle(color: Colors.black87, fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
@@ -657,53 +690,6 @@ class _LoginScreenState extends State<LoginScreen>
                     fontWeight: FontWeight.bold,
                     color: textColor,
                     letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required String label,
-    required Widget iconWidget,
-    required VoidCallback onPressed,
-    required Color bgColor,
-    required Color textColor,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                iconWidget,
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
                   ),
                 ),
               ],
