@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "Чек. Фото. Готово.",
+  "onboarding_scan_body": "Сканируйте чек, чтобы создать счёт с товарами и ценами. Проверьте детали и разделите счёт.",
+  "onboarding_voice_title": "Скажите, кто что заказал.",
+  "onboarding_voice_body": "Распределяйте позиции голосом. Проверьте доли перед сохранением.",
+  "onboarding_currency_body": "Выберите привычную валюту. Её можно менять для каждого счёта.",
+  "onboarding_split_hint": "Делите по позициям или поровну. Каждый видит свою долю.",
+  "onboarding_scan_hint": "Проверьте позиции и цены перед продолжением.",
+  "onboarding_voice_hint": "Позиции всегда можно распределить вручную.",
+  "onboarding_currency_hint": "Измените валюту по умолчанию в настройках.",
+  "onboarding_save_error": "Не удалось сохранить. Попробуйте ещё раз.",
+  "sign_in_with_google": "Войти через Google",
+  "sign_in_with_apple": "Войти через Apple",
+  "back": "Назад",
+  "get_started": "Начать",
+  "no_matches_found": "Ничего не найдено"
 }

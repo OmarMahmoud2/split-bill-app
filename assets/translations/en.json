@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "A receipt. A photo. Done.",
+  "onboarding_scan_body": "Scan your receipt to turn items and prices into a bill. Review the details, then split.",
+  "onboarding_voice_title": "Say who ordered what.",
+  "onboarding_voice_body": "Use voice assignment to tell Split Bill who had each item. Review the shares before saving.",
+  "onboarding_currency_body": "Pick the currency you use most. You can change it for any bill.",
+  "onboarding_split_hint": "Split by item or share equally. Everyone sees their share.",
+  "onboarding_scan_hint": "Check the items and prices before you continue.",
+  "onboarding_voice_hint": "Prefer tapping? You can always assign items manually.",
+  "onboarding_currency_hint": "Change your default anytime in Settings.",
+  "onboarding_save_error": "Could not save your choice. Please try again.",
+  "sign_in_with_google": "Sign in with Google",
+  "sign_in_with_apple": "Sign in with Apple",
+  "back": "Back",
+  "get_started": "Get started",
+  "no_matches_found": "No matches found"
 }

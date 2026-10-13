@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "Um recibo. Uma foto. Pronto.",
+  "onboarding_scan_body": "Digitalize o recibo para criar uma conta com itens e preços. Confira e divida.",
+  "onboarding_voice_title": "Diga quem pediu o quê.",
+  "onboarding_voice_body": "Atribua os itens com sua voz. Confira as partes antes de salvar.",
+  "onboarding_currency_body": "Escolha sua moeda habitual. Você pode alterá-la para cada conta.",
+  "onboarding_split_hint": "Divida por item ou igualmente. Todos veem sua parte.",
+  "onboarding_scan_hint": "Confira os itens e preços antes de continuar.",
+  "onboarding_voice_hint": "Você sempre pode atribuir os itens manualmente.",
+  "onboarding_currency_hint": "Altere a moeda padrão nas Configurações.",
+  "onboarding_save_error": "Não foi possível salvar. Tente novamente.",
+  "sign_in_with_google": "Entrar com Google",
+  "sign_in_with_apple": "Entrar com Apple",
+  "back": "Voltar",
+  "get_started": "Começar",
+  "no_matches_found": "Nenhum resultado"
 }

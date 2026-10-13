@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "Struk. Foto. Selesai.",
+  "onboarding_scan_body": "Pindai struk untuk membuat tagihan dengan item dan harga. Periksa, lalu bagi.",
+  "onboarding_voice_title": "Katakan siapa memesan apa.",
+  "onboarding_voice_body": "Tetapkan item dengan suara Anda. Periksa bagian masing-masing sebelum menyimpan.",
+  "onboarding_currency_body": "Pilih mata uang yang biasa Anda gunakan. Anda bisa mengubahnya untuk setiap tagihan.",
+  "onboarding_split_hint": "Bagi per item atau rata. Semua orang melihat bagiannya.",
+  "onboarding_scan_hint": "Periksa item dan harga sebelum melanjutkan.",
+  "onboarding_voice_hint": "Anda selalu bisa menetapkan item secara manual.",
+  "onboarding_currency_hint": "Ubah mata uang default di Pengaturan.",
+  "onboarding_save_error": "Tidak dapat menyimpan. Silakan coba lagi.",
+  "sign_in_with_google": "Login dengan Google",
+  "sign_in_with_apple": "Login dengan Apple",
+  "back": "Kembali",
+  "get_started": "Mulai",
+  "no_matches_found": "Tidak ada hasil"
 }

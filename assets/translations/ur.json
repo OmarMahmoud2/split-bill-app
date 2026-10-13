@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "رسید۔ تصویر۔ ہو گیا۔",
+  "onboarding_scan_body": "رسید اسکین کرکے اشیا اور قیمتوں کا بل بنائیں۔ تفصیلات دیکھیں، پھر تقسیم کریں۔",
+  "onboarding_voice_title": "بتائیں کس نے کیا منگوایا۔",
+  "onboarding_voice_body": "اپنی آواز سے اشیا تفویض کریں۔ محفوظ کرنے سے پہلے حصے دیکھیں۔",
+  "onboarding_currency_body": "اپنی عام کرنسی منتخب کریں۔ ہر بل میں اسے بدل سکتے ہیں۔",
+  "onboarding_split_hint": "اشیا کے حساب سے یا برابر تقسیم کریں۔ سب اپنا حصہ دیکھتے ہیں۔",
+  "onboarding_scan_hint": "آگے بڑھنے سے پہلے اشیا اور قیمتیں دیکھیں۔",
+  "onboarding_voice_hint": "آپ ہمیشہ اشیا دستی طور پر تفویض کر سکتے ہیں۔",
+  "onboarding_currency_hint": "سیٹنگز میں ڈیفالٹ کرنسی بدلیں۔",
+  "onboarding_save_error": "محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+  "sign_in_with_google": "Google سے سائن ان کریں",
+  "sign_in_with_apple": "Apple سے سائن ان کریں",
+  "back": "واپس",
+  "get_started": "شروع کریں",
+  "no_matches_found": "کوئی نتیجہ نہیں"
 }

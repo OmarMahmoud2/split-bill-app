@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "Paragon. Zdjęcie. Gotowe.",
+  "onboarding_scan_body": "Zeskanuj paragon, aby utworzyć rachunek z pozycjami i cenami. Sprawdź go i podziel.",
+  "onboarding_voice_title": "Powiedz, kto co zamówił.",
+  "onboarding_voice_body": "Przypisuj pozycje głosem. Sprawdź udziały przed zapisaniem.",
+  "onboarding_currency_body": "Wybierz swoją walutę. Możesz ją zmienić dla każdego rachunku.",
+  "onboarding_split_hint": "Dziel według pozycji lub po równo. Każdy widzi swój udział.",
+  "onboarding_scan_hint": "Sprawdź pozycje i ceny przed kontynuowaniem.",
+  "onboarding_voice_hint": "Zawsze możesz przypisać pozycje ręcznie.",
+  "onboarding_currency_hint": "Zmień domyślną walutę w Ustawieniach.",
+  "onboarding_save_error": "Nie udało się zapisać. Spróbuj ponownie.",
+  "sign_in_with_google": "Zaloguj się przez Google",
+  "sign_in_with_apple": "Zaloguj się przez Apple",
+  "back": "Wstecz",
+  "get_started": "Zacznij",
+  "no_matches_found": "Brak wyników"
 }

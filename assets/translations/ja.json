@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "レシート。写真。完了。",
+  "onboarding_scan_body": "レシートをスキャンして品目と価格を明細に変換。確認してから割り勘に。",
+  "onboarding_voice_title": "誰が何を頼んだか話そう。",
+  "onboarding_voice_body": "声で品目を割り当て。保存する前に各自の負担額を確認できます。",
+  "onboarding_currency_body": "よく使う通貨を選択。明細ごとに変更できます。",
+  "onboarding_split_hint": "品目ごと、または均等に分割。全員が自分の負担額を確認できます。",
+  "onboarding_scan_hint": "続ける前に品目と価格をご確認ください。",
+  "onboarding_voice_hint": "品目はいつでも手動で割り当てられます。",
+  "onboarding_currency_hint": "設定で既定の通貨を変更できます。",
+  "onboarding_save_error": "保存できませんでした。もう一度お試しください。",
+  "sign_in_with_google": "Googleでログイン",
+  "sign_in_with_apple": "Appleでログイン",
+  "back": "戻る",
+  "get_started": "はじめる",
+  "no_matches_found": "該当する結果がありません"
 }

@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "Ein Beleg. Ein Foto. Fertig.",
+  "onboarding_scan_body": "Scanne deinen Beleg, um Artikel und Preise in eine Rechnung umzuwandeln. Prüfe sie und teile sie auf.",
+  "onboarding_voice_title": "Sag, wer was bestellt hat.",
+  "onboarding_voice_body": "Ordne Artikel per Sprache zu. Prüfe die Anteile vor dem Speichern.",
+  "onboarding_currency_body": "Wähle deine übliche Währung. Du kannst sie für jede Rechnung ändern.",
+  "onboarding_split_hint": "Teile nach Artikeln oder gleichmäßig. Alle sehen ihren Anteil.",
+  "onboarding_scan_hint": "Prüfe Artikel und Preise, bevor du fortfährst.",
+  "onboarding_voice_hint": "Du kannst Artikel jederzeit manuell zuordnen.",
+  "onboarding_currency_hint": "Ändere die Standardwährung in den Einstellungen.",
+  "onboarding_save_error": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+  "sign_in_with_google": "Mit Google anmelden",
+  "sign_in_with_apple": "Mit Apple anmelden",
+  "back": "Zurück",
+  "get_started": "Loslegen",
+  "no_matches_found": "Keine Ergebnisse"
 }

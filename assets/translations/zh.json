@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "一张小票。一张照片。搞定。",
+  "onboarding_scan_body": "扫描小票，将商品和价格转为账单。核对详情后再分摊。",
+  "onboarding_voice_title": "说出谁点了什么。",
+  "onboarding_voice_body": "用语音分配商品。保存前核对每个人的份额。",
+  "onboarding_currency_body": "选择常用货币。每张账单都可以更改。",
+  "onboarding_split_hint": "按商品或平均分摊。每个人都能看到自己的份额。",
+  "onboarding_scan_hint": "继续前请核对商品和价格。",
+  "onboarding_voice_hint": "也可以随时手动分配商品。",
+  "onboarding_currency_hint": "在设置中更改默认货币。",
+  "onboarding_save_error": "无法保存，请重试。",
+  "sign_in_with_google": "使用 Google 登录",
+  "sign_in_with_apple": "使用 Apple 登录",
+  "back": "返回",
+  "get_started": "开始使用",
+  "no_matches_found": "没有匹配结果"
 }

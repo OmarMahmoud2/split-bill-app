@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "रसीद। तस्वीर। हो गया।",
+  "onboarding_scan_body": "रसीद स्कैन करके आइटम और कीमतों का बिल बनाएं। विवरण जांचें, फिर बांटें।",
+  "onboarding_voice_title": "बताएं किसने क्या मंगाया।",
+  "onboarding_voice_body": "अपनी आवाज़ से आइटम असाइन करें। सहेजने से पहले हिस्से जांचें।",
+  "onboarding_currency_body": "अपनी सामान्य मुद्रा चुनें। हर बिल में इसे बदल सकते हैं।",
+  "onboarding_split_hint": "आइटम के हिसाब से या बराबर बांटें। सभी अपना हिस्सा देखते हैं।",
+  "onboarding_scan_hint": "आगे बढ़ने से पहले आइटम और कीमतें जांचें।",
+  "onboarding_voice_hint": "आप हमेशा आइटम मैन्युअल रूप से असाइन कर सकते हैं।",
+  "onboarding_currency_hint": "सेटिंग में डिफ़ॉल्ट मुद्रा बदलें।",
+  "onboarding_save_error": "सहेजा नहीं जा सका। फिर से कोशिश करें।",
+  "sign_in_with_google": "Google से साइन इन करें",
+  "sign_in_with_apple": "Apple से साइन इन करें",
+  "back": "वापस",
+  "get_started": "शुरू करें",
+  "no_matches_found": "कोई परिणाम नहीं"
 }

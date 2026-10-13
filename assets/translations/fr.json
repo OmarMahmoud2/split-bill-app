@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "Un reçu. Une photo. C’est prêt.",
+  "onboarding_scan_body": "Scannez votre reçu pour créer une facture avec les articles et les prix. Vérifiez, puis partagez.",
+  "onboarding_voice_title": "Dites qui a commandé quoi.",
+  "onboarding_voice_body": "Attribuez les articles avec votre voix. Vérifiez les parts avant de les enregistrer.",
+  "onboarding_currency_body": "Choisissez votre devise habituelle. Vous pouvez la changer pour chaque facture.",
+  "onboarding_split_hint": "Partagez par article ou à parts égales. Chacun voit sa part.",
+  "onboarding_scan_hint": "Vérifiez les articles et les prix avant de continuer.",
+  "onboarding_voice_hint": "Vous pouvez toujours attribuer les articles manuellement.",
+  "onboarding_currency_hint": "Modifiez la devise par défaut dans les réglages.",
+  "onboarding_save_error": "Impossible d’enregistrer. Veuillez réessayer.",
+  "sign_in_with_google": "Se connecter avec Google",
+  "sign_in_with_apple": "Se connecter avec Apple",
+  "back": "Retour",
+  "get_started": "Commencer",
+  "no_matches_found": "Aucun résultat"
 }

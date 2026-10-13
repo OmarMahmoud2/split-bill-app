@@ -774,5 +774,20 @@
   "settings_custom_currency_hint": "Type 3 to 6 letters",
   "settings_search_currency": "Search currencies",
   "custom_currency": "Custom currency",
-  "custom_currency_region": "Custom"
+  "custom_currency_region": "Custom",
+  "onboarding_scan_title": "إيصال. صورة. والباقي علينا.",
+  "onboarding_scan_body": "امسح الإيصال لتحويل الأصناف والأسعار إلى فاتورة. راجع التفاصيل ثم قسّمها.",
+  "onboarding_voice_title": "قل لنا من طلب ماذا.",
+  "onboarding_voice_body": "وزّع الأصناف بصوتك وأخبر Split Bill بما طلبه كل شخص. راجع الحصص قبل الحفظ.",
+  "onboarding_currency_body": "اختر العملة التي تستخدمها عادةً. يمكنك تغييرها لكل فاتورة.",
+  "onboarding_split_hint": "قسّم حسب الأصناف أو بالتساوي. يرى الجميع حصتهم.",
+  "onboarding_scan_hint": "راجع الأصناف والأسعار قبل المتابعة.",
+  "onboarding_voice_hint": "تفضّل النقر؟ يمكنك توزيع الأصناف يدويًا دائمًا.",
+  "onboarding_currency_hint": "يمكنك تغيير العملة الافتراضية من الإعدادات.",
+  "onboarding_save_error": "تعذّر حفظ اختيارك. حاول مرة أخرى.",
+  "sign_in_with_google": "تسجيل الدخول باستخدام Google",
+  "sign_in_with_apple": "تسجيل الدخول باستخدام Apple",
+  "back": "رجوع",
+  "get_started": "ابدأ الآن",
+  "no_matches_found": "لا توجد نتائج"
 }
