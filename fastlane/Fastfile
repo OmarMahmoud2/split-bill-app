@@ -1,5 +1,6 @@
 require "fileutils"
 require "shellwords"
+require "fastlane_core/build_watcher"
 
 default_platform(:ios)
 
@@ -14,8 +15,9 @@ UI.user_error!("Could not read app version from #{PUBSPEC_PATH}") unless VERSION
 APP_VERSION = VERSION_MATCH[1]
 BUILD_NUMBER = VERSION_MATCH[2]
 RELEASE_NOTES = [
-  "New setup onboarding for currency and optional payment methods.",
-  "Expanded currency support with custom currency codes.",
+  "Fixed an issue that could cause the app to crash on launch.",
+  "Redesigned onboarding for receipt scanning, voice assignment, and currency selection.",
+  "Improved currency picker and official Google and Apple sign-in buttons.",
   "Android now uses the system Contact Picker instead of contacts permission.",
   "Stability improvements and polish."
 ].join("\n")
@@ -33,6 +35,9 @@ IOS_APP_STORE_LOCALES = %w[
   hi id it ja ko pl pt-BR pt-PT ru zh-Hans zh-Hant
 ]
 APP_REVIEW_NOTES = [
+  "Build #{BUILD_NUMBER} addresses the launch crash reported for version 1.1.9 build 19.",
+  "The contacts plugin has been updated for compatibility with the iOS UIScene launch lifecycle.",
+  "To verify: launch a fresh installation, complete onboarding, close and reopen the app, and open the contacts picker when creating a bill.",
   "Guideline 3.1.2(c) update:",
   "The Premium purchase flow now shows the selected subscription title, price, billing period, renewal/cancellation disclosure, Restore purchase, Privacy Policy, and Terms of Use (EULA) links before purchase.",
   "To verify: open the app, sign in if needed, go to Profile > Go Premium, then review the Subscription details box below the plan selector.",
@@ -57,6 +62,7 @@ def run_flutter_build(args)
 end
 
 def build_android_aab
+  ensure_file_exists!(File.join(PROJECT_ROOT, "android", "key.properties"), "Release signing configuration is required; do not upload a debug-signed bundle.")
   run_flutter_build([
     FLUTTER_BIN,
     "build",
@@ -71,21 +77,50 @@ def build_android_aab
 end
 
 def build_ios_ipa
+  # Prepare Flutter's release settings, then limit native compiler concurrency.
   run_flutter_build([
     FLUTTER_BIN,
-    "build",
-    "ipa",
-    "--release",
-    "--obfuscate",
-    "--split-debug-info=#{SYMBOLS_DIR}",
-    "--build-name=#{APP_VERSION}",
-    "--build-number=#{BUILD_NUMBER}"
+    "build", "ios", "--release", "--config-only", "--target=lib/main.dart",
+    "--obfuscate", "--split-debug-info=#{SYMBOLS_DIR}",
+    "--build-name=#{APP_VERSION}", "--build-number=#{BUILD_NUMBER}"
   ])
-  ensure_file_exists!(IOS_IPA, "iOS IPA was not produced.")
+  jobs = Integer(ENV.fetch("IOS_BUILD_JOBS", "2"))
+  UI.user_error!("IOS_BUILD_JOBS must be positive") unless jobs.positive?
+  build_app(
+    workspace: File.join(PROJECT_ROOT, "ios", "Runner.xcworkspace"),
+    scheme: "Runner",
+    configuration: "Release",
+    archive_path: File.join(PROJECT_ROOT, "build", "ios", "archive", "Runner.xcarchive"),
+    output_directory: File.dirname(IOS_IPA),
+    output_name: File.basename(IOS_IPA),
+    export_method: "app-store",
+    export_options: { method: "app-store-connect", signingStyle: "automatic" },
+    xcargs: "-jobs #{jobs} -allowProvisioningUpdates BUILD_DIR=#{File.join(PROJECT_ROOT, 'build', 'ios').shellescape} COMPILER_INDEX_STORE_ENABLE=NO",
+    export_xcargs: "-allowProvisioningUpdates",
+    xcodebuild_formatter: "",
+    buildlog_path: File.join(PROJECT_ROOT, "build", "diagnostics", "fastlane")
+  )
+  verify_ios_ipa_version!
 end
 
 def ensure_file_exists!(path, message)
   UI.user_error!("#{message} Missing: #{path}") unless File.exist?(path)
+end
+
+def verify_ios_ipa_version!
+  ensure_file_exists!(IOS_IPA, "Run `fastlane ios build_ipa` first, or omit skip_build.")
+  expected = {
+    "CFBundleShortVersionString" => APP_VERSION,
+    "CFBundleVersion" => BUILD_NUMBER,
+    "CFBundleIdentifier" => IOS_APP_IDENTIFIER
+  }
+
+  expected.each do |key, value|
+    actual = get_ipa_info_plist_value(ipa: IOS_IPA, key: key).to_s
+    next if actual == value
+
+    UI.user_error!("IPA #{key} is #{actual.inspect}; expected #{value.inspect}. Rebuild with `fastlane ios build_ipa` before uploading.")
+  end
 end
 
 def option_enabled?(value)
@@ -174,7 +209,79 @@ def ensure_ios_whats_new!
   UI.important("No iOS What's New changes were needed.") if updated.empty?
 end
 
+# Fastlane's standard submit flow refuses an existing unresolved submission.
+# Reuse only the submission whose sole item is this exact app version.
+def submit_ios_review!(api_key)
+  app = Spaceship::ConnectAPI::App.find(IOS_APP_IDENTIFIER)
+  UI.user_error!("Could not find #{IOS_APP_IDENTIFIER}") unless app
+  build = FastlaneCore::BuildWatcher.wait_for_build_processing_to_be_complete(
+    app_id: app.id, platform: "IOS", app_version: APP_VERSION,
+    build_version: BUILD_NUMBER, poll_interval: 30, timeout_duration: 900,
+    return_spaceship_testflight_build: false
+  )
+  UI.user_error!("Build #{APP_VERSION} (#{BUILD_NUMBER}) is not valid.") unless build.processing_state == "VALID"
+  submission = app.get_in_progress_review_submission(platform: "IOS")
+
+  unless submission&.state == "UNRESOLVED_ISSUES"
+    deliver(
+      ios_deliver_options(api_key).merge(
+        build_number: BUILD_NUMBER,
+        skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: true,
+        submit_for_review: true,
+        automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
+        submission_information: ios_submission_information
+      )
+    )
+    return
+  end
+
+  version = ios_app_store_version
+  items = Spaceship::ConnectAPI::ReviewSubmissionItem.all(
+    review_submission_id: submission.id, includes: "appStoreVersion"
+  )
+  item = items.first
+  unless items.size == 1 && item.app_store_version&.id == version.id &&
+         %w[REJECTED READY_FOR_REVIEW].include?(item.state)
+    UI.user_error!("The unresolved review includes other items; resolve them in App Store Connect before resubmitting.")
+  end
+
+  version.select_build(build_id: build.id)
+  if build.uses_non_exempt_encryption.nil?
+    build.update(attributes: { usesNonExemptEncryption: false })
+  end
+  release_type = option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")) ? "AFTER_APPROVAL" : "MANUAL"
+  version.update(attributes: { releaseType: release_type })
+
+  if item.state == "REJECTED"
+    Spaceship::ConnectAPI.client.tunes_request_client.patch(
+      "v1/reviewSubmissionItems/#{item.id}",
+      { data: { type: "reviewSubmissionItems", id: item.id, attributes: { resolved: true } } }
+    )
+  end
+  result = submission.submit_for_review
+  unless %w[WAITING_FOR_REVIEW IN_REVIEW].include?(result.state)
+    UI.user_error!("Resubmission returned #{result.state}; verify App Store Connect review status.")
+  end
+  UI.success("Submitted #{APP_VERSION} (#{BUILD_NUMBER}) using the existing review: #{result.state}.")
+end
+
 platform :ios do
+  desc "Upload the verified IPA and metadata without submitting it for review"
+  lane :upload_build do
+    verify_ios_ipa_version!
+    api_key = app_store_api_key
+    deliver(
+      ios_deliver_options(api_key).merge(
+        ipa: IOS_IPA,
+        overwrite_screenshots: false,
+        submit_for_review: false
+      )
+    )
+    ensure_ios_whats_new!
+  end
+
   desc "Build the obfuscated iOS IPA for the current pubspec version"
   lane :build_ipa do
     build_ios_ipa
@@ -199,23 +306,16 @@ platform :ios do
     api_key = app_store_api_key
     ensure_ios_whats_new!
 
-    deliver(
-      ios_deliver_options(api_key).merge(
-        build_number: BUILD_NUMBER,
-        skip_binary_upload: true,
-        skip_metadata: true,
-        skip_screenshots: true,
-        submit_for_review: true,
-        automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
-        submission_information: ios_submission_information
-      )
-    )
+    submit_ios_review!(api_key)
   end
 
   desc "Build, upload, and submit the iOS app version for App Store review"
   lane :release do |options|
-    build_ios_ipa unless option_enabled?(options[:skip_build])
-    ensure_file_exists!(IOS_IPA, "Run `fastlane ios build_ipa` first, or omit skip_build.")
+    if option_enabled?(options[:skip_build])
+      verify_ios_ipa_version!
+    else
+      build_ios_ipa
+    end
 
     api_key = app_store_api_key
     deliver(
@@ -228,17 +328,7 @@ platform :ios do
 
     ensure_ios_whats_new!
 
-    deliver(
-      ios_deliver_options(api_key).merge(
-        build_number: BUILD_NUMBER,
-        skip_binary_upload: true,
-        skip_metadata: true,
-        skip_screenshots: true,
-        submit_for_review: true,
-        automatic_release: option_enabled?(ENV.fetch("IOS_AUTOMATIC_RELEASE", "false")),
-        submission_information: ios_submission_information
-      )
-    )
+    submit_ios_review!(api_key)
   end
 end
 
@@ -275,7 +365,8 @@ platform :android do
       skip_upload_screenshots: true,
       skip_upload_changelogs: false,
       release_status: ENV.fetch("ANDROID_RELEASE_STATUS", "completed"),
-      changes_not_sent_for_review: false
+      changes_not_sent_for_review: false,
+      rescue_changes_not_sent_for_review: false
     )
   end
 

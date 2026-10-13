@@ -1,4 +1,5 @@
-New setup onboarding for currency and optional payment methods.
-Expanded currency support with custom currency codes.
+Fixed an issue that could cause the app to crash on launch.
+Redesigned onboarding for scanning, voice assignment, and currencies.
+Improved currency picker and official Google and Apple sign-in buttons.
 Android now uses the system Contact Picker instead of contacts permission.
 Stability improvements and polish.

@@ -54,8 +54,8 @@ NOTES_BY_LOCALE = {
 }
 
 CURRENT_RELEASE_NOTES = (
-    "New setup onboarding for currency and optional payment methods.\n"
-    "Expanded currency support with custom currency codes.\n"
+    "Redesigned onboarding for scanning, voice assignment, and currencies.\n"
+    "Improved currency picker and official Google and Apple sign-in buttons.\n"
     "Android now uses the system Contact Picker instead of contacts permission.\n"
     "Stability improvements and polish."
 )
@@ -87,6 +87,7 @@ if os.path.exists(ios_path):
             continue
         release_notes_path = os.path.join(loc_dir, "release_notes.txt")
         note = NOTES_BY_LOCALE.get(locale, NOTES_BY_LOCALE.get(locale.split('-')[0], NOTES_BY_LOCALE['default']))
+        note = "Fixed an issue that could cause the app to crash on launch.\n" + note
         with open(release_notes_path, 'w', encoding='utf-8') as f:
             f.write(note)
 
