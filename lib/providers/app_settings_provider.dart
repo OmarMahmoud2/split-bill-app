@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
+import 'package:split_bill_app/services/notification_payload.dart';
 import 'package:split_bill_app/services/user_preferences_service.dart';
 
 class AppSettingsProvider extends ChangeNotifier {
@@ -91,9 +92,11 @@ class AppSettingsProvider extends ChangeNotifier {
     _locale = locale;
     notifyListeners();
     await _saveLocalPreferences();
+    // The server reminder campaign reads users/{uid}.localeCode.
     await _preferencesService.updatePreference(
       'localeCode',
-      locale.languageCode,
+      normalizeLocaleCode(locale.languageCode) ??
+          UserPreferencesService.defaultLocaleCode,
     );
   }
 

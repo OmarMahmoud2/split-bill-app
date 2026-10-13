@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:split_bill_app/config/backend_config.dart';
+import 'package:split_bill_app/services/notification_payload.dart';
 import 'dart:async';
 
 class NotificationService with WidgetsBindingObserver {
@@ -27,6 +28,7 @@ class NotificationService with WidgetsBindingObserver {
   bool _isSyncingToken = false;
   String? _lastSyncedUid;
   String? _lastSyncedToken;
+  String? _lastSyncedTimezone;
 
   Future<void> init() async {
     if (_initialized) return;
@@ -41,12 +43,8 @@ class NotificationService with WidgetsBindingObserver {
       provisional: false,
     );
 
-    if (settings.authorizationStatus != AuthorizationStatus.authorized) {
-      debugPrint('User declined or has not accepted permission');
-      return;
-    }
-
-    // 2. Setup Local Notifications
+    // 2. Setup Local Notifications (the Android channel must exist even
+    // before permission is granted, so later campaign pushes use it).
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -78,6 +76,13 @@ class NotificationService with WidgetsBindingObserver {
               >();
 
       await androidImplementation?.createNotificationChannel(channel);
+    }
+
+    if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+      debugPrint('User declined or has not accepted permission');
+      // Keep the stored profile (timezone, notificationsEnabled=false) current.
+      unawaited(syncTokenForCurrentUser(force: true));
+      return;
     }
 
     // 3. Get Token (With Retry Logic for iOS)
@@ -151,7 +156,11 @@ class NotificationService with WidgetsBindingObserver {
       final token = tokenOverride ?? await _fcm.getToken();
       if (token == null || token.isEmpty) return;
 
-      if (!force && _lastSyncedUid == user.uid && _lastSyncedToken == token) {
+      final timezone = await _localTimezone();
+      if (!force &&
+          _lastSyncedUid == user.uid &&
+          _lastSyncedToken == token &&
+          _lastSyncedTimezone == timezone) {
         return;
       }
 
@@ -159,10 +168,12 @@ class NotificationService with WidgetsBindingObserver {
         uid: user.uid,
         token: token,
         apnsToken: apnsToken,
+        timezone: timezone,
       );
 
       _lastSyncedUid = user.uid;
       _lastSyncedToken = token;
+      _lastSyncedTimezone = timezone;
     } catch (e) {
       debugPrint("Error syncing FCM token: $e");
     } finally {
@@ -174,6 +185,7 @@ class NotificationService with WidgetsBindingObserver {
     required String uid,
     required String token,
     String? apnsToken,
+    String? timezone,
   }) async {
     final notificationSettings = await _fcm.getNotificationSettings();
     final permitted =
@@ -181,27 +193,41 @@ class NotificationService with WidgetsBindingObserver {
             AuthorizationStatus.authorized ||
         notificationSettings.authorizationStatus ==
             AuthorizationStatus.provisional;
-    String? timezone;
-    try {
-      timezone = (await FlutterTimezone.getLocalTimezone()).identifier;
-    } catch (_) {
-      // The server uses its documented fallback for older or unsupported clients.
-    }
     final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       final current = await transaction.get(userRef);
       final data = current.data() ?? <String, dynamic>{};
+      // A token refresh must never undo an explicit user opt-out, but an
+      // OS-permission-derived `false` is lifted once permission is granted.
+      final enabled = notificationsEnabledUpdate(
+        permitted: permitted,
+        hasStoredValue: data.containsKey('notificationsEnabled'),
+        storedValue: data['notificationsEnabled'],
+        storedSource: data['notificationsEnabledSource'],
+      );
       transaction.set(userRef, {
         'fcmToken': token,
         'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-        // A token refresh must never undo an explicit app-level opt-out.
-        if (!data.containsKey('notificationsEnabled') || !permitted)
-          'notificationsEnabled': permitted,
-        if (timezone != null && timezone.isNotEmpty) 'timezone': timezone,
+        if (enabled != null) ...{
+          'notificationsEnabled': enabled,
+          'notificationsEnabledSource': notificationsEnabledSystemSource,
+        },
+        if (timezone != null) 'timezone': timezone,
         'fcmPlatform': kIsWeb ? 'web' : Platform.operatingSystem,
         if (apnsToken != null && apnsToken.isNotEmpty) 'apnsToken': apnsToken,
       }, SetOptions(merge: true));
     });
+  }
+
+  /// The device IANA zone (e.g. `Africa/Cairo`), or null when unavailable or
+  /// not an IANA name; the server then uses its documented fallback.
+  Future<String?> _localTimezone() async {
+    try {
+      final info = await FlutterTimezone.getLocalTimezone();
+      return normalizeIanaTimezone(info.identifier);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> clearStoredTokenForCurrentUser() async {
