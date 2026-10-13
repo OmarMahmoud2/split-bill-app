@@ -237,10 +237,10 @@ packages:
     dependency: transitive
     description:
       name: equatable
-      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      sha256: ea36e500cbf0ec18361deabca755434f73e42fe53c5130021c7e2d6b5ebe1702
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.7"
+    version: "3.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -410,10 +410,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_contacts
-      sha256: "388d32cd33f16640ee169570128c933b45f3259bddbfae7a100bb49e5ffea9ae"
+      sha256: f668066af6cad0cc1d91719560edc1e552993dcafb12cb687ca8690b858b993d
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.9+2"
+    version: "2.1.0"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -509,6 +509,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_timezone:
+    dependency: "direct main"
+    description:
+      name: flutter_timezone
+      sha256: "7830bc64bef0b003468fc1f58fc3f3faf54817f8cd6e68fa818b306560410d68"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter

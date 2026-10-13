@@ -69,7 +69,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
         _filteredContacts = _allContacts;
       } else {
         _filteredContacts = _allContacts.where((c) {
-          final nameMatches = c.displayName.toLowerCase().contains(
+          final nameMatches = (c.displayName ?? '').toLowerCase().contains(
             query.toLowerCase(),
           );
           final phoneMatches = c.phones.any((p) => p.number.contains(query));
@@ -80,11 +80,13 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
   }
 
   void _toggleSelection(Contact contact) {
+    final id = contact.id;
+    if (id == null || id.isEmpty) return;
     setState(() {
-      if (_selectedIds.contains(contact.id)) {
-        _selectedIds.remove(contact.id);
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
       } else {
-        _selectedIds.add(contact.id);
+        _selectedIds.add(id);
       }
     });
   }
@@ -156,6 +158,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                     itemCount: _filteredContacts.length,
                     itemBuilder: (context, index) {
                       final contact = _filteredContacts[index];
+                      final displayName = contact.displayName ?? '';
                       final isSelected = _selectedIds.contains(contact.id);
                       final hasPhone = contact.phones.isNotEmpty;
 
@@ -169,14 +172,12 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                           child: isSelected
                               ? const Icon(Icons.check, color: Colors.white)
                               : Text(
-                                  contact.displayName.isNotEmpty
-                                      ? contact.displayName[0]
-                                      : "?",
+                                  displayName.isNotEmpty ? displayName[0] : "?",
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
                         ),
                         title: Text(
-                          contact.displayName,
+                          displayName,
                           style: TextStyle(
                             fontWeight: isSelected
                                 ? FontWeight.bold

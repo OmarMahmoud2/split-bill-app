@@ -15,15 +15,27 @@ class ContactService {
     if (usesSystemContactPicker) {
       return pickContacts();
     }
-    if (!await FlutterContacts.requestPermission(readonly: true)) {
+    final permission = await FlutterContacts.permissions.request(
+      PermissionType.read,
+    );
+    if (permission != PermissionStatus.granted &&
+        permission != PermissionStatus.limited) {
       return null;
     }
-    return await FlutterContacts.getContacts(withProperties: true);
+    return FlutterContacts.getAll(
+      properties: {
+        ContactProperty.name,
+        ContactProperty.phone,
+        ContactProperty.email,
+      },
+    );
   }
 
   Future<List<Contact>> pickContacts({int selectionLimit = 50}) async {
     if (!usesSystemContactPicker) {
-      final contact = await FlutterContacts.openExternalPick();
+      final contact = await FlutterContacts.native.showPicker(
+        properties: {ContactProperty.phone, ContactProperty.email},
+      );
       return contact == null ? <Contact>[] : <Contact>[contact];
     }
 
@@ -141,7 +153,7 @@ class ContactService {
           'data': {
             'uid':
                 'guest_${DateTime.now().millisecondsSinceEpoch}_${results.length}',
-            'displayName': contact.displayName,
+            'displayName': contact.displayName ?? '',
             'phoneNumber': rawPhone,
             'photoUrl': null,
           },
@@ -157,7 +169,7 @@ class ContactService {
     if (contacts.isEmpty || contacts.first.phones.isEmpty) return null;
 
     String rawPhone = contacts.first.phones.first.number;
-    String displayName = contacts.first.displayName;
+    String displayName = contacts.first.displayName ?? '';
 
     // 3. Normalize & Generate Search Variations
     List<String> variations = _generateSmartVariations(rawPhone);
@@ -224,10 +236,10 @@ class ContactService {
   Contact _contactFromPickerMap(Map<dynamic, dynamic> data) {
     final phones = _stringList(
       data['phones'],
-    ).map((number) => Phone(number)).toList(growable: false);
+    ).map((number) => Phone(number: number)).toList(growable: false);
     final emails = _stringList(
       data['emails'],
-    ).map((address) => Email(address)).toList(growable: false);
+    ).map((address) => Email(address: address)).toList(growable: false);
 
     return Contact(
       id: data['id']?.toString() ?? '',
