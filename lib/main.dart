@@ -16,6 +16,8 @@ import 'firebase_options.dart';
 import 'guest_bill_screen.dart';
 import 'bill_details_screen.dart';
 import 'participant_bill_screen.dart';
+import 'notifications_screen.dart';
+import 'services/notification_payload.dart';
 import 'services/notification_service.dart';
 import 'utils/app_theme.dart';
 import 'auth_wrapper.dart';
@@ -218,20 +220,31 @@ class _MyAppState extends State<MyApp> {
     });
 
     // 3. LISTEN TO FIREBASE NOTIFICATIONS (Important!)
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (message.data['billId'] != null) {
-        _handleBillNavigation(message.data['billId'], uid: message.data['uid']);
-      }
-    });
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
 
     // 4. CHECK INITIAL NOTIFICATION (Terminated state)
     RemoteMessage? initialMessage = await FirebaseMessaging.instance
         .getInitialMessage();
-    if (initialMessage != null && initialMessage.data['billId'] != null) {
-      _handleBillNavigation(
-        initialMessage.data['billId'],
-        uid: initialMessage.data['uid'],
-      );
+    if (initialMessage != null) {
+      _handleNotificationTap(initialMessage);
+    }
+  }
+
+  void _handleNotificationTap(RemoteMessage message) {
+    final data = message.data;
+    switch (notificationTapTarget(data)) {
+      case NotificationTapTarget.bill:
+        _handleBillNavigation(data['billId'] as String, uid: data['uid']);
+      case NotificationTapTarget.notifications:
+        // e.g. server engagement reminders: show the notification history.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (FirebaseAuth.instance.currentUser == null) return;
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+          );
+        });
+      case NotificationTapTarget.none:
+        break;
     }
   }
 
