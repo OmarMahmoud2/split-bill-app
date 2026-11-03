@@ -10,6 +10,7 @@ import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/empty_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
 
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});
@@ -279,13 +280,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       HapticFeedback.mediumImpact();
                       Navigator.pop(context);
                       // Fetch user details from Firestore
-                      final doc = await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(code)
-                          .get();
-                      if (doc.exists) {
-                        final data = doc.data()!;
-                        data['uid'] = code;
+                      final data = await PublicProfileService.fetch(code);
+                      if (data != null) {
                         onUserFound(data);
                       }
                     }

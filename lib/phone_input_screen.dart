@@ -5,6 +5,7 @@ import 'package:intl_phone_field/intl_phone_field.dart'; // THE NEW PACKAGE
 import 'home_screen.dart';
 import 'services/user_preferences_service.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
 
 class PhoneInputScreen extends StatefulWidget {
   const PhoneInputScreen({super.key});
@@ -36,18 +37,10 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     }
 
     try {
-      // 🔍 CHECK IF PHONE NUMBER ALREADY EXISTS
-      final existingUsers = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phoneNumber', isEqualTo: _fullPhoneNumber)
-          .get();
+      // 🔍 CLAIM THE NUMBER (fails if another account already owns it)
+      final claimed = await PublicProfileService.claimPhone(_fullPhoneNumber!);
 
-      // Filter out current user (in case they're updating)
-      final otherUsers = existingUsers.docs
-          .where((doc) => doc.id != user.uid)
-          .toList();
-
-      if (otherUsers.isNotEmpty) {
+      if (!claimed) {
         // Phone number already exists for another user
         setState(() => _isLoading = false);
 
@@ -106,16 +99,20 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       }
 
       // ✅ PHONE NUMBER IS UNIQUE - PROCEED TO SAVE
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final existing = (await userRef.get()).data();
+      await userRef.set({
         'phoneNumber': _fullPhoneNumber,
         'isoCode': _isoCode,
         'photoUrl': user.photoURL,
         'displayName': user.displayName ?? "User",
         'email': user.email,
-        'points': 7, // 🎁 Start with 7 free points
+        // 🎁 Start with 7 free points (granted once, never reset)
+        if (existing == null || !existing.containsKey('points')) 'points': 7,
         'localeCode': localeCode,
         'currencyCode': UserPreferencesService.defaultCurrencyCode,
       }, SetOptions(merge: true));
+      await PublicProfileService.syncFromUserDoc(force: true);
 
       if (mounted) {
         Navigator.pushReplacement(

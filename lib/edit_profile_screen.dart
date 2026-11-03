@@ -85,7 +85,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ).showSnackBar(
         SnackBar(
           content: Text(
-            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+            e is PhoneNumberTakenException
+                ? 'phone_number_already_exists'.tr()
+                : 'error_with_details'.tr(namedArgs: {'error': e.toString()}),
           ),
         ),
       );

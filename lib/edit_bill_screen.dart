@@ -17,6 +17,7 @@ import 'screens/edit_bill/widgets/edit_bill_summary_dialog.dart';
 import 'screens/split_bill/widgets/add_members_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
 
 class EditBillScreen extends StatefulWidget {
   final String billId;
@@ -190,12 +191,9 @@ class _EditBillScreenState extends State<EditBillScreen> {
         MaterialPageRoute(builder: (context) => const ScanFriendScreen()),
       );
       if (scannedUid != null) {
-        var doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(scannedUid)
-            .get();
-        if (doc.exists) {
-          _addParticipant(doc.data() as Map<String, dynamic>, 'app_user');
+        final userData = await PublicProfileService.fetch(scannedUid);
+        if (userData != null) {
+          _addParticipant(userData, 'app_user');
         }
       }
     } catch (e) {

@@ -21,6 +21,7 @@ import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/widgets/voice_command_overlay.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
 
 class SplitBillScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -255,13 +256,8 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
 
     if (scannedUid != null) {
       try {
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(scannedUid)
-            .get();
-        if (userDoc.exists) {
-          var userData = userDoc.data() as Map<String, dynamic>;
-          userData['uid'] = userDoc.id; // Inject ID explicitly
+        final userData = await PublicProfileService.fetch(scannedUid);
+        if (userData != null) {
           _addParticipant(userData, 'app_user');
         }
       } catch (e) {

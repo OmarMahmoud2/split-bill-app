@@ -62,7 +62,7 @@ beforeEach(async () => {
     await setDoc(doc(db, 'users', ADMIN), { displayName: 'Admin', isAdmin: true });
     await setDoc(doc(db, 'users', 'fresh-uid'), { fcmToken: 'x' });
     await setDoc(doc(db, 'bills', 'b1'), bill);
-    await setDoc(doc(db, 'publicProfiles', HOST), { displayName: 'Host', paymentMethods: [] });
+    await setDoc(doc(db, 'publicProfiles', HOST), { displayName: 'Host', customPaymentMethods: [] });
     await setDoc(doc(db, 'phoneClaims', '+201000000001'), { uid: HOST });
   });
 });
@@ -167,7 +167,7 @@ describe('publicProfiles', () => {
   });
 
   it('only accepts the owner writing allowed keys', async () => {
-    await assertSucceeds(setDoc(doc(google(FRIEND), 'publicProfiles', FRIEND), { displayName: 'F', photoUrl: null, paymentMethods: [], updatedAt: serverTimestamp() }));
+    await assertSucceeds(setDoc(doc(google(FRIEND), 'publicProfiles', FRIEND), { displayName: 'F', photoUrl: null, customPaymentMethods: [], updatedAt: serverTimestamp() }));
     await assertFails(setDoc(doc(google(FRIEND), 'publicProfiles', FRIEND), { displayName: 'F', phoneNumber: '+1' }));
     await assertFails(setDoc(doc(google(STRANGER), 'publicProfiles', FRIEND), { displayName: 'X' }));
   });

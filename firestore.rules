@@ -190,7 +190,7 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly([
           'displayName',
           'photoUrl',
-          'paymentMethods',
+          'customPaymentMethods',
           'updatedAt'
         ]);
 

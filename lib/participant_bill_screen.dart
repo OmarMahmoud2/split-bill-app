@@ -12,6 +12,7 @@ import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'services/notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
 
 class ParticipantBillScreen extends StatefulWidget {
   final String billId;
@@ -862,10 +863,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
   }
 
   Widget _buildPaymentMethods(String hostId) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('users').doc(hostId).get(),
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: PublicProfileService.fetch(hostId),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState != ConnectionState.done) {
           return LoadingStateWidget(message: 'retrieving_payment_methods'.tr());
         }
 
@@ -873,14 +874,13 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           return Text('error_loading_payment_methods').tr();
         }
 
-        if (!snapshot.data!.exists) {
+        final userData = snapshot.data;
+        if (userData == null) {
           return const SizedBox.shrink();
         }
 
-        var userData = snapshot.data!.data() as Map<String, dynamic>?;
-
         // 1. Try New Format (List)
-        List<dynamic> rawList = userData?['customPaymentMethods'] ?? [];
+        List<dynamic> rawList = userData['customPaymentMethods'] ?? [];
         if (rawList.isNotEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -911,7 +911,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
 
         // 2. Fallback to Old Format (Map)
         var methods =
-            userData?['paymentMethods'] as Map<String, dynamic>? ?? {};
+            userData['paymentMethods'] as Map<String, dynamic>? ?? {};
         var validMethods = methods.entries
             .where((e) => e.value != null && e.value.toString().isNotEmpty)
             .toList();

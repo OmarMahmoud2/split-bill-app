@@ -9,6 +9,7 @@ import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
 
 class PaymentSettingsScreen extends StatefulWidget {
   const PaymentSettingsScreen({super.key});
@@ -72,6 +73,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
           .collection('users')
           .doc(user!.uid)
           .update({'customPaymentMethods': _methods});
+      await PublicProfileService.syncFromUserDoc(force: true);
 
       if (!mounted) return;
       setState(() {
