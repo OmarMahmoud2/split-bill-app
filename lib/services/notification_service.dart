@@ -322,43 +322,43 @@ class NotificationService with WidgetsBindingObserver {
   }
 
   // --- HTTP BACKEND SENDING LOGIC ---
-  Future<void> sendNotification({
-    required String targetToken,
+  /// Saves the notification to the target's history and asks the backend to
+  /// push it. The backend looks up the target's FCM token itself and checks
+  /// that the caller shares [billId] with them (admins may omit it).
+  /// Returns true when the backend accepted the push.
+  Future<bool> sendNotification({
+    required String targetUid,
     required String title,
     required String body,
-    String? targetUid,
+    String? billId,
     Map<String, dynamic>? data,
     String? historyTitleKey,
     String? historyBodyKey,
     Map<String, String>? historyTitleArgs,
     Map<String, String>? historyBodyArgs,
   }) async {
+    final resolvedBillId = billId ?? data?['billId']?.toString();
+
     // 1. SAVE TO HISTORY FIRST (Ensures history works even if push fails)
-    if (targetUid != null) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(targetUid)
-            .collection('notifications')
-            .add({
-              'title': title,
-              'body': body,
-              if (historyTitleKey != null) 'titleKey': historyTitleKey,
-              if (historyBodyKey != null) 'bodyKey': historyBodyKey,
-              if (historyTitleArgs != null) 'titleArgs': historyTitleArgs,
-              if (historyBodyArgs != null) 'bodyArgs': historyBodyArgs,
-              'date': FieldValue.serverTimestamp(),
-              'read': false,
-              'data': data,
-            });
-        debugPrint("✅ Notification saved to history for UID: $targetUid");
-      } catch (e) {
-        debugPrint("❌ Error saving notification history: $e");
-      }
-    } else {
-      debugPrint(
-        "⚠️ No targetUid provided, notification NOT saved to history.",
-      );
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(targetUid)
+          .collection('notifications')
+          .add({
+            'title': title,
+            'body': body,
+            if (historyTitleKey != null) 'titleKey': historyTitleKey,
+            if (historyBodyKey != null) 'bodyKey': historyBodyKey,
+            if (historyTitleArgs != null) 'titleArgs': historyTitleArgs,
+            if (historyBodyArgs != null) 'bodyArgs': historyBodyArgs,
+            'date': FieldValue.serverTimestamp(),
+            'read': false,
+            'data': data,
+          });
+      debugPrint("✅ Notification saved to history for UID: $targetUid");
+    } catch (e) {
+      debugPrint("❌ Error saving notification history: $e");
     }
 
     // 2. SEND PUSH (Via Secure Backend)
@@ -366,12 +366,10 @@ class NotificationService with WidgetsBindingObserver {
       final authToken = await FirebaseAuth.instance.currentUser?.getIdToken();
       Map<String, dynamic> fcmData = Map<String, dynamic>.from(data ?? {});
       fcmData['click_action'] = 'FLUTTER_NOTIFICATION_CLICK';
-      if (fcmData['billId'] == null && data?['billId'] != null) {
-        fcmData['billId'] = data!['billId'];
-      }
+      if (resolvedBillId != null) fcmData['billId'] = resolvedBillId;
 
       debugPrint("--- SENDING PUSH NOTIFICATION ---");
-      debugPrint("Target: $targetToken");
+      debugPrint("Target UID: $targetUid");
       debugPrint("Payload: $fcmData");
 
       final response = await http.post(
@@ -382,7 +380,8 @@ class NotificationService with WidgetsBindingObserver {
             'Authorization': 'Bearer $authToken',
         },
         body: jsonEncode({
-          'token': targetToken,
+          'targetUid': targetUid,
+          if (resolvedBillId != null) 'billId': resolvedBillId,
           'title': title,
           'body': body,
           'data': fcmData,
@@ -392,9 +391,12 @@ class NotificationService with WidgetsBindingObserver {
       debugPrint("Backend Response: ${response.statusCode} - ${response.body}");
       if (response.statusCode < 200 || response.statusCode >= 300) {
         debugPrint("❌ Notification backend rejected the request.");
+        return false;
       }
+      return true;
     } catch (e) {
       debugPrint("❌ Error calling notification backend: $e");
+      return false;
     }
   }
 }

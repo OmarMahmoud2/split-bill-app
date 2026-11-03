@@ -45,7 +45,6 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
 
     try {
       await NotificationService().sendNotification(
-        targetToken: widget.targetToken!,
         targetUid: widget.targetUid,
         title: title,
         body: body,

@@ -546,46 +546,36 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
 
       // Notify Host
       if (hostId.isNotEmpty) {
-        DocumentSnapshot hostDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(hostId)
-            .get();
-        if (hostDoc.exists) {
-          String? hostToken = hostDoc.get('fcmToken');
-          if (hostToken != null) {
-            final formattedAmount = CurrencyUtils.format(
-              myTotal,
-              currencyCode: _currencyCode(data),
-            );
-            await NotificationService().sendNotification(
-              targetToken: hostToken,
-              targetUid: hostId,
-              title: 'payment_received'.tr(),
-              body: 'payment_received_body'.tr(
-                namedArgs: {
-                  'payer': participantName,
-                  'amount': formattedAmount,
-                  'store': storeName,
-                  'method_suffix': '',
-                },
-              ),
-              historyTitleKey: 'payment_received',
-              historyBodyKey: 'payment_received_body',
-              historyBodyArgs: {
-                'payer': participantName,
-                'amount': formattedAmount,
-                'store': storeName,
-                'method_suffix': '',
-              },
-              data: {
-                'billId': billId,
-                'type': 'payment_proof',
-                'amount': myTotal.toString(),
-                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              },
-            );
-          }
-        }
+        final formattedAmount = CurrencyUtils.format(
+          myTotal,
+          currencyCode: _currencyCode(data),
+        );
+        await NotificationService().sendNotification(
+          targetUid: hostId,
+          title: 'payment_received'.tr(),
+          body: 'payment_received_body'.tr(
+            namedArgs: {
+              'payer': participantName,
+              'amount': formattedAmount,
+              'store': storeName,
+              'method_suffix': '',
+            },
+          ),
+          historyTitleKey: 'payment_received',
+          historyBodyKey: 'payment_received_body',
+          historyBodyArgs: {
+            'payer': participantName,
+            'amount': formattedAmount,
+            'store': storeName,
+            'method_suffix': '',
+          },
+          data: {
+            'billId': billId,
+            'type': 'payment_proof',
+            'amount': myTotal.toString(),
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          },
+        );
       }
 
       if (!mounted) return;
@@ -625,42 +615,32 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       );
 
       if (hostId.isNotEmpty) {
-        DocumentSnapshot hostDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(hostId)
-            .get();
-        if (hostDoc.exists) {
-          String? hostToken = hostDoc.get('fcmToken');
-          if (hostToken != null) {
-            final formattedAmount = CurrencyUtils.format(
-              myTotal,
-              currencyCode: _currencyCode(data),
-            );
-            await NotificationService().sendNotification(
-              targetToken: hostToken,
-              targetUid: hostId,
-              title: 'payment_marked_as_sent'.tr(),
-              body: 'payment_marked_as_sent_body'.tr(
-                namedArgs: {
-                  'payer': participantName,
-                  'amount': formattedAmount,
-                },
-              ),
-              historyTitleKey: 'payment_marked_as_sent',
-              historyBodyKey: 'payment_marked_as_sent_body',
-              historyBodyArgs: {
-                'payer': participantName,
-                'amount': formattedAmount,
-              },
-              data: {
-                'billId': billId,
-                'type': 'payment_proof',
-                'amount': myTotal.toString(),
-                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              },
-            );
-          }
-        }
+        final formattedAmount = CurrencyUtils.format(
+          myTotal,
+          currencyCode: _currencyCode(data),
+        );
+        await NotificationService().sendNotification(
+          targetUid: hostId,
+          title: 'payment_marked_as_sent'.tr(),
+          body: 'payment_marked_as_sent_body'.tr(
+            namedArgs: {
+              'payer': participantName,
+              'amount': formattedAmount,
+            },
+          ),
+          historyTitleKey: 'payment_marked_as_sent',
+          historyBodyKey: 'payment_marked_as_sent_body',
+          historyBodyArgs: {
+            'payer': participantName,
+            'amount': formattedAmount,
+          },
+          data: {
+            'billId': billId,
+            'type': 'payment_proof',
+            'amount': myTotal.toString(),
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          },
+        );
       }
 
       if (!mounted) return;

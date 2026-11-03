@@ -191,31 +191,21 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     String name,
   ) async {
     try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(participantUid)
-          .get();
-      if (!userDoc.exists) return;
-
-      String? token = userDoc.get('fcmToken');
-      if (token != null && token.isNotEmpty) {
-        await NotificationService().sendNotification(
-          targetToken: token,
-          targetUid: participantUid,
-          title: 'payment_accepted'.tr(),
-          body: 'payment_accepted_body'.tr(
-            namedArgs: {'bill_name': widget.billName},
-          ),
-          historyTitleKey: 'payment_accepted',
-          historyBodyKey: 'payment_accepted_body',
-          historyBodyArgs: {'bill_name': widget.billName},
-          data: {
-            'billId': widget.billId,
-            'type': 'payment_accepted',
-            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-          },
-        );
-      }
+      await NotificationService().sendNotification(
+        targetUid: participantUid,
+        title: 'payment_accepted'.tr(),
+        body: 'payment_accepted_body'.tr(
+          namedArgs: {'bill_name': widget.billName},
+        ),
+        historyTitleKey: 'payment_accepted',
+        historyBodyKey: 'payment_accepted_body',
+        historyBodyArgs: {'bill_name': widget.billName},
+        data: {
+          'billId': widget.billId,
+          'type': 'payment_accepted',
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+        },
+      );
     } catch (e) {
       debugPrint("Error sending approval notification: $e");
     }
@@ -285,43 +275,33 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     String currencyCode,
   ) async {
     try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(targetUid)
-          .get();
-      if (!userDoc.exists) return;
-
-      String? token = userDoc.get('fcmToken');
-      if (token != null && token.isNotEmpty) {
-        await NotificationService().sendNotification(
-          targetToken: token,
-          targetUid: targetUid,
-          title: 'reminder_title'.tr(namedArgs: {'bill_name': widget.billName}),
-          body: 'reminder_body'.tr(
-            namedArgs: {
-              'amount': CurrencyUtils.format(
-                amount,
-                currencyCode: currencyCode,
-              ),
-            },
-          ),
-          historyTitleKey: 'reminder_title',
-          historyBodyKey: 'reminder_body',
-          historyTitleArgs: {'bill_name': widget.billName},
-          historyBodyArgs: {
-            'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
-          },
-          data: {'billId': widget.billId},
-        );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('reminder_sent_to'.tr(namedArgs: {'name': name})),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.blue[800],
+      final sent = await NotificationService().sendNotification(
+        targetUid: targetUid,
+        title: 'reminder_title'.tr(namedArgs: {'bill_name': widget.billName}),
+        body: 'reminder_body'.tr(
+          namedArgs: {
+            'amount': CurrencyUtils.format(
+              amount,
+              currencyCode: currencyCode,
             ),
-          );
-        }
+          },
+        ),
+        historyTitleKey: 'reminder_title',
+        historyBodyKey: 'reminder_body',
+        historyTitleArgs: {'bill_name': widget.billName},
+        historyBodyArgs: {
+          'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
+        },
+        data: {'billId': widget.billId},
+      );
+      if (sent && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('reminder_sent_to'.tr(namedArgs: {'name': name})),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.blue[800],
+          ),
+        );
       }
     } catch (e) {
       debugPrint("Error sending reminder: $e");

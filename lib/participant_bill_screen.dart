@@ -177,64 +177,54 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       });
 
       if (hostId != null) {
-        DocumentSnapshot hostDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(hostId)
-            .get();
-        if (hostDoc.exists) {
-          String? hostToken = hostDoc.get('fcmToken');
-          if (hostToken != null) {
-            final currentBillData =
-                (await billRef.get()).data() as Map<String, dynamic>;
-            double myTotal = _calculateMyShare(currentBillData)['myTotal'];
-            final payerName = user?.displayName ?? 'a_friend'.tr();
-            final formattedAmount = CurrencyUtils.format(
-              myTotal,
-              currencyCode: _currencyCode(currentBillData),
-            );
-            final methodName = _selectedMethod != null
-                ? _getPrettyMethodName(_selectedMethod!)
-                : '';
+        final currentBillData =
+            (await billRef.get()).data() as Map<String, dynamic>;
+        double myTotal = _calculateMyShare(currentBillData)['myTotal'];
+        final payerName = user?.displayName ?? 'a_friend'.tr();
+        final formattedAmount = CurrencyUtils.format(
+          myTotal,
+          currencyCode: _currencyCode(currentBillData),
+        );
+        final methodName = _selectedMethod != null
+            ? _getPrettyMethodName(_selectedMethod!)
+            : '';
 
-            await NotificationService().sendNotification(
-              targetToken: hostToken,
-              targetUid: hostId!,
-              title: 'payment_received'.tr(),
-              body: 'payment_received_body'.tr(
-                namedArgs: {
-                  'payer': payerName,
-                  'amount': formattedAmount,
-                  'store': storeName ?? '',
-                  'method_suffix': methodName.isEmpty
-                      ? ''
-                      : 'notification_via_method'.tr(
-                          namedArgs: {'method': methodName},
-                        ),
-                },
-              ),
-              historyTitleKey: 'payment_received',
-              historyBodyKey: 'payment_received_body',
-              historyBodyArgs: {
-                'payer': payerName,
-                'amount': formattedAmount,
-                'store': storeName ?? '',
-                'method_suffix': methodName.isEmpty
-                    ? ''
-                    : 'notification_via_method'.tr(
-                        namedArgs: {'method': methodName},
-                      ),
-              },
-              data: {
-                'billId': widget.billId,
-                'type': 'payment_proof',
-                'amount': myTotal.toString(),
-                'method': _selectedMethod ?? 'unknown',
-                'paymentValue': _selectedMethodValue ?? 'not_available_short'.tr(),
-                'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              },
-            );
-          }
-        }
+        await NotificationService().sendNotification(
+          targetUid: hostId!,
+          title: 'payment_received'.tr(),
+          body: 'payment_received_body'.tr(
+            namedArgs: {
+              'payer': payerName,
+              'amount': formattedAmount,
+              'store': storeName ?? '',
+              'method_suffix': methodName.isEmpty
+                  ? ''
+                  : 'notification_via_method'.tr(
+                      namedArgs: {'method': methodName},
+                    ),
+            },
+          ),
+          historyTitleKey: 'payment_received',
+          historyBodyKey: 'payment_received_body',
+          historyBodyArgs: {
+            'payer': payerName,
+            'amount': formattedAmount,
+            'store': storeName ?? '',
+            'method_suffix': methodName.isEmpty
+                ? ''
+                : 'notification_via_method'.tr(
+                    namedArgs: {'method': methodName},
+                  ),
+          },
+          data: {
+            'billId': widget.billId,
+            'type': 'payment_proof',
+            'amount': myTotal.toString(),
+            'method': _selectedMethod ?? 'unknown',
+            'paymentValue': _selectedMethodValue ?? 'not_available_short'.tr(),
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          },
+        );
       }
 
       setState(() {
@@ -283,39 +273,29 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
 
       if (hostId != null) {
         // Send Notification (Simplified)
-        DocumentSnapshot hostDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(hostId)
-            .get();
-        if (hostDoc.exists) {
-          String? hostToken = hostDoc.get('fcmToken');
-          if (hostToken != null) {
-            final currentBillData =
-                (await billRef.get()).data() as Map<String, dynamic>;
-            double myTotal = _calculateMyShare(currentBillData)['myTotal'];
-            final payerName = user?.displayName ?? 'a_friend'.tr();
-            final formattedAmount = CurrencyUtils.format(
-              myTotal,
-              currencyCode: _currencyCode(currentBillData),
-            );
+        final currentBillData =
+            (await billRef.get()).data() as Map<String, dynamic>;
+        double myTotal = _calculateMyShare(currentBillData)['myTotal'];
+        final payerName = user?.displayName ?? 'a_friend'.tr();
+        final formattedAmount = CurrencyUtils.format(
+          myTotal,
+          currencyCode: _currencyCode(currentBillData),
+        );
 
-            await NotificationService().sendNotification(
-              targetToken: hostToken,
-              targetUid: hostId!,
-              title: 'payment_marked_as_sent'.tr(),
-              body: 'payment_marked_as_sent_body'.tr(
-                namedArgs: {'payer': payerName, 'amount': formattedAmount},
-              ),
-              historyTitleKey: 'payment_marked_as_sent',
-              historyBodyKey: 'payment_marked_as_sent_body',
-              historyBodyArgs: {'payer': payerName, 'amount': formattedAmount},
-              data: {
-                'billId': widget.billId,
-                'type': 'payment_proof', // Keep same type for handler
-              },
-            );
-          }
-        }
+        await NotificationService().sendNotification(
+          targetUid: hostId!,
+          title: 'payment_marked_as_sent'.tr(),
+          body: 'payment_marked_as_sent_body'.tr(
+            namedArgs: {'payer': payerName, 'amount': formattedAmount},
+          ),
+          historyTitleKey: 'payment_marked_as_sent',
+          historyBodyKey: 'payment_marked_as_sent_body',
+          historyBodyArgs: {'payer': payerName, 'amount': formattedAmount},
+          data: {
+            'billId': widget.billId,
+            'type': 'payment_proof', // Keep same type for handler
+          },
+        );
       }
 
       setState(() {

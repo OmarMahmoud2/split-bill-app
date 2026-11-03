@@ -504,34 +504,25 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     String billId,
   ) async {
     try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
-      final token = userDoc.data()?['fcmToken'];
-
-      if (token != null) {
-        final formattedAmount = CurrencyUtils.format(
-          _finalShares[uid] ?? 0.0,
-          currencyCode: _currencyCode,
-          decimalDigits: 1,
-        );
-        await _notificationService.sendNotification(
-          targetToken: token,
-          targetUid: uid,
-          title: 'split_bill_notification_title'.tr(
-            namedArgs: {'store': store},
-          ),
-          body: 'split_bill_notification_body'.tr(
-            namedArgs: {'amount': formattedAmount},
-          ),
-          historyTitleKey: 'split_bill_notification_title',
-          historyBodyKey: 'split_bill_notification_body',
-          historyTitleArgs: {'store': store},
-          historyBodyArgs: {'amount': formattedAmount},
-          data: {"type": "new_bill", "uid": uid, "billId": billId},
-        );
-      }
+      final formattedAmount = CurrencyUtils.format(
+        _finalShares[uid] ?? 0.0,
+        currencyCode: _currencyCode,
+        decimalDigits: 1,
+      );
+      await _notificationService.sendNotification(
+        targetUid: uid,
+        title: 'split_bill_notification_title'.tr(
+          namedArgs: {'store': store},
+        ),
+        body: 'split_bill_notification_body'.tr(
+          namedArgs: {'amount': formattedAmount},
+        ),
+        historyTitleKey: 'split_bill_notification_title',
+        historyBodyKey: 'split_bill_notification_body',
+        historyTitleArgs: {'store': store},
+        historyBodyArgs: {'amount': formattedAmount},
+        data: {"type": "new_bill", "uid": uid, "billId": billId},
+      );
     } catch (e) {
       debugPrint("Error notifying user $name: $e");
     }
