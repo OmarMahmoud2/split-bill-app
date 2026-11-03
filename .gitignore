@@ -62,3 +62,7 @@ app.*.map.json
 
 # Local browser automation logs
 .playwright-cli/
+
+# Firestore rules tests
+firestore-tests/node_modules/
+firestore-debug.log

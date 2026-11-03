@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["U2PUCCM72U.com.example.splitBillApp"],
+        "components": [
+          { "/": "/bill/*" },
+          { "?": { "billId": "?*" } }
+        ]
+      }
+    ]
+  }
+}

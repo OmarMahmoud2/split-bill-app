@@ -1,0 +1,250 @@
+rules_version = '2';
+
+// Stage A (1.2.0 hotfix). Safe for 1.1.x clients still in the field:
+// - nothing is publicly readable without auth (web guests sign in anonymously)
+// - users / bills can no longer be enumerated
+// - points, premium and admin fields are server-only
+//
+// Stage B (once 1.2.0 adoption is high): tighten users `get` to owner/admin.
+// 1.2.0+ clients read other people via publicProfiles and never need it.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- HELPERS ---
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAnonymous() {
+      return signedIn() && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+
+    function isFullUser() {
+      return signedIn() && !isAnonymous();
+    }
+
+    function isOwner(userId) {
+      return isFullUser() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isFullUser()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function hasListField(data, field) {
+      return data.keys().hasAny([field]) && data[field] is list;
+    }
+
+    function listHasUid(data, field) {
+      return signedIn()
+        && hasListField(data, field)
+        && request.auth.uid in data[field];
+    }
+
+    function isGroupOwner(data) {
+      return signedIn()
+        && (
+          (data.keys().hasAny(['createdBy']) && data.createdBy == request.auth.uid) ||
+          (data.keys().hasAny(['ownerId']) && data.ownerId == request.auth.uid)
+        );
+    }
+
+    function isGroupMember(data) {
+      return listHasUid(data, 'memberIds');
+    }
+
+    // Only the backend (Admin SDK) or an admin may change these.
+    function protectedUserFields() {
+      return [
+        'isAdmin',
+        'isPremium',
+        'points',
+        'rewardedAdCount',
+        'premiumEntitlementId',
+        'premiumProductId',
+        'premiumStore',
+        'premiumEnvironment',
+        'premiumExpiresAt',
+        'premiumWillRenew',
+        'premiumManagementUrl',
+        'premiumLastEventType',
+        'premiumLastRevenueCatEventId',
+        'premiumUpdatedAt'
+      ];
+    }
+
+    // New accounts get the 7-point welcome grant and nothing else protected.
+    function validUserCreate() {
+      let data = request.resource.data;
+      return !data.keys().hasAny(protectedUserFields().removeAll(['points']))
+        && (!data.keys().hasAny(['points']) || data.points == 7);
+    }
+
+    // The user doc usually exists before phone setup (token sync creates it),
+    // so the welcome grant is also allowed once on update, never as a reset.
+    function validOwnerUserUpdate() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return !changed.hasAny(protectedUserFields().removeAll(['points']))
+        && (
+          !changed.hasAny(['points'])
+          || (!resource.data.keys().hasAny(['points']) && request.resource.data.points == 7)
+        );
+    }
+
+    function billHost() {
+      return signedIn() && resource.data.hostId == request.auth.uid;
+    }
+
+    function newBillHost() {
+      return isFullUser() && request.resource.data.hostId == request.auth.uid;
+    }
+
+    function billMember() {
+      return listHasUid(resource.data, 'participants_uids');
+    }
+
+    // Participants and anonymous web guests may only touch payment state,
+    // and may not add or remove participants.
+    function paymentOnlyBillUpdate() {
+      return signedIn()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly(['participants'])
+        && request.resource.data.participants is list
+        && request.resource.data.participants.size() == resource.data.participants.size();
+    }
+
+    function validNotificationCreate() {
+      return request.resource.data.keys().hasOnly([
+          'title',
+          'body',
+          'titleKey',
+          'bodyKey',
+          'titleArgs',
+          'bodyArgs',
+          'date',
+          'read',
+          'data'
+        ])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.body is string
+        && request.resource.data.body.size() <= 1000
+        && request.resource.data.read == false
+        && request.resource.data.date == request.time;
+    }
+
+    // --- BILLS ---
+    match /bills/{billId} {
+      // Share links open a bill by id; listing is limited to your own bills.
+      allow get: if signedIn();
+      allow list: if isAdmin()
+        || (signedIn() && request.auth.uid in resource.data.participants_uids)
+        || (signedIn() && resource.data.hostId == request.auth.uid);
+
+      allow create: if newBillHost();
+
+      allow update: if isAdmin()
+        || billHost()
+        || paymentOnlyBillUpdate();
+
+      allow delete: if isAdmin() || billHost();
+    }
+
+    // --- GROUPS ---
+    match /groups/{groupId} {
+      allow create: if isFullUser()
+        && request.resource.data.keys().hasOnly([
+          'name',
+          'createdBy',
+          'createdAt',
+          'members',
+          'memberIds'
+        ])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.memberIds is list
+        && request.auth.uid in request.resource.data.memberIds;
+
+      allow read: if isAdmin()
+        || isGroupOwner(resource.data)
+        || isGroupMember(resource.data);
+
+      allow update: if (isAdmin() || isGroupOwner(resource.data))
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly(['name', 'members', 'memberIds'])
+        && request.resource.data.memberIds is list;
+
+      allow delete: if isAdmin() || isGroupOwner(resource.data);
+    }
+
+    // --- PUBLIC PROFILES ---
+    // The only per-user data other people (and guests) may read.
+    match /publicProfiles/{userId} {
+      allow read: if signedIn();
+
+      allow create, update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly([
+          'displayName',
+          'photoUrl',
+          'paymentMethods',
+          'updatedAt'
+        ]);
+
+      allow delete: if isAdmin() || isOwner(userId);
+    }
+
+    // --- PHONE CLAIMS ---
+    // One doc per E.164 number so uniqueness can be checked without
+    // querying the users collection.
+    match /phoneClaims/{phone} {
+      allow get: if isFullUser();
+
+      allow create: if isFullUser()
+        && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid;
+
+      allow delete: if isAdmin()
+        || (isFullUser() && resource.data.uid == request.auth.uid);
+    }
+
+    // --- USERS ---
+    match /users/{userId} {
+      // Stage A: get by id stays open to signed-in users for 1.1.x clients.
+      allow get: if signedIn();
+      allow list: if isAdmin();
+
+      allow create: if isAdmin()
+        || (isOwner(userId) && validUserCreate());
+
+      allow update: if isAdmin()
+        || (isOwner(userId) && validOwnerUserUpdate());
+
+      allow delete: if isAdmin() || isOwner(userId);
+
+      // --- USER NOTIFICATIONS ---
+      match /notifications/{notificationId} {
+        allow read: if isAdmin() || isOwner(userId);
+
+        // App users and web guests can notify others, but only with the expected shape.
+        allow create: if signedIn() && validNotificationCreate();
+
+        allow update: if (isAdmin() || isOwner(userId))
+          && request.resource.data.diff(resource.data)
+            .affectedKeys()
+            .hasOnly(['read'])
+          && request.resource.data.read is bool;
+
+        allow delete: if isAdmin() || isOwner(userId);
+      }
+    }
+
+    // --- DEFAULT DENY ---
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
