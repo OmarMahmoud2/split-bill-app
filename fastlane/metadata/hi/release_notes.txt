@@ -1,5 +1,1 @@
-Fixed an issue that could cause the app to crash on launch.
-Redesigned onboarding for scanning, voice assignment, and currencies.
-Improved currency picker and official Google and Apple sign-in buttons.
-Android now uses the system Contact Picker instead of contacts permission.
-Stability improvements and polish.
+महत्वपूर्ण सुरक्षा अपडेट जो आपके कनेक्शन और खाते के डेटा की सुरक्षा करता है। साझा किए गए बिल लिंक अब केवल उन्हीं लोगों के लिए हैं जिन्हें आप भेजते हैं। कृपया अपडेट करें।

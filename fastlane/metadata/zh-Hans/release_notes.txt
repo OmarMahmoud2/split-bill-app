@@ -1,5 +1,1 @@
-Fixed an issue that could cause the app to crash on launch.
-Redesigned onboarding for scanning, voice assignment, and currencies.
-Improved currency picker and official Google and Apple sign-in buttons.
-Android now uses the system Contact Picker instead of contacts permission.
-Stability improvements and polish.
+重要安全更新，保护您的连接和账户数据。共享的账单链接现在仅对收件人可见。请及时更新。

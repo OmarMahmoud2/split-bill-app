@@ -35,12 +35,10 @@ IOS_APP_STORE_LOCALES = %w[
   hi id it ja ko pl pt-BR pt-PT ru zh-Hans zh-Hant
 ]
 APP_REVIEW_NOTES = [
-  "Build #{BUILD_NUMBER} addresses the launch crash reported for version 1.1.9 build 19.",
-  "The contacts plugin has been updated for compatibility with the iOS UIScene launch lifecycle.",
-  "To verify: launch a fresh installation, complete onboarding, close and reopen the app, and open the contacts picker when creating a bill.",
-  "Guideline 3.1.2(c) update:",
-  "The Premium purchase flow now shows the selected subscription title, price, billing period, renewal/cancellation disclosure, Restore purchase, Privacy Policy, and Terms of Use (EULA) links before purchase.",
-  "To verify: open the app, sign in if needed, go to Profile > Go Premium, then review the Subscription details box below the plan selector.",
+  "Version 1.2.0 (build #{BUILD_NUMBER}) is a security update.",
+  "It updates the Cloud Firestore SDK to 12.19.3, which removes root certificates chaining to the compromised eMudhra intermediate CAs, as required by Google's Firebase security advisory.",
+  "It also tightens account data access. There are no new features or changes to in-app purchases.",
+  "To verify: sign in, create a bill, and open Profile > Go Premium; behaviour is unchanged.",
   "Privacy Policy: #{PRIVACY_POLICY_URL}",
   "Terms of Use (EULA): #{TERMS_OF_USE_URL}"
 ].join("\n")
