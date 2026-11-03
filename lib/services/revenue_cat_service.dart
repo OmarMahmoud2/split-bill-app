@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/config/api_keys.dart';
 import 'package:split_bill_app/config/backend_config.dart';
+import 'package:split_bill_app/services/guest_session.dart';
 
 /// Service to manage RevenueCat integration and premium status
 class RevenueCatService {
@@ -41,12 +42,12 @@ class RevenueCatService {
 
     _authSubscription?.cancel();
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
-      unawaited(_handleAuthChange(user));
+      unawaited(_handleAuthChange(memberOrNull(user)));
     });
     Purchases.addCustomerInfoUpdateListener((_) {
       unawaited(syncPremiumStatus());
     });
-    await _handleAuthChange(FirebaseAuth.instance.currentUser);
+    await _handleAuthChange(memberOrNull(FirebaseAuth.instance.currentUser));
   }
 
   /// Check if current user has active premium entitlement
@@ -227,7 +228,7 @@ class RevenueCatService {
   }
 
   static Future<bool> syncCurrentUser() async {
-    return _handleAuthChange(FirebaseAuth.instance.currentUser);
+    return _handleAuthChange(memberOrNull(FirebaseAuth.instance.currentUser));
   }
 
   static Future<Uri?> subscriptionManagementUri() async {

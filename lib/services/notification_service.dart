@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:split_bill_app/config/backend_config.dart';
 import 'package:split_bill_app/services/notification_payload.dart';
+import 'package:split_bill_app/services/guest_session.dart';
 import 'dart:async';
 
 class NotificationService with WidgetsBindingObserver {
@@ -103,7 +104,7 @@ class NotificationService with WidgetsBindingObserver {
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
       User? user,
     ) async {
-      if (user != null) {
+      if (memberOrNull(user) != null) {
         await syncTokenForCurrentUser(force: true);
       } else if (_lastSyncedUid != null) {
         await clearStoredTokenForCurrentUser();
@@ -143,7 +144,7 @@ class NotificationService with WidgetsBindingObserver {
     bool force = false,
     String? tokenOverride,
   }) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = memberOrNull(FirebaseAuth.instance.currentUser);
     if (user == null || _isSyncingToken) return;
 
     _isSyncingToken = true;

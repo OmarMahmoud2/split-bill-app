@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
+import 'services/guest_session.dart';
 import 'services/notification_service.dart';
 import 'screens/guest_bill/widgets/guest_header.dart';
 import 'screens/guest_bill/widgets/download_section.dart';
@@ -55,7 +56,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     }
   }
 
-  Future<DocumentSnapshot> _fetchBill() {
+  Future<DocumentSnapshot> _fetchBill() async {
+    await GuestSession.ensureSignedIn().timeout(const Duration(seconds: 12));
     return FirebaseFirestore.instance
         .collection('bills')
         .doc(widget.billId)

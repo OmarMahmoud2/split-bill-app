@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/services/notification_payload.dart';
 import 'package:split_bill_app/services/user_preferences_service.dart';
+import 'package:split_bill_app/services/guest_session.dart';
 
 class AppSettingsProvider extends ChangeNotifier {
   AppSettingsProvider({UserPreferencesService? preferencesService})
@@ -32,9 +33,9 @@ class AppSettingsProvider extends ChangeNotifier {
     _initialized = true;
 
     await _loadLocalPreferences();
-    await _bindUser(FirebaseAuth.instance.currentUser);
+    await _bindUser(memberOrNull(FirebaseAuth.instance.currentUser));
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen(
-      _bindUser,
+      (user) => _bindUser(memberOrNull(user)),
     );
   }
 

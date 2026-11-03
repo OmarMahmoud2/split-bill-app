@@ -18,6 +18,7 @@ import 'bill_details_screen.dart';
 import 'participant_bill_screen.dart';
 import 'notifications_screen.dart';
 import 'services/notification_payload.dart';
+import 'services/guest_session.dart';
 import 'services/notification_service.dart';
 import 'utils/app_theme.dart';
 import 'auth_wrapper.dart';
@@ -269,7 +270,7 @@ class _MyAppState extends State<MyApp> {
 
     // Wait for frame to ensure navigator keys are ready
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = memberOrNull(FirebaseAuth.instance.currentUser);
 
       // SCENARIO A: Guest / Not Logged In
       if (user == null) {

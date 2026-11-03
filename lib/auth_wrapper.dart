@@ -10,6 +10,7 @@ import 'package:split_bill_app/new_onboarding_screen.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
+import 'package:split_bill_app/services/guest_session.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -102,7 +103,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
               );
             }
 
-            if (snapshot.hasData && snapshot.data != null) {
+            if (memberOrNull(snapshot.data) != null) {
               return FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('users')
