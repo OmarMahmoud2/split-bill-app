@@ -55,6 +55,12 @@ class RewardedAdHelper {
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           if (kDebugMode) debugPrint('✅ Rewarded Ad loaded successfully');
+          // Points are granted by the backend from AdMob's server-side
+          // verification callback, keyed by this uid.
+          final uid = FirebaseAuth.instance.currentUser?.uid;
+          if (uid != null) {
+            ad.setServerSideOptions(ServerSideVerificationOptions(userId: uid));
+          }
           _rewardedAd = ad;
           _isAdReady = true;
           _isLoading = false;
@@ -122,6 +128,7 @@ class RewardedAdHelper {
     }
 
     bool rewardEarned = false;
+    final pointsBefore = await _currentPoints();
 
     await _rewardedAd!.show(
       onUserEarnedReward: (ad, reward) async {
@@ -130,21 +137,11 @@ class RewardedAdHelper {
         }
         rewardEarned = true;
 
-        // Add 1 point to user in Firestore
+        // The backend adds the point; wait briefly so the UI shows it.
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          try {
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .update({'points': FieldValue.increment(1)});
-
-            if (kDebugMode) debugPrint('✅ Added 1 point to user ${user.uid}');
-            onRewardEarned();
-          } catch (e) {
-            if (kDebugMode) debugPrint('❌ Error adding points: $e');
-            onAdFailed();
-          }
+          await _waitForServerPoint(user.uid, pointsBefore);
+          onRewardEarned();
         }
       },
     );
@@ -153,6 +150,33 @@ class RewardedAdHelper {
     _rewardedAd = null;
 
     return rewardEarned;
+  }
+
+  static Future<int> _currentPoints() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return 0;
+    try {
+      final doc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      return (doc.data()?['points'] as num?)?.toInt() ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  static Future<void> _waitForServerPoint(String uid, int before) async {
+    final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    try {
+      await userRef
+          .snapshots()
+          .map((doc) => (doc.data()?['points'] as num?)?.toInt() ?? 0)
+          .firstWhere((points) => points > before)
+          .timeout(const Duration(seconds: 10));
+      if (kDebugMode) debugPrint('✅ Server granted rewarded point to $uid');
+    } catch (e) {
+      // AdMob callbacks can lag; the point still lands on the server.
+      if (kDebugMode) debugPrint('Rewarded point not visible yet: $e');
+    }
   }
 
   /// Check if ad is ready to show
