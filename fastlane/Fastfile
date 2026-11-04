@@ -14,13 +14,7 @@ UI.user_error!("Could not read app version from #{PUBSPEC_PATH}") unless VERSION
 
 APP_VERSION = VERSION_MATCH[1]
 BUILD_NUMBER = VERSION_MATCH[2]
-RELEASE_NOTES = [
-  "Fixed an issue that could cause the app to crash on launch.",
-  "Redesigned onboarding for receipt scanning, voice assignment, and currency selection.",
-  "Improved currency picker and official Google and Apple sign-in buttons.",
-  "Android now uses the system Contact Picker instead of contacts permission.",
-  "Stability improvements and polish."
-].join("\n")
+RELEASE_NOTES = File.read(File.join(PROJECT_ROOT, "fastlane", "metadata", "en-US", "release_notes.txt")).strip
 SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUILD_NUMBER}")
 ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
 IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
