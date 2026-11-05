@@ -1,34 +1,42 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:in_app_review/in_app_review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
-import 'package:flutter/services.dart';
-import 'package:split_bill_app/login_screen.dart';
-import 'package:split_bill_app/payment_settings_screen.dart';
+import 'package:split_bill_app/edit_profile_screen.dart';
 import 'package:split_bill_app/groups_screen.dart';
-import 'package:flutter/foundation.dart';
-import 'package:split_bill_app/new_onboarding_screen.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
-import 'package:provider/provider.dart';
-import 'package:split_bill_app/widgets/premium_modal.dart';
-import 'package:split_bill_app/widgets/ad_modal.dart';
+import 'package:split_bill_app/login_screen.dart';
+import 'package:split_bill_app/new_onboarding_screen.dart';
+import 'package:split_bill_app/payment_settings_screen.dart';
+import 'package:split_bill_app/payments/payments.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
-import 'package:split_bill_app/screens/profile/widgets/profile_header.dart';
-import 'package:split_bill_app/screens/profile/widgets/profile_cards.dart';
-import 'package:split_bill_app/screens/profile/widgets/profile_menu_widgets.dart';
-import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
-import 'package:split_bill_app/screens/profile/widgets/version_info.dart';
-import 'package:split_bill_app/screens/profile/widgets/theme_mode_sheet.dart';
-import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 import 'package:split_bill_app/screens/admin/admin_dashboard_screen.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/screens/profile/appearance_screen.dart';
+import 'package:split_bill_app/screens/profile/export_screen.dart';
+import 'package:split_bill_app/screens/profile/reminders_screen.dart';
+import 'package:split_bill_app/screens/profile/subscription_screen.dart';
+import 'package:split_bill_app/screens/profile/widgets/debug_seed.dart';
+import 'package:split_bill_app/screens/profile/widgets/profile_content.dart';
+import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
+import 'package:split_bill_app/screens/recurring/recurring_bill_screen.dart';
+import 'package:split_bill_app/services/reminder_prefs.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/ad_modal.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/paywall/paywall_plans.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/premium_modal.dart';
+import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 
+/// The v3 "You" tab: profile, account, app settings and Pro tools.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -37,236 +45,175 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final user = FirebaseAuth.instance.currentUser;
+  final User? _user = FirebaseAuth.instance.currentUser;
   final InAppReview _inAppReview = InAppReview.instance;
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? _userStream;
+  String? _monthlyPrice;
+  int _streamKey = 0;
 
   @override
   void initState() {
     super.initState();
+    final user = _user;
+    if (user != null) {
+      _userStream = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots();
+    }
     RewardedAdHelper.warmUpIfEligible();
+    _loadMonthlyPrice();
   }
 
-  Future<void> _shareApp(BuildContext context) async {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  Future<void> _loadMonthlyPrice() async {
+    if (kIsWeb) return;
+    try {
+      final plans = PaywallPlan.fromPackages(
+        await RevenueCatService.getPremiumPackages(),
+      );
+      final monthly = plans
+          .where((p) => p.kind == PaywallPlanKind.monthly)
+          .firstOrNull;
+      if (mounted && monthly != null) {
+        setState(() => _monthlyPrice = monthly.priceString);
+      }
+    } catch (_) {
+      // Card falls back to "Go Pro".
+    }
+  }
 
-    await PremiumBottomSheet.show(
-      context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'share_split_bill',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.6,
-            ),
-          ).tr(),
-          const SizedBox(height: 8),
-          Text(
-            'choose_the_store_link_you_want_to_send_so_your_friend_lands_on_the_right_download_page',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
-              height: 1.4,
-            ),
-          ).tr(),
+  void _retry() {
+    final user = _user;
+    if (user == null) return;
+    setState(() {
+      _streamKey++;
+      _userStream = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots();
+    });
+  }
 
-          const SizedBox(height: 24),
+  Future<T?> _push<T>(Widget screen) =>
+      Navigator.of(context).push<T>(MaterialPageRoute(builder: (_) => screen));
 
-          // Primary Share Options
-          Row(
-            children: [
-              Expanded(
-                child: _StoreShareCard(
-                  icon: Icons.android_rounded,
-                  title: 'share_to_android'.tr(),
-                  subtitle: 'google_play_link'.tr(),
-                  colors: const [Color(0xFF00C853), Color(0xFF009624)],
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await SharePlus.instance.share(
-                      ShareParams(
-                        text: 'download_split_bill_for_android'.tr(
-                          namedArgs: {'url': AppLinks.playStoreUrl},
-                        ),
-                        subject: 'split_bill_on_google_play'.tr(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _StoreShareCard(
-                  icon: Icons.apple_rounded,
-                  title: 'share_to_iphone'.tr(),
-                  subtitle: 'app_store_link'.tr(),
-                  colors: const [Color(0xFF007AFF), Color(0xFF0055FF)],
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await SharePlus.instance.share(
-                      ShareParams(
-                        text: 'download_split_bill_for_iphone'.tr(
-                          namedArgs: {'url': AppLinks.appStoreUrl},
-                        ),
-                        subject: 'split_bill_on_the_app_store'.tr(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+  Future<void> _onAction(
+    ProfileAction action,
+    Map<String, dynamic> data,
+    bool isPro,
+  ) async {
+    final settings = context.read<AppSettingsProvider>();
+    switch (action) {
+      case ProfileAction.goPro:
+        await PremiumModal.show(context);
+      case ProfileAction.editProfile:
+        await _push(EditProfileScreen(currentData: data));
+      case ProfileAction.paymentMethods:
+        await _push(const PaymentSettingsScreen());
+      case ProfileAction.subscription:
+        await _push(const SubscriptionScreen());
+      case ProfileAction.privacyAndData:
+        await ProfileDialogs.showPrivacyAndData(
+          context,
+          onExport: () => _push(const ExportScreen()),
+        );
+      case ProfileAction.groups:
+        await _push(const GroupsScreen());
+      case ProfileAction.appearance:
+        await _push(const AppearanceScreen());
+      case ProfileAction.language:
+        _showLocaleSheet(settings);
+      case ProfileAction.currency:
+        _showCurrencySheet(settings);
+      case ProfileAction.reminders:
+        await _push(RemindersScreen(currencyCode: settings.currencyCode));
+      case ProfileAction.help:
+        await ProfileDialogs.showContactUs(context);
+      case ProfileAction.shareApp:
+        await _shareApp();
+      case ProfileAction.rateApp:
+        await _rateApp();
+      case ProfileAction.watchAd:
+        await AdModal.show(context, onWatchAd: _showRewardedAd);
+      case ProfileAction.export:
+        await _push(const ExportScreen());
+      case ProfileAction.recurring:
+        await _push(const RecurringBillScreen());
+      case ProfileAction.admin:
+        await _push(const AdminDashboardScreen());
+      case ProfileAction.showOnboarding:
+        await _push(const NewOnboardingScreen());
+      case ProfileAction.seedTransactions:
+        await _seed();
+    }
+  }
 
-          const SizedBox(height: 20),
+  @override
+  Widget build(BuildContext context) {
+    if (_user == null) return const LoginScreen();
+    final settings = context.watch<AppSettingsProvider>();
+    final p = context.palette;
+    final locale = context.locale.toLanguageTag();
 
-          // Copy Link Option (Classy row)
-          Material(
-            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(18),
-            child: InkWell(
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: AppLinks.playStoreUrl));
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('link_copied_to_clipboard').tr(),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(18),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.link_rounded,
-                        color: colorScheme.primary,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        'copy_app_link',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ).tr(),
-                    ),
-                    Icon(
-                      Icons.copy_rounded,
-                      size: 18,
-                      color: colorScheme.onSurface.withValues(alpha: 0.4),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
+    return Scaffold(
+      backgroundColor: p.canvas,
+      body: SafeArea(
+        bottom: false,
+        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          key: ValueKey(_streamKey),
+          stream: _userStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return ErrorState(onRetry: _retry);
+            }
+            if (!snapshot.hasData) {
+              return const _ProfileSkeleton();
+            }
+            final data = snapshot.data!.data() ?? <String, dynamic>{};
+            final isPro = RevenueCatService.isUserActivePremium(data);
+            final planKind = planKindForProductId(
+              data['premiumProductId']?.toString(),
+            );
+            final view = ProfileViewData(
+              name:
+                  (data['displayName'] as String?) ??
+                  _user.displayName ??
+                  'user'.tr(),
+              photoUrl: data['photoUrl'] as String?,
+              isPro: isPro,
+              planLabel: planKind == null
+                  ? null
+                  : 'pw_plan_${planKind.name}'.tr(),
+              points: (data['points'] as num?)?.toInt() ?? 0,
+              paymentMethodCount: parseStoredPaymentMethods(data).length,
+              monthlyPrice: _monthlyPrice,
+              appearanceLabel: themeModeLabelKey(settings.themeMode).tr(),
+              languageLabel: findLocaleOption(
+                settings.locale.languageCode,
+              ).nativeName,
+              currencyCode: settings.currencyCode,
+              hapticsEnabled: settings.hapticsEnabled,
+              remindersSummary: ReminderPrefs.fromUserDoc(
+                data,
+              ).summary(offLabel: 'rem_off'.tr(), locale: locale),
+              isAdmin: data['isAdmin'] == true,
+              showDeveloper: kDebugMode,
+            );
+            return ProfileContent(
+              data: view,
+              onAction: (action) => _onAction(action, data, isPro),
+              onHapticsChanged: settings.updateHapticsEnabled,
+            );
+          },
+        ),
       ),
     );
   }
 
-  Future<void> _rateApp() async {
-    try {
-      if (await _inAppReview.isAvailable()) {
-        await _inAppReview.requestReview();
-      } else {
-        // Fallback for debug/unpublished apps
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'in_app_rating_is_not_available_in_development_mode',
-              ).tr(),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('could_not_open_rating_dialog').tr()),
-        );
-      }
-    }
-  }
-
-  Future<void> _contactUs() => ProfileDialogs.showContactUs(context);
-
-  void _showLogoutDialog() => ProfileDialogs.showLogout(context);
-
-  void _showDeleteAccountDialog() => ProfileDialogs.showDeleteAccount(context);
-
-  Color _getFlagColor(String code) {
-    switch (code) {
-      case 'en':
-        return Colors.blue;
-      case 'ar':
-        return Colors.green;
-      case 'fr':
-        return Colors.blueAccent;
-      case 'de':
-        return Colors.black87;
-      case 'ru':
-        return Colors.red;
-      case 'id':
-        return Colors.redAccent;
-      case 'ur':
-        return Colors.green;
-      case 'hi':
-        return Colors.orange;
-      case 'pl':
-        return Colors.red;
-      case 'es':
-        return Colors.yellow;
-      case 'it':
-        return Colors.green;
-      case 'pt':
-        return Colors.green;
-      case 'zh':
-        return Colors.red;
-      case 'ko':
-        return Colors.blue;
-      case 'ja':
-        return Colors.red;
-      case 'tr':
-        return Colors.red;
-      case 'nl':
-        return Colors.orange;
-      case 'sv':
-        return Colors.blue;
-      case 'da':
-        return Colors.red;
-      case 'nb':
-        return Colors.red;
-      case 'vi':
-        return Colors.red;
-      case 'th':
-        return Colors.indigo;
-      default:
-        return Colors.blueGrey;
-    }
-  }
+  // ------------------------------------------------------------ language
 
   void _showLocaleSheet(AppSettingsProvider settings) {
+    final p = context.palette;
     PremiumBottomSheet.show(
       context: context,
       padding: EdgeInsets.zero,
@@ -277,18 +224,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .map(
               (option) => SearchableSheetItem<LocaleOption>(
                 value: option,
-                title: option.englishName,
-                subtitle: option.nativeName,
+                title: option.nativeName,
+                subtitle: option.englishName,
                 searchTerms: [
                   option.code,
                   option.englishName,
                   option.nativeName,
                 ],
                 leading: Container(
-                  width: 42,
-                  height: 42,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
-                    color: _getFlagColor(option.code).withValues(alpha: 0.1),
+                    color: p.surfaceVariant,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
@@ -303,10 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isSelected: (option) => option.code == settings.locale.languageCode,
         onSelected: (option) async {
           final navigator = Navigator.of(context);
-          final localization = EasyLocalization.of(context);
-
-          await settings.updateLocale(option.locale);
-          await localization?.setLocale(option.locale);
+          await applyLocaleOption(context, option);
           if (!mounted) return;
           navigator.pop();
         },
@@ -326,7 +270,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .map(
               (option) => SearchableSheetItem<CurrencyOption>(
                 value: option,
-                title: '${option.code} • ${option.name}',
+                title: '${option.code} · ${option.name}',
                 subtitle: option.region,
                 searchTerms: [
                   option.code,
@@ -335,23 +279,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   option.symbol,
                 ],
                 leading: Container(
-                  width: 46,
-                  height: 46,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        p.tint(const Color(0xFFFFF7E8), Colors.amber),
-                        p.tint(const Color(0xFFFFF1CC), Colors.amber),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
+                    color: p.surfaceVariant,
+                    borderRadius: AppRadii.rowRadius,
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     option.symbol,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: p.textPrimary,
                     ),
                   ),
                 ),
@@ -361,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isSelected: (option) => option.code == settings.currencyCode,
         onSelected: (option) async {
           final navigator = Navigator.of(context);
-
+          AppHaptics.selection();
           await settings.updateCurrencyCode(option.code);
           if (!mounted) return;
           navigator.pop();
@@ -370,699 +308,184 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showThemeModeSheet(AppSettingsProvider settings) {
-    PremiumBottomSheet.show(
+  // ------------------------------------------------------------ share/rate
+
+  Future<void> _shareApp() async {
+    Future<void> share(String key, String url, String subjectKey) =>
+        SharePlus.instance.share(
+          ShareParams(
+            text: key.tr(namedArgs: {'url': url}),
+            subject: subjectKey.tr(),
+          ),
+        );
+
+    await PremiumBottomSheet.show<void>(
       context: context,
-      child: ThemeModeSheet(
-        selected: settings.themeMode,
-        onSelected: (mode) {
-          settings.updateThemeMode(mode);
-          Navigator.of(context).pop();
+      child: Builder(
+        builder: (sheetContext) {
+          final p = sheetContext.palette;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'prof_share_title'.tr(),
+                style: AppTypography.headlineLarge.copyWith(
+                  color: p.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'prof_share_body'.tr(),
+                style: AppTypography.bodyLarge.copyWith(color: p.textSecondary),
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  share(
+                    'download_split_bill_for_iphone',
+                    AppLinks.appStoreUrl,
+                    'split_bill_on_the_app_store',
+                  );
+                },
+                icon: const Icon(Icons.apple_rounded),
+                label: Text('share_to_iphone'.tr()),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  share(
+                    'download_split_bill_for_android',
+                    AppLinks.playStoreUrl,
+                    'split_bill_on_google_play',
+                  );
+                },
+                icon: const Icon(Icons.android_rounded),
+                label: Text('share_to_android'.tr()),
+              ),
+              const SizedBox(height: 10),
+              TextButton.icon(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: AppLinks.storeUrl));
+                  Navigator.pop(sheetContext);
+                  AppToast.show(
+                    context,
+                    message: 'link_copied_to_clipboard'.tr(),
+                    type: AppToastType.success,
+                  );
+                },
+                icon: const Icon(Icons.link_rounded),
+                label: Text('copy_app_link'.tr()),
+              ),
+            ],
+          );
         },
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (user == null) return const LoginScreen();
-    final settings = context.watch<AppSettingsProvider>();
-    final selectedLocale = findLocaleOption(settings.locale.languageCode);
-    final selectedCurrency = findCurrencyOption(settings.currencyCode);
-    final p = context.palette;
+  Future<void> _rateApp() async {
+    try {
+      if (await _inAppReview.isAvailable()) {
+        await _inAppReview.requestReview();
+      } else {
+        await _inAppReview.openStoreListing(appStoreId: AppLinks.appleAppId);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'could_not_open_rating_dialog'.tr(),
+        type: AppToastType.error,
+      );
+    }
+  }
 
-    return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(user!.uid)
-          .snapshots(),
-      builder: (context, snapshot) {
-        var data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
-        String name = data['displayName'] ?? user?.displayName ?? 'user'.tr();
-        String? photoUrl = data['photoUrl'];
+  // ------------------------------------------------------------ rewarded ad
 
-        return Scaffold(
-          backgroundColor: p.surfaceMuted,
-          body: CustomScrollView(
-            slivers: [
-              // 1. HEADER
-              SliverToBoxAdapter(
-                child: ProfileHeader(
-                  name: name,
-                  photoUrl: photoUrl,
-                  phoneNumber: data['phoneNumber'],
-                  userData: data,
-                ),
-              ),
-              // 2. SETTINGS LIST
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    ProfileSectionTitle(title: 'preferences'.tr()),
-                    ProfileCoolTile(
-                      icon: Icons.language_rounded,
-                      title: 'app_language'.tr(),
-                      subtitle:
-                          '${selectedLocale.englishName} • ${selectedLocale.nativeName}',
-                      color: Colors.indigo,
-                      compact: true,
-                      onTap: () => _showLocaleSheet(settings),
-                    ),
-                    ProfileCoolTile(
-                      icon: Icons.attach_money_rounded,
-                      title: 'default_currency'.tr(),
-                      subtitle:
-                          '${selectedCurrency.code} • ${selectedCurrency.name} • ${selectedCurrency.region}',
-                      color: Colors.teal,
-                      compact: true,
-                      onTap: () => _showCurrencySheet(settings),
-                    ),
-                    ProfileCoolTile(
-                      key: const ValueKey('profile-appearance'),
-                      icon: themeModeIcon(settings.themeMode),
-                      title: 'appearance'.tr(),
-                      subtitle: themeModeLabelKey(settings.themeMode).tr(),
-                      color: Colors.deepPurple,
-                      compact: true,
-                      onTap: () => _showThemeModeSheet(settings),
-                    ),
-                    ProfileSectionTitle(title: 'personal'.tr()),
-                    ProfileCoolTile(
-                      icon: Icons.account_balance_wallet_rounded,
-                      title: 'payment_methods'.tr(),
-                      subtitle: 'manage_how_you_pay_and_receive'.tr(),
-                      color: p.success,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const PaymentSettingsScreen(),
-                        ),
-                      ),
-                    ),
-                    ProfileCoolTile(
-                      icon: Icons.groups_rounded,
-                      title: 'my_groups'.tr(),
-                      subtitle: 'view_and_manage_your_squads'.tr(),
-                      color: p.warning,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const GroupsScreen()),
-                      ),
-                    ),
+  Future<void> _showRewardedAd() async {
+    if (!RewardedAdHelper.isReady) {
+      AppToast.show(context, message: 'prof_ad_loading'.tr());
+      try {
+        await RewardedAdHelper.loadAd();
+      } catch (e) {
+        debugPrint('Ad loading failed: $e');
+      }
+      return;
+    }
 
-                    // Premium & Points Section
-                    StreamBuilder<DocumentSnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(user!.uid)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) return const SizedBox.shrink();
-
-                        final userData =
-                            snapshot.data!.data() as Map<String, dynamic>?;
-                        final isPremium = RevenueCatService.isUserActivePremium(
-                          userData,
-                        );
-
-                        if (isPremium) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 20),
-                              ProfileSectionTitle(title: 'premium_status'.tr()),
-                              const PremiumStatusCard(),
-                              ProfileCoolTile(
-                                icon: Icons.manage_accounts_rounded,
-                                title: 'manage_subscription'.tr(),
-                                subtitle: 'manage_subscription_subtitle'.tr(),
-                                color: Colors.amber,
-                                onTap: _manageSubscription,
-                              ),
-                              ProfileCoolTile(
-                                icon: Icons.sync_rounded,
-                                title: 'refresh_premium_status'.tr(),
-                                subtitle: 'refresh_premium_status_subtitle'
-                                    .tr(),
-                                color: Colors.teal,
-                                onTap: _refreshPremiumStatus,
-                              ),
-                            ],
-                          );
-                        }
-
-                        final points = userData?['points'] ?? 0;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 20),
-                            ProfileSectionTitle(
-                              title: 'premium_and_points'.tr(),
-                            ),
-                            ScanPointsCard(points: points),
-                            ProfileCoolTile(
-                              icon: Icons.play_circle_filled_rounded,
-                              title: 'watch_ad_for_points'.tr(),
-                              subtitle: 'earn_1_point_per_rewarded_video'.tr(),
-                              color: Colors.purple,
-                              onTap: _showWatchAdConfirmation,
-                            ),
-                            ProfileCoolTile(
-                              icon: Icons.workspace_premium_rounded,
-                              title: 'upgrade_to_premium'.tr(),
-                              subtitle: 'unlimited_scans_no_ads_lifetime'.tr(),
-                              color: p.info,
-                              onTap: _showPremiumDialog,
-                            ),
-                            ProfileCoolTile(
-                              icon: Icons.sync_rounded,
-                              title: 'refresh_premium_status'.tr(),
-                              subtitle: 'refresh_premium_status_subtitle'.tr(),
-                              color: Colors.teal,
-                              onTap: _refreshPremiumStatus,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-                    ProfileSectionTitle(title: 'support'.tr()),
-                    ProfileCoolTile(
-                      icon: Icons.share_rounded,
-                      title: 'share_app'.tr(),
-                      subtitle: 'gift_this_app_to_your_friends'.tr(),
-                      color: p.info,
-                      onTap: () => _shareApp(context),
-                    ),
-                    ProfileCoolTile(
-                      icon: Icons.star_rounded,
-                      title: 'rate_us'.tr(),
-                      subtitle: 'help_us_grow_with_5_stars'.tr(),
-                      color: Colors.amber,
-                      onTap: _rateApp,
-                    ),
-                    ProfileCoolTile(
-                      icon: Icons.mail_rounded,
-                      title: 'contact_us'.tr(),
-                      subtitle: 'need_help_reach_out_to_us'.tr(),
-                      color: Colors.teal,
-                      onTap: _contactUs,
-                    ),
-
-                    const SizedBox(height: 20),
-                    ProfileSectionTitle(title: 'account'.tr()),
-                    ProfileCoolTile(
-                      icon: Icons.logout_rounded,
-                      title: 'logout'.tr(),
-                      subtitle: 'sign_out_of_your_account'.tr(),
-                      color: p.danger,
-                      isDestructive: true,
-                      onTap: _showLogoutDialog,
-                    ),
-                    ProfileCoolTile(
-                      icon: Icons.person_remove_rounded,
-                      title: 'delete_account'.tr(),
-                      subtitle: 'dangerous_and_irreversible'.tr(),
-                      color: p.danger,
-                      isDestructive: true,
-                      onTap: _showDeleteAccountDialog,
-                    ),
-                    if (kDebugMode) ...[
-                      const SizedBox(height: 20),
-                      ProfileSectionTitle(title: 'developer'.tr()),
-                      ProfileCoolTile(
-                        icon: Icons.rocket_launch_rounded,
-                        title: 'show_onboarding'.tr(),
-                        subtitle: 'view_intro_screens'.tr(),
-                        color: Colors.deepPurple,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const NewOnboardingScreen(),
-                          ),
-                        ),
-                      ),
-                      ProfileCoolTile(
-                        icon: Icons.data_usage_rounded,
-                        title: 'seed_transactions'.tr(),
-                        subtitle: 'add_4_test_bills'.tr(),
-                        color: Colors.brown,
-                        onTap: _seedTransactions,
-                      ),
-                    ],
-
-                    if (data['isAdmin'] == true) ...[
-                      const SizedBox(height: 20),
-                      ProfileSectionTitle(title: 'administration'.tr()),
-                      ProfileCoolTile(
-                        icon: Icons.admin_panel_settings_rounded,
-                        title: 'admin_dashboard'.tr(),
-                        subtitle: 'manage_users_fcm_and_bills'.tr(),
-                        color: Colors.blueGrey,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AdminDashboardScreen(),
-                          ),
-                        ),
-                      ),
-                    ],
-
-                    const SizedBox(height: 40),
-                    const VersionInfo(),
-                    const SizedBox(height: 150),
-                  ]),
-                ),
-              ),
-            ],
-          ),
+    await RewardedAdHelper.showAdAndReward(
+      onRewardEarned: () {
+        if (!mounted) return;
+        AppToast.show(
+          context,
+          message: 'prof_ad_reward'.tr(),
+          type: AppToastType.success,
+        );
+      },
+      onAdFailed: () {
+        if (!mounted) return;
+        AppToast.show(
+          context,
+          message: 'prof_ad_unavailable'.tr(),
+          type: AppToastType.error,
         );
       },
     );
   }
 
-  Future<void> _showWatchAdConfirmation() async {
-    await AdModal.show(
-      context,
-      onWatchAd: () async {
-        await _showRewardedAd();
-      },
-    );
-  }
+  // ------------------------------------------------------------ debug
 
-  Future<void> _showRewardedAd() async {
-    // 1. If the ad is not ready, attempt to load it and show a professional loading message
-    if (!RewardedAdHelper.isReady) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'ad_is_initializing_please_try_again_in_a_few_seconds',
-          ).tr(),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: context.palette.infoAccent,
-        ),
+  Future<void> _seed() async {
+    try {
+      await seedTestBills();
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'added_6_diverse_test_bills'.tr(),
+        type: AppToastType.success,
       );
-
-      try {
-        await RewardedAdHelper.loadAd();
-      } catch (e) {
-        debugPrint("Ad loading failed: $e");
-      }
-      return;
-    }
-
-    // 2. Show the ad with robust error handling
-    await RewardedAdHelper.showAdAndReward(
-      onRewardEarned: () {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('success_you_earned_1_scan_point').tr(),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: context.palette.success,
-            ),
-          );
-        }
-      },
-      onAdFailed: () {
-        if (mounted) {
-          // Show a more formal dialog or detailed snackbar for the reviewer
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('ad_not_available').tr(),
-              content: Text('ad_server_connection_issue_try_again_later').tr(),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('ok').tr(),
-                ),
-              ],
-            ),
-          );
-        }
-      },
-    );
-  }
-
-  Future<void> _showPremiumDialog() async {
-    final result = await PremiumModal.show(context);
-    if (result == true && mounted) {
-      // Premium purchased successfully, UI will auto-update via StreamBuilder
-      setState(() {}); // Refresh to show premium status
-    }
-  }
-
-  Future<void> _refreshPremiumStatus() async {
-    final success = await RevenueCatService.syncCurrentUser();
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          success
-              ? 'premium_status_refreshed'
-              : 'premium_status_refresh_failed',
-        ).tr(),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: success
-            ? context.palette.success
-            : context.palette.warning,
-      ),
-    );
-  }
-
-  Future<void> _manageSubscription() async {
-    final opened = await RevenueCatService.openSubscriptionManagement();
-    if (!mounted || opened) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('subscription_settings_unavailable').tr(),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: context.palette.warning,
-      ),
-    );
-  }
-
-  Future<void> _seedTransactions() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    // Helper to create a participant
-    Map<String, dynamic> makeParticipant({
-      required String id,
-      required String name,
-      required double share,
-      bool isPaid = false,
-      bool isCurrentUser = false,
-    }) {
-      return {
-        'id': id,
-        'name': name,
-        'photoUrl': isCurrentUser ? user.photoURL : null,
-        'share': share,
-        'isPaid': isPaid,
-        'status': isPaid ? 'PAID' : 'PENDING',
-        'phoneNumber': isCurrentUser ? user.phoneNumber : null,
-      };
-    }
-
-    // 1. RECENT & UNFINISHED (Active, you owe money)
-    final bill1 = {
-      'storeName': "Dinner @ Cheez",
-      'total': 1200.0,
-      'status': 'PENDING',
-      'date': Timestamp.now(), // Just now
-      'items': [
-        {
-          'name': 'Cheese Platter',
-          'price': 800.0,
-          'qty': 1,
-          'assignedTo': [user.uid, 'p2'],
-        },
-        {
-          'name': 'Drinks',
-          'price': 400.0,
-          'qty': 4,
-          'assignedTo': [user.uid, 'p2', 'p3'],
-        },
-      ],
-      'participants': [
-        makeParticipant(
-          id: user.uid,
-          name: "Me",
-          share: 533.33,
-          isCurrentUser: true,
-        ),
-        makeParticipant(id: 'p2', name: "Sarah K.", share: 533.33),
-        makeParticipant(id: 'p3', name: "Mike R.", share: 133.34),
-      ],
-      'participants_uids': [user.uid],
-    };
-
-    // 2. UNFINISHED (Pending, you haven't paid)
-    final bill2 = {
-      'storeName': "Uber to Airport",
-      'total': 450.0,
-      'status': 'PENDING',
-      'date': Timestamp.fromDate(
-        DateTime.now().subtract(const Duration(days: 5)),
-      ),
-      'items': [
-        {
-          'name': 'Ride',
-          'price': 450.0,
-          'qty': 1,
-          'assignedTo': [user.uid, 'p2'],
-        },
-      ],
-      'participants': [
-        makeParticipant(
-          id: user.uid,
-          name: "Me",
-          share: 225.0,
-          isCurrentUser: true,
-        ),
-        makeParticipant(id: 'p2', name: "John Doe", share: 225.0, isPaid: true),
-      ],
-      'participants_uids': [user.uid],
-    };
-
-    // 3. COMPLETED (Recent)
-    final bill3 = {
-      'storeName': "Starbucks Morning",
-      'total': 185.0,
-      'status': 'PAID',
-      'date': Timestamp.fromDate(
-        DateTime.now().subtract(const Duration(days: 1)),
-      ),
-      'items': [
-        {
-          'name': 'Latte',
-          'price': 185.0,
-          'qty': 1,
-          'assignedTo': [user.uid],
-        },
-      ],
-      'participants': [
-        makeParticipant(
-          id: user.uid,
-          name: "Me",
-          share: 185.0,
-          isPaid: true,
-          isCurrentUser: true,
-        ),
-      ],
-      'participants_uids': [user.uid],
-    };
-
-    // 4. COMPLETED (Older)
-    final bill4 = {
-      'storeName': "Carrefour Grocery",
-      'total': 2500.0,
-      'status': 'PAID',
-      'date': Timestamp.fromDate(
-        DateTime.now().subtract(const Duration(days: 5)),
-      ),
-      'items': [
-        {
-          'name': 'Groceries',
-          'price': 2500.0,
-          'qty': 1,
-          'assignedTo': [user.uid, 'p2', 'p3'],
-        },
-      ],
-      'participants': [
-        makeParticipant(
-          id: user.uid,
-          name: "Me",
-          share: 833.33,
-          isPaid: true,
-          isCurrentUser: true,
-        ),
-        makeParticipant(id: 'p2', name: "Mom", share: 833.33, isPaid: true),
-        makeParticipant(id: 'p3', name: "Dad", share: 833.34, isPaid: true),
-      ],
-      'participants_uids': [user.uid],
-    };
-
-    // 5. UNFINISHED (Someone owes YOU - You are host)
-    final bill5 = {
-      'storeName': "Cinema Tickets",
-      'total': 600.0,
-      'status': 'PENDING',
-      'date': Timestamp.fromDate(
-        DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-      'items': [
-        {
-          'name': 'Tickets',
-          'price': 600.0,
-          'qty': 3,
-          'assignedTo': [user.uid, 'p2', 'p3'],
-        },
-      ],
-      'participants': [
-        makeParticipant(
-          id: user.uid,
-          name: "Me",
-          share: 200.0,
-          isPaid: true,
-          isCurrentUser: true,
-        ),
-        makeParticipant(id: 'p2', name: "Ahmed", share: 200.0, isPaid: false),
-        makeParticipant(id: 'p3', name: "Layla", share: 200.0, isPaid: false),
-      ],
-      'participants_uids': [user.uid],
-    };
-
-    // 6. COMPLETED (You paid, others paid)
-    final bill6 = {
-      'storeName': "Pizza Hut",
-      'total': 850.0,
-      'status': 'PAID',
-      'date': Timestamp.fromDate(
-        DateTime.now().subtract(const Duration(days: 2)),
-      ),
-      'items': [
-        {
-          'name': 'Super Supreme',
-          'price': 850.0,
-          'qty': 2,
-          'assignedTo': [user.uid, 'p2'],
-        },
-      ],
-      'participants': [
-        makeParticipant(
-          id: user.uid,
-          name: "Me",
-          share: 425.0,
-          isPaid: true,
-          isCurrentUser: true,
-        ),
-        makeParticipant(id: 'p2', name: "Coworker", share: 425.0, isPaid: true),
-      ],
-      'participants_uids': [user.uid],
-    };
-
-    final List<Map<String, dynamic>> dummyBills = [
-      bill1,
-      bill2,
-      bill3,
-      bill4,
-      bill5,
-      bill6,
-    ];
-
-    for (var bill in dummyBills) {
-      await FirebaseFirestore.instance.collection('bills').add({
-        'hostId': user.uid,
-        'hostName': user.displayName,
-        'storeName': bill['storeName'],
-        'date': bill['date'],
-        'total': bill['total'],
-        'items': bill['items'],
-        'charges': {
-          'taxAmount': 0.0,
-          'serviceCharge': 0.0,
-          'tipAmount': 0.0,
-          'discountAmount': 0.0,
-        },
-        'participants': bill['participants'],
-        'participants_uids': bill['participants_uids'],
-      });
-    }
-
-    if (mounted) {
-      Navigator.pop(context); // Close loading
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('added_6_diverse_test_bills').tr()),
-      );
+    } catch (e) {
+      if (!mounted) return;
+      AppToast.show(context, message: '$e', type: AppToastType.error);
     }
   }
 }
 
-class _StoreShareCard extends StatelessWidget {
-  const _StoreShareCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.colors,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final List<Color> colors;
-  final VoidCallback onTap;
+class _ProfileSkeleton extends StatelessWidget {
+  const _ProfileSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Ink(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: colors,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return const SkeletonShimmer(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Skeleton.circle(size: 64),
+                SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Skeleton.line(width: 140, height: 18),
+                      SizedBox(height: 8),
+                      Skeleton.line(width: 200),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: colors.first.withValues(alpha: 0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon, color: Colors.white, size: 24),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                  letterSpacing: -0.3,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+            SizedBox(height: 24),
+            SkeletonCard(lines: [0.5, 0.7, 0.4, 0.6]),
+            SizedBox(height: 16),
+            SkeletonCard(lines: [0.6, 0.4, 0.5]),
+          ],
         ),
       ),
     );

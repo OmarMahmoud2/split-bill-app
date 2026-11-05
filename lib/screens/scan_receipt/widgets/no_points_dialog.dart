@@ -1,208 +1,150 @@
-import 'package:flutter/material.dart';
-import 'package:split_bill_app/widgets/ad_modal.dart';
-import 'package:split_bill_app/widgets/premium_modal.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/ad_modal.dart';
+import 'package:split_bill_app/widgets/paywall/paywall_plans.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/widgets/premium_modal.dart';
 
-class NoPointsDialog extends StatelessWidget {
-  final Future<void> Function() onWatchAd;
-  final int requiredPoints;
-
+/// "Out of free scans" sheet: Go Pro, watch a short ad for points, or type
+/// the bill in by hand (always free).
+class NoPointsDialog extends StatefulWidget {
   const NoPointsDialog({
     super.key,
     required this.onWatchAd,
     required this.requiredPoints,
+    this.onTypeItIn,
+    this.loadPlans,
   });
+
+  final Future<void> Function() onWatchAd;
+  final int requiredPoints;
+
+  /// Opens manual entry; when null, "Type it in instead" just closes.
+  final VoidCallback? onTypeItIn;
+
+  /// Plan source for the "from X a month" price; null reads RevenueCat.
+  @visibleForTesting
+  final Future<List<PaywallPlan>> Function()? loadPlans;
 
   static Future<void> show(
     BuildContext context, {
     required int requiredPoints,
     required Future<void> Function() onWatchAd,
+    VoidCallback? onTypeItIn,
   }) {
     return PremiumBottomSheet.show(
       context: context,
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
       child: NoPointsDialog(
         requiredPoints: requiredPoints,
         onWatchAd: onWatchAd,
+        onTypeItIn: onTypeItIn,
       ),
     );
   }
 
   @override
+  State<NoPointsDialog> createState() => _NoPointsDialogState();
+}
+
+class _NoPointsDialogState extends State<NoPointsDialog> {
+  String? _fromPrice;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrice();
+  }
+
+  Future<void> _loadPrice() async {
+    try {
+      final plans = widget.loadPlans != null
+          ? await widget.loadPlans!()
+          : PaywallPlan.fromPackages(
+              await RevenueCatService.getPremiumPackages(),
+            );
+      final price = PaywallPlan.cheapestMonthly(plans);
+      if (mounted && price != null) setState(() => _fromPrice = price);
+    } catch (e) {
+      debugPrint('No-points sheet price unavailable: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final p = context.palette;
+    final navigator = Navigator.of(context);
+    // The navigator's own context outlives this sheet, so follow-up
+    // routes can open from it after the sheet closes.
+    final hostContext = navigator.context;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Icon
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(color: p.oweSoft, shape: BoxShape.circle),
-          child: Icon(Icons.stars_rounded, size: 56, color: p.oweInk),
-        ),
-
-        const SizedBox(height: 24),
-
-        // Title
-        Text(
-          'running_low_on_points',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.6,
-          ),
-          textAlign: TextAlign.center,
-        ).tr(),
-
-        const SizedBox(height: 12),
-
-        // Subtitle
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+        Semantics(
+          header: true,
           child: Text(
-            'you_need_points_to_use_this_feature_watch_a_quick_ad_or_go_premium_to_continue',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ).tr(namedArgs: {'points': requiredPoints.toString()}),
-        ),
-
-        const SizedBox(height: 40),
-
-        // Options
-        _buildPremiumOptions(context),
-
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildPremiumOptions(BuildContext context) {
-    final p = context.palette;
-    return Column(
-      children: [
-        // Watch Ad Button
-        GestureDetector(
-          onTap: () async {
-            Navigator.pop(context);
-            await AdModal.show(context, onWatchAd: onWatchAd);
-          },
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: p.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: p.border),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: p.accentSoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.play_arrow_rounded,
-                    color: p.onAccentSoft,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'watch_a_quick_ad',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: p.textPrimary,
-                        ),
-                      ).tr(),
-                      SizedBox(height: 4),
-                      Text(
-                        'plus_1_point_instantly',
-                        style: TextStyle(
-                          color: p.accent,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ).tr(),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16,
-                  color: p.textDisabled,
-                ),
-              ],
-            ),
+            'pw_out_title'.tr(),
+            style: AppTypography.headlineLarge.copyWith(color: p.textPrimary),
           ),
         ),
-
-        const SizedBox(height: 16),
-
-        // Premium Button
-        GestureDetector(
-          onTap: () async {
-            Navigator.pop(context);
-            await PremiumModal.show(context);
-          },
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: p.inverseSurface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: p.onInverseSurface.withValues(alpha: 0.16),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.diamond_rounded,
-                    color: p.onInverseSurface,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'split_bill_premium',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: p.onInverseSurface,
-                        ),
-                      ).tr(),
-                      SizedBox(height: 4),
-                      Text(
-                        'unlimited_scans_and_no_ads',
-                        style: TextStyle(
-                          color: p.onInverseSurface.withValues(alpha: 0.72),
-                          fontSize: 13,
-                        ),
-                      ).tr(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+        const SizedBox(height: 8),
+        Text(
+          'pw_out_body'.tr(
+            namedArgs: {'points': widget.requiredPoints.toString()},
           ),
+          style: AppTypography.bodyLarge.copyWith(
+            color: p.textSecondary,
+            fontSize: 15,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 18),
+        FilledButton(
+          key: const ValueKey('no-points-pro'),
+          onPressed: () {
+            AppHaptics.light();
+            navigator.pop();
+            PremiumModal.show(hostContext);
+          },
+          style: FilledButton.styleFrom(
+            backgroundColor: p.accent,
+            foregroundColor: p.onAccent,
+            minimumSize: const Size.fromHeight(54),
+          ),
+          child: Text(
+            _fromPrice == null
+                ? 'pw_out_go_pro'.tr()
+                : 'pw_out_go_pro_from'.tr(namedArgs: {'price': _fromPrice!}),
+          ),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton(
+          key: const ValueKey('no-points-ad'),
+          onPressed: () {
+            navigator.pop();
+            AdModal.show(hostContext, onWatchAd: widget.onWatchAd);
+          },
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size.fromHeight(54),
+          ),
+          child: Text('pw_out_watch_ad'.tr()),
+        ),
+        const SizedBox(height: 6),
+        TextButton(
+          key: const ValueKey('no-points-manual'),
+          onPressed: () {
+            navigator.pop();
+            widget.onTypeItIn?.call();
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: p.textPrimary,
+            minimumSize: const Size.fromHeight(54),
+          ),
+          child: Text('pw_out_type_it'.tr()),
         ),
       ],
     );

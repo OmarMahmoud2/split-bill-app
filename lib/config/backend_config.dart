@@ -26,4 +26,9 @@ class BackendConfig {
 
   static Uri get premiumSyncUri =>
       Uri.parse('$baseUrl/api/split-bill/premium/sync/');
+
+  /// Admin-only AI usage aggregation (proposed endpoint, see
+  /// `AdminAiUsageService`).
+  static Uri adminAiUsageUri({int days = 7}) =>
+      Uri.parse('$baseUrl/api/split-bill/admin/ai-usage/?days=$days');
 }

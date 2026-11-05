@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/config/backend_config.dart';
 import 'package:split_bill_app/services/notification_payload.dart';
 import 'package:split_bill_app/services/guest_session.dart';
@@ -36,13 +37,18 @@ class NotificationService with WidgetsBindingObserver {
     _initialized = true;
     WidgetsBinding.instance.addObserver(this);
 
-    // 1. Request Permission
-    NotificationSettings settings = await _fcm.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
+    // 1. Permission. Never show the OS prompt at launch: the
+    // NotificationPermissionScreen explainer asks at the right moment via
+    // [requestPermission]. Only refresh when already granted (no prompt).
+    NotificationSettings settings = await _fcm.getNotificationSettings();
+    if (_isGranted(settings)) {
+      settings = await _fcm.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
+    }
 
     // 2. Setup Local Notifications (the Android channel must exist even
     // before permission is granted, so later campaign pushes use it).
@@ -50,9 +56,9 @@ class NotificationService with WidgetsBindingObserver {
       '@mipmap/ic_launcher',
     );
     const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
     const initSettings = InitializationSettings(
       android: androidSettings,
@@ -79,12 +85,61 @@ class NotificationService with WidgetsBindingObserver {
       await androidImplementation?.createNotificationChannel(channel);
     }
 
-    if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+    if (!_isGranted(settings)) {
       debugPrint('User declined or has not accepted permission');
       // Keep the stored profile (timezone, notificationsEnabled=false) current.
       unawaited(syncTokenForCurrentUser(force: true));
       return;
     }
+
+    await _startMessaging();
+  }
+
+  static const _askedPreferenceKey = 'notif_prompt_asked';
+  bool _messagingStarted = false;
+
+  static bool _isGranted(NotificationSettings settings) =>
+      settings.authorizationStatus == AuthorizationStatus.authorized ||
+      settings.authorizationStatus == AuthorizationStatus.provisional;
+
+  /// True when the OS prompt has not been answered yet. Android reports
+  /// "denied" before the first POST_NOTIFICATIONS request, so there we also
+  /// ask once if this app never asked.
+  Future<bool> shouldAskPermission() async {
+    if (kIsWeb) return false;
+    final status = (await _fcm.getNotificationSettings()).authorizationStatus;
+    if (status == AuthorizationStatus.notDetermined) return true;
+    if (Platform.isAndroid && status == AuthorizationStatus.denied) {
+      final prefs = await SharedPreferences.getInstance();
+      return !(prefs.getBool(_askedPreferenceKey) ?? false);
+    }
+    return false;
+  }
+
+  /// Shows the OS permission prompt (iOS, Android 13+). Returns whether
+  /// notifications are now allowed; starts token sync when they are.
+  Future<bool> requestPermission() async {
+    if (kIsWeb) return false;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_askedPreferenceKey, true);
+    final settings = await _fcm.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: false,
+    );
+    final granted = _isGranted(settings);
+    if (granted) {
+      await _startMessaging();
+    } else {
+      unawaited(syncTokenForCurrentUser(force: true));
+    }
+    return granted;
+  }
+
+  Future<void> _startMessaging() async {
+    if (_messagingStarted) return;
+    _messagingStarted = true;
 
     // 3. Get Token (With Retry Logic for iOS)
     if (!kIsWeb && Platform.isIOS) {

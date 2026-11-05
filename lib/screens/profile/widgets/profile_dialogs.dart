@@ -1,306 +1,279 @@
-import 'package:split_bill_app/config/app_links.dart';
-import 'dart:ui';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lottie/lottie.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:split_bill_app/services/auth_service.dart';
 import 'package:split_bill_app/auth_wrapper.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/config/app_links.dart';
+import 'package:split_bill_app/services/auth_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/settings/v3_settings.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+/// v3 sheets for Help and contact, Privacy and data, Sign out and Delete
+/// account.
 class ProfileDialogs {
+  ProfileDialogs._();
+
+  static Widget _title(BuildContext context, String text) => Text(
+    text,
+    style: AppTypography.headlineLarge.copyWith(
+      color: context.palette.textPrimary,
+    ),
+  );
+
+  static Widget _body(BuildContext context, String text) => Text(
+    text,
+    style: AppTypography.bodyLarge.copyWith(
+      color: context.palette.textSecondary,
+      height: 1.5,
+    ),
+  );
+
   static Future<void> showContactUs(BuildContext context) async {
-    const String email = AppLinks.supportEmail;
+    const email = AppLinks.supportEmail;
     final rootContext = Navigator.of(context, rootNavigator: true).context;
-    final messenger = ScaffoldMessenger.maybeOf(rootContext);
-
-    showGeneralDialog(
+    await PremiumBottomSheet.show<void>(
       context: context,
-      barrierDismissible: true,
-      barrierLabel: 'contact_support'.tr(),
-      transitionDuration: const Duration(milliseconds: 400),
-      pageBuilder: (dialogContext, anim1, anim2) {
-        final p = dialogContext.palette;
-        return Stack(
+      child: Builder(
+        builder: (sheetContext) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Glassmorphic Background
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(color: p.shadow.withValues(alpha: 0.4)),
+            _title(sheetContext, 'prof_help_title'.tr()),
+            const SizedBox(height: 8),
+            _body(sheetContext, 'prof_help_body'.tr()),
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: () async {
+                final uri = Uri(
+                  scheme: 'mailto',
+                  path: email,
+                  queryParameters: {
+                    'subject': 'support_request_split_bill_app'.tr(),
+                  },
+                );
+                final opened = await canLaunchUrl(uri) && await launchUrl(uri);
+                if (!opened && rootContext.mounted) {
+                  AppToast.show(
+                    rootContext,
+                    message: 'prof_mail_unavailable'.tr(),
+                    type: AppToastType.warning,
+                  );
+                }
+              },
+              icon: const Icon(Icons.mail_outline_rounded),
+              label: Text('send_email'.tr()),
             ),
-
-            // Dialog Content
-            Center(
-              child: ScaleTransition(
-                scale: CurvedAnimation(parent: anim1, curve: Curves.elasticOut),
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.85,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: p.surface,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: p.shadow.withValues(alpha: 0.2),
-                        blurRadius: 30,
-                        offset: const Offset(0, 15),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Header Animation
-                      SizedBox(
-                        height: 120,
-                        child: Lottie.asset(
-                          'assets/animations/support.json',
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              Icons.support_agent_rounded,
-                              size: 80,
-                              color: p.infoAccent,
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      Text(
-                        'we_re_here_to_help',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                          color: p.textPrimary,
-                          decoration: TextDecoration.none,
-                          fontFamily: '.SF Pro Text',
-                        ),
-                        textAlign: TextAlign.center,
-                      ).tr(),
-                      const SizedBox(height: 8),
-                      Text(
-                        'have_a_question_or_feedback_nreach_out_to_us_anytime',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: p.textSecondary,
-                          height: 1.5,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.normal,
-                          fontFamily: '.SF Pro Text',
-                        ),
-                        textAlign: TextAlign.center,
-                      ).tr(),
-                      const SizedBox(height: 24),
-
-                      // Email Button
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () async {
-                            final Uri emailLaunchUri = Uri(
-                              scheme: 'mailto',
-                              path: email,
-                              queryParameters: {
-                                'subject': 'support_request_split_bill_app'
-                                    .tr(),
-                              },
-                            );
-                            if (await canLaunchUrl(emailLaunchUri)) {
-                              await launchUrl(emailLaunchUri);
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Ink(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.withValues(alpha: 0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.email_rounded, color: Colors.white),
-                                SizedBox(width: 12),
-                                Text(
-                                  'send_email',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ).tr(),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Copy Email Button
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            Clipboard.setData(const ClipboardData(text: email));
-                            Navigator.of(dialogContext).pop();
-                            messenger?.showSnackBar(
-                              SnackBar(
-                                content: Text('email_copied_to_clipboard').tr(),
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: p.success,
-                              ),
-                            );
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Ink(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            decoration: BoxDecoration(
-                              color: p.surfaceVariant,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'copy_email_address',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: p.textSecondary,
-                                ),
-                              ).tr(),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-                      // Cancel Button
-                      TextButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(),
-                        child: Text(
-                          'maybe_later',
-                          style: TextStyle(color: p.textTertiary),
-                        ).tr(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            const SizedBox(height: 10),
+            OutlinedButton(
+              onPressed: () {
+                Clipboard.setData(const ClipboardData(text: email));
+                Navigator.of(sheetContext).pop();
+                AppToast.show(
+                  rootContext,
+                  message: 'prof_email_copied'.tr(),
+                  type: AppToastType.success,
+                );
+              },
+              child: Text('copy_email_address'.tr()),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Privacy policy, terms, export, sign out and delete account.
+  static Future<void> showPrivacyAndData(
+    BuildContext context, {
+    required VoidCallback onExport,
+  }) {
+    final rootContext = Navigator.of(context, rootNavigator: true).context;
+    Future<void> open(String url) async {
+      final ok = await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+      if (!ok && rootContext.mounted) {
+        AppToast.show(
+          rootContext,
+          message: 'could_not_open_legal_link'.tr(),
+          type: AppToastType.error,
         );
-      },
-      transitionBuilder: (context, anim1, anim2, child) {
-        return FadeTransition(opacity: anim1, child: child);
-      },
+      }
+    }
+
+    return PremiumBottomSheet.show<void>(
+      context: context,
+      padding: const EdgeInsets.fromLTRB(0, 12, 0, 24),
+      child: Builder(
+        builder: (sheetContext) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: _title(sheetContext, 'prof_privacy_data'.tr()),
+            ),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: _body(sheetContext, 'prof_privacy_data_body'.tr()),
+            ),
+            const SizedBox(height: 16),
+            SettingsCard(
+              children: [
+                SettingsRow(
+                  title: 'prof_privacy_policy'.tr(),
+                  trailing: Icon(
+                    Icons.open_in_new_rounded,
+                    size: 18,
+                    color: sheetContext.palette.textTertiary,
+                  ),
+                  showChevron: false,
+                  onTap: () => open(AppLinks.privacyPolicyUrl),
+                ),
+                SettingsRow(
+                  title: 'prof_terms'.tr(),
+                  trailing: Icon(
+                    Icons.open_in_new_rounded,
+                    size: 18,
+                    color: sheetContext.palette.textTertiary,
+                  ),
+                  showChevron: false,
+                  onTap: () => open(AppLinks.termsOfUseUrl),
+                ),
+                SettingsRow(
+                  title: 'prof_export_my_data'.tr(),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    onExport();
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SettingsCard(
+              children: [
+                SettingsRow(
+                  key: const ValueKey('privacy-sign-out'),
+                  title: 'prof_sign_out'.tr(),
+                  showChevron: false,
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    showLogout(rootContext);
+                  },
+                ),
+                SettingsRow(
+                  key: const ValueKey('privacy-delete-account'),
+                  title: 'prof_delete_account'.tr(),
+                  destructive: true,
+                  showChevron: false,
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    showDeleteAccount(rootContext);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Future<void> _blockingProgress(BuildContext rootContext, String text) {
+    return showDialog<void>(
+      context: rootContext,
+      barrierDismissible: false,
+      builder: (_) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2.6),
+              ),
+              const SizedBox(width: 16),
+              Expanded(child: Text(text)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   static void showLogout(BuildContext context) {
     final rootNavigator = Navigator.of(context, rootNavigator: true);
     final rootContext = rootNavigator.context;
-    final messenger = ScaffoldMessenger.maybeOf(rootContext);
-    final p = context.palette;
-
-    showDialog(
+    PremiumBottomSheet.show<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'logout',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ).tr(),
-        content: Text('are_you_sure_you_want_to_logout').tr(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              'common_cancel',
-              style: TextStyle(color: p.textTertiary),
-            ).tr(),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(dialogContext).pop();
-              showDialog(
-                context: rootContext,
-                barrierDismissible: false,
-                builder: (_) => PopScope(
-                  canPop: false,
-                  child: AlertDialog(
-                    content: Row(
-                      children: [
-                        const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2.6),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(child: Text('signing_out').tr()),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-
-              try {
-                await AuthService().signOut();
-                rootNavigator.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const AuthWrapper()),
-                  (route) => false,
-                );
-              } catch (e) {
-                if (rootNavigator.canPop()) {
-                  rootNavigator.pop();
+      child: Builder(
+        builder: (sheetContext) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _title(sheetContext, 'prof_sign_out_title'.tr()),
+            const SizedBox(height: 8),
+            _body(sheetContext, 'prof_sign_out_body'.tr()),
+            const SizedBox(height: 20),
+            FilledButton(
+              key: const ValueKey('confirm-sign-out'),
+              onPressed: () async {
+                Navigator.of(sheetContext).pop();
+                AppHaptics.light();
+                _blockingProgress(rootContext, 'signing_out'.tr());
+                try {
+                  await AuthService().signOut();
+                  rootNavigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const AuthWrapper()),
+                    (route) => false,
+                  );
+                } catch (_) {
+                  if (rootNavigator.canPop()) rootNavigator.pop();
+                  if (rootContext.mounted) {
+                    AppToast.show(
+                      rootContext,
+                      message: 'prof_sign_out_failed'.tr(),
+                      type: AppToastType.error,
+                    );
+                  }
                 }
-                messenger?.showSnackBar(
-                  SnackBar(
-                    content: Text(e.toString()),
-                    backgroundColor: p.danger,
-                  ),
-                );
-              }
-            },
-            child: Text(
-              'logout',
-              style: TextStyle(color: p.danger, fontWeight: FontWeight.bold),
-            ).tr(),
-          ),
-        ],
+              },
+              child: Text('prof_sign_out'.tr()),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () => Navigator.of(sheetContext).pop(),
+              child: Text('common_cancel'.tr()),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   static void showDeleteAccount(BuildContext context) {
-    showDialog(
+    PremiumBottomSheet.show<void>(
       context: context,
-      builder: (context) => const _DeleteAccountDialog(),
+      isScrollable: true,
+      child: const _DeleteAccountSheet(),
     );
   }
 }
 
-class _DeleteAccountDialog extends StatefulWidget {
-  const _DeleteAccountDialog();
+class _DeleteAccountSheet extends StatefulWidget {
+  const _DeleteAccountSheet();
 
   @override
-  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+  State<_DeleteAccountSheet> createState() => _DeleteAccountSheetState();
 }
 
-class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
   final _passwordController = TextEditingController();
   bool _hidePassword = true;
   String? _passwordError;
@@ -311,152 +284,105 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+  Future<void> _delete(bool requiresPassword) async {
+    if (requiresPassword && _passwordController.text.trim().isEmpty) {
+      setState(() {
+        _passwordError = 'enter_current_password_to_continue'.tr();
+      });
+      return;
+    }
     final rootNavigator = Navigator.of(context, rootNavigator: true);
     final rootContext = rootNavigator.context;
-    final messenger = ScaffoldMessenger.maybeOf(rootContext);
-    final p = context.palette;
+    final password = _passwordController.text.trim();
+    Navigator.of(context).pop();
+    AppHaptics.warning();
+    ProfileDialogs._blockingProgress(rootContext, 'deleting_account'.tr());
 
+    try {
+      await AuthService().deleteAccount(
+        password: requiresPassword ? password : null,
+      );
+      rootNavigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const AuthWrapper()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (rootNavigator.canPop()) rootNavigator.pop();
+      if (rootContext.mounted) {
+        AppToast.show(
+          rootContext,
+          message: e is String && e.isNotEmpty ? e : 'prof_delete_failed'.tr(),
+          type: AppToastType.error,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final user = FirebaseAuth.instance.currentUser;
     final providers =
         user?.providerData
             .map((provider) => provider.providerId)
-            .where((providerId) => providerId.isNotEmpty)
+            .where((id) => id.isNotEmpty)
             .toSet() ??
         <String>{};
-
     final requiresPassword =
         providers.contains('password') &&
         !providers.contains('google.com') &&
         !providers.contains('apple.com');
 
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Row(
-        children: [
-          Icon(Icons.warning_amber_rounded, color: p.danger),
-          const SizedBox(width: 8),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ProfileDialogs._title(context, 'prof_delete_title'.tr()),
+        const SizedBox(height: 8),
+        ProfileDialogs._body(context, 'prof_delete_body'.tr()),
+        if (requiresPassword) ...[
+          const SizedBox(height: 16),
           Text(
-            'delete_account',
-            style: TextStyle(fontWeight: FontWeight.bold, color: p.danger),
-          ).tr(),
-        ],
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'delete_account_warning_message',
-            style: const TextStyle(fontSize: 14),
-          ).tr(),
-          if (requiresPassword) ...[
-            const SizedBox(height: 16),
-            Text(
-              'delete_account_requires_password',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: p.textPrimary,
-              ),
-            ).tr(),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _passwordController,
-              obscureText: _hidePassword,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: 'current_password'.tr(),
-                errorText: _passwordError,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                suffixIcon: IconButton(
-                  onPressed: () => setState(() {
-                    _hidePassword = !_hidePassword;
-                  }),
-                  icon: Icon(
-                    _hidePassword
-                        ? Icons.visibility_off_rounded
-                        : Icons.visibility_rounded,
-                  ),
+            'delete_account_requires_password'.tr(),
+            style: AppTypography.titleMedium.copyWith(color: p.textPrimary),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _passwordController,
+            obscureText: _hidePassword,
+            autofocus: true,
+            autofillHints: const [AutofillHints.password],
+            decoration: InputDecoration(
+              labelText: 'current_password'.tr(),
+              errorText: _passwordError,
+              suffixIcon: IconButton(
+                tooltip: _hidePassword
+                    ? 'prof_show_password'.tr()
+                    : 'prof_hide_password'.tr(),
+                onPressed: () => setState(() => _hidePassword = !_hidePassword),
+                icon: Icon(
+                  _hidePassword
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
                 ),
               ),
-            ),
-          ],
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            'no_keep_it',
-            style: TextStyle(color: p.textTertiary),
-          ).tr(),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (requiresPassword && _passwordController.text.trim().isEmpty) {
-              setState(() {
-                _passwordError = 'enter_current_password_to_continue'.tr();
-              });
-              return;
-            }
-
-            Navigator.of(context).pop();
-            showDialog(
-              context: rootContext,
-              barrierDismissible: false,
-              builder: (_) => PopScope(
-                canPop: false,
-                child: AlertDialog(
-                  content: Row(
-                    children: [
-                      const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.6),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(child: Text('deleting_account').tr()),
-                    ],
-                  ),
-                ),
-              ),
-            );
-
-            try {
-              await AuthService().deleteAccount(
-                password: requiresPassword
-                    ? _passwordController.text.trim()
-                    : null,
-              );
-
-              rootNavigator.pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const AuthWrapper()),
-                (route) => false,
-              );
-            } catch (e) {
-              if (rootNavigator.canPop()) {
-                rootNavigator.pop();
-              }
-              messenger?.showSnackBar(
-                SnackBar(
-                  content: Text(e.toString()),
-                  backgroundColor: p.danger,
-                  duration: const Duration(seconds: 4),
-                ),
-              );
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: p.danger,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: Text('yes_delete').tr(),
+        ],
+        const SizedBox(height: 20),
+        FilledButton(
+          key: const ValueKey('confirm-delete-account'),
+          style: FilledButton.styleFrom(
+            backgroundColor: p.error,
+            foregroundColor: p.onError,
+          ),
+          onPressed: () => _delete(requiresPassword),
+          child: Text('prof_delete_confirm'.tr()),
+        ),
+        const SizedBox(height: 10),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('prof_keep_account'.tr()),
         ),
       ],
     );

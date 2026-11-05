@@ -16,11 +16,17 @@ class _TestSettings extends AppSettingsProvider {
   String get currencyCode => 'USD';
 }
 
+/// Overridable so the suite can run against a translations checkout.
+const _dir = String.fromEnvironment(
+  'TRANSLATIONS_DIR',
+  defaultValue: 'assets/translations',
+);
+
 class _Translations extends AssetLoader {
   const _Translations();
   @override
   Future<Map<String, dynamic>> load(String path, Locale locale) async =>
-      jsonDecode(File('$path/${locale.languageCode}.json').readAsStringSync())
+      jsonDecode(File('$_dir/${locale.languageCode}.json').readAsStringSync())
           as Map<String, dynamic>;
 }
 

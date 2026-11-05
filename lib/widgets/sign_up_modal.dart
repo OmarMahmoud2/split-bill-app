@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'dart:ui' as ui;
 
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/settings/v3_settings.dart';
+
+final _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$');
+
+/// Email sign-up sheet. [onSignUp] performs the sign-up and throws on
+/// failure (the caller shows the error); the sheet closes on success.
 class SignUpModal extends StatefulWidget {
   final Future<void> Function(String name, String email, String password)
   onSignUp;
@@ -16,51 +23,39 @@ class SignUpModal extends StatefulWidget {
   }) {
     return PremiumBottomSheet.show(
       context: context,
+      isScrollable: true,
       child: SignUpModal(onSignUp: onSignUp),
     );
+  }
+
+  /// Field validation, shared with tests. Returns a translation key.
+  @visibleForTesting
+  static String? validateField(String kind, String? value) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) return 'required';
+    if (kind == 'email' && !_emailPattern.hasMatch(v)) {
+      return 'acct_err_invalid_email';
+    }
+    if (kind == 'password' && (value ?? '').length < 6) {
+      return 'acct_err_weak_password';
+    }
+    return null;
   }
 
   @override
   State<SignUpModal> createState() => _SignUpModalState();
 }
 
-class _SignUpModalState extends State<SignUpModal>
-    with SingleTickerProviderStateMixin {
+class _SignUpModalState extends State<SignUpModal> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-          CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-        );
-
-    _animationController.forward();
-  }
+  bool _hidePassword = true;
 
   @override
   void dispose() {
-    _animationController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -68,8 +63,11 @@ class _SignUpModalState extends State<SignUpModal>
   }
 
   Future<void> _handleSignUp() async {
-    if (!_formKey.currentState!.validate()) return;
-
+    if (!_formKey.currentState!.validate()) {
+      AppHaptics.error();
+      return;
+    }
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     try {
       await widget.onSignUp(
@@ -77,233 +75,113 @@ class _SignUpModalState extends State<SignUpModal>
         _emailController.text.trim(),
         _passwordController.text,
       );
+      AppHaptics.success();
       if (mounted) Navigator.pop(context);
-    } catch (e) {
+    } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  String? _validate(String kind, String? value) {
+    final key = SignUpModal.validateField(kind, value);
+    return key?.tr();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
+    final p = context.palette;
+    return Form(
+      key: _formKey,
+      child: AutofillGroup(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 12),
-            SlideTransition(
-              position: _slideAnimation,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SizedBox(
-                  height: 120,
-                  child: Lottie.asset(
-                    'assets/animations/welcome.json',
-                    errorBuilder: (c, e, s) => Icon(
-                      Icons.person_add_alt_1_rounded,
-                      size: 80,
-                      color: colorScheme.primary,
-                    ),
-                  ),
+            const SizedBox(height: 4),
+            Semantics(
+              header: true,
+              child: Text(
+                'acct_signup_title'.tr(),
+                style: AppTypography.headlineLarge.copyWith(
+                  color: p.textPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            SlideTransition(
-              position: _slideAnimation,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Text(
-                  'create_account',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.5,
+            const SizedBox(height: 6),
+            Text(
+              'acct_signup_sub'.tr(),
+              style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+            ),
+            const SizedBox(height: 20),
+            V3FieldLabel('acct_name_label'.tr()),
+            TextFormField(
+              key: const ValueKey('signup-name'),
+              controller: _nameController,
+              textCapitalization: TextCapitalization.words,
+              autofillHints: const [AutofillHints.name],
+              textInputAction: TextInputAction.next,
+              validator: (v) => _validate('name', v),
+            ),
+            const SizedBox(height: 14),
+            V3FieldLabel('acct_email_label'.tr()),
+            TextFormField(
+              key: const ValueKey('signup-email'),
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              textInputAction: TextInputAction.next,
+              autocorrect: false,
+              textDirection: ui.TextDirection.ltr,
+              decoration: const InputDecoration(hintText: 'you@example.com'),
+              validator: (v) => _validate('email', v),
+            ),
+            const SizedBox(height: 14),
+            V3FieldLabel('password'.tr()),
+            TextFormField(
+              key: const ValueKey('signup-password'),
+              controller: _passwordController,
+              obscureText: _hidePassword,
+              autofillHints: const [AutofillHints.newPassword],
+              textInputAction: TextInputAction.done,
+              autocorrect: false,
+              enableSuggestions: false,
+              onFieldSubmitted: (_) => _handleSignUp(),
+              decoration: InputDecoration(
+                helperText: 'acct_password_rule'.tr(),
+                suffixIcon: IconButton(
+                  tooltip:
+                      (_hidePassword
+                              ? 'acct_show_password'
+                              : 'acct_hide_password')
+                          .tr(),
+                  onPressed: () =>
+                      setState(() => _hidePassword = !_hidePassword),
+                  icon: Icon(
+                    _hidePassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
                   ),
-                ).tr(),
+                ),
               ),
+              validator: (v) => _validate('password', v),
+            ),
+            const SizedBox(height: 22),
+            FilledButton(
+              key: const ValueKey('signup-submit'),
+              onPressed: _isLoading ? null : _handleSignUp,
+              child: _isLoading
+                  ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: p.onInverseSurface,
+                      ),
+                    )
+                  : Text('create_account'.tr()),
             ),
             const SizedBox(height: 8),
-            SlideTransition(
-              position: _slideAnimation,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Text(
-                  'join_the_squad_and_split_bills_seamlessly',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.onSurface.withValues(alpha: 0.6),
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ).tr(),
-              ),
-            ),
-            const SizedBox(height: 32),
-            _buildAnimatedField(
-              index: 0,
-              child: _buildTextField(
-                controller: _nameController,
-                label: 'full_name'.tr(),
-                icon: Icons.person_outline_rounded,
-                context: context,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildAnimatedField(
-              index: 1,
-              child: _buildTextField(
-                controller: _emailController,
-                label: 'email_address'.tr(),
-                icon: Icons.alternate_email_rounded,
-                keyboardType: TextInputType.emailAddress,
-                context: context,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildAnimatedField(
-              index: 2,
-              child: _buildTextField(
-                controller: _passwordController,
-                label: 'password'.tr(),
-                icon: Icons.lock_outline_rounded,
-                isPassword: true,
-                context: context,
-              ),
-            ),
-            const SizedBox(height: 32),
-            _buildAnimatedField(
-              index: 3,
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _handleSignUp,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    padding: EdgeInsets.zero,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [colorScheme.primary, colorScheme.secondary],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorScheme.primary.withValues(alpha: 0.4),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              'let_s_go',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ).tr(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAnimatedField({required int index, required Widget child}) {
-    return SlideTransition(
-      position: Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
-          .animate(
-            CurvedAnimation(
-              parent: _animationController,
-              curve: Interval(
-                0.2 + (index * 0.1),
-                1.0,
-                curve: Curves.easeOutCubic,
-              ),
-            ),
-          ),
-      child: FadeTransition(
-        opacity: CurvedAnimation(
-          parent: _animationController,
-          curve: Interval(0.2 + (index * 0.1), 1.0, curve: Curves.easeOut),
-        ),
-        child: child,
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    bool isPassword = false,
-    TextInputType? keyboardType,
-    required BuildContext context,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1)),
-      ),
-      child: TextFormField(
-        controller: controller,
-        obscureText: isPassword,
-        keyboardType: keyboardType,
-        validator: (value) {
-          if (value == null || value.isEmpty) return 'required'.tr();
-          return null;
-        },
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: colorScheme.onSurface,
-        ),
-        decoration: InputDecoration(
-          filled: false,
-          fillColor: Colors.transparent,
-          labelText: label,
-          labelStyle: TextStyle(
-            color: colorScheme.onSurface.withValues(alpha: 0.5),
-          ),
-          prefixIcon: Icon(icon, color: colorScheme.primary),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          focusedErrorBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
-          ),
         ),
       ),
     );

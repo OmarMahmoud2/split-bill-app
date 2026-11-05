@@ -1,223 +1,101 @@
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
-class AdModal extends StatefulWidget {
-  final VoidCallback onWatchAd;
-
+/// "Rewarded ad, always optional" explainer shown before a rewarded ad.
+///
+/// Returns true when the person chose to watch (and [onWatchAd] ran), false
+/// or null when they declined.
+class AdModal extends StatelessWidget {
   const AdModal({super.key, required this.onWatchAd});
+
+  final VoidCallback onWatchAd;
 
   static Future<bool?> show(
     BuildContext context, {
     required VoidCallback onWatchAd,
   }) {
-    return showDialog<bool>(
+    return PremiumBottomSheet.show<bool>(
       context: context,
-      barrierDismissible: true, // Allow clicking outside to dismiss
-      builder: (context) => AdModal(onWatchAd: onWatchAd),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+      child: AdModal(onWatchAd: onWatchAd),
     );
-  }
-
-  @override
-  State<AdModal> createState() => _AdModalState();
-}
-
-class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    )..forward();
-
-    _scaleAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return ScaleTransition(
-      scale: _scaleAnimation,
-      child: Dialog(
-        backgroundColor: Colors.transparent,
-        child: Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            // Card Content
-            ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 360),
-                  decoration: BoxDecoration(
-                    color: p.surface,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: p.primary.withValues(alpha: 0.3),
-                        blurRadius: 30,
-                        offset: const Offset(0, 15),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Header Animation (Coins/Chest/Gift)
-                      SizedBox(
-                        height: 180,
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: p.primaryGradient,
-                              ),
-                            ),
-                            Center(
-                              child: Lottie.asset(
-                                'assets/animations/coins.json', // Gamified Asset
-                                height: 140,
-                                errorBuilder: (c, e, s) => const Icon(
-                                  Icons.card_giftcard_rounded,
-                                  size: 100,
-                                  color: Colors.amber,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            Text(
-                              'earn_scan_points',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                color: p.textPrimary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ).tr(),
-                            const SizedBox(height: 12),
-                            RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: p.textSecondary,
-                                  height: 1.5,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text: 'watch_a_short_video_to_get'.tr(),
-                                  ),
-                                  TextSpan(
-                                    text: 'plus_1_point'.tr(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: p.primaryStrong,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: 'for_your_next_receipt_scan'.tr(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-
-                            // Watch Button
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context, true);
-                                  widget.onWatchAd(); // Trigger callback
-                                },
-                                icon: const Icon(
-                                  Icons.play_circle_fill_rounded,
-                                ),
-                                label: Text('watch_video').tr(),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: p.primary,
-                                  foregroundColor: p.onPrimary,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  textStyle: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  elevation: 5,
-                                  shadowColor: p.primary.withValues(alpha: 0.4),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: Text(
-                                'no_thanks',
-                                style: TextStyle(color: p.textTertiary),
-                              ).tr(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // Floating Close Button (Top Right)
-            Positioned(
-              right: -10,
-              top: -10,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context, false),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: p.surface,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: p.shadow.withValues(alpha: 0.12),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: Icon(Icons.close, size: 20, color: p.textStrong),
-                ),
-              ),
-            ),
-          ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(
+            'pw_ad_title'.tr(),
+            style: AppTypography.headlineLarge.copyWith(color: p.textPrimary),
+          ),
         ),
-      ),
+        const SizedBox(height: 8),
+        Text(
+          'pw_ad_body'.tr(),
+          style: AppTypography.bodyLarge.copyWith(
+            color: p.textSecondary,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: p.surfaceVariant,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              ExcludeSemantics(
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: p.accent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.check_rounded, size: 20, color: p.onAccent),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'pw_ad_promise'.tr(),
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: p.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        FilledButton.icon(
+          key: const ValueKey('ad-watch'),
+          onPressed: () {
+            AppHaptics.light();
+            Navigator.of(context).pop(true);
+            onWatchAd();
+          },
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: Text('pw_ad_watch'.tr()),
+        ),
+        const SizedBox(height: 8),
+        TextButton(
+          key: const ValueKey('ad-not-now'),
+          onPressed: () => Navigator.of(context).pop(false),
+          style: TextButton.styleFrom(foregroundColor: p.textPrimary),
+          child: Text('pw_not_now'.tr()),
+        ),
+      ],
     );
   }
 }

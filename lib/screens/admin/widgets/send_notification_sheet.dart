@@ -1,18 +1,36 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/services/notification_service.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
+/// Admin: send one push notification to a single user (v3 "Notification"
+/// board): audience, title, message, a live preview and one ink CTA.
 class SendNotificationSheet extends StatefulWidget {
   final String targetUid;
   final String? targetToken;
   final String userName;
+
+  /// Injected for tests; defaults to [NotificationService.sendNotification].
+  final Future<bool> Function({
+    required String targetUid,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
+  })?
+  sender;
+
+  /// Called with the title after a successful send (audit logging).
+  final void Function(String title)? onSent;
 
   const SendNotificationSheet({
     super.key,
     required this.targetUid,
     this.targetToken,
     required this.userName,
+    this.sender,
+    this.onSent,
   });
 
   @override
@@ -24,28 +42,53 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
   final TextEditingController _bodyController = TextEditingController();
   bool _isSending = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _titleController.addListener(_refresh);
+    _bodyController.addListener(_refresh);
+  }
+
+  void _refresh() => setState(() {});
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bodyController.dispose();
+    super.dispose();
+  }
+
+  bool get _hasToken =>
+      widget.targetToken != null && widget.targetToken!.isNotEmpty;
+
   Future<void> _handleSend() async {
     final title = _titleController.text.trim();
     final body = _bodyController.text.trim();
 
     if (title.isEmpty || body.isEmpty) {
-      ScaffoldMessenger.of(
+      AppToast.show(
         context,
-      ).showSnackBar(SnackBar(content: Text('please_fill_all_fields'.tr())));
+        message: 'please_fill_all_fields'.tr(),
+        type: AppToastType.warning,
+      );
       return;
     }
 
-    if (widget.targetToken == null || widget.targetToken!.isEmpty) {
-      ScaffoldMessenger.of(
+    if (!_hasToken) {
+      AppToast.show(
         context,
-      ).showSnackBar(SnackBar(content: Text('user_missing_fcm_token'.tr())));
+        message: 'user_missing_fcm_token'.tr(),
+        type: AppToastType.warning,
+      );
       return;
     }
 
     setState(() => _isSending = true);
+    AppHaptics.light();
 
     try {
-      await NotificationService().sendNotification(
+      final send = widget.sender ?? NotificationService().sendNotification;
+      final ok = await send(
         targetUid: widget.targetUid,
         title: title,
         body: body,
@@ -54,25 +97,22 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
         },
       );
-
-      if (mounted) {
-        final p = context.palette;
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('notification_sent_successfully'.tr()),
-            backgroundColor: p.success,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      if (!mounted) return;
+      if (!ok) throw StateError('send failed');
+      widget.onSent?.call(title);
+      // The toast lives in the root overlay, so it outlives the sheet.
+      AppToast.show(
+        context,
+        message: 'notification_sent_successfully'.tr(),
+        type: AppToastType.success,
+      );
+      Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('error_sending_notification'.tr()),
-            backgroundColor: context.palette.danger,
-          ),
+        AppToast.show(
+          context,
+          message: 'error_sending_notification'.tr(),
+          type: AppToastType.error,
         );
       }
     } finally {
@@ -82,86 +122,133 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = context.palette;
+    final title = _titleController.text.trim();
+    final body = _bodyController.text.trim();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'send_notification_to'.tr(namedArgs: {'name': widget.userName}),
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.6,
+        Semantics(
+          header: true,
+          child: Text(
+            'adm3_notification_title'.tr(),
+            style: AppTypography.headlineMedium.copyWith(color: p.textPrimary),
+          ),
+        ),
+        const SizedBox(height: 18),
+        V3FieldLabel('adm3_audience'.tr()),
+        Container(
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: p.surface,
+            borderRadius: AppRadii.rowRadius,
+            border: Border.all(color: p.borderStrong),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.userName,
+                  style: AppTypography.bodyLarge.copyWith(color: p.textPrimary),
+                ),
+              ),
+              Text(
+                _hasToken
+                    ? 'adm3_audience_one'.tr()
+                    : 'user_missing_fcm_token'.tr(),
+                style: AppTypography.bodySmall.copyWith(
+                  color: _hasToken ? p.textSecondary : p.owe,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        V3FieldLabel('adm3_title_label'.tr()),
+        TextField(
+          key: const ValueKey('admin-notification-title'),
+          controller: _titleController,
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(hintText: 'notification_title'.tr()),
+        ),
+        const SizedBox(height: 14),
+        V3FieldLabel('adm3_message_label'.tr()),
+        TextField(
+          key: const ValueKey('admin-notification-body'),
+          controller: _bodyController,
+          minLines: 3,
+          maxLines: 5,
+          decoration: InputDecoration(hintText: 'notification_body'.tr()),
+        ),
+        const SizedBox(height: 14),
+        V3FieldLabel('adm3_preview'.tr()),
+        Semantics(
+          label: 'adm3_preview'.tr(),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: p.surface,
+              borderRadius: AppRadii.cardRadius,
+              border: Border.all(color: p.hairline),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: p.accent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title.isEmpty ? 'notification_title'.tr() : title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.titleSmall.copyWith(
+                          color: title.isEmpty ? p.textTertiary : p.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        body.isEmpty ? 'notification_body'.tr() : body,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: p.textSecondary,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 24),
-
-        // Title
-        TextField(
-          controller: _titleController,
-          decoration: InputDecoration(
-            hintText: 'notification_title'.tr(),
-            filled: true,
-            fillColor: colorScheme.surfaceContainerHighest.withValues(
-              alpha: 0.3,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Body
-        TextField(
-          controller: _bodyController,
-          maxLines: 4,
-          decoration: InputDecoration(
-            hintText: 'notification_body'.tr(),
-            filled: true,
-            fillColor: colorScheme.surfaceContainerHighest.withValues(
-              alpha: 0.3,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-        const SizedBox(height: 32),
-
-        ElevatedButton(
+        FilledButton(
+          key: const ValueKey('admin-notification-send'),
           onPressed: _isSending ? null : _handleSend,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-            ),
-            elevation: 0,
-          ),
           child: _isSending
               ? SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: colorScheme.onPrimary,
+                    color: p.onInverseSurface,
                   ),
                 )
-              : Text(
-                  'send_notification'.tr(),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                  ),
-                ),
+              : Text('adm3_send_to'.tr(namedArgs: {'name': widget.userName})),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
       ],
     );
   }

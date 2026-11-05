@@ -6,10 +6,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/auth_wrapper.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/app_theme.dart';
+import 'package:split_bill_app/screens/account/notification_permission_screen.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
+/// v3 onboarding: scan, split, settle, then the default currency.
+/// Persists `onboarding_complete(_v2)` and the chosen currency.
 class NewOnboardingScreen extends StatefulWidget {
   const NewOnboardingScreen({super.key});
 
@@ -18,46 +23,20 @@ class NewOnboardingScreen extends StatefulWidget {
 }
 
 class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
-  // Onboarding has its own light-mode art direction; these are its light
-  // values. Dark mode maps them onto palette roles (see getters below).
-  static const _inkLight = Color(0xFF172C35);
-  static const _mutedLight = Color(0xFF53676E);
-  static const _accentLight = Color(0xFF008A86);
-  static const _voiceLight = Color(0xFF8056B1);
-  static const _backgrounds = [
-    Color(0xFFF4FAF8),
-    Color(0xFFF2F6FF),
-    Color(0xFFF7F3FC),
-    Color(0xFFFFF8ED),
-  ];
-  // Page hues used to tint the dark background.
-  static const _pageHues = [
-    Color(0xFF008A86),
-    Color(0xFF2962FF),
-    Color(0xFF8056B1),
-    Color(0xFFFF9800),
-  ];
-
-  AppPalette get _p => context.palette;
-  Color get _ink => _p.isDark ? _p.textPrimary : _inkLight;
-  Color get _muted => _p.isDark ? _p.textSecondary : _mutedLight;
-  Color get _accent => _p.isDark ? _p.primaryStrong : _accentLight;
-  Color get _voice => _p.isDark ? const Color(0xFFB39DDB) : _voiceLight;
-  Color _background(int page) => _p.isDark
-      ? Color.alphaBlend(_pageHues[page].withValues(alpha: 0.07), _p.background)
-      : _backgrounds[page];
+  static const _pageCount = 4;
   static const _titles = [
-    'onboarding_title_scan_split',
-    'onboarding_scan_title',
-    'onboarding_voice_title',
+    'acct_onb_scan_title',
+    'acct_onb_split_title',
+    'acct_onb_settle_title',
     'onboarding_title_currency',
   ];
-  static const _descriptions = [
-    'onboarding_desc_scan_split',
-    'onboarding_scan_body',
-    'onboarding_voice_body',
+  static const _bodies = [
+    'acct_onb_scan_body',
+    'acct_onb_split_body',
+    'acct_onb_settle_body',
     'onboarding_currency_body',
   ];
+
   final _controller = PageController();
   int _page = 0;
   bool _loadedDefaults = false;
@@ -78,6 +57,9 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     super.dispose();
   }
 
+  Duration get _pageDuration =>
+      AppMotion.durationFor(context, AppMotion.moneyShort);
+
   Future<void> _complete() async {
     if (_completing) return;
     setState(() => _completing = true);
@@ -87,157 +69,116 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
       await prefs.setBool('onboarding_complete', true);
       await prefs.setBool('onboarding_complete_v2', true);
       if (!mounted) return;
+      AppHaptics.success();
       Navigator.of(context).pushAndRemoveUntil(
         PageRouteBuilder(
           pageBuilder: (_, _, _) => const AuthWrapper(),
           transitionsBuilder: (_, animation, _, child) =>
               FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 250),
+          transitionDuration: AppMotion.slow,
         ),
         (route) => false,
       );
     } catch (_) {
       if (!mounted) return;
       setState(() => _completing = false);
-      ScaffoldMessenger.of(
+      AppToast.show(
         context,
-      ).showSnackBar(SnackBar(content: Text('onboarding_save_error'.tr())));
+        message: 'onboarding_save_error'.tr(),
+        type: AppToastType.error,
+      );
     }
   }
 
   void _next() {
-    if (_page == 3) {
+    if (_page == _pageCount - 1) {
       _complete();
       return;
     }
-    _controller.nextPage(
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeOutCubic,
-    );
+    AppHaptics.selection();
+    _controller.nextPage(duration: _pageDuration, curve: AppMotion.standard);
   }
+
+  void _back() => _controller.previousPage(
+    duration: _pageDuration,
+    curve: AppMotion.standard,
+  );
 
   @override
   Widget build(BuildContext context) {
-    final reducedMotion = MediaQuery.disableAnimationsOf(context);
+    final p = context.palette;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
       child: Scaffold(
-        body: AnimatedContainer(
-          duration: Duration(milliseconds: reducedMotion ? 0 : 320),
-          color: _background(_page),
-          child: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 0),
-                  child: Row(
-                    children: [
-                      if (_page > 0)
+        backgroundColor: p.canvas,
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(24, 8, 12, 0),
+                    child: Row(
+                      children: [
+                        if (_page > 0) ...[
+                          KeyedSubtree(
+                            key: const ValueKey('onboarding-back'),
+                            child: V3IconButton.back(
+                              context,
+                              onPressed: _completing ? null : _back,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        _ProgressDashes(count: _pageCount, current: _page),
+                        const Spacer(),
                         TextButton(
-                          key: const ValueKey('onboarding-back'),
-                          onPressed: _completing
-                              ? null
-                              : () => _controller.previousPage(
-                                  duration: Duration(
-                                    milliseconds: reducedMotion ? 1 : 320,
-                                  ),
-                                  curve: Curves.easeOutCubic,
-                                ),
-                          child: Text('back'.tr()),
-                        )
-                      else
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Image.asset(
-                            'assets/logo.png',
-                            width: 40,
-                            height: 40,
+                          key: const ValueKey('onboarding-skip'),
+                          onPressed: _completing ? null : _complete,
+                          style: TextButton.styleFrom(
+                            foregroundColor: p.textSecondary,
                           ),
+                          child: Text('skip'.tr()),
                         ),
-                      const Spacer(),
-                      TextButton(
-                        key: const ValueKey('onboarding-skip'),
-                        onPressed: _completing ? null : _complete,
-                        child: Text('skip'.tr()),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
-                  child: Row(
-                    children: List.generate(
-                      4,
-                      (i) => Expanded(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 240),
-                          height: 3,
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          decoration: BoxDecoration(
-                            color: i <= _page
-                                ? _accent
-                                : _ink.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _controller,
+                      itemCount: _pageCount,
+                      onPageChanged: (value) => setState(() => _page = value),
+                      itemBuilder: (context, index) => _buildPage(index),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        key: const ValueKey('onboarding-next'),
+                        onPressed: _completing ? null : _next,
+                        child: _completing
+                            ? SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: p.onInverseSurface,
+                                ),
+                              )
+                            : Text(
+                                (_page == _pageCount - 1
+                                        ? 'get_started'
+                                        : 'common_continue')
+                                    .tr(),
+                              ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: PageView.builder(
-                    controller: _controller,
-                    itemCount: 4,
-                    onPageChanged: (value) => setState(() => _page = value),
-                    itemBuilder: (context, index) => _buildPage(index),
-                  ),
-                ),
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 560),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 12, 28, 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          key: const ValueKey('onboarding-next'),
-                          onPressed: _completing ? null : _next,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: _p.isDark
-                                ? _p.inverseSurface
-                                : _inkLight,
-                            foregroundColor: _p.isDark
-                                ? _p.onInverseSurface
-                                : Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 18,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          child: _completing
-                              ? const SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(
-                                  (_page == 3 ? 'get_started' : 'next').tr(),
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -245,199 +186,273 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     );
   }
 
-  Widget _buildPage(int index) => LayoutBuilder(
-    builder: (context, constraints) {
-      final heroHeight = (constraints.maxHeight * 0.45).clamp(180.0, 340.0);
-      return SingleChildScrollView(
-        key: ValueKey('onboarding-page-$index'),
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 504),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _titles[index].tr(),
-                  style: TextStyle(
-                    color: _ink,
-                    fontSize: 34,
-                    height: 1.15,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -1,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _descriptions[index].tr(),
-                  style: TextStyle(color: _muted, fontSize: 17, height: 1.5),
-                ),
-                const SizedBox(height: 28),
-                if (index == 0 || index == 1)
-                  SizedBox(
-                    height: heroHeight,
-                    width: double.infinity,
-                    child: Image.asset(
-                      index == 0
-                          ? 'assets/onboarding/onboarding_split_bill_1767296158711-removebg-preview.png'
-                          : 'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                if (index == 2) _buildVoiceIllustration(heroHeight),
-                if (index == 3) _buildCurrencyCard(),
-                const SizedBox(height: 24),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline_rounded,
-                      size: 20,
-                      color: _accent,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        [
-                          'onboarding_split_hint',
-                          'onboarding_scan_hint',
-                          'onboarding_voice_hint',
-                          'onboarding_currency_hint',
-                        ][index].tr(),
-                        style: TextStyle(
-                          color: _muted,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+  Widget _buildPage(int index) {
+    final p = context.palette;
+    return SingleChildScrollView(
+      key: ValueKey('onboarding-page-$index'),
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          StaggeredEntrance(
+            child: switch (index) {
+              0 => _ReceiptPreview(),
+              1 => const _SplitPreview(),
+              2 => _settlePreview(),
+              _ => _buildCurrencyCard(),
+            },
           ),
-        ),
-      );
-    },
-  );
-
-  Widget _buildVoiceIllustration(double height) => Container(
-    constraints: BoxConstraints(minHeight: height),
-    width: double.infinity,
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(
-      color: _p.surface,
-      borderRadius: BorderRadius.circular(32),
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: _p.tint(const Color(0xFFF0E7FC), _voiceLight),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.mic_rounded, size: 42, color: _voice),
-        ),
-        const SizedBox(height: 22),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            23,
-            (i) => Container(
-              width: 4,
-              height: [12.0, 24.0, 40.0, 20.0, 32.0][i % 5],
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: BoxDecoration(
-                color: _voice,
-                borderRadius: BorderRadius.circular(4),
+          const SizedBox(height: 36),
+          Semantics(
+            header: true,
+            child: Text(
+              _titles[index].tr(),
+              style: AppTypography.displaySmall.copyWith(
+                color: p.textPrimary,
+                fontSize: 34,
+                height: 1.1,
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 22),
-        Text(
-          'voice_try_example'.tr(),
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: _ink,
-            fontSize: 18,
-            height: 1.5,
-            fontWeight: FontWeight.w600,
+          const SizedBox(height: 12),
+          Text(
+            _bodies[index].tr(),
+            style: AppTypography.bodyLarge.copyWith(
+              color: p.textSecondary,
+              height: 1.5,
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _settlePreview() => Column(
+    children: [
+      SampleNotificationCard(
+        title: 'acct_notif_sample_paid_title'.tr(
+          namedArgs: {'amount': formatMoneyMinor(3024, _currency)},
         ),
-      ],
-    ),
+        body: 'acct_notif_sample_paid_body'.tr(),
+        elevated: true,
+      ),
+    ],
   );
 
   Widget _buildCurrencyCard() {
+    final p = context.palette;
     final currency = findCurrencyOption(_currency);
     return Material(
-      color: _p.surface,
-      borderRadius: BorderRadius.circular(28),
+      color: p.surface,
+      shape: AppRadii.cardShape(p.hairline),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         key: const ValueKey('onboarding-currency'),
-        borderRadius: BorderRadius.circular(28),
         onTap: _completing
             ? null
             : () => CurrencySelectionSheet.show(
                 context: context,
                 selectedCode: _currency,
-                onSelected: (code) => setState(() => _currency = code),
+                onSelected: (code) {
+                  AppHaptics.selection();
+                  setState(() => _currency = code);
+                },
               ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.all(18),
+          child: Row(
             children: [
               Container(
-                width: 64,
-                height: 64,
-                padding: const EdgeInsets.all(12),
+                width: 52,
+                height: 52,
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _p.tint(const Color(0xFFFFF2D8), Colors.orange),
-                  borderRadius: BorderRadius.circular(20),
+                  color: p.accentSoft,
+                  borderRadius: AppRadii.rowRadius,
                 ),
                 child: FittedBox(
                   child: Text(
                     currency.symbol,
-                    style: TextStyle(color: _ink, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                currency.code,
-                style: TextStyle(
-                  color: _ink,
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              Text(
-                currency.name,
-                style: TextStyle(color: _muted, fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'choose_currency'.tr(),
-                      style: TextStyle(
-                        color: _accent,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
+                    style: AppTypography.titleLarge.copyWith(
+                      color: p.onAccentSoft,
                     ),
                   ),
-                  Icon(Icons.arrow_forward_rounded, color: _accent),
-                ],
+                ),
               ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      currency.code,
+                      style: AppTypography.amountLarge.copyWith(
+                        color: p.textPrimary,
+                        fontSize: 26,
+                      ),
+                    ),
+                    Text(
+                      currency.name,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: p.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  'choose_currency'.tr(),
+                  textAlign: TextAlign.end,
+                  style: AppTypography.titleSmall.copyWith(color: p.accent),
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, color: p.accent),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ProgressDashes extends StatelessWidget {
+  const _ProgressDashes({required this.count, required this.current});
+
+  final int count;
+  final int current;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Semantics(
+      label: '${current + 1} / $count',
+      excludeSemantics: true,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < count; i++)
+            AnimatedContainer(
+              duration: AppMotion.durationFor(context, AppMotion.medium),
+              width: i == current ? 24 : 12,
+              height: 4,
+              margin: const EdgeInsetsDirectional.only(end: 6),
+              decoration: BoxDecoration(
+                color: i == current ? p.textPrimary : p.borderStrong,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sample receipt with a teal "read" line, as on the board.
+class _ReceiptPreview extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    Widget row(String name, String amount) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              name,
+              style: AppTypography.bodyLarge.copyWith(
+                color: p.textPrimary,
+                fontSize: 15,
+              ),
+            ),
+          ),
+          Text(
+            amount,
+            style: AppTypography.amount.copyWith(
+              color: p.textPrimary,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
+    );
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: AppRadii.cardRadius,
+        border: Border.all(color: p.hairline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'acct_onb_receipt_caption'.tr(namedArgs: {'count': '6'}),
+            style: AppTypography.titleSmall.copyWith(color: p.textSecondary),
+          ),
+          const SizedBox(height: 6),
+          row('acct_onb_item_burger'.tr(), '14.00'),
+          row('acct_onb_item_fries'.tr(), '6.00'),
+          row('acct_onb_item_fish'.tr(), '18.50'),
+          const SizedBox(height: 6),
+          Container(
+            height: 2,
+            decoration: BoxDecoration(
+              color: p.accent.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(1),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Items with the avatars of who had them.
+class _SplitPreview extends StatelessWidget {
+  const _SplitPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    Widget row(String name, List<String> people) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              name,
+              style: AppTypography.bodyLarge.copyWith(
+                color: p.textPrimary,
+                fontSize: 15,
+              ),
+            ),
+          ),
+          for (var i = 0; i < people.length; i++)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(start: 4),
+              child: AvatarHop(
+                duration: Duration(milliseconds: 350 + 80 * i),
+                child: V3Avatar(name: people[i], size: 30),
+              ),
+            ),
+        ],
+      ),
+    );
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: AppRadii.cardRadius,
+        border: Border.all(color: p.hairline),
+      ),
+      child: Column(
+        children: [
+          row('acct_onb_item_burger'.tr(), const ['Ali']),
+          row('acct_onb_item_fries'.tr(), const ['Ali', 'Sara', 'Omar']),
+          row('acct_onb_item_fish'.tr(), const ['Sara']),
+        ],
       ),
     );
   }

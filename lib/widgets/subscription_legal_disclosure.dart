@@ -2,206 +2,155 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:split_bill_app/config/app_links.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/paywall/paywall_plans.dart';
+import 'package:split_bill_app/widgets/paywall/paywall_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// Subscription terms shown before purchase (App Store 3.1.2, Play
+/// subscriptions policy): price, billing period, free trial, auto-renewal,
+/// how to cancel, plus Terms, Privacy and (optionally) Restore links.
 class SubscriptionLegalDisclosure extends StatelessWidget {
   const SubscriptionLegalDisclosure({
     super.key,
     required this.package,
     this.dark = false,
-  });
+  }) : plan = null,
+       onRestore = null;
+
+  /// From a mapped paywall [plan]; [onRestore] adds a "Restore" link.
+  const SubscriptionLegalDisclosure.plan({
+    super.key,
+    required PaywallPlan this.plan,
+    this.onRestore,
+  }) : package = null,
+       dark = false;
 
   final Package? package;
+  final PaywallPlan? plan;
+  final VoidCallback? onRestore;
+
+  /// Ignored since v3; kept so older call sites compile.
   final bool dark;
 
-  bool get _isSubscription {
-    if (package?.storeProduct.subscriptionPeriod != null) return true;
-
-    final type = package?.packageType;
-    return type != null &&
-        type != PackageType.lifetime &&
-        type != PackageType.unknown &&
-        type != PackageType.custom;
+  List<String> _lines() {
+    final store = paywallStoreName();
+    final mapped =
+        plan ?? (package == null ? null : PaywallPlan.fromPackage(package!));
+    if (mapped != null) {
+      return [for (final c in mapped.legal(store: store)) paywallText(c)];
+    }
+    final pkg = package;
+    if (pkg == null) return ['subscription_details_loading'.tr()];
+    final title = pkg.storeProduct.title.trim().isEmpty
+        ? 'go_premium'.tr()
+        : pkg.storeProduct.title.trim();
+    return [
+      'subscription_auto_renew_disclosure'.tr(
+        namedArgs: {
+          'title': title,
+          'price': pkg.storeProduct.priceString,
+          'period': 'subscription_period_billing_period'.tr(),
+        },
+      ),
+      'pw_legal_cancel'.tr(namedArgs: {'store': store}),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final package = this.package;
     final p = context.palette;
-    // [dark] means the disclosure sits on the always-dark premium card, so
-    // those colors stay fixed. Otherwise follow the app theme (light values
-    // unchanged).
-    final foreground = dark
-        ? Colors.white
-        : (p.isDark ? p.textPrimary : const Color(0xFF1F2933));
-    final muted = dark
-        ? Colors.white.withValues(alpha: 0.68)
-        : (p.isDark ? p.textSecondary : const Color(0xFF667085));
-    final linkColor = dark
-        ? p.premium
-        : (p.isDark ? p.successStrong : const Color(0xFF006D3C));
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: dark
-            ? Colors.white.withValues(alpha: 0.08)
-            : (p.isDark ? p.surfaceVariant : const Color(0xFFF6F8FA)),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: dark
-              ? Colors.white.withValues(alpha: 0.14)
-              : (p.isDark ? p.border : const Color(0xFFE4E7EC)),
+    final style = AppTypography.labelSmall.copyWith(
+      color: p.textSecondary,
+      fontWeight: FontWeight.w400,
+      height: 1.5,
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          _lines().join(' '),
+          key: const ValueKey('paywall-legal'),
+          textAlign: TextAlign.center,
+          style: style,
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'subscription_details',
-            style: TextStyle(
-              color: foreground,
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _LegalLink(
+              label: 'pw_link_terms'.tr(),
+              onTap: () => _open(context, AppLinks.termsOfUseUrl),
             ),
-          ).tr(),
-          const SizedBox(height: 6),
-          Text(
-            package == null
-                ? 'subscription_details_loading'.tr()
-                : _disclosureText(package),
-            style: TextStyle(color: muted, fontSize: 12, height: 1.35),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: [
+            _Dot(style: style),
+            _LegalLink(
+              label: 'pw_link_privacy'.tr(),
+              onTap: () => _open(context, AppLinks.privacyPolicyUrl),
+            ),
+            if (onRestore != null) ...[
+              _Dot(style: style),
               _LegalLink(
-                label: 'privacy_policy'.tr(),
-                url: AppLinks.privacyPolicyUrl,
-                color: linkColor,
-              ),
-              _LegalLink(
-                label: 'terms_of_use_eula'.tr(),
-                url: AppLinks.termsOfUseUrl,
-                color: linkColor,
+                key: const ValueKey('paywall-restore'),
+                label: 'pw_link_restore'.tr(),
+                onTap: onRestore!,
               ),
             ],
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 
-  String _disclosureText(Package package) {
-    final title = package.storeProduct.title.trim().isEmpty
-        ? _fallbackTitle(package)
-        : package.storeProduct.title.trim();
-    final price = package.storeProduct.priceString;
-
-    if (!_isSubscription) {
-      return 'subscription_lifetime_disclosure'.tr(
-        namedArgs: {'title': title, 'price': price},
+  static Future<void> _open(BuildContext context, String url) async {
+    var opened = false;
+    try {
+      opened = await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
       );
+    } catch (_) {
+      opened = false;
     }
-
-    return 'subscription_auto_renew_disclosure'.tr(
-      namedArgs: {
-        'title': title,
-        'price': price,
-        'period': _periodLabel(package),
-      },
-    );
-  }
-
-  String _fallbackTitle(Package package) {
-    switch (package.packageType) {
-      case PackageType.lifetime:
-        return 'plan_lifetime'.tr();
-      case PackageType.annual:
-        return 'plan_annual'.tr();
-      case PackageType.monthly:
-        return 'plan_monthly'.tr();
-      case PackageType.weekly:
-        return 'plan_weekly'.tr();
-      default:
-        return 'go_premium'.tr();
-    }
-  }
-
-  String _periodLabel(Package package) {
-    final period = package.storeProduct.subscriptionPeriod;
-    switch (period) {
-      case 'P1W':
-        return 'subscription_period_week'.tr();
-      case 'P1M':
-        return 'subscription_period_month'.tr();
-      case 'P2M':
-        return 'subscription_period_two_months'.tr();
-      case 'P3M':
-        return 'subscription_period_three_months'.tr();
-      case 'P6M':
-        return 'subscription_period_six_months'.tr();
-      case 'P1Y':
-        return 'subscription_period_year'.tr();
-    }
-
-    switch (package.packageType) {
-      case PackageType.weekly:
-        return 'subscription_period_week'.tr();
-      case PackageType.monthly:
-        return 'subscription_period_month'.tr();
-      case PackageType.twoMonth:
-        return 'subscription_period_two_months'.tr();
-      case PackageType.threeMonth:
-        return 'subscription_period_three_months'.tr();
-      case PackageType.sixMonth:
-        return 'subscription_period_six_months'.tr();
-      case PackageType.annual:
-        return 'subscription_period_year'.tr();
-      default:
-        return 'subscription_period_billing_period'.tr();
+    if (!opened && context.mounted) {
+      AppToast.show(
+        context,
+        message: 'could_not_open_legal_link'.tr(),
+        type: AppToastType.error,
+      );
     }
   }
 }
 
+class _Dot extends StatelessWidget {
+  const _Dot({required this.style});
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) =>
+      ExcludeSemantics(child: Text('·', style: style));
+}
+
 class _LegalLink extends StatelessWidget {
-  const _LegalLink({
-    required this.label,
-    required this.url,
-    required this.color,
-  });
+  const _LegalLink({super.key, required this.label, required this.onTap});
 
   final String label;
-  final String url;
-  final Color color;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
-      onPressed: () => _open(context),
-      icon: const Icon(Icons.open_in_new_rounded, size: 15),
-      label: Text(label),
+    final p = context.palette;
+    return TextButton(
+      onPressed: onTap,
       style: TextButton.styleFrom(
-        foregroundColor: color,
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-        minimumSize: const Size(0, 32),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+        foregroundColor: p.textPrimary,
+        minimumSize: const Size(44, 44),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        textStyle: AppTypography.labelSmall.copyWith(
+          decoration: TextDecoration.underline,
+        ),
       ),
+      child: Text(label),
     );
-  }
-
-  Future<void> _open(BuildContext context) async {
-    final uri = Uri.parse(url);
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!opened && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('could_not_open_legal_link').tr()));
-    }
   }
 }
