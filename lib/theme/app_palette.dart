@@ -230,7 +230,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     background: AppColors.backgroundDark, // #121212
     surface: AppColors.surfaceDark, // #1E1E1E
     surfaceVariant: AppColors.cardDark, // #2C2C2C
-    surfaceMuted: Color(0xFF181818),
+    surfaceMuted: Color(0xFF121212), // = background, so surface cards separate
     border: AppColors.borderDark, // #404040
     borderSubtle: Color(0xFF333333),
     textPrimary: AppColors.textPrimaryDark, // #FFFFFF
