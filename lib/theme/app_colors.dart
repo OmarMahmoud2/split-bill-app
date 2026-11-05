@@ -1,114 +1,170 @@
 import 'package:flutter/material.dart';
 
-/// Modern color palette for Split Bill app
-/// Teal/Cyan primary for trust and clarity, Coral/Orange for warmth and action
+/// Color primitives for the v3 "Quiet ledger" design.
+///
+/// Warm neutrals carry the screen, one teal accent marks what you can act
+/// on, and owing is amber, never alarm red. Red is only for errors and
+/// destructive actions.
+///
+/// Widgets should not read these directly: use the semantic roles in
+/// `context.palette` (see `app_palette.dart`), which pick the light or dark
+/// value. The old names (`primary`, `secondary`, `owingRed`, ...) are kept so
+/// existing call sites keep compiling; they now point at v3 values.
 class AppColors {
   AppColors._(); // Private constructor to prevent instantiation
 
-  // ==================== PRIMARY COLORS ====================
+  // ==================== V3 LIGHT ====================
 
-  /// Main brand color - Teal/Cyan gradient
-  static const Color primary = Color(0xFF00ACC1); // Cyan 600
-  static const Color primaryDark = Color(0xFF00838F); // Cyan 800
-  static const Color primaryLight = Color(0xFF4DD0E1); // Cyan 300
+  static const Color canvasLight = Color(0xFFF7F7F5);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color surface2Light = Color(0xFFF2F1EE);
+  static const Color hairlineLight = Color(0xFFE7E6E1);
+  static const Color dividerSubtleLight = Color(0xFFEFEEEA);
+  static const Color borderStrongLight = Color(0xFFD9D8D3);
+  static const Color inkLight = Color(0xFF111312);
+  static const Color inkMediumLight = Color(0xFF3A3D3B);
+  static const Color mutedLight = Color(0xFF5F6360);
+  static const Color tertiaryLight = Color(0xFF6B6F6C);
+  static const Color disabledLight = Color(0xFFA8ABA8);
+  static const Color tealLight = Color(0xFF0F766E);
+  static const Color tealStrongLight = Color(0xFF0B5F58);
+  static const Color tealSoftLight = Color(0xFFE6F2F0);
+  static const Color tealInkLight = Color(0xFF0B4F49);
+  static const Color amberLight = Color(0xFFB45309);
+  static const Color amberSoftLight = Color(0xFFFBF1E6);
+  static const Color amberInkLight = Color(0xFF7A3E06);
+  static const Color errorRedLight = Color(0xFFB42318);
+  static const Color errorStrongLight = Color(0xFF912018);
+  static const Color errorSoftLight = Color(0xFFFDECEA);
 
-  /// Gradient for headers and featured sections
+  // ==================== V3 DARK ====================
+
+  static const Color canvasDark = Color(0xFF0E0F0E);
+  static const Color surfaceDarkV3 = Color(0xFF171918);
+  static const Color surface2Dark = Color(0xFF1F221F);
+  static const Color hairlineDark = Color(0xFF262927);
+  static const Color dividerSubtleDark = Color(0xFF222523);
+  static const Color borderStrongDark = Color(0xFF3A3E3B);
+  static const Color inkDark = Color(0xFFF2F3F1);
+  static const Color inkMediumDark = Color(0xFFC9CCCA);
+  static const Color mutedDark = Color(0xFFA3A8A5);
+  static const Color tertiaryDark = Color(0xFF8E9390);
+  static const Color disabledDark = Color(0xFF5C605D);
+  static const Color tealDark = Color(0xFF34C5B0);
+  static const Color tealStrongDark = Color(0xFF5ED6C4);
+  static const Color tealSoftDark = Color(0xFF12322E);
+  static const Color tealInkDark = Color(0xFF8FE3D6);
+  static const Color amberDark = Color(0xFFF0B35E);
+  static const Color amberSoftDark = Color(0xFF33240F);
+  static const Color amberInkDark = Color(0xFFF6C987);
+  static const Color errorRedDark = Color(0xFFF97066);
+  static const Color errorStrongDark = Color(0xFFFDA29B);
+  static const Color errorSoftDark = Color(0xFF3A1A17);
+
+  // ==================== LEGACY NAMES (mapped to v3) ====================
+
+  /// Brand accent (teal). Prefer `context.palette.accent`.
+  static const Color primary = tealLight;
+  static const Color primaryDark = tealStrongLight;
+  static const Color primaryLight = tealDark;
+
+  /// Quiet, nearly flat brand gradient for legacy hero headers.
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, primaryDark],
+    colors: [tealLight, tealStrongLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  // ==================== SECONDARY COLORS ====================
+  /// v3 has a single accent; the old coral secondary now maps to teal.
+  static const Color secondary = tealLight;
+  static const Color secondaryDark = tealStrongLight;
+  static const Color secondaryLight = tealSoftLight;
 
-  /// Accent color - Coral/Orange for CTAs and highlights
-  static const Color secondary = Color(0xFFFF7043); // Deep Orange 400
-  static const Color secondaryDark = Color(0xFFE64A19); // Deep Orange 700
-  static const Color secondaryLight = Color(0xFFFFAB91); // Deep Orange 200
+  static const Color success = tealLight;
+  static const Color successLight = tealSoftLight;
+  static const Color successDark = tealStrongLight;
 
-  // ==================== SEMANTIC COLORS ====================
+  static const Color error = errorRedLight;
+  static const Color errorLight = errorSoftLight;
+  static const Color errorDark = errorStrongLight;
 
-  /// Success states - Emerald green
-  static const Color success = Color(0xFF26A69A); // Teal 400
-  static const Color successLight = Color(0xFF80CBC4); // Teal 200
-  static const Color successDark = Color(0xFF00897B); // Teal 600
+  static const Color warning = amberLight;
+  static const Color warningLight = amberSoftLight;
 
-  /// Error states - Soft red
-  static const Color error = Color(0xFFEF5350); // Red 400
-  static const Color errorLight = Color(0xFFFFCDD2); // Red 100
-  static const Color errorDark = Color(0xFFC62828); // Red 800
+  static const Color info = Color(0xFF3B5B7A);
+  static const Color infoLight = Color(0xFFEAF0F5);
 
-  /// Warning states - Amber
-  static const Color warning = Color(0xFFFFCA28); // Amber 600
-  static const Color warningLight = Color(0xFFFFE082); // Amber 200
+  static const Color backgroundLight = canvasLight;
+  static const Color cardLight = surfaceLight;
+  static const Color textPrimaryLight = inkLight;
+  static const Color textSecondaryLight = mutedLight;
+  static const Color textDisabledLight = disabledLight;
+  static const Color dividerLight = hairlineLight;
+  static const Color borderLight = hairlineLight;
+  static const Color overlayLight = Color(0x14111312);
+  static const Color shadowLight = Color(0x14111312); // 8% ink
 
-  /// Info states - Blue
-  static const Color info = Color(0xFF42A5F5); // Blue 400
-  static const Color infoLight = Color(0xFF90CAF9); // Blue 200
-
-  // ==================== NEUTRAL COLORS (LIGHT MODE) ====================
-
-  static const Color backgroundLight = Color(
-    0xFFF5F7FA,
-  ); // Very light blue-gray
-  static const Color surfaceLight = Color(0xFFFFFFFF); // Pure white
-  static const Color cardLight = Color(0xFFFFFFFF); // White cards
-
-  static const Color textPrimaryLight = Color(0xFF212121); // Almost black
-  static const Color textSecondaryLight = Color(0xFF757575); // Gray 600
-  static const Color textDisabledLight = Color(0xFFBDBDBD); // Gray 400
-
-  static const Color dividerLight = Color(0xFFE0E0E0); // Gray 300
-  static const Color borderLight = Color(0xFFE0E0E0); // Gray 300
-
-  /// Overlay colors
-  static const Color overlayLight = Color(0x14000000); // 8% black
-  static const Color shadowLight = Color(0x1F000000); // 12% black
-
-  // ==================== NEUTRAL COLORS (DARK MODE) ====================
-
-  static const Color backgroundDark = Color(0xFF121212); // True dark
-  static const Color surfaceDark = Color(0xFF1E1E1E); // Dark gray
-  static const Color cardDark = Color(0xFF2C2C2C); // Lighter dark gray
-
-  static const Color textPrimaryDark = Color(0xFFFFFFFF); // White
-  static const Color textSecondaryDark = Color(0xFFB0B0B0); // Light gray
-  static const Color textDisabledDark = Color(0xFF707070); // Medium gray
-
-  static const Color dividerDark = Color(0xFF404040); // Dark gray
-  static const Color borderDark = Color(0xFF404040); // Dark gray
-
-  /// Overlay colors
-  static const Color overlayDark = Color(0x14FFFFFF); // 8% white
-  static const Color shadowDark = Color(0x3D000000); // 24% black
+  static const Color backgroundDark = canvasDark;
+  static const Color surfaceDark = surfaceDarkV3;
+  static const Color cardDark = surface2Dark;
+  static const Color textPrimaryDark = inkDark;
+  static const Color textSecondaryDark = mutedDark;
+  static const Color textDisabledDark = disabledDark;
+  static const Color dividerDark = hairlineDark;
+  static const Color borderDark = hairlineDark;
+  static const Color overlayDark = Color(0x14FFFFFF);
+  static const Color shadowDark = Color(0x00000000); // no shadows in dark
 
   // ==================== BILL STATUS COLORS ====================
 
-  /// For "You Owe" indicators
-  static const Color owingRed = Color(0xFFFF5252); // Red Accent
+  /// "You owe": amber, never alarm red.
+  static const Color owingRed = amberLight;
 
-  /// For "Owed to You" indicators
-  static const Color owedGreen = Color(0xFF69F0AE); // Green Accent
+  /// "Owed to you": the teal accent.
+  static const Color owedGreen = tealLight;
 
-  /// For pending/review states
-  static const Color pending = warning;
-
-  /// For paid/settled states
-  static const Color settled = success;
+  static const Color pending = amberLight;
+  static const Color settled = tealLight;
 
   // ==================== PARTICIPANT COLORS ====================
 
-  /// Colorful palette for participant avatars/chips
+  /// Desaturated avatar tints (light mode) from the v3 mockups. Text on them
+  /// is always ink at full strength.
+  static const List<Color> avatarTintsLight = [
+    Color(0xFFF3ECE1), // sand
+    Color(0xFFE6F2F0), // teal
+    Color(0xFFF4E6E6), // rose
+    Color(0xFFEDEFF2), // slate
+    Color(0xFFE9EAF5), // lavender
+    Color(0xFFEAF2E3), // sage
+    Color(0xFFF5EEDC), // straw
+    Color(0xFFE5EEF6), // sky
+  ];
+
+  /// Dark-mode avatar tints (same hues, low lightness). Text is `inkDark`.
+  static const List<Color> avatarTintsDark = [
+    Color(0xFF3A3226),
+    Color(0xFF12322E),
+    Color(0xFF3B2828),
+    Color(0xFF2A2E33),
+    Color(0xFF2B2D40),
+    Color(0xFF283323),
+    Color(0xFF3A321D),
+    Color(0xFF223040),
+  ];
+
+  /// Legacy saturated participant palette, kept for charts and chips that
+  /// still use it. New UI should use [avatarTintsLight]/[avatarTintsDark].
   static const List<Color> participantColors = [
-    Color(0xFF42A5F5), // Blue
-    Color(0xFFAB47BC), // Purple
-    Color(0xFF26A69A), // Teal
-    Color(0xFFFF7043), // Deep Orange
-    Color(0xFF66BB6A), // Green
-    Color(0xFFEC407A), // Pink
-    Color(0xFF5C6BC0), // Indigo
-    Color(0xFFFFCA28), // Amber
-    Color(0xFF26C6DA), // Cyan
-    Color(0xFF9CCC65), // Light Green
+    Color(0xFF0F766E), // teal
+    Color(0xFFB45309), // amber
+    Color(0xFF3B5B7A), // slate blue
+    Color(0xFF7A4E8C), // plum
+    Color(0xFF4D7C3A), // moss
+    Color(0xFFA34A5C), // rose
+    Color(0xFF52599E), // indigo
+    Color(0xFF8A6D1F), // ochre
+    Color(0xFF2B7A99), // sea
+    Color(0xFF6B6F6C), // graphite
   ];
 }
