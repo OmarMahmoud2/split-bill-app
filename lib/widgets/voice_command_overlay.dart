@@ -287,7 +287,8 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
             .toList(),
         participants: widget.participants,
         transcript: _transcript!,
-      );
+        transcriptSource: 'server',
+      ).then((r) => r.assignments);
 
       // 2. Update State on Success
       if (mounted) {

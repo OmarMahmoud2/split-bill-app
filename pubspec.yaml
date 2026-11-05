@@ -52,6 +52,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   font_awesome_flutter: ^11.0.0
+  speech_to_text: ^7.5.0
 
 dev_dependencies:
   flutter_test:
