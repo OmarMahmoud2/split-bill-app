@@ -21,6 +21,9 @@ import 'notifications_screen.dart';
 import 'services/notification_payload.dart';
 import 'services/guest_session.dart';
 import 'services/notification_service.dart';
+import 'services/home_widget_service.dart';
+import 'services/home_widget_data.dart' show WidgetLaunchDeduper;
+import 'scan_receipt_screen.dart';
 import 'utils/app_theme.dart';
 import 'auth_wrapper.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
@@ -179,6 +182,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
+  StreamSubscription<Uri?>? _widgetClickSubscription;
+  final WidgetLaunchDeduper _widgetLaunchDeduper = WidgetLaunchDeduper();
   bool _isHandlingLink = false;
 
   @override
@@ -193,6 +198,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _linkSubscription?.cancel();
+    _widgetClickSubscription?.cancel();
     super.dispose();
   }
 
@@ -218,6 +224,18 @@ class _MyAppState extends State<MyApp> {
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
       _handleDeepLink(uri);
     });
+
+    // 2. HOME-SCREEN WIDGET TAPS (warm and cold start)
+    _widgetClickSubscription = HomeWidgetService.instance.widgetClicks.listen((
+      uri,
+    ) {
+      if (uri != null) _handleWidgetUri(uri);
+    });
+    unawaited(
+      HomeWidgetService.instance.initialLaunchUri().then((uri) {
+        if (uri != null) _handleWidgetUri(uri);
+      }),
+    );
 
     // 3. LISTEN TO FIREBASE NOTIFICATIONS (Important!)
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
@@ -250,6 +268,11 @@ class _MyAppState extends State<MyApp> {
 
   // Unified Handler for both Deep Links and Notifications
   Future<void> _handleDeepLink(Uri uri) async {
+    if (WidgetRoute.tryParse(uri) != null) {
+      // splitbill://widget/... can also reach app_links; route it once.
+      _handleWidgetUri(uri);
+      return;
+    }
     if (_isHandlingLink) return;
     final linkData = _extractBillLinkData(uri);
     final billId = linkData['billId'];
@@ -257,6 +280,42 @@ class _MyAppState extends State<MyApp> {
 
     if (billId != null) {
       _handleBillNavigation(billId, uid: uid);
+    }
+  }
+
+  /// Routes a home-screen widget tap (see lib/services/home_widget_data.dart).
+  void _handleWidgetUri(Uri uri) {
+    final route = WidgetRoute.tryParse(uri);
+    if (route == null || !_widgetLaunchDeduper.shouldHandle(uri)) return;
+
+    switch (route.kind) {
+      case WidgetRouteKind.friend when route.billId != null:
+        // Settling happens on the bill today; open the largest open bill
+        // with that person.
+        _handleBillNavigation(route.billId!);
+      case WidgetRouteKind.scan:
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          // On a cold start the persisted session may still be loading.
+          final user = memberOrNull(
+            FirebaseAuth.instance.currentUser ??
+                await FirebaseAuth.instance.authStateChanges().first.timeout(
+                  const Duration(seconds: 5),
+                  onTimeout: () => null,
+                ),
+          );
+          if (user == null) return; // AuthWrapper shows sign-in.
+          final navigator = navigatorKey.currentState;
+          if (navigator == null) return;
+          navigator.popUntil((route) => route.isFirst);
+          navigator.push(
+            MaterialPageRoute(builder: (_) => const ScanReceiptScreen()),
+          );
+        });
+      case WidgetRouteKind.home:
+      case WidgetRouteKind.friend:
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          navigatorKey.currentState?.popUntil((route) => route.isFirst);
+        });
     }
   }
 
@@ -343,6 +402,19 @@ class _MyAppState extends State<MyApp> {
             if (mounted) {
               context.setLocale(appSettings.locale);
             }
+          });
+        }
+
+        if (!kIsWeb) {
+          final widgetLocale = context.locale;
+          final widgetCurrency = appSettings.currencyCode;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            HomeWidgetService.instance
+              ..start(locale: widgetLocale, currency: widgetCurrency)
+              ..updatePresentation(
+                locale: widgetLocale,
+                currency: widgetCurrency,
+              );
           });
         }
 
