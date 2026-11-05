@@ -17,9 +17,4 @@ class ApiKeys {
       'ca-app-pub-8581075015023620/6310100274';
   static const String adMobIosBanner = 'ca-app-pub-8581075015023620/5550602314';
 
-  // Interstitial Ads
-  static const String adMobAndroidInterstitial =
-      'ca-app-pub-8581075015023620/3111407087'; // Shows test id, confirmed?
-  static const String adMobIosInterstitial =
-      'ca-app-pub-8581075015023620/1691941259'; // Shows test id, confirmed?
 }

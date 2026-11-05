@@ -6,11 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/bill_flow/bill_calculator.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
-import 'package:split_bill_app/config/api_keys.dart';
 import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/screens/split_bill/bill_roulette_screen.dart';
@@ -19,7 +17,6 @@ import 'package:split_bill_app/screens/split_bill/split_method_screen.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
 import 'package:split_bill_app/services/notification_service.dart';
-import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/bill_details/bill_breakdown_card.dart';
@@ -117,7 +114,6 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   late BillDraft _draft;
   bool _isCreating = false;
   String? _expandedId;
-  InterstitialAd? _interstitialAd;
   late final NotificationService _notificationService = NotificationService();
 
   bool get _testing => widget.debugSave != null;
@@ -169,39 +165,6 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
           discount: widget.discountAmount,
           delivery: widget.deliveryFeeAmount,
         );
-    if (!_testing) _loadInterstitialAd();
-  }
-
-  @override
-  void dispose() {
-    _interstitialAd?.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadInterstitialAd() async {
-    if (kIsWeb) return;
-    try {
-      if (await RevenueCatService.isPremium()) return;
-    } catch (_) {
-      return;
-    }
-    final adUnitId = kDebugMode
-        ? (Platform.isAndroid
-              ? 'ca-app-pub-3940256099942544/1033173712'
-              : 'ca-app-pub-3940256099942544/4411468910')
-        : (Platform.isAndroid
-              ? ApiKeys.adMobAndroidInterstitial
-              : ApiKeys.adMobIosInterstitial);
-    InterstitialAd.load(
-      adUnitId: adUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) => _interstitialAd = ad,
-        onAdFailedToLoad: (error) {
-          if (kDebugMode) debugPrint('InterstitialAd failed: $error');
-        },
-      ),
-    );
   }
 
   Map<String, dynamic> _participant(String id) {
@@ -493,23 +456,8 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       return;
     }
     if (!mounted) return;
-    final ad = _interstitialAd;
-    if (ad != null) {
-      ad.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (a) {
-          a.dispose();
-          _showSuccess(billId, billData);
-        },
-        onAdFailedToShowFullScreenContent: (a, _) {
-          a.dispose();
-          _showSuccess(billId, billData);
-        },
-      );
-      _interstitialAd = null;
-      await ad.show();
-    } else {
-      _showSuccess(billId, billData);
-    }
+    // 2.0 has no interstitial ads: saving goes straight to the success screen.
+    _showSuccess(billId, billData);
   }
 
   Future<void> _cleanupResumed() async {
