@@ -31,6 +31,7 @@ import 'helpers/rewarded_ad_helper.dart';
 import 'config/supported_preferences.dart';
 import 'providers/app_settings_provider.dart';
 import 'web_download_screen.dart';
+import 'screens/debug/foundation_gallery_screen.dart';
 
 // Global Navigator Key for Deep Linking
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -360,6 +361,12 @@ class _MyAppState extends State<MyApp> {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: appSettings.themeMode,
+          // Debug-only QA gallery of the v3 foundation (never in release).
+          routes: {
+            if (kDebugMode)
+              FoundationGalleryScreen.routeName: (_) =>
+                  const FoundationGalleryScreen(),
+          },
           // Status bar icons follow the active theme on screens without an
           // AppBar (AppBarTheme.systemOverlayStyle covers the rest).
           builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
