@@ -22,11 +22,15 @@ class CurrencyOption {
   final String symbol;
   final String region;
 
+  /// ISO 4217 minor units: 0 for JPY/KRW/VND..., 3 for KWD/BHD/OMR..., else 2.
+  final int decimalDigits;
+
   const CurrencyOption({
     required this.code,
     required this.name,
     required this.symbol,
     required this.region,
+    this.decimalDigits = 2,
   });
 }
 
@@ -236,24 +240,28 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Kuwaiti Dinar',
     symbol: 'د.ك',
     region: 'Middle East',
+    decimalDigits: 3,
   ),
   CurrencyOption(
     code: 'OMR',
     name: 'Omani Rial',
     symbol: 'ر.ع.',
     region: 'Middle East',
+    decimalDigits: 3,
   ),
   CurrencyOption(
     code: 'BHD',
     name: 'Bahraini Dinar',
     symbol: 'د.ب',
     region: 'Middle East',
+    decimalDigits: 3,
   ),
   CurrencyOption(
     code: 'JPY',
     name: 'Japanese Yen',
     symbol: '¥',
     region: 'Asia',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'CNY',
@@ -266,6 +274,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'South Korean Won',
     symbol: '₩',
     region: 'Asia',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'INR',
@@ -315,6 +324,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Vietnamese Dong',
     symbol: '₫',
     region: 'Asia',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'RUB',
@@ -379,7 +389,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'MAD',
     name: 'Moroccan Dirham',
-    symbol: 'MAD',
+    symbol: 'DH',
     region: 'Africa',
   ),
   CurrencyOption(
@@ -387,6 +397,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Tunisian Dinar',
     symbol: 'DT',
     region: 'Africa',
+    decimalDigits: 3,
   ),
   CurrencyOption(
     code: 'GHS',
@@ -399,6 +410,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Ugandan Shilling',
     symbol: 'USh',
     region: 'Africa',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'CAD',
@@ -427,21 +439,28 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'MXN',
     name: 'Mexican Peso',
-    symbol: 'Mex\$',
+    symbol: 'MX\$',
     region: 'Americas',
+  ),
+  CurrencyOption(
+    code: 'AFN',
+    name: 'Afghan Afghani',
+    symbol: '؋',
+    region: 'Asia',
   ),
   CurrencyOption(
     code: 'ALL',
     name: 'Albanian Lek',
-    symbol: 'ALL',
+    symbol: 'L',
     region: 'Europe',
   ),
   CurrencyOption(
     code: 'AMD',
     name: 'Armenian Dram',
-    symbol: 'AMD',
+    symbol: '֏',
     region: 'Asia',
   ),
+  // Replaced by XCG in 2025; kept for existing bills.
   CurrencyOption(
     code: 'ANG',
     name: 'Netherlands Antillean Guilder',
@@ -469,7 +488,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'AZN',
     name: 'Azerbaijani Manat',
-    symbol: 'AZN',
+    symbol: '₼',
     region: 'Asia',
   ),
   CurrencyOption(
@@ -490,17 +509,19 @@ const supportedCurrencyOptions = <CurrencyOption>[
     symbol: 'Tk',
     region: 'Asia',
   ),
+  // Replaced by EUR in 2026; kept for existing bills.
   CurrencyOption(
     code: 'BGN',
     name: 'Bulgarian Lev',
-    symbol: 'BGN',
+    symbol: 'лв',
     region: 'Europe',
   ),
   CurrencyOption(
     code: 'BIF',
     name: 'Burundian Franc',
-    symbol: 'BIF',
+    symbol: 'FBu',
     region: 'Africa',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'BMD',
@@ -553,14 +574,15 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'CDF',
     name: 'Congolese Franc',
-    symbol: 'CDF',
+    symbol: 'FC',
     region: 'Africa',
   ),
   CurrencyOption(
     code: 'CLP',
     name: 'Chilean Peso',
-    symbol: 'CLP',
+    symbol: 'CLP\$',
     region: 'Americas',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'COP',
@@ -570,8 +592,8 @@ const supportedCurrencyOptions = <CurrencyOption>[
   ),
   CurrencyOption(
     code: 'CRC',
-    name: 'Costa Rican Colon',
-    symbol: 'CRC',
+    name: 'Costa Rican Colón',
+    symbol: '₡',
     region: 'Americas',
   ),
   CurrencyOption(
@@ -583,20 +605,21 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'CVE',
     name: 'Cape Verdean Escudo',
-    symbol: 'CVE',
+    symbol: 'Esc',
     region: 'Africa',
   ),
   CurrencyOption(
     code: 'CZK',
     name: 'Czech Koruna',
-    symbol: 'Kc',
+    symbol: 'Kč',
     region: 'Europe',
   ),
   CurrencyOption(
     code: 'DJF',
     name: 'Djiboutian Franc',
-    symbol: 'DJF',
+    symbol: 'Fdj',
     region: 'Africa',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'DOP',
@@ -608,6 +631,12 @@ const supportedCurrencyOptions = <CurrencyOption>[
     code: 'DZD',
     name: 'Algerian Dinar',
     symbol: 'DA',
+    region: 'Africa',
+  ),
+  CurrencyOption(
+    code: 'ERN',
+    name: 'Eritrean Nakfa',
+    symbol: 'Nfk',
     region: 'Africa',
   ),
   CurrencyOption(
@@ -623,10 +652,22 @@ const supportedCurrencyOptions = <CurrencyOption>[
     region: 'Oceania',
   ),
   CurrencyOption(
+    code: 'FKP',
+    name: 'Falkland Islands Pound',
+    symbol: 'FK£',
+    region: 'Americas',
+  ),
+  CurrencyOption(
     code: 'GEL',
     name: 'Georgian Lari',
-    symbol: 'GEL',
+    symbol: '₾',
     region: 'Asia',
+  ),
+  CurrencyOption(
+    code: 'GIP',
+    name: 'Gibraltar Pound',
+    symbol: '£',
+    region: 'Europe',
   ),
   CurrencyOption(
     code: 'GMD',
@@ -637,8 +678,9 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'GNF',
     name: 'Guinean Franc',
-    symbol: 'GNF',
+    symbol: 'FG',
     region: 'Africa',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'GTQ',
@@ -658,6 +700,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
     symbol: 'L',
     region: 'Americas',
   ),
+  // Replaced by EUR in 2023; kept for existing bills.
   CurrencyOption(
     code: 'HRK',
     name: 'Croatian Kuna',
@@ -679,19 +722,20 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'ILS',
     name: 'Israeli New Shekel',
-    symbol: 'ILS',
+    symbol: '₪',
     region: 'Middle East',
   ),
   CurrencyOption(
     code: 'IQD',
     name: 'Iraqi Dinar',
-    symbol: 'IQD',
+    symbol: 'ع.د',
     region: 'Middle East',
+    decimalDigits: 3,
   ),
   CurrencyOption(
     code: 'IRR',
     name: 'Iranian Rial',
-    symbol: 'IRR',
+    symbol: '﷼',
     region: 'Middle East',
   ),
   CurrencyOption(
@@ -699,6 +743,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Icelandic Krona',
     symbol: 'kr',
     region: 'Europe',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'JMD',
@@ -711,36 +756,50 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Jordanian Dinar',
     symbol: 'JD',
     region: 'Middle East',
+    decimalDigits: 3,
   ),
   CurrencyOption(
     code: 'KGS',
     name: 'Kyrgyzstani Som',
-    symbol: 'KGS',
+    symbol: 'сом',
     region: 'Asia',
   ),
   CurrencyOption(
     code: 'KHR',
     name: 'Cambodian Riel',
-    symbol: 'KHR',
+    symbol: '៛',
     region: 'Asia',
   ),
   CurrencyOption(
     code: 'KMF',
     name: 'Comorian Franc',
-    symbol: 'KMF',
+    symbol: 'CF',
     region: 'Africa',
+    decimalDigits: 0,
+  ),
+  CurrencyOption(
+    code: 'KPW',
+    name: 'North Korean Won',
+    symbol: '₩',
+    region: 'Asia',
+  ),
+  CurrencyOption(
+    code: 'KYD',
+    name: 'Cayman Islands Dollar',
+    symbol: 'CI\$',
+    region: 'Americas',
   ),
   CurrencyOption(
     code: 'KZT',
     name: 'Kazakhstani Tenge',
-    symbol: 'KZT',
+    symbol: '₸',
     region: 'Asia',
   ),
-  CurrencyOption(code: 'LAK', name: 'Lao Kip', symbol: 'LAK', region: 'Asia'),
+  CurrencyOption(code: 'LAK', name: 'Lao Kip', symbol: '₭', region: 'Asia'),
   CurrencyOption(
     code: 'LBP',
     name: 'Lebanese Pound',
-    symbol: 'LBP',
+    symbol: 'ل.ل',
     region: 'Middle East',
   ),
   CurrencyOption(
@@ -766,47 +825,48 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Libyan Dinar',
     symbol: 'LD',
     region: 'Africa',
+    decimalDigits: 3,
   ),
   CurrencyOption(
     code: 'MDL',
     name: 'Moldovan Leu',
-    symbol: 'MDL',
+    symbol: 'L',
     region: 'Europe',
   ),
   CurrencyOption(
     code: 'MGA',
     name: 'Malagasy Ariary',
-    symbol: 'MGA',
+    symbol: 'Ar',
     region: 'Africa',
   ),
   CurrencyOption(
     code: 'MKD',
     name: 'Macedonian Denar',
-    symbol: 'MKD',
+    symbol: 'ден',
     region: 'Europe',
   ),
   CurrencyOption(
     code: 'MMK',
     name: 'Myanmar Kyat',
-    symbol: 'MMK',
+    symbol: 'K',
     region: 'Asia',
   ),
   CurrencyOption(
     code: 'MNT',
     name: 'Mongolian Tugrik',
-    symbol: 'MNT',
+    symbol: '₮',
     region: 'Asia',
   ),
   CurrencyOption(
     code: 'MOP',
     name: 'Macanese Pataca',
-    symbol: 'MOP',
+    symbol: 'MOP\$',
     region: 'Asia',
   ),
   CurrencyOption(
     code: 'MRU',
     name: 'Mauritanian Ouguiya',
-    symbol: 'MRU',
+    symbol: 'UM',
     region: 'Africa',
   ),
   CurrencyOption(
@@ -818,13 +878,13 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'MVR',
     name: 'Maldivian Rufiyaa',
-    symbol: 'MVR',
+    symbol: 'Rf',
     region: 'Asia',
   ),
   CurrencyOption(
     code: 'MWK',
     name: 'Malawian Kwacha',
-    symbol: 'MWK',
+    symbol: 'MK',
     region: 'Africa',
   ),
   CurrencyOption(
@@ -841,7 +901,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
   ),
   CurrencyOption(
     code: 'NIO',
-    name: 'Nicaraguan Cordoba',
+    name: 'Nicaraguan Córdoba',
     symbol: 'C\$',
     region: 'Americas',
   ),
@@ -872,8 +932,9 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'PYG',
     name: 'Paraguayan Guarani',
-    symbol: 'PYG',
+    symbol: '₲',
     region: 'Americas',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'RON',
@@ -884,14 +945,15 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'RSD',
     name: 'Serbian Dinar',
-    symbol: 'RSD',
+    symbol: 'дин.',
     region: 'Europe',
   ),
   CurrencyOption(
     code: 'RWF',
     name: 'Rwandan Franc',
-    symbol: 'RWF',
+    symbol: 'FRw',
     region: 'Africa',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'SBD',
@@ -902,19 +964,31 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'SCR',
     name: 'Seychellois Rupee',
-    symbol: 'SCR',
+    symbol: 'SR',
     region: 'Africa',
   ),
   CurrencyOption(
     code: 'SDG',
     name: 'Sudanese Pound',
-    symbol: 'SDG',
+    symbol: 'ج.س.',
+    region: 'Africa',
+  ),
+  CurrencyOption(
+    code: 'SHP',
+    name: 'Saint Helena Pound',
+    symbol: '£',
+    region: 'Africa',
+  ),
+  CurrencyOption(
+    code: 'SLE',
+    name: 'Sierra Leonean Leone',
+    symbol: 'Le',
     region: 'Africa',
   ),
   CurrencyOption(
     code: 'SOS',
     name: 'Somali Shilling',
-    symbol: 'SOS',
+    symbol: 'Sh',
     region: 'Africa',
   ),
   CurrencyOption(
@@ -931,26 +1005,32 @@ const supportedCurrencyOptions = <CurrencyOption>[
   ),
   CurrencyOption(
     code: 'STN',
-    name: 'Sao Tome and Principe Dobra',
-    symbol: 'STN',
+    name: 'São Tomé and Príncipe Dobra',
+    symbol: 'Db',
     region: 'Africa',
   ),
   CurrencyOption(
     code: 'SVC',
-    name: 'Salvadoran Colon',
-    symbol: 'SVC',
+    name: 'Salvadoran Colón',
+    symbol: '₡',
     region: 'Americas',
   ),
   CurrencyOption(
     code: 'SYP',
     name: 'Syrian Pound',
-    symbol: 'SYP',
+    symbol: 'ل.س',
     region: 'Middle East',
+  ),
+  CurrencyOption(
+    code: 'SZL',
+    name: 'Eswatini Lilangeni',
+    symbol: 'E',
+    region: 'Africa',
   ),
   CurrencyOption(
     code: 'TJS',
     name: 'Tajikistani Somoni',
-    symbol: 'TJS',
+    symbol: 'SM',
     region: 'Asia',
   ),
   CurrencyOption(
@@ -961,7 +1041,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
   ),
   CurrencyOption(
     code: 'TOP',
-    name: 'Tongan Paanga',
+    name: 'Tongan Paʻanga',
     symbol: 'T\$',
     region: 'Oceania',
   ),
@@ -986,20 +1066,39 @@ const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
     code: 'UAH',
     name: 'Ukrainian Hryvnia',
-    symbol: 'UAH',
+    symbol: '₴',
     region: 'Europe',
   ),
   CurrencyOption(
     code: 'UYU',
     name: 'Uruguayan Peso',
-    symbol: 'UYU',
+    symbol: '\$U',
     region: 'Americas',
   ),
   CurrencyOption(
     code: 'UZS',
     name: 'Uzbekistani Som',
-    symbol: 'UZS',
+    symbol: 'soʻm',
     region: 'Asia',
+  ),
+  CurrencyOption(
+    code: 'VED',
+    name: 'Venezuelan Digital Bolívar',
+    symbol: 'Bs.D',
+    region: 'Americas',
+  ),
+  CurrencyOption(
+    code: 'VES',
+    name: 'Venezuelan Bolívar',
+    symbol: 'Bs.S',
+    region: 'Americas',
+  ),
+  CurrencyOption(
+    code: 'VUV',
+    name: 'Vanuatu Vatu',
+    symbol: 'VT',
+    region: 'Oceania',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'WST',
@@ -1012,6 +1111,7 @@ const supportedCurrencyOptions = <CurrencyOption>[
     name: 'Central African CFA Franc',
     symbol: 'FCFA',
     region: 'Africa',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'XCD',
@@ -1020,27 +1120,41 @@ const supportedCurrencyOptions = <CurrencyOption>[
     region: 'Americas',
   ),
   CurrencyOption(
+    code: 'XCG',
+    name: 'Caribbean Guilder',
+    symbol: 'Cg',
+    region: 'Americas',
+  ),
+  CurrencyOption(
     code: 'XOF',
     name: 'West African CFA Franc',
     symbol: 'CFA',
     region: 'Africa',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'XPF',
     name: 'CFP Franc',
     symbol: 'XPF',
     region: 'Oceania',
+    decimalDigits: 0,
   ),
   CurrencyOption(
     code: 'YER',
     name: 'Yemeni Rial',
-    symbol: 'YER',
+    symbol: 'ر.ي',
     region: 'Middle East',
   ),
   CurrencyOption(
     code: 'ZMW',
     name: 'Zambian Kwacha',
     symbol: 'ZK',
+    region: 'Africa',
+  ),
+  CurrencyOption(
+    code: 'ZWG',
+    name: 'Zimbabwe Gold',
+    symbol: 'ZiG',
     region: 'Africa',
   ),
 ];
@@ -1062,6 +1176,10 @@ CurrencyOption findCurrencyOption(String code) {
     orElse: () => customCurrencyOption(normalized),
   );
 }
+
+/// ISO 4217 minor units for [code]; 2 for custom or unknown codes.
+int currencyDecimalDigits(String code) =>
+    findCurrencyOption(code).decimalDigits;
 
 Locale resolveSupportedLocale(
   Iterable<Locale> preferredLocales, {
