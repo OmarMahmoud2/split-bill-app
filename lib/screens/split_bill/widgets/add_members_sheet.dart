@@ -1,131 +1,225 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
+/// One of the "Scan QR / Contacts / Add guest" cards (People board 1).
+class AddSourceCard extends StatelessWidget {
+  const AddSourceCard({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: p.surface,
+        shape: AppRadii.cardShape(p.border),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            AppHaptics.light();
+            onTap();
+          },
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 72),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 22, color: p.textPrimary),
+                  const SizedBox(height: 6),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelMedium.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: p.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Quick "add people" sheet: Scan QR, Contacts, Add guest and Groups. The
+/// full step is `AddPeopleScreen`; this sheet stays for screens (edit bill)
+/// that only need the sources.
 class AddMembersSheet extends StatelessWidget {
   final VoidCallback onScanQR;
   final VoidCallback onPickContacts;
   final VoidCallback? onPickGroups;
+
+  /// Shows the "Add guest" card when set.
+  final VoidCallback? onAddGuest;
 
   const AddMembersSheet({
     super.key,
     required this.onScanQR,
     required this.onPickContacts,
     this.onPickGroups,
+    this.onAddGuest,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+    final p = context.palette;
+    final cards = <Widget>[
+      AddSourceCard(
+        icon: Icons.qr_code_scanner_rounded,
+        label: 'scan_qr'.tr(),
+        onTap: onScanQR,
+      ),
+      AddSourceCard(
+        icon: Icons.contacts_outlined,
+        label: 'contacts'.tr(),
+        onTap: onPickContacts,
+      ),
+      if (onAddGuest != null)
+        AddSourceCard(
+          icon: Icons.person_add_alt_outlined,
+          label: 'bf_assign_add_guest'.tr(),
+          onTap: onAddGuest!,
+        ),
+      if (onPickGroups != null)
+        AddSourceCard(
+          icon: Icons.groups_outlined,
+          label: 'groups'.tr(),
+          onTap: onPickGroups!,
+        ),
+    ];
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'add_people',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.6,
-                ),
-              ).tr(),
-              const SizedBox(height: 8),
-              Text(
-                'invite_friends_or_select_groups_to_start_splitting_the_bill',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                  height: 1.4,
-                  fontWeight: FontWeight.w500,
-                ),
-              ).tr(),
-            ],
-          ),
+        Text(
+          'add_people'.tr(),
+          style: AppTypography.headlineMedium.copyWith(color: p.textPrimary),
         ),
-
-        const SizedBox(height: 32),
-
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          'invite_friends_or_select_groups_to_start_splitting_the_bill'.tr(),
+          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+        ),
+        const SizedBox(height: AppSpacing.xl),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAddOption(
-              context,
-              Icons.qr_code_scanner_rounded,
-              'scan_qr'.tr(),
-              const Color(0xFF007AFF),
-              onScanQR,
-            ),
-            _buildAddOption(
-              context,
-              Icons.contacts_rounded,
-              'contacts'.tr(),
-              context.palette.primary,
-              onPickContacts,
-            ),
-            if (onPickGroups != null)
-              _buildAddOption(
-                context,
-                Icons.groups_rounded,
-                'groups'.tr(),
-                const Color(0xFFFF9500),
-                onPickGroups!,
-              ),
+            for (var i = 0; i < cards.length; i++) ...[
+              if (i > 0) const SizedBox(width: AppSpacing.sm),
+              Expanded(child: cards[i]),
+            ],
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.sm),
       ],
     );
   }
+}
 
-  Widget _buildAddOption(
-    BuildContext context,
-    IconData icon,
-    String label,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+/// "Add guest": a name only. Pops the trimmed name, or null.
+class AddGuestSheet extends StatefulWidget {
+  const AddGuestSheet({super.key});
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Column(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: color.withValues(alpha: 0.2),
-                    width: 1.5,
-                  ),
-                ),
-                child: Icon(icon, color: color, size: 28),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                label,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ],
+  static Future<String?> show(BuildContext context) =>
+      PremiumBottomSheet.show<String>(
+        context: context,
+        child: const AddGuestSheet(),
+      );
+
+  @override
+  State<AddGuestSheet> createState() => _AddGuestSheetState();
+}
+
+class _AddGuestSheetState extends State<AddGuestSheet> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _controller.text.trim();
+    if (name.isEmpty) {
+      AppHaptics.error();
+      return;
+    }
+    Navigator.of(context).pop(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'bf_assign_add_guest'.tr(),
+          style: AppTypography.headlineMedium.copyWith(color: p.textPrimary),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          'bf_assign_guest_hint'.tr(),
+          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        TextField(
+          controller: _controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _submit(),
+          onChanged: (_) => setState(() {}),
+          maxLength: 40,
+          decoration: InputDecoration(
+            hintText: 'bf_assign_guest_name_hint'.tr(),
+            counterText: '',
+            filled: true,
+            fillColor: p.surface,
+            border: OutlineInputBorder(
+              borderRadius: AppRadii.rowRadius,
+              borderSide: BorderSide(color: p.borderStrong),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: AppRadii.rowRadius,
+              borderSide: BorderSide(color: p.borderStrong),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: AppRadii.rowRadius,
+              borderSide: BorderSide(color: p.accent, width: 1.5),
+            ),
           ),
         ),
-      ),
+        const SizedBox(height: AppSpacing.xl),
+        AssignPillButton(
+          label: 'bf_assign_add_guest_cta'.tr(),
+          onPressed: _controller.text.trim().isEmpty ? null : _submit,
+        ),
+      ],
     );
   }
 }

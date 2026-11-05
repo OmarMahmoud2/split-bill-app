@@ -1,10 +1,34 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:split_bill_app/services/group_service.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/add_people_screen.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
+import 'package:split_bill_app/services/group_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
 
+/// The host's groups as [AddPeopleGroup]s (for `AddPeopleScreen`).
+Stream<List<AddPeopleGroup>> addPeopleGroupsFrom(GroupService service) =>
+    service.getMyGroups().map(
+      (snapshot) => [
+        for (final doc in snapshot.docs)
+          if (doc.data() is Map)
+            _groupFrom(doc.id, Map<String, dynamic>.from(doc.data() as Map)),
+      ],
+    );
+
+AddPeopleGroup _groupFrom(String id, Map<String, dynamic> data) =>
+    AddPeopleGroup(
+      id: id,
+      name: (data['name'] ?? '').toString(),
+      members: [
+        for (final m in (data['members'] as List?) ?? const [])
+          if (m is Map && m['id'] != null) Map<String, dynamic>.from(m),
+      ],
+    );
+
+/// Pick one of the host's groups; calls [onGroupSelected] with its members.
 class GroupSelectionSheet extends StatelessWidget {
   final GroupService groupService;
   final Function(List<dynamic>) onGroupSelected;
@@ -17,127 +41,137 @@ class GroupSelectionSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+    final p = context.palette;
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'select_group',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.6,
-                ),
-              ).tr(),
-              const SizedBox(height: 16),
-            ],
-          ),
+        Text(
+          'select_group'.tr(),
+          style: AppTypography.headlineMedium.copyWith(color: p.textPrimary),
         ),
-
+        const SizedBox(height: AppSpacing.lg),
         ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.5,
+            maxHeight: MediaQuery.sizeOf(context).height * 0.5,
           ),
           child: StreamBuilder<QuerySnapshot>(
             stream: groupService.getMyGroups(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return LoadingStateWidget(message: 'loading_groups'.tr());
+              if (snapshot.hasError) {
+                return ErrorState.inline(
+                  title: 'bf_assign_groups_error_title'.tr(),
+                  message: 'bf_assign_groups_error_message'.tr(),
+                );
               }
-              if (snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.groups_outlined,
-                          size: 64,
-                          color: colorScheme.outline.withValues(alpha: 0.4),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'no_groups_found',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: colorScheme.onSurface.withValues(alpha: 0.5),
-                          ),
-                          textAlign: TextAlign.center,
-                        ).tr(),
-                      ],
-                    ),
+              if (!snapshot.hasData) {
+                return const SkeletonShimmer(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [SkeletonListTile(), SkeletonListTile()],
                   ),
                 );
               }
-              return ListView.separated(
-                shrinkWrap: true,
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                itemCount: snapshot.data!.docs.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  var data =
-                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                  final memberCount = (data['members'] as List).length;
-
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: context.palette.surfaceMuted,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: context.palette.surfaceVariant),
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 4,
-                      ),
-                      onTap: () {
-                        Navigator.pop(context); // Close sheet
-                        onGroupSelected(data['members']);
-                      },
-                      leading: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
+              final docs = snapshot.data!.docs;
+              if (docs.isEmpty) {
+                return EmptyState(
+                  icon: Icons.groups_outlined,
+                  title: 'no_groups_found'.tr(),
+                  compact: true,
+                );
+              }
+              return DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: p.border),
+                  borderRadius: AppRadii.cardRadius,
+                ),
+                child: ClipRRect(
+                  borderRadius: AppRadii.cardRadius,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    itemCount: docs.length,
+                    itemBuilder: (context, index) {
+                      final data = Map<String, dynamic>.from(
+                        docs[index].data() as Map,
+                      );
+                      final members = (data['members'] as List?) ?? const [];
+                      return Material(
+                        color: p.surface,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            onGroupSelected(members);
+                          },
+                          child: Container(
+                            constraints: const BoxConstraints(minHeight: 62),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 11,
+                            ),
+                            decoration: BoxDecoration(
+                              border: index > 0
+                                  ? Border(
+                                      top: BorderSide(color: p.borderSubtle),
+                                    )
+                                  : null,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: p.accentSoft,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.groups_rounded,
+                                    size: 20,
+                                    color: p.onAccentSoft,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        (data['name'] ?? '').toString(),
+                                        style: AppTypography.titleMedium
+                                            .copyWith(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              color: p.textPrimary,
+                                            ),
+                                      ),
+                                      Text(
+                                        'members_count'.tr(
+                                          namedArgs: {
+                                            'count': '${members.length}',
+                                          },
+                                        ),
+                                        style: AppTypography.caption.copyWith(
+                                          color: p.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.adaptive.arrow_forward_rounded,
+                                  size: 18,
+                                  color: p.textSecondary,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Icon(
-                          Icons.groups_rounded,
-                          color: colorScheme.primary,
-                          size: 20,
-                        ),
-                      ),
-                      title: Text(
-                        data['name'],
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(
-                        "members_count".tr(
-                          namedArgs: {'count': memberCount.toString()},
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      trailing: Icon(
-                        Icons.chevron_right_rounded,
-                        color: colorScheme.outline.withValues(alpha: 0.5),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                ),
               );
             },
           ),
@@ -147,6 +181,7 @@ class GroupSelectionSheet extends StatelessWidget {
   }
 }
 
+/// Choose which members of a group join the bill.
 class GroupMemberSelectionDialog extends StatefulWidget {
   final List<dynamic> groupMembers;
   final Function(List<dynamic>) onMembersConfirmed;
@@ -169,55 +204,108 @@ class _GroupMemberSelectionDialogState
   @override
   void initState() {
     super.initState();
-    _selectedIds = widget.groupMembers.map((m) => m['id'] as String).toList();
+    _selectedIds = widget.groupMembers.map((m) => m['id'].toString()).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text('select_members').tr(),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: widget.groupMembers.length,
-          itemBuilder: (context, index) {
-            var m = widget.groupMembers[index];
-            bool isSelected = _selectedIds.contains(m['id']);
-            return CheckboxListTile(
-              value: isSelected,
-              title: Text(m['name']),
-              secondary: CircleAvatar(child: Text(m['name'][0])),
-              onChanged: (bool? val) {
-                setState(() {
-                  if (val == true) {
-                    _selectedIds.add(m['id']);
-                  } else {
-                    _selectedIds.remove(m['id']);
-                  }
-                });
-              },
-            );
-          },
+    final p = context.palette;
+    return Dialog(
+      backgroundColor: p.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadii.cardRadius,
+        side: BorderSide(color: p.border),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'select_members'.tr(),
+              style: AppTypography.headlineMedium.copyWith(
+                color: p.textPrimary,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.groupMembers.length,
+                itemBuilder: (context, index) {
+                  final m = Map<String, dynamic>.from(
+                    widget.groupMembers[index] as Map,
+                  );
+                  final id = m['id'].toString();
+                  final selected = _selectedIds.contains(id);
+                  return Semantics(
+                    checked: selected,
+                    button: true,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          selected
+                              ? _selectedIds.remove(id)
+                              : _selectedIds.add(id);
+                        });
+                        AppHaptics.selection();
+                      },
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 56),
+                        child: Row(
+                          children: [
+                            PersonAvatar(participant: m, size: 36),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Text(
+                                (m['name'] ?? '').toString(),
+                                style: AppTypography.titleMedium.copyWith(
+                                  fontSize: 15,
+                                  color: p.textPrimary,
+                                ),
+                              ),
+                            ),
+                            AssignCheckbox(checked: selected),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: AssignPillButton(
+                    label: 'common_cancel'.tr(),
+                    secondary: true,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: AssignPillButton(
+                    label: 'add_selected'.tr(),
+                    onPressed: () {
+                      final finalSelection = widget.groupMembers
+                          .where(
+                            (m) => _selectedIds.contains(m['id'].toString()),
+                          )
+                          .toList();
+                      widget.onMembersConfirmed(finalSelection);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('common_cancel').tr(),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            List<dynamic> finalSelection = widget.groupMembers
-                .where((m) => _selectedIds.contains(m['id']))
-                .toList();
-            widget.onMembersConfirmed(finalSelection);
-            Navigator.pop(context);
-          },
-          child: Text('add_selected').tr(),
-        ),
-      ],
     );
   }
 }
