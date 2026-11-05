@@ -1,1 +1,1 @@
-{{APP_NAME}}: Bagi Tagihan
+Evens: Bagi Tagihan

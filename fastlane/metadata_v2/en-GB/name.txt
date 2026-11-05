@@ -1,1 +1,1 @@
-{{APP_NAME}}: Split Group Bills
+Evens: Split Bills & Receipts

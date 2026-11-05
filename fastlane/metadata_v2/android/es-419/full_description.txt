@@ -1,6 +1,6 @@
 Divide cualquier cuenta con quien sea, en cualquier teléfono y en cualquier país.
 
-{{APP_NAME}} escanea el recibo, entiende quién pidió qué y lleva un saldo acumulado para viajes, roomies y cenas. Tus amigos pagan desde un enlace con las apps que ya usan. Sin descargas, sin cuenta.
+Evens escanea el recibo, entiende quién pidió qué y lleva un saldo acumulado para viajes, roomies y cenas. Tus amigos pagan desde un enlace con las apps que ya usan. Sin descargas, sin cuenta.
 
 ESCANÉALO
 Tómale una foto al recibo y la IA lee cada línea, más impuestos, servicio y propina. Los subtotales y totales se detectan y no acaban entre tus artículos.

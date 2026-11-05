@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 é um app novo do zero.
+Evens 2.0 é um app novo do zero.
 
 - Escaneie uma nota e diga quem pediu o quê. A atribuição por voz é nova.
 - Grupos com saldo corrente para viagens, repúblicas e jantares.

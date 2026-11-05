@@ -1,1 +1,1 @@
-{{APP_NAME}}: Rekening splitsen
+Evens: Rekening splitsen

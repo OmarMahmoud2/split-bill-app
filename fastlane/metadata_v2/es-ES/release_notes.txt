@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 es una app nueva desde cero.
+Evens 2.0 es una app nueva desde cero.
 
 - Escanea un ticket y di quién pidió qué. La asignación por voz es nueva.
 - Grupos con saldo acumulado para viajes, pisos compartidos y cenas.

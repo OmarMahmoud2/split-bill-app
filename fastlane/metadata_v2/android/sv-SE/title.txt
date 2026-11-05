@@ -1,1 +1,1 @@
-{{APP_NAME}}: Dela notan
+Evens: Dela notan

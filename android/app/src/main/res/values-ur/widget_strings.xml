@@ -7,7 +7,7 @@
     <string name="widget_scan_description">سیدھا رسید اسکین کریں۔</string>
     <string name="widget_settle_name">حساب برابر کریں</string>
     <string name="widget_settle_description">وہ لوگ جن سے آپ کا سب سے زیادہ حساب باقی ہے۔</string>
-    <string name="widget_open_app">اپنا بیلنس دیکھنے کے لیے Split Bill کھولیں</string>
+    <string name="widget_open_app">اپنا بیلنس دیکھنے کے لیے Evens کھولیں</string>
     <string name="widget_you_are_owed_sample">آپ کو ملنا ہے</string>
     <string name="widget_scan_receipt_sample">رسید اسکین کریں</string>
 </resources>

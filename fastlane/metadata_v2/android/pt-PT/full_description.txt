@@ -1,6 +1,6 @@
 Divida qualquer conta com qualquer pessoa, em qualquer telemóvel, em qualquer país.
 
-{{APP_NAME}} lê o talão, entende quem pediu o quê e mantém um saldo corrente para viagens, casas partilhadas e jantares. Os teus amigos pagam por um link com os apps que já usam. Sem download, sem conta.
+Evens lê o talão, entende quem pediu o quê e mantém um saldo corrente para viagens, casas partilhadas e jantares. Os teus amigos pagam por um link com os apps que já usam. Sem download, sem conta.
 
 DIGITALIZE
 Tire uma foto ao talão e a IA lê cada linha, mais impostos, serviço e gorjeta. Subtotais e totais são reconhecidos e não viram itens.

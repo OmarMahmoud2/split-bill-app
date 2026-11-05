@@ -1,6 +1,6 @@
 Dela vilken nota som helst med vem som helst, på vilken telefon som helst, i vilket land som helst.
 
-{{APP_NAME}} skannar kvittot, förstår vem som tog vad och håller ett löpande saldo för resor, kollektiv och middagar. Vänner betalar via en länk i de appar de redan använder. Ingen nedladdning, inget konto.
+Evens skannar kvittot, förstår vem som tog vad och håller ett löpande saldo för resor, kollektiv och middagar. Vänner betalar via en länk i de appar de redan använder. Ingen nedladdning, inget konto.
 
 SKANNA
 Fota kvittot så läser AI:n varje rad, plus moms, serviceavgift och dricks. Delsummor och totaler känns igen och hamnar inte bland dina varor.

@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 is een volledig nieuwe app.
+Evens 2.0 is een volledig nieuwe app.
 
 - Scan een bon en zeg wie wat had. Spraaktoewijzing is nieuw.
 - Groepen met een lopend saldo voor reizen, huisgenoten en etentjes.

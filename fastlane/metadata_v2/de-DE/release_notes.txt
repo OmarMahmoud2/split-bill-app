@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 ist eine komplett neue App.
+Evens 2.0 ist eine komplett neue App.
 
 - Bon scannen, dann sagen, wer was hatte. Die Sprachzuordnung ist neu.
 - Gruppen mit laufendem Saldo für Reisen, WGs und Abende mit Freunden.

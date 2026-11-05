@@ -70,7 +70,7 @@ class NotificationService with WidgetsBindingObserver {
     if (!kIsWeb && Platform.isAndroid) {
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
         'split_bill_channel', // id
-        'Split Bill Notifications', // title
+        'Evens notifications', // title
         description: 'Notifications for bill splitting updates', // description
         importance: Importance.max,
         playSound: true,
@@ -321,7 +321,7 @@ class NotificationService with WidgetsBindingObserver {
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'split_bill_channel',
-          'Split Bill Notifications',
+          'Evens notifications',
           importance: Importance.max,
           priority: Priority.high,
         ),

@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 adalah aplikasi baru dari nol.
+Evens 2.0 adalah aplikasi baru dari nol.
 
 - Pindai struk, lalu sebutkan siapa makan apa. Penetapan suara itu baru.
 - Grup dengan saldo berjalan untuk liburan, anak kos, dan makan bareng.

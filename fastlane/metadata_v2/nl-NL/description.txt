@@ -1,6 +1,6 @@
 Splits elke rekening met iedereen, op elke telefoon, in elk land.
 
-{{APP_NAME}} scant het bonnetje, begrijpt wie wat had en houdt een lopend saldo bij voor reizen, huisgenoten en etentjes. Vrienden betalen via een link met de apps die ze al gebruiken. Geen download, geen account.
+Evens scant het bonnetje, begrijpt wie wat had en houdt een lopend saldo bij voor reizen, huisgenoten en etentjes. Vrienden betalen via een link met de apps die ze al gebruiken. Geen download, geen account.
 
 SCANNEN
 Maak een foto van de bon en de AI leest elke regel, plus btw, service en fooi. Subtotalen en totalen worden herkend en komen niet tussen je items.

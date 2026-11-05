@@ -1,6 +1,6 @@
 Split any bill with anyone, on any phone, in any country.
 
-{{APP_NAME}} scans the receipt, lets you say who had what, and keeps a running balance for trips, share houses and dinners. Friends pay from a link in the apps they already use. No download, no account.
+Evens scans the receipt, lets you say who had what, and keeps a running balance for trips, share houses and dinners. Friends pay from a link in the apps they already use. No download, no account.
 
 SCAN IT
 Snap a receipt and AI reads every line, plus tax, service and tip. Subtotal and total rows are detected and kept out of your items.

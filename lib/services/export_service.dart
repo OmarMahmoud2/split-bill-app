@@ -138,7 +138,7 @@ class ExportLabels {
     required this.status,
     required this.paid,
     required this.unpaid,
-    this.reportTitle = 'Split Bill',
+    this.reportTitle = 'Evens',
     this.totalsHeading = 'Totals',
     this.billsHeading = 'Bills',
     this.receiptsHeading = 'Receipts',
@@ -287,7 +287,7 @@ class ExportService {
     final theme = (font != null)
         ? pw.ThemeData.withFont(base: font, bold: boldFont ?? font)
         : pw.ThemeData.base();
-    final doc = pw.Document(title: labels.reportTitle, creator: 'Split Bill');
+    final doc = pw.Document(title: labels.reportTitle, creator: 'Evens');
     final sorted = sortBills(bills);
     final totals = totalsByCurrency(sorted);
     final direction = rtl ? pw.TextDirection.rtl : pw.TextDirection.ltr;

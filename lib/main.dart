@@ -29,6 +29,7 @@ import 'utils/app_theme.dart';
 import 'theme/app_typography.dart';
 import 'theme/font_licenses.dart';
 import 'auth_wrapper.dart';
+import 'package:split_bill_app/widgets/brand/brand_intro.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
 import 'helpers/rewarded_ad_helper.dart';
@@ -131,7 +132,7 @@ class FirebaseStartupErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Split Bill',
+      title: 'Evens',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
@@ -153,7 +154,7 @@ class FirebaseStartupErrorApp extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'We could not start Split Bill',
+                      'We could not start Evens',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(fontWeight: FontWeight.w800),
@@ -426,7 +427,7 @@ class _MyAppState extends State<MyApp> {
 
         return MaterialApp(
           navigatorKey: navigatorKey,
-          title: 'Split Bill',
+          title: 'Evens',
           onGenerateTitle: (context) => 'app_title'.tr(),
           debugShowCheckedModeBanner: false,
           locale: context.locale,
@@ -457,7 +458,7 @@ class _MyAppState extends State<MyApp> {
                         initialParticipantId: uidFromUrl,
                       )
                     : const WebDownloadScreen())
-              : const CustomUpgrader(child: AuthWrapper()),
+              : const BrandIntro(child: CustomUpgrader(child: AuthWrapper())),
         );
       },
     );

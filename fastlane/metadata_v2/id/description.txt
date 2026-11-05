@@ -1,6 +1,6 @@
 Bagi tagihan apa pun dengan siapa pun, di ponsel apa pun, di negara mana pun.
 
-{{APP_NAME}} memindai struk, memahami siapa makan apa, dan menyimpan saldo berjalan untuk liburan, anak kos, dan makan bareng. Teman membayar lewat tautan dengan aplikasi yang sudah mereka pakai. Tanpa unduhan, tanpa akun.
+Evens memindai struk, memahami siapa makan apa, dan menyimpan saldo berjalan untuk liburan, anak kos, dan makan bareng. Teman membayar lewat tautan dengan aplikasi yang sudah mereka pakai. Tanpa unduhan, tanpa akun.
 
 PINDAI
 Foto struknya, dan AI membaca tiap baris beserta pajak, servis, dan tip. Baris subtotal dan total dikenali dan tidak masuk ke daftar item.

@@ -7,7 +7,7 @@
     <string name="widget_scan_description">바로 영수증을 스캔하세요.</string>
     <string name="widget_settle_name">정산할 사람</string>
     <string name="widget_settle_description">정산할 금액이 가장 큰 사람들입니다.</string>
-    <string name="widget_open_app">Split Bill을 열어 잔액을 확인하세요</string>
+    <string name="widget_open_app">Evens을 열어 잔액을 확인하세요</string>
     <string name="widget_you_are_owed_sample">받을 금액</string>
     <string name="widget_scan_receipt_sample">영수증 스캔</string>
 </resources>

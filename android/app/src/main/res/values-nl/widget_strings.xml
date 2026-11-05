@@ -7,7 +7,7 @@
     <string name="widget_scan_description">Direct een bon scannen.</string>
     <string name="widget_settle_name">Verrekenen met</string>
     <string name="widget_settle_description">De mensen met wie je het meest open hebt staan.</string>
-    <string name="widget_open_app">Open Split Bill om je saldi te zien</string>
+    <string name="widget_open_app">Open Evens om je saldi te zien</string>
     <string name="widget_you_are_owed_sample">Te ontvangen</string>
     <string name="widget_scan_receipt_sample">Scan een bon</string>
 </resources>

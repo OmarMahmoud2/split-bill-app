@@ -73,6 +73,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/brand/
     - assets/logo.png
     - assets/onboarding/
     - assets/animations/
@@ -109,20 +110,28 @@ flutter_launcher_icons:
   ios: true
   web:
     generate: true
-    background_color: "#ffffff"
-    theme_color: "#667EEA"
-  image_path: "assets/logo.png"
-  adaptive_icon_background: "#ffffff"  # White background (Android will adapt to theme)
-  adaptive_icon_foreground: "assets/logo.png"
+    image_path: "assets/brand/evens_icon_1024.png"
+    background_color: "#F7F7F5"
+    theme_color: "#0F766E"
+  image_path: "assets/brand/evens_icon_1024.png"
+  adaptive_icon_background: "#0F766E"
+  adaptive_icon_foreground: "assets/brand/evens_adaptive_foreground.png"
+  adaptive_icon_monochrome: "assets/brand/evens_adaptive_foreground.png"
   remove_alpha_ios: true
 
 # Splash Screen Configuration
 flutter_native_splash:
-  color: "#ffffff" # White background as requested
-  image: assets/logo.png
+  color: "#F7F7F5"
+  image: assets/brand/evens_splash_light.png
+  branding: assets/brand/evens_wordmark_light.png
+  color_dark: "#0E0F0E"
+  image_dark: assets/brand/evens_splash_dark.png
+  branding_dark: assets/brand/evens_wordmark_dark.png
   android: true
   ios: true
-  web: true
+  web: false # the guest web page has its own v3 skeleton splash in web/index.html
   android_12:
-    icon_background_color: "#ffffff"
-    image: assets/logo.png
+    color: "#F7F7F5"
+    image: assets/brand/evens_splash_android12_light.png
+    color_dark: "#0E0F0E"
+    image_dark: assets/brand/evens_splash_android12_dark.png

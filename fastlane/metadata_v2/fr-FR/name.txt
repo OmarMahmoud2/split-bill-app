@@ -1,1 +1,1 @@
-{{APP_NAME}}: Partager l'addition
+Evens: Partager l'addition

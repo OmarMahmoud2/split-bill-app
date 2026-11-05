@@ -1,1 +1,1 @@
-{{APP_NAME}}: Dividir la cuenta
+Evens: Dividir la cuenta

@@ -396,7 +396,7 @@ String? _pixQr(PaymentMethodType t, PaymentRequest r) {
   if (!isValidPixKey(key)) return null;
   return buildPixPayload(
     key: key,
-    merchantName: r.recipientName ?? 'Split Bill',
+    merchantName: r.recipientName ?? 'Evens',
     merchantCity: 'BRASIL',
     amount: _prefillAmount(t, r),
     description: r.note,
@@ -449,7 +449,7 @@ String? _epcQr(PaymentMethodType t, PaymentRequest r) {
   if (r.currency != null && r.currency != 'EUR') return null;
   return buildEpcQrPayload(
     name: (r.recipientName == null || r.recipientName!.trim().isEmpty)
-        ? 'Split Bill'
+        ? 'Evens'
         : r.recipientName!,
     iban: iban,
     amountEur: r.currency == 'EUR' ? r.amountString : null,

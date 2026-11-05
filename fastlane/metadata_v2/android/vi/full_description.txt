@@ -1,6 +1,6 @@
 Chia bất kỳ hóa đơn nào với bất kỳ ai, trên mọi điện thoại, ở mọi quốc gia.
 
-{{APP_NAME}} quét hóa đơn, hiểu ai ăn gì và giữ số dư liên tục cho chuyến đi, bạn cùng phòng và các bữa ăn. Bạn bè trả qua link bằng những ứng dụng họ đang dùng. Không tải, không tài khoản.
+Evens quét hóa đơn, hiểu ai ăn gì và giữ số dư liên tục cho chuyến đi, bạn cùng phòng và các bữa ăn. Bạn bè trả qua link bằng những ứng dụng họ đang dùng. Không tải, không tài khoản.
 
 QUÉT
 Chụp hóa đơn và AI đọc từng dòng, cả thuế, phí dịch vụ và tiền tip. Dòng tạm tính và tổng cộng được nhận diện và không lẫn vào món.

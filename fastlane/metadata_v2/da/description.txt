@@ -1,6 +1,6 @@
 Del enhver regning med alle, på enhver telefon, i ethvert land.
 
-{{APP_NAME}} scanner kvitteringen, forstår hvem der fik hvad og holder en løbende saldo for rejser, bofællesskaber og middage. Venner betaler via et link i de apps, de allerede bruger. Ingen download, ingen konto.
+Evens scanner kvitteringen, forstår hvem der fik hvad og holder en løbende saldo for rejser, bofællesskaber og middage. Venner betaler via et link i de apps, de allerede bruger. Ingen download, ingen konto.
 
 SCAN
 Tag et billede af kvitteringen, og AI'en læser hver linje plus moms, service og drikkepenge. Subtotaler og totaler genkendes og ender ikke blandt dine varer.

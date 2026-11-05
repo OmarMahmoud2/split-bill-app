@@ -555,133 +555,133 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "افتح Split Bill لعرض أرصدتك"
+            "value": "افتح Evens لعرض أرصدتك"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åbn Split Bill for at se dine saldi"
+            "value": "Åbn Evens for at se dine saldi"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Öffne Split Bill, um deine Salden zu sehen"
+            "value": "Öffne Evens, um deine Salden zu sehen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Split Bill to see your balances"
+            "value": "Open Evens to see your balances"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abre Split Bill para ver tus saldos"
+            "value": "Abre Evens para ver tus saldos"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrez Split Bill pour voir vos soldes"
+            "value": "Ouvrez Evens pour voir vos soldes"
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "अपने बैलेंस देखने के लिए Split Bill खोलें"
+            "value": "अपने बैलेंस देखने के लिए Evens खोलें"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Buka Split Bill untuk melihat saldo Anda"
+            "value": "Buka Evens untuk melihat saldo Anda"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apri Split Bill per vedere i tuoi saldi"
+            "value": "Apri Evens per vedere i tuoi saldi"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Split Bill を開いて残高を表示"
+            "value": "Evens を開いて残高を表示"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Split Bill을 열어 잔액을 확인하세요"
+            "value": "Evens을 열어 잔액을 확인하세요"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åpne Split Bill for å se saldoene dine"
+            "value": "Åpne Evens for å se saldoene dine"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Split Bill om je saldi te zien"
+            "value": "Open Evens om je saldi te zien"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otwórz Split Bill, aby zobaczyć salda"
+            "value": "Otwórz Evens, aby zobaczyć salda"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abra o Split Bill para ver seus saldos"
+            "value": "Abra o Evens para ver seus saldos"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Откройте Split Bill, чтобы увидеть балансы"
+            "value": "Откройте Evens, чтобы увидеть балансы"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Öppna Split Bill för att se dina saldon"
+            "value": "Öppna Evens för att se dina saldon"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เปิด Split Bill เพื่อดูยอดคงเหลือ"
+            "value": "เปิด Evens เพื่อดูยอดคงเหลือ"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bakiyelerinizi görmek için Split Bill'i açın"
+            "value": "Bakiyelerinizi görmek için Evens'i açın"
           }
         },
         "ur": {
           "stringUnit": {
             "state": "translated",
-            "value": "اپنا بیلنس دیکھنے کے لیے Split Bill کھولیں"
+            "value": "اپنا بیلنس دیکھنے کے لیے Evens کھولیں"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mở Split Bill để xem số dư"
+            "value": "Mở Evens để xem số dư"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开 Split Bill 查看余额"
+            "value": "打开 Evens 查看余额"
           }
         }
       }

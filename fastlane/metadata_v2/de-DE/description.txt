@@ -1,6 +1,6 @@
 Teile jede Rechnung mit allen, auf jedem Handy, in jedem Land.
 
-{{APP_NAME}} scannt den Kassenbon, versteht, wer was hatte, und führt einen laufenden Saldo für Reisen, WGs und Abende mit Freunden. Freunde zahlen über einen Link mit den Apps, die sie schon nutzen. Kein Download, kein Konto.
+Evens scannt den Kassenbon, versteht, wer was hatte, und führt einen laufenden Saldo für Reisen, WGs und Abende mit Freunden. Freunde zahlen über einen Link mit den Apps, die sie schon nutzen. Kein Download, kein Konto.
 
 SCANNEN
 Bon fotografieren, fertig. Die KI liest jede Position sowie Steuer, Service und Trinkgeld. Zwischensummen und Gesamtbeträge werden erkannt und landen nicht bei den Artikeln.

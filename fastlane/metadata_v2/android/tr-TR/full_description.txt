@@ -1,6 +1,6 @@
 Her hesabı herkesle, her telefonda, her ülkede bölüş.
 
-{{APP_NAME}} fişi tarar, kimin ne aldığını anlar ve seyahatler, ev arkadaşları ve yemekler için güncel bakiye tutar. Arkadaşların zaten kullandıkları uygulamalarla bağlantıdan öder. İndirme yok, hesap açma yok.
+Evens fişi tarar, kimin ne aldığını anlar ve seyahatler, ev arkadaşları ve yemekler için güncel bakiye tutar. Arkadaşların zaten kullandıkları uygulamalarla bağlantıdan öder. İndirme yok, hesap açma yok.
 
 TARA
 Fişin fotoğrafını çek; yapay zeka her satırı, vergiyi, servisi ve bahşişi okur. Ara toplam ve toplam satırları tanınır, kalemlerin arasına karışmaz.

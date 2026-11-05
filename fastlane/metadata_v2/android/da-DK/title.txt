@@ -1,1 +1,1 @@
-{{APP_NAME}}: Del regningen
+Evens: Del regningen

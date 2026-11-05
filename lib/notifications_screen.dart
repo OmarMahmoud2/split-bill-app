@@ -62,7 +62,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     String body,
   ) {
     final splitMatch = RegExp(
-      r'^Split Bill:\s*(.+)$',
+      r'^(?:Split Bill|Evens):\s*(.+)$',
       caseSensitive: false,
     ).firstMatch(title);
     final splitBodyMatch = RegExp(

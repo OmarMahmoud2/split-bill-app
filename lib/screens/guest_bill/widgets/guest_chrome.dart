@@ -21,7 +21,7 @@ class GuestBrand extends StatelessWidget {
     return Semantics(
       header: true,
       child: Text(
-        'Split Bill',
+        'Evens',
         style: AppTypography.headlineMedium.copyWith(
           fontSize: large ? 20 : 18,
           color: p.textPrimary,

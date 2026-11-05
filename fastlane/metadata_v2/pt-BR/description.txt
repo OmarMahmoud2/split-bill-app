@@ -1,6 +1,6 @@
 Divida qualquer conta com qualquer pessoa, em qualquer celular, em qualquer país.
 
-{{APP_NAME}} escaneia a nota, entende quem pediu o quê e mantém um saldo corrente para viagens, repúblicas e jantares. Seus amigos pagam por um link com os apps que já usam. Sem download, sem conta.
+Evens escaneia a nota, entende quem pediu o quê e mantém um saldo corrente para viagens, repúblicas e jantares. Seus amigos pagam por um link com os apps que já usam. Sem download, sem conta.
 
 ESCANEIE
 Tire uma foto da nota e a IA lê cada linha, mais impostos, serviço e gorjeta. Subtotais e totais são reconhecidos e não viram itens.

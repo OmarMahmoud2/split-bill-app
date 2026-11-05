@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 sıfırdan yeni bir uygulama.
+Evens 2.0 sıfırdan yeni bir uygulama.
 
 - Fişi tara, sonra kim ne aldı söyle. Sesle atama yeni.
 - Seyahatler, ev arkadaşları ve yemekler için güncel bakiyeli gruplar.

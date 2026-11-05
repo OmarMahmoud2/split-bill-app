@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 là ứng dụng hoàn toàn mới.
+Evens 2.0 là ứng dụng hoàn toàn mới.
 
 - Quét hóa đơn rồi nói ai ăn gì. Gán bằng giọng nói là tính năng mới.
 - Nhóm có số dư liên tục cho chuyến đi, bạn cùng phòng và bữa ăn.

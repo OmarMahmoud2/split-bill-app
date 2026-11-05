@@ -1,1 +1,1 @@
-{{APP_NAME}}: AA制分账
+Evens: AA制分账

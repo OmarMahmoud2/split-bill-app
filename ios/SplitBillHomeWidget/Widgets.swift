@@ -1,4 +1,4 @@
-// The four Split Bill widgets. Kinds must match HomeWidgetService.iOSKinds.
+// The four Evens widgets. Kinds must match HomeWidgetService.iOSKinds.
 //
 // Animation: WidgetKit has no imperative withAnimation in an extension;
 // changes between timeline entries animate through the content transitions
@@ -22,7 +22,7 @@ struct BalanceWidgetView: View {
         MessageView(
           icon: "person.crop.circle.badge.questionmark",
           text: entry.payload?.strings.signIn
-            ?? String(localized: "widget_open_app", defaultValue: "Open Split Bill to see your balances"))
+            ?? String(localized: "widget_open_app", defaultValue: "Open Evens to see your balances"))
       }
     }
     .widgetURL(.splitBillHome)
@@ -142,7 +142,7 @@ struct SettleWidgetView: View {
         MessageView(
           icon: "person.2",
           text: entry.payload?.strings.signIn
-            ?? String(localized: "widget_open_app", defaultValue: "Open Split Bill to see your balances"))
+            ?? String(localized: "widget_open_app", defaultValue: "Open Evens to see your balances"))
       }
     }
     .widgetURL(.splitBillHome)
@@ -235,7 +235,7 @@ struct BalanceAccessoryView: View {
       } else {
         Text(
           entry.payload?.strings.signIn
-            ?? String(localized: "widget_open_app", defaultValue: "Open Split Bill to see your balances")
+            ?? String(localized: "widget_open_app", defaultValue: "Open Evens to see your balances")
         )
         .font(.caption)
         .lineLimit(2)

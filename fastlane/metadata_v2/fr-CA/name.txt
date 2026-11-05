@@ -1,1 +1,1 @@
-{{APP_NAME}}: Séparer la facture
+Evens: Séparer la facture

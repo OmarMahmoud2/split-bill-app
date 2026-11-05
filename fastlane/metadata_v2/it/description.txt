@@ -1,6 +1,6 @@
 Dividi qualsiasi conto con chiunque, su qualsiasi telefono, in qualsiasi paese.
 
-{{APP_NAME}} scansiona lo scontrino, capisce chi ha preso cosa e tiene un saldo corrente per viaggi, coinquilini e cene. Gli amici pagano da un link con le app che usano già. Nessun download, nessun account.
+Evens scansiona lo scontrino, capisce chi ha preso cosa e tiene un saldo corrente per viaggi, coinquilini e cene. Gli amici pagano da un link con le app che usano già. Nessun download, nessun account.
 
 SCANSIONA
 Fotografa lo scontrino e l'IA legge ogni riga, più tasse, servizio e mancia. Subtotali e totali vengono riconosciuti e non finiscono tra le tue voci.

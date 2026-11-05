@@ -1,10 +1,10 @@
 {
-    "name": "Split Bill",
-    "short_name": "Split Bill",
+    "name": "Evens",
+    "short_name": "Evens",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F7F7F5",
-    "theme_color": "#F7F7F5",
+    "theme_color": "#0F766E",
     "description": "See your share of a bill, pay your host the way you like and let them know. No account needed.",
     "orientation": "any",
     "prefer_related_applications": true,

@@ -1,6 +1,6 @@
 Podziel każdy rachunek z kimkolwiek, na każdym telefonie, w każdym kraju.
 
-{{APP_NAME}} skanuje paragon, rozumie, kto co zamówił, i prowadzi bieżące saldo dla wyjazdów, mieszkań i kolacji. Znajomi płacą z linku w aplikacjach, których już używają. Bez pobierania, bez konta.
+Evens skanuje paragon, rozumie, kto co zamówił, i prowadzi bieżące saldo dla wyjazdów, mieszkań i kolacji. Znajomi płacą z linku w aplikacjach, których już używają. Bez pobierania, bez konta.
 
 ZESKANUJ
 Zrób zdjęcie paragonu, a AI odczyta każdą pozycję oraz podatek, serwis i napiwek. Sumy częściowe i całkowite są rozpoznawane i nie trafiają między pozycje.

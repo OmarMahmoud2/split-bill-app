@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 är en helt ny app.
+Evens 2.0 är en helt ny app.
 
 - Skanna ett kvitto och säg vem som tog vad. Rösttilldelning är nytt.
 - Grupper med löpande saldo för resor, kollektiv och middagar.

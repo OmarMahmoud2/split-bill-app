@@ -1,4 +1,4 @@
-// Shared model, timeline provider, theme and App Intent for the Split Bill
+// Shared model, timeline provider, theme and App Intent for the Evens
 // widgets. All amounts and labels are computed, localized and formatted in
 // Dart (lib/services/home_widget_data.dart) and arrive as one JSON payload in
 // the App Group, so this file only decodes and displays.
@@ -82,7 +82,7 @@ struct WidgetPayload: Decodable, Equatable {
     let owed = String(localized: "widget_you_are_owed_sample", defaultValue: "You're owed")
     let settle = String(localized: "widget_settle_name", defaultValue: "Settle with")
     let scan = String(localized: "widget_scan_receipt_sample", defaultValue: "Scan a receipt")
-    let open = String(localized: "widget_open_app", defaultValue: "Open Split Bill to see your balances")
+    let open = String(localized: "widget_open_app", defaultValue: "Open Evens to see your balances")
     return WidgetPayload(
       v: 1, state: "ready", locale: Locale.current.identifier,
       dir: Locale.Language(identifier: Locale.current.identifier).characterDirection == .rightToLeft

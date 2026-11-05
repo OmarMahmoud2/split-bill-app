@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 est une toute nouvelle appli.
+Evens 2.0 est une toute nouvelle appli.
 
 - Scannez un reçu, puis dites qui a pris quoi. L'attribution vocale est nouvelle.
 - Des groupes avec un solde courant pour les voyages, la coloc et les restos.

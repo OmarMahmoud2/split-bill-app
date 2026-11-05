@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 é uma app nova de raiz.
+Evens 2.0 é uma app nova de raiz.
 
 - Digitaliza um talão e diz quem pediu o quê. A atribuição por voz é nova.
 - Grupos com saldo corrente para viagens, casas partilhadas e jantares.

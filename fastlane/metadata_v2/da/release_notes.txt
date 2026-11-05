@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 er en helt ny app.
+Evens 2.0 er en helt ny app.
 
 - Scan en kvittering og sig hvem der fik hvad. Stemmetildeling er nyt.
 - Grupper med løbende saldo for rejser, bofællesskaber og middage.

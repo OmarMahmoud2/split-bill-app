@@ -7,7 +7,7 @@
     <string name="widget_scan_description">Chuyển thẳng đến quét hóa đơn.</string>
     <string name="widget_settle_name">Thanh toán với</string>
     <string name="widget_settle_description">Những người bạn còn chênh lệch nhiều nhất.</string>
-    <string name="widget_open_app">Mở Split Bill để xem số dư</string>
+    <string name="widget_open_app">Mở Evens để xem số dư</string>
     <string name="widget_you_are_owed_sample">Bạn được nợ</string>
     <string name="widget_scan_receipt_sample">Quét hóa đơn</string>
 </resources>

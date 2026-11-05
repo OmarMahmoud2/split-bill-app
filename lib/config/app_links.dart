@@ -31,7 +31,7 @@ class AppLinks {
 
   // 5. Share Text
   static String get shareText =>
-      'Check out this awesome Split Bill app! 💸\n\n'
+      'Check out this Evens app! 💸\n\n'
       'App Store: $appStoreUrl\n'
       'Play Store: $playStoreUrl';
 }

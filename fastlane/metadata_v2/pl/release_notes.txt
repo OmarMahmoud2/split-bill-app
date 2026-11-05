@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 to zupełnie nowa aplikacja.
+Evens 2.0 to zupełnie nowa aplikacja.
 
 - Zeskanuj paragon i powiedz, kto co zamówił. Przypisywanie głosem jest nowe.
 - Grupy z bieżącym saldem dla wyjazdów, mieszkań i kolacji.

@@ -1,6 +1,6 @@
 Partagez n'importe quelle addition avec n'importe qui, sur n'importe quel téléphone, dans n'importe quel pays.
 
-{{APP_NAME}} scanne le ticket, comprend qui a pris quoi et tient un solde courant pour les voyages, la coloc et les restos. Vos amis paient depuis un lien, avec les applis qu'ils utilisent déjà. Aucun téléchargement, aucun compte.
+Evens scanne le ticket, comprend qui a pris quoi et tient un solde courant pour les voyages, la coloc et les restos. Vos amis paient depuis un lien, avec les applis qu'ils utilisent déjà. Aucun téléchargement, aucun compte.
 
 SCANNEZ
 Prenez le ticket en photo : l'IA lit chaque ligne, plus la taxe, le service et le pourboire. Les sous-totaux et totaux sont détectés et restent hors de vos articles.

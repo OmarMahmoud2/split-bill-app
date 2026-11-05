@@ -32,7 +32,7 @@
 		<string>zh-Hans</string>
 	</array>
 	<key>CFBundleDisplayName</key>
-	<string>Split Bill</string>
+	<string>Evens</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -77,9 +77,9 @@
 	<key>NSContactsUsageDescription</key>
 	<string>We need access to your contacts to find friends to split bills with.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Split Bill uses the microphone when you assign receipt items by voice. Audio is only used while you are speaking.</string>
+	<string>Evens uses the microphone when you assign receipt items by voice. Audio is only used while you are speaking.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Split Bill turns what you say into text on your iPhone so it can assign receipt items to people.</string>
+	<string>Evens turns what you say into text on your iPhone so it can assign receipt items to people.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need permission to save edited receipts.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

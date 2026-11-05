@@ -1,4 +1,4 @@
-{{APP_NAME}} 2.0 è un'app completamente nuova.
+Evens 2.0 è un'app completamente nuova.
 
 - Scansiona uno scontrino e di' chi ha preso cosa. L'assegnazione vocale è nuova.
 - Gruppi con saldo corrente per viaggi, coinquilini e cene.

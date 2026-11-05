@@ -7,7 +7,7 @@
     <string name="widget_scan_description">انتقل مباشرةً إلى مسح إيصال.</string>
     <string name="widget_settle_name">سوِّ الحساب مع</string>
     <string name="widget_settle_description">الأشخاص الذين بينك وبينهم أكبر فرق.</string>
-    <string name="widget_open_app">افتح Split Bill لعرض أرصدتك</string>
+    <string name="widget_open_app">افتح Evens لعرض أرصدتك</string>
     <string name="widget_you_are_owed_sample">مستحق لك</string>
     <string name="widget_scan_receipt_sample">امسح إيصالاً</string>
 </resources>
