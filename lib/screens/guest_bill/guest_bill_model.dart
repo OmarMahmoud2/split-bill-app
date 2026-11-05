@@ -186,7 +186,10 @@ class GuestBill {
 
   factory GuestBill.fromMap(String id, Map<String, dynamic> data) {
     final currency = normalizeCurrency(
-      (data['currency'] ?? data['currencyCode'] ?? data['currency_code'] ?? 'USD')
+      (data['currency'] ??
+              data['currencyCode'] ??
+              data['currency_code'] ??
+              'USD')
           .toString(),
     );
     final participants = <GuestParticipant>[];
@@ -412,9 +415,7 @@ class GuestBreakdown {
     final me = bill.participant(participantId);
     final stored = me?.shareMinor;
     final fallback = GuestBreakdown(
-      lines: [
-        GuestLine(kind: GuestLineKind.share, amountMinor: stored ?? 0),
-      ],
+      lines: [GuestLine(kind: GuestLineKind.share, amountMinor: stored ?? 0)],
       totalMinor: stored ?? 0,
       currency: bill.currency,
       itemized: false,

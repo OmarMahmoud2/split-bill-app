@@ -150,10 +150,7 @@ void main() {
       expect(b.lines[2].ratePercent, '14');
       expect(b.lines[2].baseMinor, 1300);
       expect(b.lines[3].ratePercent, '12');
-      expect(
-        b.lines.fold<int>(0, (s, l) => s + l.amountMinor),
-        b.totalMinor,
-      );
+      expect(b.lines.fold<int>(0, (s, l) => s + l.amountMinor), b.totalMinor);
     });
 
     test('adds an adjustment line when the stored share differs', () {
@@ -164,10 +161,7 @@ void main() {
       expect(b.totalMinor, 1700);
       expect(b.lines.last.kind, GuestLineKind.adjustment);
       expect(b.lines.last.amountMinor, 62);
-      expect(
-        b.lines.fold<int>(0, (s, l) => s + l.amountMinor),
-        b.totalMinor,
-      );
+      expect(b.lines.fold<int>(0, (s, l) => s + l.amountMinor), b.totalMinor);
     });
 
     test('falls back to the stored share without items', () {
