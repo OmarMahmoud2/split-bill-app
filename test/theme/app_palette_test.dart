@@ -23,6 +23,7 @@ void main() {
     expect(argb(p.border), argb(Colors.grey[300]!));
     expect(argb(p.borderSubtle), argb(Colors.grey[200]!));
     expect(argb(p.textSecondary), argb(Colors.grey[600]!));
+    expect(argb(p.textMedium), argb(Colors.grey[700]!));
     expect(argb(p.textTertiary), argb(Colors.grey[500]!));
     expect(argb(p.textDisabled), argb(Colors.grey[400]!));
     expect(argb(p.success), argb(Colors.green));

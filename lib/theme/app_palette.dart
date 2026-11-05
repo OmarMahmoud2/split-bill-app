@@ -23,6 +23,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.borderSubtle,
     required this.textPrimary,
     required this.textStrong,
+    required this.textMedium,
     required this.textSecondary,
     required this.textTertiary,
     required this.textDisabled,
@@ -84,6 +85,9 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
   /// Maximum-emphasis text: pure black in light mode, white in dark mode.
   final Color textStrong;
+
+  /// Between primary and secondary (light: grey 700).
+  final Color textMedium;
 
   /// Secondary text, captions, icons (light: grey 600 / black54).
   final Color textSecondary;
@@ -170,6 +174,12 @@ class AppPalette extends ThemeExtension<AppPalette> {
   /// Amount the current user owes.
   Color get owe => danger;
 
+  /// Light tint background for a category hue: returns [lightTint] in light
+  /// mode (so the existing look is kept) and [hue] at [darkAlpha] in dark
+  /// mode, e.g. `p.tint(Colors.blueGrey[50]!, Colors.blueGrey)`.
+  Color tint(Color lightTint, Color hue, {double darkAlpha = 0.18}) =>
+      isDark ? hue.withValues(alpha: darkAlpha) : lightTint;
+
   // ----------------------------------------------------------------- presets
   static const AppPalette light = AppPalette(
     brightness: Brightness.light,
@@ -181,6 +191,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     borderSubtle: Color(0xFFEEEEEE), // grey 200
     textPrimary: AppColors.textPrimaryLight, // #212121
     textStrong: Color(0xFF000000),
+    textMedium: Color(0xFF616161), // grey 700
     textSecondary: AppColors.textSecondaryLight, // #757575 grey 600
     textTertiary: Color(0xFF9E9E9E), // grey 500
     textDisabled: AppColors.textDisabledLight, // #BDBDBD grey 400
@@ -224,6 +235,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     borderSubtle: Color(0xFF333333),
     textPrimary: AppColors.textPrimaryDark, // #FFFFFF
     textStrong: Color(0xFFFFFFFF),
+    textMedium: Color(0xFFC2C2C2),
     textSecondary: AppColors.textSecondaryDark, // #B0B0B0
     textTertiary: Color(0xFF9A9A9A),
     textDisabled: AppColors.textDisabledDark, // #707070
@@ -274,6 +286,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     Color? borderSubtle,
     Color? textPrimary,
     Color? textStrong,
+    Color? textMedium,
     Color? textSecondary,
     Color? textTertiary,
     Color? textDisabled,
@@ -316,6 +329,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       borderSubtle: borderSubtle ?? this.borderSubtle,
       textPrimary: textPrimary ?? this.textPrimary,
       textStrong: textStrong ?? this.textStrong,
+      textMedium: textMedium ?? this.textMedium,
       textSecondary: textSecondary ?? this.textSecondary,
       textTertiary: textTertiary ?? this.textTertiary,
       textDisabled: textDisabled ?? this.textDisabled,
@@ -364,6 +378,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       borderSubtle: c(borderSubtle, other.borderSubtle),
       textPrimary: c(textPrimary, other.textPrimary),
       textStrong: c(textStrong, other.textStrong),
+      textMedium: c(textMedium, other.textMedium),
       textSecondary: c(textSecondary, other.textSecondary),
       textTertiary: c(textTertiary, other.textTertiary),
       textDisabled: c(textDisabled, other.textDisabled),
