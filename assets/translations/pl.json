@@ -844,5 +844,15 @@
   "feedback_toast_warning": "Ostrzeżenie",
   "feedback_toast_error": "Błąd",
   "settings_haptics": "Haptyka",
-  "settings_haptics_subtitle": "Delikatne wibracje, gdy przepływają pieniądze"
+  "settings_haptics_subtitle": "Delikatne wibracje, gdy przepływają pieniądze",
+  "widget_you_are_owed": "Należy Ci się",
+  "widget_you_owe": "Jesteś winien",
+  "widget_all_settled": "Wszystko rozliczone",
+  "widget_updated_at": "Zaktualizowano {time}",
+  "widget_scan_receipt": "Zeskanuj paragon",
+  "widget_settle_with": "Rozlicz się z",
+  "widget_no_open_balances": "Brak otwartych sald",
+  "widget_sign_in_prompt": "Zaloguj się, aby zobaczyć salda",
+  "widget_hide_amounts": "Ukryj kwoty",
+  "widget_show_amounts": "Pokaż kwoty"
 }

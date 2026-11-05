@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settle-with widget: three fixed rows (no collection adapter needed).
+     Default texts double as the gallery preview. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg_surface"
+    android:clipToOutline="true"
+    android:padding="@dimen/widget_padding">
+
+    <LinearLayout
+        android:id="@+id/settle_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/settle_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:maxLines="1"
+            android:text="@string/widget_settle_name"
+            android:textAlignment="viewStart"
+            android:textColor="@color/widget_muted"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/settle_row_1"
+            style="@style/SplitBillWidget.Row">
+
+            <TextView
+                android:id="@+id/settle_name_1"
+                style="@style/SplitBillWidget.RowName"
+                android:text="Sara" />
+
+            <TextView
+                android:id="@+id/settle_amount_1"
+                style="@style/SplitBillWidget.RowAmount"
+                android:text="+54.10" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/settle_row_2"
+            style="@style/SplitBillWidget.Row">
+
+            <TextView
+                android:id="@+id/settle_name_2"
+                style="@style/SplitBillWidget.RowName"
+                android:text="Ali" />
+
+            <TextView
+                android:id="@+id/settle_amount_2"
+                style="@style/SplitBillWidget.RowAmount"
+                android:text="+32.30" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/settle_row_3"
+            style="@style/SplitBillWidget.Row">
+
+            <TextView
+                android:id="@+id/settle_name_3"
+                style="@style/SplitBillWidget.RowName"
+                android:text="Mona" />
+
+            <TextView
+                android:id="@+id/settle_amount_3"
+                style="@style/SplitBillWidget.RowAmount"
+                android:text="−24.00"
+                android:textColor="@color/widget_negative" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/settle_empty"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/widget_muted"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/settle_message"
+        style="@style/SplitBillWidget.Message"
+        android:visibility="gone" />
+</FrameLayout>

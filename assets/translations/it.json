@@ -844,5 +844,15 @@
   "feedback_toast_warning": "Attenzione",
   "feedback_toast_error": "Errore",
   "settings_haptics": "Feedback aptico",
-  "settings_haptics_subtitle": "Vibrazioni leggere quando il denaro si muove"
+  "settings_haptics_subtitle": "Vibrazioni leggere quando il denaro si muove",
+  "widget_you_are_owed": "Ti devono",
+  "widget_you_owe": "Devi",
+  "widget_all_settled": "Tutto saldato",
+  "widget_updated_at": "Aggiornato alle {time}",
+  "widget_scan_receipt": "Scansiona uno scontrino",
+  "widget_settle_with": "Salda con",
+  "widget_no_open_balances": "Nessun saldo aperto",
+  "widget_sign_in_prompt": "Accedi per vedere i saldi",
+  "widget_hide_amounts": "Nascondi importi",
+  "widget_show_amounts": "Mostra importi"
 }

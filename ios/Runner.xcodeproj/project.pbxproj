@@ -17,6 +17,13 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		26143803286C2DA6FAEC87AD /* SplitBillHomeWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 11E2829000EFCF856C28DB8E /* SplitBillHomeWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		35D359E259EBEF33B04A119C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 232ED187AB29937A98B2B765 /* WidgetKit.framework */; };
+		8D4C6627F946A73241C13079 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E86272C65401A34FCEB2C9FC /* SwiftUI.framework */; };
+		A8ACE9BFE45777544B0F21C1 /* Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6A8E885BC04AE7AD92C22E /* Widget.swift */; };
+		111369BF6B69B094B512A1F9 /* WidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86F050004D54D07B6B53E36 /* WidgetBundle.swift */; };
+		A1B2C3D4E5F60718293A4B02 /* Widgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B01 /* Widgets.swift */; };
+		A1B2C3D4E5F60718293A4B04 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B03 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,6 +33,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
 			remoteInfo = Runner;
+		};
+		9E63CD1E823C9B4748AA8670 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F19A05473118A8989A63B6FD;
+			remoteInfo = SplitBillHomeWidget;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -38,6 +52,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		24B3C9B856EE06A794F96F7E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				26143803286C2DA6FAEC87AD /* SplitBillHomeWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -68,6 +93,16 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CA290BD9EE3A7B4AC8CD6CBB /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		E6FD252F2EE89C8F00E632B1 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		68EC8D0B1D2F26069F27AD05 /* HomeWidget.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = HomeWidget.xcconfig; path = Flutter/HomeWidget.xcconfig; sourceTree = "<group>"; };
+		11E2829000EFCF856C28DB8E /* SplitBillHomeWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SplitBillHomeWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		232ED187AB29937A98B2B765 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		E86272C65401A34FCEB2C9FC /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		CC08C8D92686B7EA7E1A17C3 /* SplitBillHomeWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SplitBillHomeWidget.entitlements; sourceTree = "<group>"; };
+		0D6A8E885BC04AE7AD92C22E /* Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widget.swift; sourceTree = "<group>"; };
+		E86F050004D54D07B6B53E36 /* WidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBundle.swift; sourceTree = "<group>"; };
+		47171243CBEBE92C6C483075 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B01 /* Widgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widgets.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B03 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +119,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				4753363C9761DEAE44E39512 /* Pods_Runner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F19D69CAF991E5FABA34536 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D4C6627F946A73241C13079 /* SwiftUI.framework in Frameworks */,
+				35D359E259EBEF33B04A119C /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +149,7 @@
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
 				9740EEB31CF90195004384FC /* Generated.xcconfig */,
+				68EC8D0B1D2F26069F27AD05 /* HomeWidget.xcconfig */,
 			);
 			name = Flutter;
 			sourceTree = "<group>";
@@ -119,6 +164,8 @@
 				5ED2893CB3878865078F3DA9 /* GoogleService-Info.plist */,
 				BDA103ECBE0FD0CDCA40EE4F /* Pods */,
 				FE6AFB751DA9FD035BD30D2C /* Frameworks */,
+				CC08C8D92686B7EA7E1A17C3 /* SplitBillHomeWidget.entitlements */,
+				C6442771EAD80D4C000FFE9F /* SplitBillHomeWidget */,
 			);
 			sourceTree = "<group>";
 		};
@@ -127,6 +174,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
+				11E2829000EFCF856C28DB8E /* SplitBillHomeWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -169,6 +217,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		C6442771EAD80D4C000FFE9F /* SplitBillHomeWidget */ = {
+			isa = PBXGroup;
+			children = (
+				0D6A8E885BC04AE7AD92C22E /* Widget.swift */,
+				E86F050004D54D07B6B53E36 /* WidgetBundle.swift */,
+				A1B2C3D4E5F60718293A4B01 /* Widgets.swift */,
+				A1B2C3D4E5F60718293A4B03 /* Localizable.xcstrings */,
+				47171243CBEBE92C6C483075 /* Info.plist */,
+			);
+			path = SplitBillHomeWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -201,18 +261,37 @@
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
-				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
+				24B3C9B856EE06A794F96F7E /* Embed Foundation Extensions */,
 				630CC646E138546A4643845A /* [CP] Embed Pods Frameworks */,
 				05BF4DEFFD40964D0934E80D /* [CP] Copy Pods Resources */,
+				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				9442EA839EA0CCEE116E7A05 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
+		};
+		F19A05473118A8989A63B6FD /* SplitBillHomeWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C62E52289F624C4185A09E42 /* Build configuration list for PBXNativeTarget "SplitBillHomeWidget" */;
+			buildPhases = (
+				93B446C1E6B5E1D84FB7F05F /* Sources */,
+				2F19D69CAF991E5FABA34536 /* Frameworks */,
+				5BDD209EA2558883E7A2FDD0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SplitBillHomeWidget;
+			productName = SplitBillHomeWidget;
+			productReference = 11E2829000EFCF856C28DB8E /* SplitBillHomeWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -249,6 +328,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
+				F19A05473118A8989A63B6FD /* SplitBillHomeWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -270,6 +350,14 @@
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				0D0E8EFAFE4AEE15035F859A /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5BDD209EA2558883E7A2FDD0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B2C3D4E5F60718293A4B04 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,6 +493,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		93B446C1E6B5E1D84FB7F05F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A8ACE9BFE45777544B0F21C1 /* Widget.swift in Sources */,
+				111369BF6B69B094B512A1F9 /* WidgetBundle.swift in Sources */,
+				A1B2C3D4E5F60718293A4B02 /* Widgets.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -412,6 +510,11 @@
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 			targetProxy = 331C8085294A63A400263BE5 /* PBXContainerItemProxy */;
+		};
+		9442EA839EA0CCEE116E7A05 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F19A05473118A8989A63B6FD /* SplitBillHomeWidget */;
+			targetProxy = 9E63CD1E823C9B4748AA8670 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -730,6 +833,87 @@
 			};
 			name = Release;
 		};
+		0663E11D4FC0558C74C417B7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 68EC8D0B1D2F26069F27AD05 /* HomeWidget.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = SplitBillHomeWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = U2PUCCM72U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				INFOPLIST_FILE = SplitBillHomeWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Split Bill";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.splitBillApp.SplitBillHomeWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		48C43833B6432D8AB92FC825 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 68EC8D0B1D2F26069F27AD05 /* HomeWidget.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = SplitBillHomeWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = U2PUCCM72U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				INFOPLIST_FILE = SplitBillHomeWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Split Bill";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.splitBillApp.SplitBillHomeWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		0464F56F03FB7F5A153232FD /* Profile */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 68EC8D0B1D2F26069F27AD05 /* HomeWidget.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = SplitBillHomeWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = U2PUCCM72U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				INFOPLIST_FILE = SplitBillHomeWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Split Bill";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.splitBillApp.SplitBillHomeWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -759,6 +943,16 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C62E52289F624C4185A09E42 /* Build configuration list for PBXNativeTarget "SplitBillHomeWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0663E11D4FC0558C74C417B7 /* Debug */,
+				48C43833B6432D8AB92FC825 /* Release */,
+				0464F56F03FB7F5A153232FD /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

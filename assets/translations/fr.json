@@ -844,5 +844,15 @@
   "feedback_toast_warning": "Attention",
   "feedback_toast_error": "Erreur",
   "settings_haptics": "Retour haptique",
-  "settings_haptics_subtitle": "Légères vibrations quand l'argent bouge"
+  "settings_haptics_subtitle": "Légères vibrations quand l'argent bouge",
+  "widget_you_are_owed": "On vous doit",
+  "widget_you_owe": "Vous devez",
+  "widget_all_settled": "Tout est réglé",
+  "widget_updated_at": "Mis à jour à {time}",
+  "widget_scan_receipt": "Scanner un ticket",
+  "widget_settle_with": "Régler avec",
+  "widget_no_open_balances": "Aucun solde en cours",
+  "widget_sign_in_prompt": "Connectez-vous pour voir vos soldes",
+  "widget_hide_amounts": "Masquer les montants",
+  "widget_show_amounts": "Afficher les montants"
 }

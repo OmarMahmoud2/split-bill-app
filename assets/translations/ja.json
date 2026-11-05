@@ -844,5 +844,15 @@
   "feedback_toast_warning": "注意",
   "feedback_toast_error": "エラー",
   "settings_haptics": "触覚フィードバック",
-  "settings_haptics_subtitle": "お金が動くときに軽く振動します"
+  "settings_haptics_subtitle": "お金が動くときに軽く振動します",
+  "widget_you_are_owed": "受け取る金額",
+  "widget_you_owe": "支払う金額",
+  "widget_all_settled": "すべて精算済み",
+  "widget_updated_at": "{time} に更新",
+  "widget_scan_receipt": "レシートをスキャン",
+  "widget_settle_with": "精算する相手",
+  "widget_no_open_balances": "未精算の残高はありません",
+  "widget_sign_in_prompt": "サインインして残高を表示",
+  "widget_hide_amounts": "金額を隠す",
+  "widget_show_amounts": "金額を表示"
 }

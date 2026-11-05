@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">余额</string>
+    <string name="widget_balance_description">所有未结账单的净余额。</string>
+    <string name="widget_scan_name">快速扫描</string>
+    <string name="widget_scan_description">直接开始扫描收据。</string>
+    <string name="widget_settle_name">与谁结算</string>
+    <string name="widget_settle_description">与你差额最大的人。</string>
+    <string name="widget_open_app">打开 Split Bill 查看余额</string>
+    <string name="widget_you_are_owed_sample">别人欠你</string>
+    <string name="widget_scan_receipt_sample">扫描收据</string>
+</resources>

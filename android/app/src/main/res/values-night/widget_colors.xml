@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget palette (design System.dc.html, dark). -->
+<resources>
+    <color name="widget_surface">#171918</color>
+    <color name="widget_ink">#F2F3F1</color>
+    <color name="widget_muted">#A3A8A5</color>
+    <color name="widget_positive">#34C5B0</color>
+    <color name="widget_negative">#F0B35E</color>
+    <color name="widget_accent">#34C5B0</color>
+    <color name="widget_on_accent">#0E0F0E</color>
+</resources>

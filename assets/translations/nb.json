@@ -844,5 +844,15 @@
   "feedback_toast_warning": "Advarsel",
   "feedback_toast_error": "Feil",
   "settings_haptics": "Haptikk",
-  "settings_haptics_subtitle": "Lette vibrasjoner når penger flyttes"
+  "settings_haptics_subtitle": "Lette vibrasjoner når penger flyttes",
+  "widget_you_are_owed": "Du har til gode",
+  "widget_you_owe": "Du skylder",
+  "widget_all_settled": "Alt er gjort opp",
+  "widget_updated_at": "Oppdatert {time}",
+  "widget_scan_receipt": "Skann en kvittering",
+  "widget_settle_with": "Gjør opp med",
+  "widget_no_open_balances": "Ingen åpne saldoer",
+  "widget_sign_in_prompt": "Logg på for å se saldoer",
+  "widget_hide_amounts": "Skjul beløp",
+  "widget_show_amounts": "Vis beløp"
 }

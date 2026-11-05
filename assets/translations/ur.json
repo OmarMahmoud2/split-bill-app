@@ -844,5 +844,15 @@
   "feedback_toast_warning": "انتباہ",
   "feedback_toast_error": "خرابی",
   "settings_haptics": "ہیپٹکس",
-  "settings_haptics_subtitle": "پیسے کی منتقلی پر ہلکی وائبریشن"
+  "settings_haptics_subtitle": "پیسے کی منتقلی پر ہلکی وائبریشن",
+  "widget_you_are_owed": "آپ کو ملنا ہے",
+  "widget_you_owe": "آپ کے ذمے",
+  "widget_all_settled": "سب حساب برابر",
+  "widget_updated_at": "آخری اپڈیٹ {time}",
+  "widget_scan_receipt": "رسید اسکین کریں",
+  "widget_settle_with": "حساب برابر کریں",
+  "widget_no_open_balances": "کوئی کھلا بیلنس نہیں",
+  "widget_sign_in_prompt": "بیلنس دیکھنے کے لیے سائن اِن کریں",
+  "widget_hide_amounts": "رقم چھپائیں",
+  "widget_show_amounts": "رقم دکھائیں"
 }

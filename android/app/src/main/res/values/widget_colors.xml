@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget palette (design System.dc.html, light). Dark in values-night. -->
+<resources>
+    <color name="widget_surface">#FFFFFF</color>
+    <color name="widget_ink">#111312</color>
+    <color name="widget_muted">#5F6360</color>
+    <color name="widget_positive">#0F766E</color>
+    <color name="widget_negative">#B45309</color>
+    <color name="widget_accent">#0F766E</color>
+    <color name="widget_on_accent">#FFFFFF</color>
+</resources>

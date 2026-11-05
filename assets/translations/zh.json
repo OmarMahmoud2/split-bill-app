@@ -844,5 +844,15 @@
   "feedback_toast_warning": "警告",
   "feedback_toast_error": "错误",
   "settings_haptics": "触感反馈",
-  "settings_haptics_subtitle": "资金变动时轻微振动"
+  "settings_haptics_subtitle": "资金变动时轻微振动",
+  "widget_you_are_owed": "别人欠你",
+  "widget_you_owe": "你欠别人",
+  "widget_all_settled": "已全部结清",
+  "widget_updated_at": "{time} 更新",
+  "widget_scan_receipt": "扫描收据",
+  "widget_settle_with": "与谁结算",
+  "widget_no_open_balances": "没有未结余额",
+  "widget_sign_in_prompt": "登录以查看余额",
+  "widget_hide_amounts": "隐藏金额",
+  "widget_show_amounts": "显示金额"
 }

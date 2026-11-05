@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Balance</string>
+    <string name="widget_balance_description">Your net balance across open bills.</string>
+    <string name="widget_scan_name">Quick scan</string>
+    <string name="widget_scan_description">Jump straight to scanning a receipt.</string>
+    <string name="widget_settle_name">Settle with</string>
+    <string name="widget_settle_description">The people you\'re most out of balance with.</string>
+    <string name="widget_open_app">Open Split Bill to see your balances</string>
+    <string name="widget_you_are_owed_sample">You\'re owed</string>
+    <string name="widget_scan_receipt_sample">Scan a receipt</string>
+</resources>

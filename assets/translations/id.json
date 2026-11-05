@@ -844,5 +844,15 @@
   "feedback_toast_warning": "Peringatan",
   "feedback_toast_error": "Kesalahan",
   "settings_haptics": "Haptik",
-  "settings_haptics_subtitle": "Getaran lembut saat uang berpindah"
+  "settings_haptics_subtitle": "Getaran lembut saat uang berpindah",
+  "widget_you_are_owed": "Piutang Anda",
+  "widget_you_owe": "Utang Anda",
+  "widget_all_settled": "Semua sudah lunas",
+  "widget_updated_at": "Diperbarui {time}",
+  "widget_scan_receipt": "Pindai struk",
+  "widget_settle_with": "Selesaikan dengan",
+  "widget_no_open_balances": "Tidak ada saldo terbuka",
+  "widget_sign_in_prompt": "Masuk untuk melihat saldo",
+  "widget_hide_amounts": "Sembunyikan jumlah",
+  "widget_show_amounts": "Tampilkan jumlah"
 }

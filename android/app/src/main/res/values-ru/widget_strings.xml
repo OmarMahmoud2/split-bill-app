@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Баланс</string>
+    <string name="widget_balance_description">Ваш итоговый баланс по открытым счетам.</string>
+    <string name="widget_scan_name">Быстрое сканирование</string>
+    <string name="widget_scan_description">Сразу перейти к сканированию чека.</string>
+    <string name="widget_settle_name">Рассчитаться с</string>
+    <string name="widget_settle_description">Люди, с которыми у вас самые крупные долги.</string>
+    <string name="widget_open_app">Откройте Split Bill, чтобы увидеть балансы</string>
+    <string name="widget_you_are_owed_sample">Вам должны</string>
+    <string name="widget_scan_receipt_sample">Сканировать чек</string>
+</resources>

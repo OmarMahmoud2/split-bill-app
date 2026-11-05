@@ -12,5 +12,9 @@
 	<array>
 		<string>applinks:splitbillapp-ffc39.web.app</string>
 	</array>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.example.splitBillApp.widgets</string>
+	</array>
 </dict>
 </plist>

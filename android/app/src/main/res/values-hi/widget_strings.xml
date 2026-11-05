@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">बैलेंस</string>
+    <string name="widget_balance_description">खुले बिलों में आपका कुल बैलेंस।</string>
+    <string name="widget_scan_name">क्विक स्कैन</string>
+    <string name="widget_scan_description">सीधे रसीद स्कैन करने पर जाएँ।</string>
+    <string name="widget_settle_name">इनसे हिसाब करें</string>
+    <string name="widget_settle_description">जिनके साथ आपका सबसे ज़्यादा हिसाब बाकी है।</string>
+    <string name="widget_open_app">अपने बैलेंस देखने के लिए Split Bill खोलें</string>
+    <string name="widget_you_are_owed_sample">आपको मिलना है</string>
+    <string name="widget_scan_receipt_sample">रसीद स्कैन करें</string>
+</resources>
