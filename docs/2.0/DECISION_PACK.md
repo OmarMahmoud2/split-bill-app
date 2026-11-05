@@ -14,9 +14,9 @@ Verification labels used throughout:
 
 | # | Decision | Recommended default | Confidence / what to check first |
 |---|---|---|---|
-| 1 | **App name** | **Nusso**. Store title: `Nusso: Split Bills & Receipts`. Subtitle: `AI Receipt Scanner & Settle Up`. | `nusso.app` is unregistered and no exact-name app exists on the App Store (US/SA) or Google Play (US) (verified). Still needed: a trademark search (not done) and a sense check by native Arabic, Hindi/Urdu and Spanish speakers. The runner-up is **Qismo**. |
-| 2 | **Pro prices (USD base)** | **$3.99/month, $24.99/year, $59.99 lifetime** (lifetime has fair-use limits on AI scans). Add a 7-day free trial on the yearly plan only. | Positioned below Splitwise ($4.99 / $39.99) and level with Settle Up's monthly price ($3.99 / $19.99). Set local price tiers separately in App Store Connect and Play Console. |
-| 3 | **Support email domain** | `support@nusso.app`, routed through a forwarding or mail provider. Keep the old address forwarding for at least 12 months. | Register the domain before announcing the name, because `.app` names are first-come. `.app` requires HTTPS for websites but does not affect email. |
+| 1 | **App name** | **Halbo** (replaces Nusso; the owner asked for a global name). Store title: `Halbo: Split Bills & Receipts` (29 chars). Subtitle: `AI Receipt Scanner & Settle Up` (30 chars). | `halbo.app` and `gethalbo.com` are unregistered, and no similar app exists on the App Store (US/GB/DE/SA) or Google Play (US, partial) (verified). `halbo.com` is taken and its use is unknown. Still needed: a registry trademark search (classes 9 and 36, not done) and a native-speaker check (section 1.3). The runner-up is **Tabzu**. |
+| 2 | **Pro prices (USD base)** | **Decided by owner: $2.99/month, $24.99/year, $59.99 lifetime** (lifetime keeps fair-use limits on AI scans). Recommended: a 7-day free trial on the yearly plan only. | Decided. Below Splitwise ($4.99 / $39.99) and Settle Up's monthly ($3.99). Yearly is about $2.08/mo, 30% off monthly. Set local price tiers separately in App Store Connect and Play Console. Section 2.2 still shows the earlier $3.99 monthly recommendation for reference. |
+| 3 | **Support email** | DECIDED by owner: `support@omarmali.net` (live in app and backend on release/2.0.0). | A product-domain address can be added later after the rename, forwarding to support@omarmali.net. |
 | 4 | **Anthropic: `voice/assign/`** | **Switch to Claude Haiku 5.5** on a short production trial. Fall back to Sonnet if matching is weak. | Low risk: the output is sanitized, and a bad answer costs the user one tap. The privacy policy must be updated first (section 5.4). |
 | 5 | **Anthropic: `receipts/scan/`** | **Stay on OpenAI until the 20–30 receipt bake-off in section 5 passes.** | This is the core paid feature, and there is no quality data for Claude on it yet. The estimated Claude cost is not clearly lower. |
 | 6 | **Anthropic: `voice/transcribe/`** | **Stay on OpenAI.** | No choice here: the Claude API has no speech-to-text. |
@@ -26,70 +26,123 @@ Verification labels used throughout:
 
 ## 1. Name shortlist
 
-Criteria: two syllables, easy to say in Arabic, English, Hindi/Urdu and Spanish, no hard clusters, and ideally a root meaning "share" or "half" so the name has a story in the MENA and South Asia markets.
+Revised 2026-11-05. The owner rejected the Arabic-root-only list and asked for **global** names. The earlier Arabic-root candidates are kept only as a footnote (section 1.6).
 
-### 1.1 Candidates
+Criteria:
 
-| Name | Meaning / rationale | Store title |
-|---|---|---|
-| **Nusso** (recommended) | From Arabic نص *nuṣṣ*, "half". *Nuṣṣ-nuṣṣ* means "50/50" in Gulf, Levantine and Egyptian dialects, and colloquial نصّه (*nuṣṣo*) means "half of it". It is short and playful, and works as a verb ("let's nusso it"). In German, *Nuss* means "nut", which is harmless. | `Nusso: Split Bills & Receipts` |
-| **Qismo** | From Arabic قسمة *qisma*, "division" or "portion" (the same root as *kismet*). Colloquially قسمه means "his share". The catch: English and Spanish speakers may not know to read "Q" as "K". | `Qismo: Split Bills & Receipts` |
-| **Hisso** | From حصة *ḥiṣṣa* (Arabic) and हिस्सा / حصہ *hissa* (Hindi/Urdu), both meaning "share". It works across the MENA and South Asia markets. The catch: in English it evokes a hiss, and Levantine حسّه (*ḥisso*) means "his voice", which is harmless. | `Hisso: Split Bills & Receipts` |
-| **Fiftio** | From "fifty-fifty", which Arabic, Hindi and Spanish speakers all use as a loanword. Its meaning is the most universal, but it has no cultural root. | `Fiftio: Split Bills & Receipts` |
-| **Evenio** | From "even" plus a Latin-style ending, so it reads naturally in Spanish, Italian and Portuguese. Its meaning ("getting even" as in "settled up") is less obvious to Arabic speakers. | `Evenio: Split Bills & Receipts` |
-| **Halfa** | From "half" plus "a". Easy to say everywhere. In Arabic, حلفا is a grass and the name of the Sudanese town Wadi Halfa, which is neutral. Weakest as a brand. | `Halfa: Split Bills & Receipts` |
+- Short: 8 letters or fewer, ideally 6 or fewer. With the store title pattern `<Name>: Split Bills & Receipts`, the suffix is 24 characters, so **only names of 6 letters or fewer fit the 30-character iOS and Play title limit.** Longer names need a shorter suffix, such as `<Name>: Split Bills & Scans` (21 characters).
+- Easy to say in English, Spanish, German, Japanese, Arabic and Hindi. Avoid hard consonant clusters. Prefer names with no **P** or **V**, because Arabic has neither sound (speakers say B and F instead), and Japanese merges V with B.
+- No negative meaning in the 22 app languages.
+- Evokes splitting, sharing, settling, being even, or a tab.
+- No same-niche app, website or brand with a confusingly similar name.
 
-All titles are within the 30-character iOS limit. `Nusso: Split Bills & Receipts` is 29 characters.
+### 1.1 Candidates (12, across three styles)
 
-Note: an existing app uses the identical pattern, "Tabli: Split Bills & Receipts". That is fine, because the pattern is generic, but the brand word must carry the distinction.
+| # | Name | Style | Letters | Meaning / rationale | Pronunciation and meaning notes (see 1.3 for what was checked) |
+|---|---|---|---|---|---|
+| 1 | **Halbo** | Coined | 5 | From German *halb* ("half"), with cognates in Dutch *half/halve* and Swedish, Danish and Norwegian *halv*. That gives it an instant meaning in DE, CH, AT, NL and the Nordics, and it reads as "half-o" in English. | No P, V or clusters, so it is easy in all six test languages (ja ハルボ *harubo*, ar هالبو, hi हाल्बो). Spanish *albo* means "white" (poetic), which is harmless. No negative meaning found. |
+| 2 | **Tabzu** | Coined | 5 | "Tab" plus *-zu*. In German, *Tab zu* reads as "tab closed", which suits settling up. Short and punchy. | Easy everywhere (ja タブズ, ar تابزو, hi टैब्ज़ू). No negative meaning found. The *z* is said as "s" by some Arabic and Spanish speakers, which does no harm. |
+| 3 | **Tabaroo** | Coined | 7 | "Tab" plus the playful Australian *-aroo* ending (as in *kangaroo*). Friendly and memorable in the US, UK and AU. | Easy (ja タバルー, ar تبارو). Italian *tabarro* means "cloak", which is harmless. Some people may hear "taboo" in it, which is mild. **At 7 letters it does not fit the standard title** (31 characters). |
+| 4 | **Kwittle** | Coined | 7 | From *quitt* (German, "we're even"), *kvitt* (Swedish, Danish, Norwegian), *quitte* (Dutch, *quitte spelen* = "break even"), *квиты* (Russian, "we're quits") and Polish *kwit* ("receipt"). It has the strongest multi-market meaning of any candidate. | The *-ttl* cluster is hard in Japanese (クウィトル) and Spanish. Arabic speakers write كويتل, which looks a little like الكويت (Kuwait), a neutral association. Avoid the *Kwitta* spelling, which is close to Hindi/Urdu कुत्ता / کتا *kutta* ("dog", an insult). Too long for the standard title. |
+| 5 | **Evenkin** | Compound | 7 | "Even" plus "kin": settling up with your people. Warm and clear in English. | Arabic speakers say "ifinkin" (no V). Russian speakers may hear *Evenki* (an Indigenous people of Siberia), a neutral association. Too long for the standard title. |
+| 6 | **Tabhop** | Compound | 6 | "Tab" plus "hop", as in bar-hopping or a group night out. Fits the title in exactly 30 characters. | Arabic speakers say "tabhob" (no P), which is harmless. Japanese タブホップ is fine. German *hopp* means "quick", which is positive. |
+| 7 | **Evenbee** | Compound | 7 | "Even" plus "bee" (busy and organized). Good mascot potential. | One letter from **Eventbee**, an existing event-ticketing brand with several apps on Play. Too long for the standard title. |
+| 8 | **Evenkit** | Compound | 7 | "Even" plus "kit": a toolkit for getting even. | Close to "evenTickit" (event tickets on Play). `evenkit.com` was registered in 2024 and shows a blank page. Too long for the standard title. |
+| 9 | **Fiftee** | Real-word twist | 6 | From "fifty-fifty", a loanword in Arabic, Hindi, Spanish and many other languages. | Easy everywhere (ja フィフティー). **Fiftee SRL**, a sports social app from Belgium/France, exists on both stores and owns `fiftee.com`, so the EU trademark risk is real. |
+| 10 | **Halvee** | Real-word twist | 6 | From "halve" and "halvsies". | It sounds like *halva* (Arabic *ḥalāwa*, Turkish *helva*, Hindi *halwa*), a sweet, which is mostly positive. In Turkish culture, though, helva is also cooked at funerals. "Halvee - Cozy Match Puzzle" (a game) and "CoHalve" (Finance) are on the App Store. |
+| 11 | **Tabclear** | Real-word twist | 8 | From "clear the tab". The meaning is self-explanatory. | It is descriptive, so a trademark would be weak. Several "Tab Clear" browser extensions exist. Too long for the standard title. |
+| 12 | **Quidsies** | Real-word twist | 8 | British *quid* ("pound") plus *-sies*, as in "halfsies". | The meaning is lost outside the UK and Ireland, and it is hard in Japanese. It is close to **Quidsi** (the former Amazon subsidiary behind Diapers.com). Too long for the standard title. |
 
 ### 1.2 Availability checks (2026-11-05)
 
 Methods:
 
-- `.app` domains: Google Registry RDAP (`pubapi.registry.google/rdap/domain/<name>.app`). A 404 means not registered and a 200 means registered.
-- `.com` and other domains: the `whois` CLI.
-- App Store: the iTunes Search API, with `country=us` and, where noted, `country=sa`.
-- Google Play: the Play web search page, with `gl=US` and `hl=en`, scraped for titles containing the name.
+- `.app`: Google Registry RDAP (`pubapi.registry.google/rdap/domain/<name>.app`). A 404 means not registered and a 200 means registered. I checked twice, the second time just before writing this.
+- `.com` and `get<name>.com`: the `whois` CLI. Where the `.com` was taken, I fetched the homepage to see what it is.
+- App Store: the iTunes Search API (`entity=software`, limit 50) for `country=us`, `gb`, `de` and `sa`. I flagged any result whose first word contains the name or is at least 75% similar to it (difflib).
+- Google Play: the web search page (`gl=US`, `hl=en`), scraped for titles containing the name. **Partial**: the page relies on JavaScript, so I only see what the server returns.
+- Trademark: a web search for the exact name. The USPTO Trademark Search site needs JavaScript and **was not reachable** from this environment, and EUIPO, WIPO, the GCC registers and Saudi SAIP were not checked. **All trademark cells are unverified** apart from the web search.
 
-| Name | `.app` | `.com` | Alternatives | App Store (exact-name app) | Google Play (exact-name app) | Trademark |
-|---|---|---|---|---|---|---|
-| **Nusso** | **Free** (RDAP 404). Verified. | Taken since 1998; a Canadian textile wholesaler's site. Verified. | `getnusso.com`, `trynusso.com`, `nussoapp.com` free; `nusso.io` free; `nusso.co` taken. Verified. | None in US search results. Verified. | None in US search results. Verified, partial (*) | Not checked |
-| **Qismo** | **Free** (RDAP 404). Verified. | Taken, listed for sale on HugeDomains. Verified. | `getqismo.com` free; `qismo.co` free. Verified. | None (US). Verified. | None (US). Verified, partial (*) | Not checked |
-| **Hisso** | **Free** (RDAP 404). Verified. | Taken (2000). Verified. | `gethisso.com`, `hissoapp.com` free; `hisso.co` free. Verified. | None (US). Verified. | None (US). Verified, partial (*) | Not checked |
-| **Fiftio** | **Free** (RDAP 404). Verified. | Taken (2018). Verified. | `getfiftio.com` free. Verified. | None (US). Verified. | None (US). Verified, partial (*) | Not checked |
-| **Evenio** | **Free** (RDAP 404). Verified. | Taken (2010). Verified. | `evenioapp.com` free. Verified. | **"Evenio"** exists (Social Networking, Profeko sp. z o.o.), outside our niche, plus "EvenioPro" (Entertainment). Verified. | "EvenioPro" appears. Verified, partial (*) | Not checked |
-| **Halfa** | **Free** (RDAP 404). Verified. | Taken (1997). Verified. | Not checked | Only "Wadi Halfa" (Shopping, Saudi seller). Verified. | "HalfandHalf" appears. Verified, partial (*) | Not checked |
-
-(*) The Play search page is rendered with JavaScript. I could only read what the server returned, so a listing might not show up. Re-check by hand in the Play Store app before committing.
+| # | Name | `.app` (verified) | `.com` (verified) | Alternatives (verified) | App Store, US/GB/DE/SA (verified) | Google Play, US (verified, partial) | Trademark / web (web search only, unverified) |
+|---|---|---|---|---|---|---|---|
+| 1 | **Halbo** | **Free** | Taken (2015). The site is behind a Cloudflare challenge, so its use is unknown. | `gethalbo.com` free | No similar app in any of the 4 countries | No exact match. Nearest: "Habbo" (a game), "Halvo — BTC Cycle" | No company, app or mark found. Habbo (Sulake, games) is the nearest well-known mark, in a different class. |
+| 2 | **Tabzu** | **Free** | Taken (2019), for sale on HugeDomains | `gettabzu.com` free | No similar app | No exact match. Near: "TAPZU: Food Delivery", "**Tapzum: Expense Budget Tracker**" | Nothing found. TABZOO (a UK accessories mark) is dead. |
+| 3 | **Tabaroo** | **Free** | Taken (2013), no site | `gettabaroo.com` free | No similar app | No exact match | "Tabaroo: AI Tab Manager", a Chrome extension for browser tabs (a different product, low risk) |
+| 4 | **Kwittle** | **Free** | **Free** | `getkwittle.com` free | No similar app | No exact match | Nothing found. Note that **"Kwitsy: Split Bills"** (same niche, on Play and `kwitsy.com`) and "Kwit" (quit smoking) share the *kwit-* stem. |
+| 5 | **Evenkin** | **Free** | Taken **2026-08-30** (Cloudflare, an app host that returns 404). Someone may be building on it. | `getevenkin.com` free | **No results at all** | No exact match (only Evenki language apps) | Nothing found |
+| 6 | **Tabhop** | **Free** | Taken (2016), no site | `gettabhop.com` free | No similar app | No exact match | A Chrome extension "Tab Hop" (about 2 users), low risk |
+| 7 | **Evenbee** | **Free** | Taken (2026-06), for sale on HugeDomains | `getevenbee.com` free | No results at all | No exact match. **Eventbee** event apps rank first | Eventbee is a confusingly similar brand |
+| 8 | **Evenkit** | **Free** | Taken (2024), blank site | `getevenkit.com` free | No similar app | No exact match. "evenTickit" appears | Nothing found |
+| 9 | **Fiftee** | **Free** | Taken; used by **Fiftee SRL** (a sports app) | `getfiftee.com` free | **"Fiftee"** (Sports) in all 4 countries | **"Fiftee"** listed | Fiftee SRL is an active company, so the EU risk is high |
+| 10 | **Halvee** | **Free** | Taken (2025), no site | `gethalvee.com` free | **"Halvee - Cozy Match Puzzle"** (Games) in the US and GB, and "CoHalve" (Finance) | No exact match | Nothing beyond the game |
+| 11 | **Tabclear** | **Free** | Taken (2005), placeholder | `gettabclear.com` free | No similar app | No exact match. Same-niche "Tab - The simple bill splitter" and "TabTap" rank near it | "Tab Clear" browser extensions. Descriptive, so weak |
+| 12 | **Quidsies** | **Free** | **Free** | `getquidsies.com` free | No similar app | No exact match | Close to Quidsi (Amazon). "Quidly" (3 Finance apps) and "Quid: UK Student Life" (Finance) share the stem |
 
 Caveats that apply to every row:
 
-- An RDAP 404 means the domain is not registered. It does not tell you the price: a name can be a registry premium or reserved name at a higher price. **Unverified until you try to buy it at a registrar.**
-- Availability can change at any moment. Registering the `.app` domain soon after deciding costs little and protects the name.
-- No trademark search was done (USPTO, EUIPO, WIPO Global Brand Database, or the GCC and Saudi SAIP registers). Do one before the rename. A quick WIPO Global Brand Database search in classes 9 and 36 is the minimum.
-- My notes on meanings come from my own language knowledge and were **not checked by native speakers**. Ask at least one person each from the Gulf, Egypt, the Levant, India/Pakistan and a Spanish-speaking country to confirm there is no slang problem.
+- An RDAP 404 means the domain is not registered. It does not tell you the price: the name could be a registry premium or reserved name. **Unverified until you try to buy it at a registrar.**
+- Availability can change at any moment. Several near-miss `.com` names in this niche were registered in mid-to-late 2026 (see 1.5), which suggests other people are naming bill-split apps right now. Register the `.app` and `get<name>.com` domains as soon as a name is chosen.
+- **No registry trademark search was done.** Before the rename, search at least the USPTO, EUIPO and the WIPO Global Brand Database in classes 9 (software) and 36 (financial services). Add the UK IPO, CIPO (Canada), IP Australia, JPO, KIPO and the GCC/SAIP registers for the target markets.
 
-### 1.3 Names checked and rejected
+### 1.3 Language check: what was and was not checked
 
-| Name | Why rejected (verified 2026-11-05) |
+- **Checked from my own language knowledge (not by native speakers):** en, es, de, fr, it, pt, nl, sv, da, nb, pl, ru, tr, ar, hi, ur, ja, ko and id. For each, I looked for real words, slang or obscenities that match or nearly match each name. I found no negative meaning for **Halbo, Tabzu, Tabhop, Evenkin or Tabaroo**. The issues I did find (Kwitta and *kutta*, Halvee and the Turkish funeral *helva*) are noted in 1.1.
+- **Checked for pronunciation only, not for meaning:** zh, vi and th. For these I am not confident about slang, tones or near-homophones.
+- **Ask a native speaker** to sense-check the chosen name and the runner-up in at least ar (Gulf), hi/ur, ja, ko, zh, th, vi and tr before committing.
+
+### 1.4 Top 5 (ranked)
+
+| Rank | Name | One-line rationale |
+|---|---|---|
+| 1 | **Halbo** | It means "half" to German, Dutch and Nordic speakers, has no P, V or clusters so it is easy in all 22 languages, and it is clean on both stores in all 4 countries checked. `halbo.app` and `gethalbo.com` are free. |
+| 2 | **Tabzu** | It is short, punchy and universally pronounceable, and both domains are free. The near-namesake "Tapzum" expense tracker on Play is the only flag. |
+| 3 | **Tabhop** | It has a clear "group night out, then split the tab" story and fits the standard title in exactly 30 characters, with only a tiny Chrome extension nearby. |
+| 4 | **Evenkin** | It has the cleanest store result (zero App Store hits) and a warm "even with your people" meaning. But it is 7 letters, too long for the standard title, and `evenkin.com` was registered in August 2026. |
+| 5 | **Tabaroo** | It is the most fun and memorable in the US, UK and AU, but at 7 letters it needs the shorter title suffix, and there is a browser-tab Chrome extension with the same name. |
+
+Honourable mention: **Kwittle** has the best multi-market meaning ("quits" in German, Dutch, Nordic and Russian, and "receipt" in Polish), and both its `.app` and `.com` are free. But it is hard to say in Japanese and Spanish, and it shares the *kwit-* stem with the same-niche "Kwitsy: Split Bills".
+
+### 1.5 Recommendation
+
+**Halbo.**
+
+- Store title: `Halbo: Split Bills & Receipts` (29 characters).
+- Subtitle (iOS) / short description lead (Play): `AI Receipt Scanner & Settle Up` (30 characters).
+- Domains to register first: `halbo.app` and `gethalbo.com` (both free on 2026-11-05). `halbo.com` is taken, and its use is unknown.
+- Why: it means "half" in the target markets with the highest willingness to pay (DE, CH, NL and the Nordics), it says the product's core idea in 5 letters, it is pronounceable in every app language, and no app with a similar name exists in the US, GB, DE or SA stores.
+- Before committing: run a registry trademark search (classes 9 and 36), check that halbo.com is not an active business in this space, and do the native-speaker check in 1.3.
+
+**Runner-up: Tabzu.**
+
+### 1.6 Names checked and rejected
+
+| Name | Why rejected (verified 2026-11-05 unless marked) |
 |---|---|
-| Qasma | **"Qasma: Split Trip Expenses"** already exists (Finance, App Store). `qasma.com` is taken. |
-| Tabsy | **"Tabsy - Shared Tabs & Expenses"** already exists (Finance, App Store). `tabsy.com` is taken. |
-| Hisaab / Hisabi | Several finance apps already exist, including **"Hisaab: Split Bills & UPI"** and "Hisabi: AI Expense Tracker". The `.app` domains are taken. |
-| Splitsy, Splitzy, Splitto, Splitmate | Either a same-niche app exists ("Splitsy: Split Bills") or the `.app` domain is taken. |
-| Sawa, Tamam, Kitto, Sahmi, Divvo | The `.app` domain is taken. For Divvo, a Finance app named "Divvo" also exists. |
-| Tabby (idea only) | Tabby is a large BNPL fintech in Saudi Arabia and the UAE, so the confusion risk in our key market is too high. |
+| Kwitsy | **"Kwitsy: Split Bills"** exists on Google Play, and `kwitsy.com` (registered 2026-09) is a live bill-splitting site. |
+| Evenpot | `evenpot.com` is a live "split bills, settle up" app (Finance), and `getevenpot.com` hosts "Even Pot". |
+| Quitsies | `quitsies.com` (registered 2026-08) hosts a live web app with the same name. |
+| Evenout, Evensies, Fairsies, Tab Tally, TabsUp | A same-niche Finance app with that name already exists on the App Store (for example "EvenOut: Split & Settle Up", "Evensies: Split & Settle Up", "Fairsies: Split the Bill", "Tab Tally - Split Group Bills", "TabsUp"). |
+| Evenko | evenko is a major Montreal concert promoter, and Canada is a target market. Confirmed by a Play search. |
+| Quidly, Quidsy, Quidd | "Quidly" is used by 3 Finance apps. `quidsy.com` is a UK "earn money" site. Quidd is a known collectibles app (from memory, unverified). |
+| Fairlo | `fairlo.com` is a Swedish consumer-credit company, which matters because the Nordics are a target market. |
+| Splitkin, Splitzu | There is already an App Store app called "SplitKin App", and the *split-* prefix is crowded: "Splitzy", "Splitza", "Splitr", "Splitski", "Splitko" and "Splito" all exist. |
+| Tabora | "Tabora: Save Videos as Tabs" (Productivity) exists. |
+| Tabso, Tabsie | Too close to the existing "Tabsy - Shared Tabs & Expenses" (Finance). |
+| Tabfox, Evenfox | "TabFox" exists (Developer Tools). Foxes also suggest cunning, which is the wrong signal for a money app. |
+| Evenowl | The owl is a bad omen in Arab culture, and Hindi/Urdu *ullu* ("owl") is slang for "fool". `evenowl.app` was free. |
+| Tabmint, Evenmint | "Mint" is Intuit's former budgeting brand, so the trademark risk in finance is high. |
+| Divvia | Close to **Divvy** (BILL's spend-management brand), and the double V is hard in Arabic. |
+| Tabbo | The `.app` is free, but there is a "TABBO" app (Education), and the name reads as "taboo" in English and Arabic (تابو). |
+| Kwitt, Kvitt, Quitto, Halvo, Settla, Settlo, Evenup, Sharo, Squaro, Halvsies, Quits, Splitly, Fairly, Squarely, Tabby, and others | The `.app` domain is registered (RDAP 200). |
+| Tabby (idea only) | Tabby is a large BNPL fintech in Saudi Arabia and the UAE. |
 
-### 1.4 Recommendation
+### 1.7 Footnote: regional alternatives (from the earlier Arabic-root list)
 
-**Nusso.**
+If a regional sub-brand is ever needed for MENA or South Asia, these were checked on 2026-11-05. All have a free `.app` and no same-name app in US search results. No trademark search was done for any of them.
 
-- It has the strongest built-in story for the Arabic-speaking core audience ("nuṣṣ-nuṣṣ" means 50/50) while still sounding neutral and friendly in English, Spanish and German.
-- It is two syllables with no "Q" problem.
-- The `.app` domain is free, and no same-name app exists on either store.
-
-**Qismo** is the backup if a trademark search or a native-speaker check rules out Nusso.
+- **Nusso**: from Arabic نص *nuṣṣ*, "half". *Nuṣṣ-nuṣṣ* means "50/50" in Gulf, Levantine and Egyptian dialects.
+- **Qismo**: from Arabic قسمة *qisma*, "portion". The "Q" is hard for non-Arabic speakers.
+- **Hisso**: from Arabic حصة *ḥiṣṣa* and Hindi/Urdu हिस्सा / حصہ *hissa*, both meaning "share". In English it evokes a hiss.
 
 ---
 
