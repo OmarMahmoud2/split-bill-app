@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/services/notification_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class SendNotificationSheet extends StatefulWidget {
   final String targetUid;
@@ -28,16 +29,16 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
     final body = _bodyController.text.trim();
 
     if (title.isEmpty || body.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('please_fill_all_fields'.tr())),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('please_fill_all_fields'.tr())));
       return;
     }
 
     if (widget.targetToken == null || widget.targetToken!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('user_missing_fcm_token'.tr())),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('user_missing_fcm_token'.tr())));
       return;
     }
 
@@ -55,11 +56,12 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
       );
 
       if (mounted) {
+        final p = context.palette;
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('notification_sent_successfully'.tr()),
-            backgroundColor: Colors.green,
+            backgroundColor: p.success,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -69,7 +71,7 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('error_sending_notification'.tr()),
-            backgroundColor: Colors.red,
+            backgroundColor: context.palette.danger,
           ),
         );
       }
@@ -102,7 +104,9 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
           decoration: InputDecoration(
             hintText: 'notification_title'.tr(),
             filled: true,
-            fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            fillColor: colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.3,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide.none,
@@ -118,7 +122,9 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
           decoration: InputDecoration(
             hintText: 'notification_body'.tr(),
             filled: true,
-            fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            fillColor: colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.3,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide.none,
@@ -149,7 +155,10 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
                 )
               : Text(
                   'send_notification'.tr(),
-                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                  ),
                 ),
         ),
         const SizedBox(height: 16),

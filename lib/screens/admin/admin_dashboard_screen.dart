@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'user_admin_detail_screen.dart';
@@ -37,8 +38,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: p.surfaceMuted,
       appBar: AppBar(
         title: Text(
           'admin_dashboard'.tr(),
@@ -47,7 +49,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             letterSpacing: -0.5,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: p.surface,
         elevation: 0,
         centerTitle: true,
       ),
@@ -85,6 +87,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     required int totalCount,
     required int shownCount,
   }) {
+    final p = context.palette;
     final activeFilters = _activeFilterCount;
     final isFiltered =
         activeFilters > 0 ||
@@ -93,7 +96,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
-      color: Colors.white,
+      color: p.surface,
       child: Column(
         children: [
           Row(
@@ -116,7 +119,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           )
                         : null,
                     filled: true,
-                    fillColor: Colors.grey[100],
+                    fillColor: p.surfaceVariant,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                       borderSide: BorderSide.none,
@@ -152,7 +155,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           },
                         ),
                   style: TextStyle(
-                    color: Colors.blueGrey[600],
+                    color: p.isDark
+                        ? Colors.blueGrey[300]
+                        : Colors.blueGrey[600],
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -170,6 +175,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildFilterButton(BuildContext context, int activeFilters) {
+    final p = context.palette;
     final hasActiveFilters =
         activeFilters > 0 || _sort != _AdminUserSort.newest;
 
@@ -186,14 +192,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 onPressed: _openUserFiltersSheet,
                 style: OutlinedButton.styleFrom(
                   backgroundColor: hasActiveFilters
-                      ? Colors.blue.withValues(alpha: 0.08)
-                      : Colors.grey[100],
+                      ? p.info.withValues(alpha: 0.08)
+                      : p.surfaceVariant,
                   foregroundColor: hasActiveFilters
-                      ? Colors.blue[700]
+                      ? (p.isDark ? p.infoStrong : Colors.blue[700])
                       : Colors.blueGrey,
                   side: BorderSide(
                     color: hasActiveFilters
-                        ? Colors.blue.withValues(alpha: 0.35)
+                        ? p.info.withValues(alpha: 0.35)
                         : Colors.transparent,
                   ),
                   shape: RoundedRectangleBorder(
@@ -211,8 +217,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               top: -3,
               child: Container(
                 padding: const EdgeInsets.all(5),
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
+                decoration: BoxDecoration(
+                  color: p.info,
                   shape: BoxShape.circle,
                 ),
                 child: Text(
@@ -249,6 +255,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       return _buildEmptyFilteredState();
     }
 
+    final p = context.palette;
     return ListView.builder(
       padding: const EdgeInsets.all(20),
       itemCount: filteredUsers.length,
@@ -270,14 +277,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: p.surface,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: (isAdmin
-                        ? Colors.blueGrey
-                        : (isPremium ? Colors.amber : Colors.blue))
-                    .withValues(alpha: 0.04),
+                color:
+                    (isAdmin
+                            ? Colors.blueGrey
+                            : (isPremium ? Colors.amber : Colors.blue))
+                        .withValues(alpha: 0.04),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -306,8 +314,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           height: 52,
                           decoration: BoxDecoration(
                             color: isAdmin
-                                ? Colors.blueGrey[50]
-                                : (isPremium ? Colors.amber[50] : Colors.blue[50]),
+                                ? p.tint(Colors.blueGrey[50]!, Colors.blueGrey)
+                                : (isPremium
+                                      ? p.tint(Colors.amber[50]!, Colors.amber)
+                                      : p.infoSoft),
                             borderRadius: BorderRadius.circular(16),
                             image: avatarImage != null
                                 ? DecorationImage(
@@ -326,10 +336,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                       fontWeight: FontWeight.w900,
                                       fontSize: 20,
                                       color: isAdmin
-                                          ? Colors.blueGrey[700]
+                                          ? (p.isDark
+                                                ? Colors.blueGrey[200]
+                                                : Colors.blueGrey[700])
                                           : (isPremium
-                                              ? Colors.amber[800]
-                                              : Colors.blue[700]),
+                                                ? (p.isDark
+                                                      ? Colors.amber[300]
+                                                      : Colors.amber[800])
+                                                : (p.isDark
+                                                      ? p.infoStrong
+                                                      : Colors.blue[700])),
                                     ),
                                   ),
                                 )
@@ -342,9 +358,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(3),
                               decoration: BoxDecoration(
-                                color: isAdmin ? Colors.blueGrey[800] : Colors.amber[700],
+                                color: isAdmin
+                                    ? Colors.blueGrey[800]
+                                    : Colors.amber[700],
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 1.5),
+                                border: Border.all(
+                                  color: p.surface,
+                                  width: 1.5,
+                                ),
                               ),
                               child: Icon(
                                 isAdmin
@@ -369,10 +390,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               Flexible(
                                 child: Text(
                                   name,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 15,
-                                    color: Colors.black87,
+                                    color: p.textPrimary,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -381,22 +402,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               if (isAdmin) ...[
                                 _buildStatusBadge(
                                   'admin'.tr(),
-                                  Colors.blueGrey[700]!,
-                                  Colors.blueGrey[50]!,
+                                  p.isDark
+                                      ? Colors.blueGrey[200]!
+                                      : Colors.blueGrey[700]!,
+                                  p.tint(Colors.blueGrey[50]!, Colors.blueGrey),
                                 ),
                                 const SizedBox(width: 4),
                               ],
                               if (isPremium)
                                 _buildStatusBadge(
                                   'premium'.tr(),
-                                  Colors.amber[800]!,
-                                  Colors.amber[50]!,
+                                  p.isDark
+                                      ? Colors.amber[300]!
+                                      : Colors.amber[800]!,
+                                  p.tint(Colors.amber[50]!, Colors.amber),
                                 )
                               else if (!isAdmin)
                                 _buildStatusBadge(
                                   'admin_user_free'.tr(),
-                                  Colors.grey[600]!,
-                                  Colors.grey[100]!,
+                                  p.textSecondary,
+                                  p.surfaceVariant,
                                 ),
                             ],
                           ),
@@ -404,7 +429,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           Text(
                             email,
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: p.textSecondary,
                               fontSize: 12,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -421,7 +446,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               Text(
                                 '$points ${'points'.tr()}',
                                 style: TextStyle(
-                                  color: Colors.grey[700],
+                                  color: p.textMedium,
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -435,7 +460,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     // Trailing Arrow
                     Icon(
                       Icons.chevron_right_rounded,
-                      color: Colors.grey[400],
+                      color: p.textDisabled,
                       size: 22,
                     ),
                   ],
@@ -468,6 +493,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildEmptyFilteredState() {
+    final p = context.palette;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -484,7 +510,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               'admin_no_matching_users'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.blueGrey[700],
+                color: p.isDark ? Colors.blueGrey[200] : Colors.blueGrey[700],
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
               ),
@@ -513,13 +539,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            final p = context.palette;
             return Container(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(sheetContext).size.height * 0.86,
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              decoration: BoxDecoration(
+                color: p.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
               ),
               child: SafeArea(
                 top: false,
@@ -535,7 +564,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           height: 5,
                           margin: const EdgeInsets.only(bottom: 18),
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: p.border,
                             borderRadius: BorderRadius.circular(999),
                           ),
                         ),
@@ -608,14 +637,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           title: Text(
                             _sortLabel(sort),
                             style: TextStyle(
-                              color: selected ? Colors.blue[700] : null,
+                              color: selected
+                                  ? (p.isDark ? p.infoStrong : Colors.blue[700])
+                                  : null,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           trailing: selected
                               ? Icon(
                                   Icons.check_circle_rounded,
-                                  color: Colors.blue[700],
+                                  color: p.isDark
+                                      ? p.infoStrong
+                                      : Colors.blue[700],
                                 )
                               : const Icon(Icons.circle_outlined),
                           contentPadding: EdgeInsets.zero,
@@ -667,10 +700,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildSheetSectionTitle(String title) {
+    final p = context.palette;
     return Text(
       title,
       style: TextStyle(
-        color: Colors.blueGrey[700],
+        color: p.isDark ? Colors.blueGrey[200] : Colors.blueGrey[700],
         fontWeight: FontWeight.w900,
       ),
     );
