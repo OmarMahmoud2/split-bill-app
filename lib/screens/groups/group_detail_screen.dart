@@ -13,6 +13,7 @@ import 'package:split_bill_app/screens/groups/create_group_screen.dart';
 import 'package:split_bill_app/screens/groups/group_currencies_screen.dart';
 import 'package:split_bill_app/screens/groups/member_picker.dart';
 import 'package:split_bill_app/screens/settle/settle_up_screen.dart';
+import 'package:split_bill_app/services/pro_access.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
@@ -107,6 +108,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     } catch (_) {
       if (mounted) AppToast.show(context, message: 'groups_save_failed'.tr(), type: AppToastType.error);
     }
+  }
+
+  /// Trips in several currencies are a Pro feature.
+  Future<void> _openCurrencies(LedgerGroup g) async {
+    if (!await ProAccess.instance.ensure(context) || !mounted) return;
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupCurrenciesScreen(groupId: g.id)));
   }
 
   void _invite(LedgerGroup g) {
@@ -220,7 +227,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               onSelected: (v) {
                 switch (v) {
                   case 'currencies':
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupCurrenciesScreen(groupId: group.id)));
+                    _openCurrencies(group);
                   case 'invite':
                     _invite(group);
                   case 'archive':
