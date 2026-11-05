@@ -633,6 +633,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
       context,
       requiredPoints: requiredPoints,
       onWatchAd: _watchAdForPoint,
+      onTypeItIn: _openManualEntry,
     );
   }
 
