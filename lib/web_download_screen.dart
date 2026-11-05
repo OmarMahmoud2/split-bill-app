@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class WebDownloadScreen extends StatelessWidget {
   const WebDownloadScreen({super.key});
@@ -10,9 +11,10 @@ class WebDownloadScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final isCompact = width < 820;
+    final p = context.palette;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FB),
+      backgroundColor: p.isDark ? p.background : const Color(0xFFF6F8FB),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -67,6 +69,7 @@ class _DownloadCopy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final p = context.palette;
 
     return Column(
       crossAxisAlignment: isCompact
@@ -90,7 +93,7 @@ class _DownloadCopy extends StatelessWidget {
               'Split Bill',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w900,
-                color: const Color(0xFF111827),
+                color: p.isDark ? p.textPrimary : const Color(0xFF111827),
               ),
             ),
           ],
@@ -102,7 +105,7 @@ class _DownloadCopy extends StatelessWidget {
           style: theme.textTheme.displaySmall?.copyWith(
             fontWeight: FontWeight.w900,
             height: 1.05,
-            color: const Color(0xFF0F172A),
+            color: p.isDark ? p.textPrimary : const Color(0xFF0F172A),
           ),
         ),
         const SizedBox(height: 18),
@@ -110,7 +113,7 @@ class _DownloadCopy extends StatelessWidget {
           'web_download_body'.tr(),
           textAlign: isCompact ? TextAlign.center : TextAlign.start,
           style: theme.textTheme.titleMedium?.copyWith(
-            color: const Color(0xFF526070),
+            color: p.isDark ? p.textSecondary : const Color(0xFF526070),
             height: 1.45,
             fontWeight: FontWeight.w500,
           ),
@@ -138,7 +141,7 @@ class _DownloadCopy extends StatelessWidget {
           'web_download_guest_note'.tr(),
           textAlign: isCompact ? TextAlign.center : TextAlign.start,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: const Color(0xFF667085),
+            color: p.isDark ? p.textTertiary : const Color(0xFF667085),
             height: 1.45,
           ),
         ),
@@ -163,11 +166,13 @@ class _StoreButton extends StatelessWidget {
     final maxWidth = (MediaQuery.sizeOf(context).width - 48)
         .clamp(232.0, 360.0)
         .toDouble();
+    final p = context.palette;
+    final foreground = p.isDark ? p.onInverseSurface : Colors.white;
 
     return ConstrainedBox(
       constraints: BoxConstraints(minWidth: 232, maxWidth: maxWidth),
       child: Material(
-        color: const Color(0xFF111827),
+        color: p.isDark ? p.inverseSurface : const Color(0xFF111827),
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
@@ -177,15 +182,15 @@ class _StoreButton extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, color: Colors.white, size: 24),
+                Icon(icon, color: foreground, size: 24),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Text(
                     label,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: foreground,
                       fontWeight: FontWeight.w800,
                       fontSize: 15,
                       height: 1.15,
@@ -214,11 +219,12 @@ class _PhonePreview extends StatelessWidget {
         width: isCompact ? 260 : 330,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
+          // Phone bezel: intentionally dark in both themes.
           color: const Color(0xFF111827),
           borderRadius: BorderRadius.circular(34),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.18),
+              color: context.palette.shadow.withValues(alpha: 0.18),
               blurRadius: 36,
               offset: const Offset(0, 22),
             ),

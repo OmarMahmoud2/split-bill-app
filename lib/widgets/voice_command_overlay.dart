@@ -15,6 +15,7 @@ import 'package:split_bill_app/screens/scan_receipt/widgets/no_points_dialog.dar
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class VoiceCommandOverlay extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -145,7 +146,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           content: Text(
             'ad_is_still_loading_please_try_again_in_a_moment',
           ).tr(),
-          backgroundColor: Colors.blue,
+          backgroundColor: context.palette.info,
         ),
       );
       return;
@@ -157,7 +158,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('plus_1_point_earned').tr(),
-              backgroundColor: Colors.green,
+              backgroundColor: context.palette.success,
             ),
           );
         }
@@ -167,7 +168,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('ad_failed_to_load_please_try_again').tr(),
-              backgroundColor: Colors.red,
+              backgroundColor: context.palette.danger,
             ),
           );
         }
@@ -332,6 +333,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     bool isProcessing = _isProcessingTranscript || _isProcessingAssignment;
     bool showConfirmation =
         _transcript != null && !isProcessing && !_isSuccess && !_isListening;
+    final p = context.palette;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -377,13 +379,13 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black12,
+                  color: p.textStrong.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white24),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.close_rounded,
-                  color: Colors.black87,
+                  color: p.textPrimary,
                   size: 24,
                 ),
               ),
@@ -473,13 +475,14 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
   }
 
   Widget _buildConfirmationUI() {
+    final p = context.palette;
     return Column(
       children: [
         // Transcript Box
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.95),
+            color: p.surface.withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(20),
             boxShadow: const [
               BoxShadow(
@@ -494,7 +497,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
               Text(
                 'you_said',
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: p.textTertiary,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -503,9 +506,9 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
               Text(
                 _transcript!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
-                  color: Colors.black87,
+                  color: p.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -519,7 +522,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.redAccent.withValues(alpha: 0.9),
+                color: p.dangerAccent.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -542,7 +545,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
             _buildActionButton(
               icon: Icons.refresh_rounded,
               color: Colors.white,
-              bgColor: Colors.grey.withValues(alpha: 0.8),
+              bgColor: p.textTertiary.withValues(alpha: 0.8),
               onTap: _retryRecording,
               label: 're_record'.tr(),
             ),
@@ -608,13 +611,14 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
   }
 
   Widget _buildLanguageSelectionView() {
+    final p = context.palette;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'select_language',
           style: TextStyle(
-            color: Colors.black87,
+            color: p.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -622,7 +626,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         const SizedBox(height: 8),
         Text(
           'choose_the_language_you_will_speak',
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          style: TextStyle(color: p.textSecondary, fontSize: 14),
         ).tr(),
         const SizedBox(height: 32),
         Wrap(
@@ -637,6 +641,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
   }
 
   Widget _buildLanguageCard(LocaleOption option) {
+    final p = context.palette;
     return GestureDetector(
       onTap: () {
         HapticFeedback.mediumImpact();
@@ -649,16 +654,16 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
         width: 90,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: p.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: p.shadow.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(color: Colors.grey.shade100),
+          border: Border.all(color: p.surfaceVariant),
         ),
         child: Column(
           children: [
@@ -667,10 +672,10 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
             Text(
               option.nativeName,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: p.textPrimary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -754,10 +759,12 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     );
   }
 
+  // The orb is a vivid state-colored button with a white icon, so its
+  // success / listening / idle hues stay fixed in both themes.
   Color _getOrbColor() {
     if (_isSuccess) return Colors.greenAccent;
     if (_isProcessingAssignment || _isProcessingTranscript) {
-      return Colors.purpleAccent;
+      return context.palette.primary;
     }
     if (_isListening) return Colors.redAccent;
     return Colors.blueAccent;
@@ -766,7 +773,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
   List<Color> _getOrbGradient() {
     if (_isSuccess) return [Colors.green.shade400, Colors.green.shade600];
     if (_isProcessingAssignment || _isProcessingTranscript) {
-      return [Colors.purple.shade400, Colors.deepPurple.shade600];
+      return context.palette.primaryGradient.colors;
     }
     if (_isListening) return [const Color(0xFFFF5252), const Color(0xFFD50000)];
     return [const Color(0xFF448AFF), const Color(0xFF2979FF)]; // Idle Blue

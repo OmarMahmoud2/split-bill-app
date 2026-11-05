@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class CustomUpgrader extends StatefulWidget {
   final Widget child;
@@ -51,6 +52,7 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
       barrierLabel: "Update Available",
       transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (context, anim1, anim2) {
+        final p = context.palette;
         return Stack(
           children: [
             BackdropFilter(
@@ -66,11 +68,11 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
                   child: Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: p.surface,
                       borderRadius: BorderRadius.circular(32),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.blueAccent.withValues(alpha: 0.2),
+                          color: p.infoAccent.withValues(alpha: 0.2),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
@@ -84,36 +86,38 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
                           height: 140,
                           child: Lottie.asset(
                             'assets/animations/update_rocket.json', // Requires asset
-                            errorBuilder: (c, e, s) => const Icon(
+                            errorBuilder: (c, e, s) => Icon(
                               Icons.rocket_launch_rounded,
                               size: 100,
-                              color: Colors.blueAccent,
+                              color: p.infoAccent,
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
-                        Text('update_available',
+                        Text(
+                          'update_available',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
-                            color: Colors.black87,
+                            color: p.textPrimary,
                           ),
                           textAlign: TextAlign.center,
                         ).tr(),
                         const SizedBox(height: 12),
                         Text(
                           "Version ${_upgrader.currentAppStoreVersion ?? 'New'} is now available.",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black54,
+                            color: p.textSecondary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text('we_ve_added_new_features_and_fixed_some_bugs_to_improve_your_experience',
+                        Text(
+                          'we_ve_added_new_features_and_fixed_some_bugs_to_improve_your_experience',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: p.textSecondary,
                             height: 1.4,
                           ),
                           textAlign: TextAlign.center,
@@ -134,16 +138,17 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueAccent,
+                              backgroundColor: p.infoAccent,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               elevation: 4,
-                              shadowColor: Colors.blueAccent.withValues(alpha: 0.4),
+                              shadowColor: p.infoAccent.withValues(alpha: 0.4),
                             ),
-                            child: Text('update_now',
+                            child: Text(
+                              'update_now',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -154,8 +159,9 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
                         const SizedBox(height: 12),
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text('later',
-                            style: TextStyle(color: Colors.grey),
+                          child: Text(
+                            'later',
+                            style: TextStyle(color: p.textTertiary),
                           ).tr(),
                         ),
                       ],

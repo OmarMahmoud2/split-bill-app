@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/widgets/bill_tile.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:lottie/lottie.dart';
@@ -68,9 +69,10 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
     if (user == null) {
       return Scaffold(body: Center(child: Text('please_log_in').tr()));
     }
+    final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: palette.surfaceMuted,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('bills')
@@ -104,11 +106,11 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: palette.surface,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
+                            color: palette.shadow.withValues(alpha: 0.04),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -121,7 +123,7 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: palette.surfaceVariant,
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(
@@ -131,7 +133,8 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Text('completed_bills',
+                          Text(
+                            'completed_bills',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 18,
@@ -157,9 +160,10 @@ class _CompletedBillsScreenState extends State<CompletedBillsScreen> {
                           repeat: false,
                         ),
                         const SizedBox(height: 16),
-                        Text('no_completed_bills_yet',
+                        Text(
+                          'no_completed_bills_yet',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: palette.textSecondary,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class AdModal extends StatefulWidget {
   final VoidCallback onWatchAd;
@@ -49,6 +50,7 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Dialog(
@@ -65,11 +67,11 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                 child: Container(
                   constraints: const BoxConstraints(maxWidth: 360),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: p.surface,
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.purple.withValues(alpha: 0.3),
+                        color: p.primary.withValues(alpha: 0.3),
                         blurRadius: 30,
                         offset: const Offset(0, 15),
                       ),
@@ -85,14 +87,7 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.purple.shade400,
-                                    Colors.deepPurple.shade700,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
+                                gradient: p.primaryGradient,
                               ),
                             ),
                             Center(
@@ -114,11 +109,12 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            Text('earn_scan_points',
+                            Text(
+                              'earn_scan_points',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w900,
-                                color: Colors.black87,
+                                color: p.textPrimary,
                               ),
                               textAlign: TextAlign.center,
                             ).tr(),
@@ -128,18 +124,22 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                               text: TextSpan(
                                 style: TextStyle(
                                   fontSize: 15,
-                                  color: Colors.grey[600],
+                                  color: p.textSecondary,
                                   height: 1.5,
                                 ),
                                 children: [
-                                  TextSpan(text: 'watch_a_short_video_to_get'.tr()),
-                                  TextSpan(text: 'plus_1_point'.tr(),
+                                  TextSpan(
+                                    text: 'watch_a_short_video_to_get'.tr(),
+                                  ),
+                                  TextSpan(
+                                    text: 'plus_1_point'.tr(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.purple,
+                                      color: p.primaryStrong,
                                     ),
                                   ),
-                                  TextSpan(text: 'for_your_next_receipt_scan'.tr(),
+                                  TextSpan(
+                                    text: 'for_your_next_receipt_scan'.tr(),
                                   ),
                                 ],
                               ),
@@ -159,8 +159,8 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                                 ),
                                 label: Text('watch_video').tr(),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.purple,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: p.primary,
+                                  foregroundColor: p.onPrimary,
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
                                   ),
@@ -169,7 +169,7 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                                     fontWeight: FontWeight.bold,
                                   ),
                                   elevation: 5,
-                                  shadowColor: Colors.purple.withValues(alpha: 0.4),
+                                  shadowColor: p.primary.withValues(alpha: 0.4),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -179,8 +179,9 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                             const SizedBox(height: 16),
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: Text('no_thanks',
-                                style: TextStyle(color: Colors.grey),
+                              child: Text(
+                                'no_thanks',
+                                style: TextStyle(color: p.textTertiary),
                               ).tr(),
                             ),
                           ],
@@ -200,14 +201,17 @@ class _AdModalState extends State<AdModal> with SingleTickerProviderStateMixin {
                 onTap: () => Navigator.pop(context, false),
                 child: Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: p.surface,
                     shape: BoxShape.circle,
                     boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 10),
+                      BoxShadow(
+                        color: p.shadow.withValues(alpha: 0.12),
+                        blurRadius: 10,
+                      ),
                     ],
                   ),
-                  child: const Icon(Icons.close, size: 20, color: Colors.black),
+                  child: Icon(Icons.close, size: 20, color: p.textStrong),
                 ),
               ),
             ),

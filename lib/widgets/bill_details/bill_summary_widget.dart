@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 
 class BillSummaryWidget extends StatelessWidget {
@@ -36,15 +37,16 @@ class BillSummaryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final double left = total - collected;
     final primaryColor = Theme.of(context).colorScheme.primary;
+    final p = context.palette;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: p.surface,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: p.shadow.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -88,7 +90,7 @@ class BillSummaryWidget extends StatelessWidget {
                             _formatDate(date),
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey[500],
+                              color: p.textTertiary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -107,12 +109,12 @@ class BillSummaryWidget extends StatelessWidget {
                       Icon(
                         Icons.person_pin_rounded,
                         size: 18,
-                        color: Colors.grey[400],
+                        color: p.textDisabled,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'created_by',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 14, color: p.textSecondary),
                       ).tr(),
                       const SizedBox(width: 5),
                       Text(
@@ -134,7 +136,7 @@ class BillSummaryWidget extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
+                top: BorderSide(color: p.textTertiary.withValues(alpha: 0.1)),
               ),
             ),
             padding: const EdgeInsets.symmetric(vertical: 20),
@@ -144,19 +146,19 @@ class BillSummaryWidget extends StatelessWidget {
                   context,
                   "Collected",
                   CurrencyUtils.format(collected, currencyCode: currencyCode),
-                  Colors.green,
+                  p.success,
                   Icons.check_circle_rounded,
                 ),
                 Container(
                   width: 1,
                   height: 30,
-                  color: Colors.grey.withValues(alpha: 0.1),
+                  color: p.textTertiary.withValues(alpha: 0.1),
                 ),
                 _buildMetric(
                   context,
                   "Left",
                   CurrencyUtils.format(left, currencyCode: currencyCode),
-                  Colors.orange[700]!,
+                  p.warningStrong,
                   Icons.hourglass_bottom_rounded,
                 ),
               ],
@@ -174,6 +176,7 @@ class BillSummaryWidget extends StatelessWidget {
     Color color,
     IconData icon,
   ) {
+    final p = context.palette;
     return Expanded(
       child: Column(
         children: [
@@ -186,7 +189,7 @@ class BillSummaryWidget extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[500],
+                  color: p.textTertiary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

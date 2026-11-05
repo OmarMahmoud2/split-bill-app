@@ -789,5 +789,11 @@
   "sign_in_with_apple": "使用 Apple 登录",
   "back": "返回",
   "get_started": "开始使用",
-  "no_matches_found": "没有匹配结果"
+  "no_matches_found": "没有匹配结果",
+  "appearance": "外观",
+  "choose_appearance": "选择外观",
+  "theme_mode_system": "跟随系统",
+  "theme_mode_system_subtitle": "跟随设备设置",
+  "theme_mode_light": "浅色",
+  "theme_mode_dark": "深色"
 }

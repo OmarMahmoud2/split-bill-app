@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:split_bill_app/config/app_links.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SubscriptionLegalDisclosure extends StatelessWidget {
@@ -27,11 +28,19 @@ class SubscriptionLegalDisclosure extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final package = this.package;
-    final foreground = dark ? Colors.white : const Color(0xFF1F2933);
+    final p = context.palette;
+    // [dark] means the disclosure sits on the always-dark premium card, so
+    // those colors stay fixed. Otherwise follow the app theme (light values
+    // unchanged).
+    final foreground = dark
+        ? Colors.white
+        : (p.isDark ? p.textPrimary : const Color(0xFF1F2933));
     final muted = dark
         ? Colors.white.withValues(alpha: 0.68)
-        : const Color(0xFF667085);
-    final linkColor = dark ? const Color(0xFFFFD700) : const Color(0xFF006D3C);
+        : (p.isDark ? p.textSecondary : const Color(0xFF667085));
+    final linkColor = dark
+        ? p.premium
+        : (p.isDark ? p.successStrong : const Color(0xFF006D3C));
 
     return Container(
       width: double.infinity,
@@ -39,12 +48,12 @@ class SubscriptionLegalDisclosure extends StatelessWidget {
       decoration: BoxDecoration(
         color: dark
             ? Colors.white.withValues(alpha: 0.08)
-            : const Color(0xFFF6F8FA),
+            : (p.isDark ? p.surfaceVariant : const Color(0xFFF6F8FA)),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: dark
               ? Colors.white.withValues(alpha: 0.14)
-              : const Color(0xFFE4E7EC),
+              : (p.isDark ? p.border : const Color(0xFFE4E7EC)),
         ),
       ),
       child: Column(

@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Mit Apple anmelden",
   "back": "Zurück",
   "get_started": "Loslegen",
-  "no_matches_found": "Keine Ergebnisse"
+  "no_matches_found": "Keine Ergebnisse",
+  "appearance": "Darstellung",
+  "choose_appearance": "Darstellung wählen",
+  "theme_mode_system": "Systemstandard",
+  "theme_mode_system_subtitle": "Folgt der Einstellung deines Geräts",
+  "theme_mode_light": "Hell",
+  "theme_mode_dark": "Dunkel"
 }

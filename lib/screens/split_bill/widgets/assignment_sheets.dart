@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 
 class SimpleAssignmentSheet extends StatefulWidget {
@@ -37,6 +38,7 @@ class _SimpleAssignmentSheetState extends State<SimpleAssignmentSheet> {
     final allParticipantIds = widget.participants
         .map<String>((participant) => participant['id'] as String)
         .toList();
+    final palette = context.palette;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -61,13 +63,15 @@ class _SimpleAssignmentSheetState extends State<SimpleAssignmentSheet> {
               return Container(
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.05)
-                      : Colors.grey[50],
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.05)
+                      : palette.surfaceMuted,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
                         ? Theme.of(context).colorScheme.primary
-                        : Colors.grey.shade100,
+                        : palette.surfaceVariant,
                     width: 1.5,
                   ),
                 ),
@@ -102,7 +106,7 @@ class _SimpleAssignmentSheetState extends State<SimpleAssignmentSheet> {
                             fontWeight: FontWeight.bold,
                             color: isSelected
                                 ? Theme.of(context).colorScheme.primary
-                                : Colors.black87,
+                                : palette.textPrimary,
                             fontSize: 16,
                           ),
                         ),
@@ -177,7 +181,7 @@ class _SimpleAssignmentSheetState extends State<SimpleAssignmentSheet> {
                 onPressed: () => widget.onConfirm(_selectedIds),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: palette.onPrimary,
                   minimumSize: const Size(double.infinity, 56),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -235,6 +239,7 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
   Widget build(BuildContext context) {
     int currentAssignedTotal = _currentMap.values.fold(0, (sum, v) => sum + v);
     int remaining = widget.maxQty - currentAssignedTotal;
+    final palette = context.palette;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -251,13 +256,13 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: remaining < 0
-                    ? Colors.red.withValues(alpha: 0.1)
-                    : Colors.green.withValues(alpha: 0.1),
+                    ? palette.danger.withValues(alpha: 0.1)
+                    : palette.success.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: remaining < 0
-                      ? Colors.red.withValues(alpha: 0.2)
-                      : Colors.green.withValues(alpha: 0.2),
+                      ? palette.danger.withValues(alpha: 0.2)
+                      : palette.success.withValues(alpha: 0.2),
                 ),
               ),
               child: Text(
@@ -265,7 +270,7 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
-                  color: remaining < 0 ? Colors.red : Colors.green[800],
+                  color: remaining < 0 ? palette.danger : palette.successStrong,
                 ),
               ),
             ),
@@ -285,12 +290,17 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
               final qty = _currentMap[p['id']] ?? 0;
 
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  color: qty > 0 ? Colors.blue.withValues(alpha: 0.05) : Colors.grey[50],
+                  color: qty > 0
+                      ? palette.info.withValues(alpha: 0.05)
+                      : palette.surfaceMuted,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: qty > 0 ? Colors.blue : Colors.grey.shade100,
+                    color: qty > 0 ? palette.info : palette.surfaceVariant,
                     width: 1.5,
                   ),
                 ),
@@ -332,7 +342,7 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
                           },
                           icon: Icon(
                             Icons.remove_circle_outline_rounded,
-                            color: qty > 0 ? Colors.red : Colors.grey[300],
+                            color: qty > 0 ? palette.danger : palette.border,
                           ),
                         ),
                         Container(
@@ -357,7 +367,9 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
                           },
                           icon: Icon(
                             Icons.add_circle_outline_rounded,
-                            color: remaining > 0 ? Colors.green : Colors.grey[300],
+                            color: remaining > 0
+                                ? palette.success
+                                : palette.border,
                           ),
                         ),
                       ],
@@ -370,10 +382,12 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
         ),
         const SizedBox(height: 24),
         ElevatedButton(
-          onPressed: remaining >= 0 ? () => widget.onConfirm(_currentMap) : null,
+          onPressed: remaining >= 0
+              ? () => widget.onConfirm(_currentMap)
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Colors.white,
+            foregroundColor: palette.onPrimary,
             minimumSize: const Size(double.infinity, 56),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),

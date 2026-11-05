@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class SearchableSheetItem<T> {
   const SearchableSheetItem({
@@ -185,7 +186,7 @@ class _SearchableSelectionSheetState<T>
             boxShadow: [
               if (!selected)
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: context.palette.shadow.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),

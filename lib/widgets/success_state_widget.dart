@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import '../theme/app_typography.dart';
 import '../theme/app_spacing.dart';
 
@@ -30,10 +31,10 @@ class SuccessStateWidget extends StatelessWidget {
               height: 200,
               repeat: false,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const Icon(
+              errorBuilder: (context, error, stackTrace) => Icon(
                 Icons.check_circle_outline,
                 size: 100,
-                color: Colors.green,
+                color: context.palette.success,
               ),
             ),
             const SizedBox(height: AppSpacing.xl),

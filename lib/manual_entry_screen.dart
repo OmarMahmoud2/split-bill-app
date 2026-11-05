@@ -6,7 +6,9 @@ import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
+
 // import 'package:flutter_contacts/flutter_contacts.dart';
 
 class ManualEntryScreen extends StatefulWidget {
@@ -111,7 +113,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('add_at_least_one_item').tr(),
-          backgroundColor: Colors.red,
+          backgroundColor: context.palette.danger,
         ),
       );
       return;
@@ -125,8 +127,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       (sum, item) => sum + ((item['price'] as double) * (item['qty'] as int)),
     );
 
-    final currencyCode =
-        Provider.of<AppSettingsProvider>(context, listen: false).currencyCode;
+    final currencyCode = Provider.of<AppSettingsProvider>(
+      context,
+      listen: false,
+    ).currencyCode;
     final manualReceiptData = {
       'storeName': _storeController.text.trim(),
       'total': total,
@@ -162,6 +166,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       alpha: 0.7,
     );
     final currencyCode = context.watch<AppSettingsProvider>().currencyCode;
+    final palette = context.palette;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -186,7 +191,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(
+                      color: palette.shadow.withValues(
                         alpha: theme.brightness == Brightness.dark
                             ? 0.18
                             : 0.08,
@@ -238,10 +243,16 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                             builder: (context, child) {
                               return Theme(
                                 data: Theme.of(context).copyWith(
-                                  colorScheme: Theme.of(context).colorScheme.copyWith(
-                                        primary: Theme.of(context).colorScheme.primary, // header background color
-                                        onPrimary: Colors.white, // header text color
-                                        onSurface: Theme.of(context).colorScheme.onSurface, // body text color
+                                  colorScheme: Theme.of(context).colorScheme
+                                      .copyWith(
+                                        primary: Theme.of(context)
+                                            .colorScheme
+                                            .primary, // header background color
+                                        onPrimary: palette
+                                            .onPrimary, // header text color
+                                        onSurface: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface, // body text color
                                       ),
                                 ),
                                 child: child!,
@@ -477,7 +488,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
           color: colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(
+              color: palette.shadow.withValues(
                 alpha: theme.brightness == Brightness.dark ? 0.18 : 0.05,
               ),
               blurRadius: 20,
@@ -523,7 +534,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 onPressed: _finish,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: palette.onPrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 18,
@@ -568,6 +579,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     );
     double lineTotal = (item['price'] as double) * (item['qty'] as int);
     final currencyCode = context.read<AppSettingsProvider>().currencyCode;
+    final palette = context.palette;
 
     return SizeTransition(
       sizeFactor: animation,
@@ -587,12 +599,12 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 24),
               decoration: BoxDecoration(
-                color: Colors.redAccent.withValues(alpha: 0.1),
+                color: palette.dangerAccent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.delete_forever_rounded,
-                color: Colors.redAccent,
+                color: palette.dangerAccent,
                 size: 28,
               ),
             ),
@@ -607,7 +619,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(
+                    color: palette.shadow.withValues(
                       alpha: theme.brightness == Brightness.dark ? 0.14 : 0.05,
                     ),
                     blurRadius: 8,
@@ -622,7 +634,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.1),
+                      color: palette.warning.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(18),
                     ),
                     child: ClipRRect(
@@ -631,7 +643,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                         'assets/animations/food.json',
                         fit: BoxFit.cover,
                         errorBuilder: (c, e, s) =>
-                            const Icon(Icons.fastfood, color: Colors.orange),
+                            Icon(Icons.fastfood, color: palette.warning),
                       ),
                     ),
                   ),

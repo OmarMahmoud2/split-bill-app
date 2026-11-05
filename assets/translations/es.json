@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Iniciar sesión con Apple",
   "back": "Atrás",
   "get_started": "Empezar",
-  "no_matches_found": "Sin resultados"
+  "no_matches_found": "Sin resultados",
+  "appearance": "Apariencia",
+  "choose_appearance": "Elige la apariencia",
+  "theme_mode_system": "Predeterminado del sistema",
+  "theme_mode_system_subtitle": "Sigue el ajuste de tu dispositivo",
+  "theme_mode_light": "Claro",
+  "theme_mode_dark": "Oscuro"
 }

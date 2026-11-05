@@ -6,6 +6,7 @@ import 'package:split_bill_app/services/profile_service.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/widgets/custom_app_header.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -38,7 +39,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       text: widget.currentData['phoneNumber'] ?? user?.phoneNumber ?? "",
     );
     _emailController = TextEditingController(
-      text: widget.currentData['email'] ?? user?.email ?? 'no_email_linked'.tr(),
+      text:
+          widget.currentData['email'] ?? user?.email ?? 'no_email_linked'.tr(),
     );
   }
 
@@ -80,9 +82,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       setState(() => _isLoading = false);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             e is PhoneNumberTakenException
@@ -96,8 +96,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: p.surface,
       appBar: CustomAppHeader(
         title: 'edit_profile'.tr(),
         infoMessage: 'edit_profile_benefits_message'.tr(),
@@ -124,7 +125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           width: 120,
                           height: 120,
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: p.surfaceVariant,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Theme.of(
@@ -134,7 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
+                                color: p.shadow.withValues(alpha: 0.05),
                                 blurRadius: 15,
                                 offset: const Offset(0, 5),
                               ),
@@ -153,10 +154,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     )!,
                                     fit: BoxFit.cover,
                                   )
-                                : const Icon(
+                                : Icon(
                                     Icons.person,
                                     size: 60,
-                                    color: Colors.grey,
+                                    color: p.textTertiary,
                                   ),
                           ),
                         ),
@@ -168,11 +169,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).primaryColor,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 3),
+                              border: Border.all(color: p.surface, width: 3),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.camera_alt_rounded,
-                              color: Colors.white,
+                              color: p.onPrimary,
                               size: 20,
                             ),
                           ),
@@ -212,7 +213,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onPressed: _saveProfile,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white,
+                        foregroundColor: p.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18),
                         ),
@@ -221,7 +222,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           context,
                         ).primaryColor.withValues(alpha: 0.4),
                       ),
-                      child: Text('save_changes',
+                      child: Text(
+                        'save_changes',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -242,6 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     TextInputType keyboardType = TextInputType.text,
     bool isReadOnly = false,
   }) {
+    final p = context.palette;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -250,7 +253,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: Colors.grey[600],
+              color: p.textSecondary,
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
@@ -263,14 +266,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: p.surfaceMuted,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
+              borderSide: BorderSide(
+                color: p.textTertiary.withValues(alpha: 0.1),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -280,7 +285,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
             suffixIcon: isReadOnly
-                ? Icon(Icons.lock_outline_rounded, color: Colors.grey[400])
+                ? Icon(Icons.lock_outline_rounded, color: p.textDisabled)
                 : null,
           ),
           readOnly: isReadOnly,

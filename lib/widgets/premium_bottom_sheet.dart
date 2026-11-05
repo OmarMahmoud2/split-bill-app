@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 /// A standardized premium bottom sheet container that is bottom-anchored,
 /// responsive, and keyboard-aware.
@@ -24,13 +25,11 @@ class PremiumBottomSheet extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? colorScheme.surface
-            : Colors.white,
+        color: context.palette.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: context.palette.shadow.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),

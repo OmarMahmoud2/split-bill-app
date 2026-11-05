@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:split_bill_app/services/group_service.dart';
 import 'package:split_bill_app/services/contact_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/empty_state_widget.dart';
@@ -29,11 +30,13 @@ class _GroupsScreenState extends State<GroupsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('groups',
+        title: Text(
+          'groups',
           style: TextStyle(fontWeight: FontWeight.bold),
         ).tr(),
-        content: Text('create_squads_for_your_roommates_family_or_travel_buddies_groups_help_you_split_bills_faster_by_selecting_multiple_people_with_one_tap',
-          style: TextStyle(fontSize: 14, color: Colors.grey),
+        content: Text(
+          'create_squads_for_your_roommates_family_or_travel_buddies_groups_help_you_split_bills_faster_by_selecting_multiple_people_with_one_tap',
+          style: TextStyle(fontSize: 14, color: context.palette.textTertiary),
         ).tr(),
         actions: [
           TextButton(
@@ -59,7 +62,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('create_new_group',
+              Text(
+                'create_new_group',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
@@ -71,14 +75,22 @@ class _GroupsScreenState extends State<GroupsScreen> {
                 style: const TextStyle(fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'group_name'.tr(),
-                  prefixIcon: Icon(Icons.group_work_rounded, color: colorScheme.primary),
+                  prefixIcon: Icon(
+                    Icons.group_work_rounded,
+                    color: colorScheme.primary,
+                  ),
                   filled: true,
-                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.3,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -91,8 +103,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       icon: Icons.contacts_rounded,
                       label: "Contacts",
                       onTap: () async {
-                        final result = await _contactService
-                            .pickAndFindUser();
+                        final result = await _contactService.pickAndFindUser();
                         if (result != null) {
                           final data = result['data'];
                           if (!selectedMembers.any(
@@ -157,7 +168,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                   padding: const EdgeInsets.all(2),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+                                    border: Border.all(
+                                      color: colorScheme.primary.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                    ),
                                   ),
                                   child: CircleAvatar(
                                     radius: 28,
@@ -196,8 +211,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                 ),
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.red,
+                                  decoration: BoxDecoration(
+                                    color: context.palette.danger,
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -237,14 +252,15 @@ class _GroupsScreenState extends State<GroupsScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
+                    foregroundColor: context.palette.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
                     ),
                     elevation: 4,
                     shadowColor: colorScheme.primary.withValues(alpha: 0.3),
                   ),
-                  child: Text('create_group',
+                  child: Text(
+                    'create_group',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
@@ -322,55 +338,64 @@ class _GroupsScreenState extends State<GroupsScreen> {
           const SizedBox(height: 8),
           Text(
             data['name'],
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
           ),
           Text(
-            'members_count'.tr(
-              namedArgs: {'count': members.length.toString()},
-            ),
-            style: TextStyle(color: Colors.grey[500]),
+            'members_count'.tr(namedArgs: {'count': members.length.toString()}),
+            style: TextStyle(color: context.palette.textTertiary),
           ),
           const SizedBox(height: 24),
 
           ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              itemCount: members.length,
-              itemBuilder: (context, index) {
-                final m = members[index];
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    backgroundImage: ImageUtils.getAvatarImage(m['photoUrl']),
-                    child: ImageUtils.getAvatarImage(m['photoUrl']) == null
-                        ? const Icon(Icons.person)
-                        : null,
-                  ),
-                  title: Text(
-                    m['name'],
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    m['phoneNumber'] ?? "No phone",
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  ),
-                  trailing: m['id'] == FirebaseAuth.instance.currentUser?.uid
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.blueGrey.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text('owner',
-                            style: TextStyle(fontSize: 10, color: Colors.blueGrey, fontWeight: FontWeight.bold),
-                          ).tr(),
-                        )
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            itemCount: members.length,
+            itemBuilder: (context, index) {
+              final m = members[index];
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(
+                  backgroundImage: ImageUtils.getAvatarImage(m['photoUrl']),
+                  child: ImageUtils.getAvatarImage(m['photoUrl']) == null
+                      ? const Icon(Icons.person)
                       : null,
-                );
-              },
-            ),
+                ),
+                title: Text(
+                  m['name'],
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  m['phoneNumber'] ?? "No phone",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.palette.textSecondary,
+                  ),
+                ),
+                trailing: m['id'] == FirebaseAuth.instance.currentUser?.uid
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'owner',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.blueGrey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ).tr(),
+                      )
+                    : null,
+              );
+            },
+          ),
 
           Padding(
             padding: const EdgeInsets.all(24),
@@ -383,18 +408,22 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       Navigator.pop(context);
                       _deleteGroup(groupId);
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete_outline_rounded,
-                      color: Colors.red,
+                      color: context.palette.danger,
                     ),
-                    label: Text('delete_group',
-                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    label: Text(
+                      'delete_group',
+                      style: TextStyle(
+                        color: context.palette.danger,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ).tr(),
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      side: const BorderSide(color: Colors.red),
+                      side: BorderSide(color: context.palette.danger),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
@@ -406,12 +435,19 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       Navigator.pop(context);
                       _showEditModal(groupId, data);
                     },
-                    icon: const Icon(Icons.edit_rounded, color: Colors.white),
-                    label: Text('edit_members',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    icon: Icon(
+                      Icons.edit_rounded,
+                      color: context.palette.onInverseSurface,
+                    ),
+                    label: Text(
+                      'edit_members',
+                      style: TextStyle(
+                        color: context.palette.onInverseSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ).tr(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: context.palette.inverseSurface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -440,7 +476,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('edit_group_members',
+              Text(
+                'edit_group_members',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
@@ -454,8 +491,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       icon: Icons.person_add_rounded,
                       label: "Add Contacts",
                       onTap: () async {
-                        final result = await _contactService
-                            .pickAndFindUser();
+                        final result = await _contactService.pickAndFindUser();
                         if (result != null) {
                           final userData = result['data'];
                           if (!editedMembers.any(
@@ -501,34 +537,35 @@ class _GroupsScreenState extends State<GroupsScreen> {
               ),
               const SizedBox(height: 20),
               ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: editedMembers.length,
-                  itemBuilder: (context, index) {
-                    final m = editedMembers[index];
-                    bool isSameAsMe =
-                        m['id'] == FirebaseAuth.instance.currentUser?.uid;
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: CircleAvatar(
-                        backgroundImage: ImageUtils.getAvatarImage(
-                          m['photoUrl'],
-                        ),
-                      ),
-                      title: Text(m['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                      trailing: isSameAsMe
-                          ? null
-                          : IconButton(
-                              icon: const Icon(
-                                Icons.remove_circle_outline,
-                                color: Colors.orange,
-                              ),
-                              onPressed: () => setEditState(
-                                () => editedMembers.removeAt(index),
-                              ),
+                shrinkWrap: true,
+                itemCount: editedMembers.length,
+                itemBuilder: (context, index) {
+                  final m = editedMembers[index];
+                  bool isSameAsMe =
+                      m['id'] == FirebaseAuth.instance.currentUser?.uid;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(
+                      backgroundImage: ImageUtils.getAvatarImage(m['photoUrl']),
+                    ),
+                    title: Text(
+                      m['name'],
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    trailing: isSameAsMe
+                        ? null
+                        : IconButton(
+                            icon: Icon(
+                              Icons.remove_circle_outline,
+                              color: context.palette.warning,
                             ),
-                    );
-                  },
-                ),
+                            onPressed: () => setEditState(
+                              () => editedMembers.removeAt(index),
+                            ),
+                          ),
+                  );
+                },
+              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -546,9 +583,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       borderRadius: BorderRadius.circular(18),
                     ),
                   ),
-                  child: Text('scan_save_changes',
+                  child: Text(
+                    'scan_save_changes',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: context.palette.onPrimary,
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                     ),
@@ -575,7 +613,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('common_delete', style: TextStyle(color: Colors.red)).tr(),
+            child: Text(
+              'common_delete',
+              style: TextStyle(color: context.palette.danger),
+            ).tr(),
           ),
         ],
       ),
@@ -587,8 +628,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: palette.surfaceMuted,
       body: Stack(
         children: [
           CustomScrollView(
@@ -601,11 +643,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: palette.surface,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
+                            color: palette.shadow.withValues(alpha: 0.04),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -618,7 +660,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: palette.surfaceVariant,
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(
@@ -628,7 +670,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Text('my_squads',
+                          Text(
+                            'my_squads',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 18,
@@ -708,9 +751,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: const Icon(
+        child: Icon(
           Icons.group_add_rounded,
-          color: Colors.white,
+          color: palette.onPrimary,
           size: 28,
         ),
       ),
@@ -719,14 +762,15 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
   Widget _buildGroupCard(String id, Map<String, dynamic> data) {
     List members = data['members'] ?? [];
+    final palette = context.palette;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: palette.shadow.withValues(alpha: 0.02),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -753,7 +797,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                            border: Border.all(
+                              color: palette.surface,
+                              width: 2,
+                            ),
                           ),
                           child: CircleAvatar(
                             radius: 16,
@@ -789,7 +836,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         'members_count'.tr(
                           namedArgs: {'count': members.length.toString()},
                         ),
-                        style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                        style: TextStyle(
+                          color: palette.textTertiary,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -797,7 +847,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 14,
-                  color: Colors.grey[300],
+                  color: palette.border,
                 ),
               ],
             ),
@@ -824,7 +874,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colorScheme.outline.withValues(alpha: 0.08)),
+            border: Border.all(
+              color: colorScheme.outline.withValues(alpha: 0.08),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

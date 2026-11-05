@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_menu_widgets.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
@@ -22,14 +23,18 @@ class UserAdminDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .snapshots(),
       builder: (context, snapshot) {
+        final p = context.palette;
         final currentData =
             (snapshot.data?.data() as Map<String, dynamic>?) ?? userData;
         final String name =
             (currentData['displayName'] as String?)?.trim().isNotEmpty == true
-                ? currentData['displayName']
-                : 'unknown_user'.tr();
+            ? currentData['displayName']
+            : 'unknown_user'.tr();
         final isPremium = RevenueCatService.isUserActivePremium(currentData);
         final isAdmin = currentData['isAdmin'] == true;
         final int points = (currentData['points'] as num?)?.toInt() ?? 0;
@@ -67,17 +72,14 @@ class UserAdminDetailScreen extends StatelessWidget {
         }
 
         return Scaffold(
-          backgroundColor: Colors.grey[50],
+          backgroundColor: p.surfaceMuted,
           appBar: AppBar(
             title: Text(name),
-            backgroundColor: Colors.white,
+            backgroundColor: p.surface,
             elevation: 0,
             actions: [
               IconButton(
-                icon: const Icon(
-                  Icons.notifications_active_rounded,
-                  color: Colors.blue,
-                ),
+                icon: Icon(Icons.notifications_active_rounded, color: p.info),
                 onPressed: () => _sendNotification(context, currentData),
               ),
             ],
@@ -95,11 +97,11 @@ class UserAdminDetailScreen extends StatelessWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: p.surface,
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
+                              color: p.shadow.withValues(alpha: 0.03),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -110,8 +112,16 @@ class UserAdminDetailScreen extends StatelessWidget {
                             CircleAvatar(
                               radius: 46,
                               backgroundColor: isAdmin
-                                  ? Colors.blueGrey[50]
-                                  : (isPremium ? Colors.amber[50] : Colors.blue[50]),
+                                  ? p.tint(
+                                      Colors.blueGrey[50]!,
+                                      Colors.blueGrey,
+                                    )
+                                  : (isPremium
+                                        ? p.tint(
+                                            Colors.amber[50]!,
+                                            Colors.amber,
+                                          )
+                                        : p.infoSoft),
                               backgroundImage: avatarImage,
                               child: avatarImage == null
                                   ? Text(
@@ -122,10 +132,16 @@ class UserAdminDetailScreen extends StatelessWidget {
                                         fontSize: 32,
                                         fontWeight: FontWeight.w900,
                                         color: isAdmin
-                                            ? Colors.blueGrey[700]
+                                            ? (p.isDark
+                                                  ? Colors.blueGrey[200]
+                                                  : Colors.blueGrey[700])
                                             : (isPremium
-                                                ? Colors.amber[800]
-                                                : Colors.blue[700]),
+                                                  ? (p.isDark
+                                                        ? Colors.amber[300]
+                                                        : Colors.amber[800])
+                                                  : (p.isDark
+                                                        ? p.infoStrong
+                                                        : Colors.blue[700])),
                                       ),
                                     )
                                   : null,
@@ -146,69 +162,88 @@ class UserAdminDetailScreen extends StatelessWidget {
                                 if (isAdmin) ...[
                                   _buildBadge(
                                     'admin'.tr(),
-                                    Colors.blueGrey[700]!,
-                                    Colors.blueGrey[50]!,
+                                    p.isDark
+                                        ? Colors.blueGrey[200]!
+                                        : Colors.blueGrey[700]!,
+                                    p.tint(
+                                      Colors.blueGrey[50]!,
+                                      Colors.blueGrey,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                 ],
                                 if (isPremium)
                                   _buildBadge(
                                     'premium_crown'.tr(),
-                                    Colors.amber[800]!,
-                                    Colors.amber[50]!,
+                                    p.isDark
+                                        ? Colors.amber[300]!
+                                        : Colors.amber[800]!,
+                                    p.tint(Colors.amber[50]!, Colors.amber),
                                   )
                                 else if (!isAdmin)
                                   _buildBadge(
                                     'admin_user_free'.tr(),
-                                    Colors.grey[700]!,
-                                    Colors.grey[100]!,
+                                    p.textMedium,
+                                    p.surfaceVariant,
                                   ),
                               ],
                             ),
                             const SizedBox(height: 20),
                             _buildDetailRow(
+                              p,
                               Icons.fingerprint_rounded,
                               'UID',
                               uid,
                             ),
                             _buildDetailRow(
+                              p,
                               Icons.mail_outline_rounded,
                               'email'.tr(),
                               currentData['email'] ?? 'not_provided'.tr(),
                             ),
                             _buildDetailRow(
+                              p,
                               Icons.phone_iphone_rounded,
                               'phone'.tr(),
                               currentData['phoneNumber'] ?? 'not_provided'.tr(),
                             ),
                             if (platformDisplay != 'unknown'.tr())
                               _buildDetailRow(
+                                p,
                                 Icons.devices_rounded,
                                 'platform'.tr(),
                                 platformDisplay,
                               ),
                             _buildDetailRow(
+                              p,
                               Icons.public_rounded,
                               'country'.tr(),
                               countryName,
                             ),
                             _buildDetailRow(
+                              p,
                               Icons.stars_rounded,
                               'points'.tr(),
                               points.toString(),
                             ),
                             if (currentData['premiumExpiresAt'] != null)
                               _buildDetailRow(
+                                p,
                                 Icons.timer_outlined,
                                 'Expires',
-                                currentData['premiumExpiresAt'].toString().split('T').first,
+                                currentData['premiumExpiresAt']
+                                    .toString()
+                                    .split('T')
+                                    .first,
                               ),
                             _buildDetailRow(
+                              p,
                               Icons.calendar_today_rounded,
                               'registered'.tr(),
                               currentData['createdAt'] != null
                                   ? DateFormat.yMMMd().format(
-                                      (currentData['createdAt'] as Timestamp).toDate(),
+                                      (currentData['createdAt'] as Timestamp)
+                                          .toDate(),
                                     )
                                   : 'unknown'.tr(),
                             ),
@@ -224,11 +259,11 @@ class UserAdminDetailScreen extends StatelessWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: p.surface,
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
+                              color: p.shadow.withValues(alpha: 0.03),
                               blurRadius: 15,
                               offset: const Offset(0, 5),
                             ),
@@ -249,20 +284,34 @@ class UserAdminDetailScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: Colors.amber[50],
+                                    color: p.tint(
+                                      Colors.amber[50]!,
+                                      Colors.amber,
+                                    ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.stars_rounded, color: Colors.amber[800], size: 16),
+                                      Icon(
+                                        Icons.stars_rounded,
+                                        color: p.isDark
+                                            ? Colors.amber[300]
+                                            : Colors.amber[800],
+                                        size: 16,
+                                      ),
                                       const SizedBox(width: 4),
                                       Text(
                                         '$points pts',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w900,
-                                          color: Colors.amber[900],
+                                          color: p.isDark
+                                              ? Colors.amber[200]
+                                              : Colors.amber[900],
                                           fontSize: 13,
                                         ),
                                       ),
@@ -280,34 +329,40 @@ class UserAdminDetailScreen extends StatelessWidget {
                               children: [
                                 _buildActionChip(
                                   label: '+5',
-                                  color: Colors.green,
-                                  onTap: () => _modifyPoints(context, points, 5),
+                                  color: p.success,
+                                  onTap: () =>
+                                      _modifyPoints(context, points, 5),
                                 ),
                                 _buildActionChip(
                                   label: '+10',
-                                  color: Colors.green,
-                                  onTap: () => _modifyPoints(context, points, 10),
+                                  color: p.success,
+                                  onTap: () =>
+                                      _modifyPoints(context, points, 10),
                                 ),
                                 _buildActionChip(
                                   label: '+50',
-                                  color: Colors.green,
-                                  onTap: () => _modifyPoints(context, points, 50),
+                                  color: p.success,
+                                  onTap: () =>
+                                      _modifyPoints(context, points, 50),
                                 ),
                                 _buildActionChip(
                                   label: '-5',
-                                  color: Colors.red,
-                                  onTap: () => _modifyPoints(context, points, -5),
+                                  color: p.danger,
+                                  onTap: () =>
+                                      _modifyPoints(context, points, -5),
                                 ),
                                 _buildActionChip(
                                   label: '-10',
-                                  color: Colors.red,
-                                  onTap: () => _modifyPoints(context, points, -10),
+                                  color: p.danger,
+                                  onTap: () =>
+                                      _modifyPoints(context, points, -10),
                                 ),
                                 _buildActionChip(
                                   label: 'set_custom_points'.tr(),
-                                  color: Colors.blue,
+                                  color: p.info,
                                   isOutlined: true,
-                                  onTap: () => _showCustomPointsDialog(context, points),
+                                  onTap: () =>
+                                      _showCustomPointsDialog(context, points),
                                 ),
                               ],
                             ),
@@ -327,7 +382,8 @@ class UserAdminDetailScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: ElevatedButton.icon(
-                                    onPressed: () => _togglePremium(context, isPremium),
+                                    onPressed: () =>
+                                        _togglePremium(context, isPremium),
                                     icon: Icon(
                                       isPremium
                                           ? Icons.remove_circle_outline_rounded
@@ -338,17 +394,31 @@ class UserAdminDetailScreen extends StatelessWidget {
                                       isPremium
                                           ? 'revoke_premium'.tr()
                                           : 'grant_premium'.tr(),
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: isPremium ? Colors.red[50] : Colors.amber[500],
-                                      foregroundColor: isPremium ? Colors.red[700] : Colors.white,
+                                      backgroundColor: isPremium
+                                          ? p.dangerSoft
+                                          : Colors.amber[500],
+                                      foregroundColor: isPremium
+                                          ? p.dangerStrong
+                                          : Colors.white,
                                       elevation: 0,
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(14),
                                         side: isPremium
-                                            ? BorderSide(color: Colors.red.shade200)
+                                            ? BorderSide(
+                                                color: p.isDark
+                                                    ? p.danger.withValues(
+                                                        alpha: 0.4,
+                                                      )
+                                                    : Colors.red.shade200,
+                                              )
                                             : BorderSide.none,
                                       ),
                                     ),
@@ -372,7 +442,8 @@ class UserAdminDetailScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: OutlinedButton.icon(
-                                    onPressed: () => _toggleAdminRole(context, isAdmin),
+                                    onPressed: () =>
+                                        _toggleAdminRole(context, isAdmin),
                                     icon: Icon(
                                       isAdmin
                                           ? Icons.person_remove_rounded
@@ -383,14 +454,24 @@ class UserAdminDetailScreen extends StatelessWidget {
                                       isAdmin
                                           ? 'remove_admin'.tr()
                                           : 'make_admin'.tr(),
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     style: OutlinedButton.styleFrom(
-                                      foregroundColor: isAdmin ? Colors.red[700] : Colors.blueGrey[800],
+                                      foregroundColor: isAdmin
+                                          ? p.dangerStrong
+                                          : (p.isDark
+                                                ? Colors.blueGrey[100]
+                                                : Colors.blueGrey[800]),
                                       side: BorderSide(
-                                        color: isAdmin ? Colors.red.shade300 : Colors.blueGrey.shade300,
+                                        color: isAdmin
+                                            ? Colors.red.shade300
+                                            : Colors.blueGrey.shade300,
                                       ),
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(14),
                                       ),
@@ -466,7 +547,8 @@ class UserAdminDetailScreen extends StatelessWidget {
                         final billData = billDoc.data() as Map<String, dynamic>;
                         final storeName =
                             billData['storeName'] ?? 'unknown_store'.tr();
-                        final total = (billData['total'] as num? ?? 0.0).toDouble();
+                        final total = (billData['total'] as num? ?? 0.0)
+                            .toDouble();
                         final currency = billData['currencyCode'] ?? 'USD';
                         final date = (billData['date'] as Timestamp).toDate();
                         final status = billData['status'] ?? 'PENDING';
@@ -476,7 +558,7 @@ class UserAdminDetailScreen extends StatelessWidget {
                           title: storeName,
                           subtitle:
                               '${CurrencyUtils.format(total, currencyCode: currency)} • ${DateFormat.yMMMd().format(date)}',
-                          color: status == 'PAID' ? Colors.green : Colors.orange,
+                          color: status == 'PAID' ? p.success : p.warning,
                           onTap: () {
                             _showBillSummarySheet(context, billData);
                           },
@@ -510,7 +592,9 @@ class UserAdminDetailScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: isOutlined ? Border.all(color: color.withValues(alpha: 0.5)) : null,
+            border: isOutlined
+                ? Border.all(color: color.withValues(alpha: 0.5))
+                : null,
           ),
           child: Text(
             label,
@@ -525,13 +609,16 @@ class UserAdminDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _modifyPoints(BuildContext context, int currentPoints, int delta) async {
+  Future<void> _modifyPoints(
+    BuildContext context,
+    int currentPoints,
+    int delta,
+  ) async {
     final newPoints = (currentPoints + delta).clamp(0, 999999);
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .update({'points': newPoints});
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'points': newPoints,
+      });
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -543,13 +630,19 @@ class UserAdminDetailScreen extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: context.palette.danger,
+          ),
         );
       }
     }
   }
 
-  Future<void> _showCustomPointsDialog(BuildContext context, int currentPoints) async {
+  Future<void> _showCustomPointsDialog(
+    BuildContext context,
+    int currentPoints,
+  ) async {
     final controller = TextEditingController(text: currentPoints.toString());
     final result = await showDialog<int>(
       context: context,
@@ -584,10 +677,9 @@ class UserAdminDetailScreen extends StatelessWidget {
     if (result != null && context.mounted) {
       final safePoints = result.clamp(0, 999999);
       try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .update({'points': safePoints});
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'points': safePoints,
+        });
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -598,19 +690,27 @@ class UserAdminDetailScreen extends StatelessWidget {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: context.palette.danger,
+            ),
           );
         }
       }
     }
   }
 
-  Future<void> _togglePremium(BuildContext context, bool currentlyPremium) async {
+  Future<void> _togglePremium(
+    BuildContext context,
+    bool currentlyPremium,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(currentlyPremium ? 'revoke_premium'.tr() : 'grant_premium'.tr()),
+        title: Text(
+          currentlyPremium ? 'revoke_premium'.tr() : 'grant_premium'.tr(),
+        ),
         content: Text(
           currentlyPremium
               ? 'confirm_premium_revoke'.tr()
@@ -623,11 +723,15 @@ class UserAdminDetailScreen extends StatelessWidget {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: currentlyPremium ? Colors.red : Colors.amber[700],
+              backgroundColor: currentlyPremium
+                  ? ctx.palette.danger
+                  : Colors.amber[700],
               foregroundColor: Colors.white,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(currentlyPremium ? 'revoke_premium'.tr() : 'grant_premium'.tr()),
+            child: Text(
+              currentlyPremium ? 'revoke_premium'.tr() : 'grant_premium'.tr(),
+            ),
           ),
         ],
       ),
@@ -654,21 +758,27 @@ class UserAdminDetailScreen extends StatelessWidget {
             .set(updates, SetOptions(merge: true));
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('user_updated_success'.tr())),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('user_updated_success'.tr())));
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: context.palette.danger,
+            ),
           );
         }
       }
     }
   }
 
-  Future<void> _toggleAdminRole(BuildContext context, bool currentlyAdmin) async {
+  Future<void> _toggleAdminRole(
+    BuildContext context,
+    bool currentlyAdmin,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -682,11 +792,15 @@ class UserAdminDetailScreen extends StatelessWidget {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: currentlyAdmin ? Colors.red : Colors.blueGrey[800],
+              backgroundColor: currentlyAdmin
+                  ? ctx.palette.danger
+                  : Colors.blueGrey[800],
               foregroundColor: Colors.white,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(currentlyAdmin ? 'remove_admin'.tr() : 'make_admin'.tr()),
+            child: Text(
+              currentlyAdmin ? 'remove_admin'.tr() : 'make_admin'.tr(),
+            ),
           ),
         ],
       ),
@@ -694,20 +808,22 @@ class UserAdminDetailScreen extends StatelessWidget {
 
     if (confirmed == true && context.mounted) {
       try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .update({'isAdmin': !currentlyAdmin});
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'isAdmin': !currentlyAdmin,
+        });
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('user_updated_success'.tr())),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('user_updated_success'.tr())));
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: context.palette.danger,
+            ),
           );
         }
       }
@@ -733,16 +849,21 @@ class UserAdminDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  Widget _buildDetailRow(
+    AppPalette p,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.grey[400]),
+          Icon(icon, size: 18, color: p.textDisabled),
           const SizedBox(width: 12),
           Text(
             '$label:',
-            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            style: TextStyle(color: p.textSecondary, fontSize: 13),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -758,7 +879,10 @@ class UserAdminDetailScreen extends StatelessWidget {
     );
   }
 
-  void _sendNotification(BuildContext context, Map<String, dynamic> currentData) {
+  void _sendNotification(
+    BuildContext context,
+    Map<String, dynamic> currentData,
+  ) {
     PremiumBottomSheet.show(
       context: context,
       child: SendNotificationSheet(
@@ -790,6 +914,7 @@ class _BillSummarySheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final palette = context.palette;
     final storeName = billData['storeName'] ?? 'unknown_store'.tr();
     final total = (billData['total'] as num? ?? 0.0).toDouble();
     final currency = billData['currencyCode'] ?? 'USD';
@@ -836,14 +961,13 @@ class _BillSummarySheet extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: (isPaid ? Colors.green : Colors.grey).withValues(
-                      alpha: 0.1,
-                    ),
+                    color: (isPaid ? palette.success : palette.textTertiary)
+                        .withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     isPaid ? Icons.check_circle_rounded : Icons.pending_rounded,
-                    color: isPaid ? Colors.green : Colors.grey,
+                    color: isPaid ? palette.success : palette.textTertiary,
                     size: 16,
                   ),
                 ),
@@ -858,7 +982,7 @@ class _BillSummarySheet extends StatelessWidget {
                   CurrencyUtils.format(pShare, currencyCode: currency),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    color: isPaid ? Colors.green : colorScheme.onSurface,
+                    color: isPaid ? palette.success : colorScheme.onSurface,
                   ),
                 ),
               ],

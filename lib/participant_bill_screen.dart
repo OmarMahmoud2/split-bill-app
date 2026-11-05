@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:split_bill_app/widgets/success_state_widget.dart';
@@ -97,8 +98,9 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           final share = splitMethod == 'equal'
               ? amount / participantCount
               : amount * myRatio;
-      return {
-            'label': (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+          return {
+            'label': (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                .toString(),
             'amount': share,
           };
         })
@@ -240,7 +242,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           content: Text(
             'error_with_details'.tr(namedArgs: {'error': e.toString()}),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: context.palette.danger,
         ),
       );
     }
@@ -311,7 +313,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           content: Text(
             'error_with_details'.tr(namedArgs: {'error': e.toString()}),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: context.palette.danger,
         ),
       );
     }
@@ -326,23 +328,25 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           Text(
             'confirm_payment',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.5,
-                ),
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+            ),
           ).tr(),
           const SizedBox(height: 8),
           Text(
             'help_the_host_verify_your_payment_faster',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w500,
             ),
           ).tr(),
           const SizedBox(height: 32),
           _buildPaymentOption(
             icon: Icons.image_rounded,
-            color: Colors.blue,
+            color: context.palette.info,
             title: 'upload_screenshot'.tr(),
             subtitle: 'recommended_for_digital_wallets'.tr(),
             onTap: () {
@@ -353,7 +357,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           const SizedBox(height: 12),
           _buildPaymentOption(
             icon: Icons.check_circle_outline_rounded,
-            color: Colors.orange,
+            color: context.palette.warning,
             title: 'i_paid_skip_proof'.tr(),
             subtitle: 'host_will_verify_manually'.tr(),
             onTap: () {
@@ -387,7 +391,9 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1)),
+            border: Border.all(
+              color: colorScheme.outline.withValues(alpha: 0.1),
+            ),
           ),
           child: Row(
             children: [
@@ -441,11 +447,11 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: context.palette.textTertiary.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -465,7 +471,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
-                    color: Colors.blue[800],
+                    color: context.palette.infoStrong,
                     letterSpacing: 1.5,
                   ),
                 ).tr(),
@@ -493,8 +499,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
     String currencyCode,
   ) {
     Color statusColor = status == 'PAID'
-        ? Colors.green
-        : (status == 'REVIEW' ? Colors.orange : Colors.blue[800]!);
+        ? context.palette.success
+        : (status == 'REVIEW'
+              ? context.palette.warning
+              : context.palette.infoStrong);
     String statusLabel = status == 'PAID'
         ? 'status_paid'.tr()
         : (status == 'REVIEW' ? 'in_review'.tr() : 'you_owe'.tr());
@@ -503,7 +511,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
@@ -521,16 +529,16 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
               Text(
                 'you_owe_to',
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: context.palette.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ).tr(),
               const Text(' '),
               Text(
                 hostName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  color: Colors.black,
+                  color: context.palette.textStrong,
                 ),
               ),
             ],
@@ -578,11 +586,11 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.palette.surface,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: context.palette.shadow.withValues(alpha: 0.05),
                 blurRadius: 15,
               ),
             ],
@@ -597,10 +605,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       'assets/animations/food.json',
                       height: 100,
                       fit: BoxFit.contain,
-                      errorBuilder: (c, e, s) => const Icon(
+                      errorBuilder: (c, e, s) => Icon(
                         Icons.receipt_long_rounded,
                         size: 60,
-                        color: Colors.blue,
+                        color: context.palette.info,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -610,7 +618,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 2,
-                        color: Colors.grey,
+                        color: context.palette.textTertiary,
                       ),
                     ).tr(),
                     const SizedBox(height: 24),
@@ -682,14 +690,18 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                                     Text(
                                       'split_with_others'.tr(
                                         namedArgs: {
-                                          'count': (((item['sharedCount'] as num?)?.toInt() ?? 1) - 1)
-                                              .clamp(1, 999)
-                                              .toString(),
+                                          'count':
+                                              (((item['sharedCount'] as num?)
+                                                              ?.toInt() ??
+                                                          1) -
+                                                      1)
+                                                  .clamp(1, 999)
+                                                  .toString(),
                                         },
                                       ),
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: Colors.grey[500],
+                                        color: context.palette.textTertiary,
                                       ),
                                     ),
                                 ],
@@ -722,7 +734,11 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       currencyCode,
                     ),
                     if (calc['myTax'] > 0)
-                      _buildBillRow('tax_share'.tr(), calc['myTax'], currencyCode),
+                      _buildBillRow(
+                        'tax_share'.tr(),
+                        calc['myTax'],
+                        currencyCode,
+                      ),
                     if (calc['myService'] > 0)
                       _buildBillRow(
                         'service_share'.tr(),
@@ -730,7 +746,11 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                         currencyCode,
                       ),
                     if (calc['myTip'] > 0)
-                      _buildBillRow('tip_share'.tr(), calc['myTip'], currencyCode),
+                      _buildBillRow(
+                        'tip_share'.tr(),
+                        calc['myTip'],
+                        currencyCode,
+                      ),
                     if (calc['myDelivery'] > 0)
                       _buildBillRow(
                         'delivery_share'.tr(),
@@ -739,7 +759,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       ),
                     ...(calc['otherChargeShares'] as List<dynamic>).map(
                       (charge) => _buildBillRow(
-                        (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+                        (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                            .toString(),
                         charge['amount'] as double,
                         currencyCode,
                       ),
@@ -772,10 +793,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                             calc['myTotal'] as double,
                             currencyCode: currencyCode,
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 20,
-                            color: Colors.blue,
+                            color: context.palette.info,
                           ),
                         ),
                       ],
@@ -799,7 +820,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 width: 15,
                 height: 15,
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: context.palette.surfaceMuted,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -819,7 +840,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 width: 15,
                 height: 15,
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: context.palette.surfaceMuted,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -844,7 +865,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           Text(
             label,
             style: TextStyle(
-              color: Colors.grey[600],
+              color: context.palette.textSecondary,
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
@@ -854,7 +875,9 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
-              color: isDiscount ? Colors.red : Colors.black87,
+              color: isDiscount
+                  ? context.palette.danger
+                  : context.palette.textPrimary,
             ),
           ),
         ],
@@ -893,7 +916,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
                     letterSpacing: 1,
-                    color: Colors.grey,
+                    color: context.palette.textTertiary,
                   ),
                 ).tr(),
               ),
@@ -910,8 +933,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
         }
 
         // 2. Fallback to Old Format (Map)
-        var methods =
-            userData['paymentMethods'] as Map<String, dynamic>? ?? {};
+        var methods = userData['paymentMethods'] as Map<String, dynamic>? ?? {};
         var validMethods = methods.entries
             .where((e) => e.value != null && e.value.toString().isNotEmpty)
             .toList();
@@ -921,14 +943,14 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.orange[50],
+              color: context.palette.warningSoft,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.orange),
+              border: Border.all(color: context.palette.warning),
             ),
             child: Text(
               'host_hasn_t_added_payment_methods_yet',
               style: TextStyle(
-                color: Colors.black87,
+                color: context.palette.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -947,7 +969,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
                   letterSpacing: 1,
-                  color: Colors.grey,
+                  color: context.palette.textTertiary,
                 ),
               ).tr(),
             ),
@@ -984,24 +1006,29 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
       decoration: BoxDecoration(
         gradient: isSelected
             ? LinearGradient(
-                colors: [Colors.blue[900]!, Colors.blue[700]!],
+                colors: [
+                  Colors.blue[900]!,
+                  Colors.blue[700]!,
+                ], // Selected card: always blue with white text.
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
-            : const LinearGradient(colors: [Colors.white, Colors.white]),
+            : LinearGradient(
+                colors: [context.palette.surface, context.palette.surface],
+              ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: isSelected
-                ? Colors.blue.withValues(alpha: 0.3)
-                : Colors.black.withValues(alpha: 0.05),
+                ? context.palette.info.withValues(alpha: 0.3)
+                : context.palette.shadow.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
         ],
         border: isSelected
             ? Border.all(color: Colors.transparent)
-            : Border.all(color: Colors.grey.shade200, width: 1),
+            : Border.all(color: context.palette.borderSubtle, width: 1),
       ),
       child: Material(
         color: Colors.transparent,
@@ -1034,7 +1061,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                 ),
                 behavior: SnackBarBehavior.floating,
                 duration: const Duration(seconds: 2),
-                backgroundColor: Colors.green[700],
+                backgroundColor: Colors
+                    .green[700], // Fixed: white text on green in both themes.
               ),
             );
           },
@@ -1047,11 +1075,12 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color:
+                        Colors.white, // Fixed white backdrop for brand logos.
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: context.palette.shadow.withValues(alpha: 0.1),
                         blurRadius: 8,
                       ),
                     ],
@@ -1062,10 +1091,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                       fit: BoxFit.cover,
                       errorBuilder: (c, e, s) => Container(
                         padding: const EdgeInsets.all(12),
-                        color: Colors.grey[100],
+                        color: context.palette.surfaceVariant,
                         child: Icon(
                           Icons.payment_rounded,
-                          color: Colors.blue[800],
+                          color: context.palette.infoStrong,
                         ),
                       ),
                     ),
@@ -1083,7 +1112,9 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
-                          color: isSelected ? Colors.white : Colors.black87,
+                          color: isSelected
+                              ? Colors.white
+                              : context.palette.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -1092,7 +1123,9 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: isSelected ? Colors.white70 : Colors.grey[600],
+                          color: isSelected
+                              ? Colors.white70
+                              : context.palette.textSecondary,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -1111,7 +1144,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? Colors.white24
-                          : Colors.blue.withValues(
+                          : context.palette.info.withValues(
                               alpha: 0.1,
                             ), // Fixed opacity usage
                       borderRadius: BorderRadius.circular(20),
@@ -1124,14 +1157,18 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : Colors.blue[800],
+                            color: isSelected
+                                ? Colors.white
+                                : context.palette.infoStrong,
                           ),
                         ).tr(),
                         const SizedBox(width: 4),
                         Icon(
                           Icons.open_in_new_rounded,
                           size: 14,
-                          color: isSelected ? Colors.white : Colors.blue[800],
+                          color: isSelected
+                              ? Colors.white
+                              : context.palette.infoStrong,
                         ),
                       ],
                     ),
@@ -1141,7 +1178,9 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                     isSelected
                         ? Icons.check_circle_rounded
                         : Icons.copy_rounded,
-                    color: isSelected ? Colors.white : Colors.grey[400],
+                    color: isSelected
+                        ? Colors.white
+                        : context.palette.textDisabled,
                   ),
               ],
             ),
@@ -1161,7 +1200,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.palette.surfaceMuted,
       body: Stack(
         children: [
           StreamBuilder<DocumentSnapshot>(
@@ -1206,14 +1245,14 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
                         _buildStatusInfo(
                           "PAYMENT UNDER REVIEW",
                           "The host has been notified and is checking your payment proof.",
-                          Colors.orange,
+                          context.palette.warning,
                           status,
                         ),
                       if (status == 'PAID')
                         _buildStatusInfo(
                           "FULLY SETTLED",
                           "You've successfully paid your share. Thank you!",
-                          Colors.green,
+                          context.palette.success,
                           status,
                         ),
                       const SizedBox(height: 120),
@@ -1267,13 +1306,13 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           // --- OVERLAYS ---
           if (_isLoading)
             Container(
-              color: Colors.white.withValues(alpha: 0.95),
+              color: context.palette.surface.withValues(alpha: 0.95),
               child: LoadingStateWidget(message: 'uploading_proof'.tr()),
             ),
 
           if (_showSuccess)
             Container(
-              color: Colors.white,
+              color: context.palette.surface,
               child: SuccessStateWidget(
                 message: 'payment_sent'.tr(),
                 actionLabel: 'got_it'.tr(),
@@ -1342,7 +1381,7 @@ class DottedLine extends StatelessWidget {
         40,
         (index) => Expanded(
           child: Container(
-            color: index % 2 == 0 ? Colors.transparent : Colors.grey[300],
+            color: index % 2 == 0 ? Colors.transparent : context.palette.border,
             height: 1.5,
           ),
         ),

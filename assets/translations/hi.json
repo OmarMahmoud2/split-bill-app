@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Apple से साइन इन करें",
   "back": "वापस",
   "get_started": "शुरू करें",
-  "no_matches_found": "कोई परिणाम नहीं"
+  "no_matches_found": "कोई परिणाम नहीं",
+  "appearance": "रूप-रंग",
+  "choose_appearance": "रूप-रंग चुनें",
+  "theme_mode_system": "सिस्टम डिफ़ॉल्ट",
+  "theme_mode_system_subtitle": "आपके डिवाइस की सेटिंग के अनुसार",
+  "theme_mode_light": "लाइट",
+  "theme_mode_dark": "डार्क"
 }

@@ -29,6 +29,7 @@ Future<void> _mount(
   Size size = const Size(402, 874),
   double scale = 1,
   String locale = 'en',
+  ThemeMode themeMode = ThemeMode.light,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -49,6 +50,8 @@ Future<void> _mount(
             supportedLocales: context.supportedLocales,
             localizationsDelegates: context.localizationDelegates,
             theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode,
             builder: (context, child) => MediaQuery(
               data: MediaQuery.of(
                 context,
@@ -109,6 +112,18 @@ void main() {
       },
     );
   }
+
+  testWidgets('onboarding renders all pages in dark mode', (tester) async {
+    await _mount(tester, themeMode: ThemeMode.dark);
+    expect(tester.takeException(), isNull);
+    final context = tester.element(find.byType(NewOnboardingScreen));
+    expect(Theme.of(context).brightness, Brightness.dark);
+    await _next(tester);
+    await _next(tester);
+    await _next(tester);
+    expect(find.byKey(const ValueKey('onboarding-currency')), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets(
     'currency opens shared sheet and selection stays after going back',

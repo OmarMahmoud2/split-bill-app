@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/edit_profile_screen.dart';
@@ -23,17 +24,18 @@ class ProfileHeader extends StatelessWidget {
         (phoneNumber != null && phoneNumber!.trim().isNotEmpty)
         ? phoneNumber!
         : context.tr('no_phone_set');
+    final p = context.palette;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 65, 20, 20),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: p.surface,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: p.shadow.withValues(alpha: 0.04),
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -46,7 +48,7 @@ class ProfileHeader extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: p.surfaceVariant,
                 borderRadius: BorderRadius.circular(18),
                 image: ImageUtils.getAvatarImage(photoUrl) != null
                     ? DecorationImage(
@@ -56,11 +58,7 @@ class ProfileHeader extends StatelessWidget {
                     : null,
               ),
               child: ImageUtils.getAvatarImage(photoUrl) == null
-                  ? const Icon(
-                      Icons.person_rounded,
-                      color: Colors.grey,
-                      size: 30,
-                    )
+                  ? Icon(Icons.person_rounded, color: p.textTertiary, size: 30)
                   : null,
             ),
             const SizedBox(width: 16),
@@ -71,16 +69,16 @@ class ProfileHeader extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 18,
-                      color: Colors.black87,
+                      color: p.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     fallbackPhone,
-                    style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                    style: TextStyle(color: p.textTertiary, fontSize: 13),
                   ),
                 ],
               ),

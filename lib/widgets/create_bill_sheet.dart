@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class CreateBillSheet extends StatelessWidget {
   const CreateBillSheet({
@@ -14,6 +15,7 @@ class CreateBillSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final p = context.palette;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -35,7 +37,7 @@ class CreateBillSheet extends StatelessWidget {
               'best_when_you_already_have_the_bill_photo_or_want_camera_import'
                   .tr(),
           gradientColors: [const Color(0xFF00B4D8), const Color(0xFF0077B6)],
-          iconBgColor: const Color(0xFFE0F2F1),
+          iconBgColor: p.tint(const Color(0xFFE0F2F1), Colors.teal),
           onTap: onScanTap,
         ),
         const SizedBox(height: 16),
@@ -45,8 +47,8 @@ class CreateBillSheet extends StatelessWidget {
           subtitle:
               'build_the_receipt_yourself_then_continue_to_split_and_add_people'
                   .tr(),
-          gradientColors: [const Color(0xFF7209B7), const Color(0xFF560BAD)],
-          iconBgColor: const Color(0xFFF3E5F5),
+          gradientColors: [p.primary, p.primaryStrong],
+          iconBgColor: p.primarySoft,
           onTap: onManualTap,
         ),
         const SizedBox(height: 24),
@@ -75,6 +77,7 @@ class _CreateBillOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final p = context.palette;
 
     return InkWell(
       onTap: onTap,
@@ -82,18 +85,16 @@ class _CreateBillOption extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: theme.brightness == Brightness.dark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.white,
+          color: p.isDark ? Colors.white.withValues(alpha: 0.05) : p.surface,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: theme.brightness == Brightness.dark
                 ? Colors.white.withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.1),
+                : p.textTertiary.withValues(alpha: 0.1),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: p.shadow.withValues(alpha: 0.03),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),

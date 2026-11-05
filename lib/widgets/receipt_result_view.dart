@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 
 class ReceiptResultView extends StatelessWidget {
@@ -83,6 +84,7 @@ class ReceiptResultView extends StatelessWidget {
     final surface = theme.colorScheme.surface;
     final onSurface = theme.colorScheme.onSurface;
     final muted = theme.colorScheme.onSurface.withValues(alpha: 0.65);
+    final p = context.palette;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -92,7 +94,7 @@ class ReceiptResultView extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: p.shadow.withValues(alpha: 0.05),
               blurRadius: 30,
               offset: const Offset(0, 10),
             ),
@@ -106,10 +108,10 @@ class ReceiptResultView extends StatelessWidget {
               child: Lottie.asset(
                 'assets/animations/food.json',
                 repeat: true,
-                errorBuilder: (context, error, stackTrace) => const Icon(
+                errorBuilder: (context, error, stackTrace) => Icon(
                   Icons.receipt_long_rounded,
                   size: 72,
-                  color: Colors.orange,
+                  color: p.warning,
                 ),
               ),
             ),
@@ -123,6 +125,7 @@ class ReceiptResultView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 52),
                     child: isEditingHeader
                         ? _buildSmallEditField(
+                            p: p,
                             controller: restaurantController,
                             label: 'receipt_store_name'.tr(),
                             isBold: true,
@@ -148,6 +151,7 @@ class ReceiptResultView extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: _buildSectionEditButton(
+                      p: p,
                       isEditing: isEditingHeader,
                       onTap: () {
                         if (isEditingHeader) {
@@ -174,10 +178,14 @@ class ReceiptResultView extends StatelessWidget {
                     return Theme(
                       data: Theme.of(context).copyWith(
                         colorScheme: Theme.of(context).colorScheme.copyWith(
-                              primary: Theme.of(context).colorScheme.primary, // header background color
-                              onPrimary: Colors.white, // header text color
-                              onSurface: Theme.of(context).colorScheme.onSurface, // body text color
-                            ),
+                          primary: Theme.of(
+                            context,
+                          ).colorScheme.primary, // header background color
+                          onPrimary: p.onPrimary, // header text color
+                          onSurface: Theme.of(
+                            context,
+                          ).colorScheme.onSurface, // body text color
+                        ),
                       ),
                       child: child!,
                     );
@@ -189,7 +197,10 @@ class ReceiptResultView extends StatelessWidget {
               },
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -245,6 +256,7 @@ class ReceiptResultView extends StatelessWidget {
                   ),
                   const Spacer(),
                   _buildActionPillButton(
+                    p: p,
                     icon: Icons.add_rounded,
                     label: 'receipt_add_item'.tr(),
                     onTap: () => _showItemEditorDialog(context),
@@ -295,6 +307,7 @@ class ReceiptResultView extends StatelessWidget {
                   ),
                   const Spacer(),
                   _buildSectionEditButton(
+                    p: p,
                     isEditing: isEditingCharges,
                     onTap: () {
                       if (isEditingCharges) {
@@ -317,26 +330,31 @@ class ReceiptResultView extends StatelessWidget {
             ),
             if (isEditingCharges) ...[
               _buildChargeEditRow(
+                p,
                 'receipt_tax'.tr(),
                 taxController,
                 confidenceScore: _score(confidenceScores['tax_amount']),
               ),
               _buildChargeEditRow(
+                p,
                 'receipt_service_charge'.tr(),
                 serviceController,
                 confidenceScore: _score(confidenceScores['service_charge']),
               ),
               _buildChargeEditRow(
+                p,
                 'receipt_discount'.tr(),
                 discountController,
                 confidenceScore: _score(confidenceScores['discount_amount']),
               ),
               _buildChargeEditRow(
+                p,
                 'receipt_tip'.tr(),
                 tipController,
                 confidenceScore: _score(confidenceScores['tip_amount']),
               ),
               _buildChargeEditRow(
+                p,
                 'receipt_delivery_fee'.tr(),
                 deliveryController,
                 confidenceScore: _score(confidenceScores['delivery_fee']),
@@ -399,7 +417,8 @@ class ReceiptResultView extends StatelessWidget {
               ...otherCharges.map(
                 (charge) => _buildChargeRow(
                   context,
-                  charge['label']?.toString() ?? 'receipt_other_charge_label'.tr(),
+                  charge['label']?.toString() ??
+                      'receipt_other_charge_label'.tr(),
                   (charge['amount'] as num?)?.toDouble() ?? 0.0,
                   confidenceScore: _score(charge['confidence_score']),
                   confidenceNote: charge['confidence_note']?.toString(),
@@ -431,9 +450,10 @@ class ReceiptResultView extends StatelessWidget {
     required TextEditingController qtyController,
     required TextEditingController priceController,
   }) {
+    final p = context.palette;
     final score = _score(itemData['confidence_score']);
-    final palette = _confidencePalette(score);
-    final badge = _buildConfidenceChip(score);
+    final palette = _confidencePalette(score, p);
+    final badge = _buildConfidenceChip(score, p);
     final note = itemData['confidence_note']?.toString().trim() ?? '';
     final qty = double.tryParse(qtyController.text) ?? 1.0;
     final price = double.tryParse(priceController.text) ?? 0.0;
@@ -457,10 +477,10 @@ class ReceiptResultView extends StatelessWidget {
               Expanded(
                 child: Text(
                   nameController.text,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
-                    color: Colors.black87,
+                    color: p.textPrimary,
                   ),
                 ),
               ),
@@ -469,14 +489,15 @@ class ReceiptResultView extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 CurrencyUtils.format(lineTotal, currencyCode: currencyCode),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 15,
-                  color: Colors.black87,
+                  color: p.textPrimary,
                 ),
               ),
               const SizedBox(width: 8),
               _buildSectionEditButton(
+                p: p,
                 isEditing: false,
                 onTap: () => _showItemEditorDialog(
                   context,
@@ -496,14 +517,14 @@ class ReceiptResultView extends StatelessWidget {
             children: [
               _buildInfoPill(
                 label: "x${_formatQty(qty)}",
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.grey.shade800,
+                backgroundColor: p.surface,
+                foregroundColor: p.textPrimary,
               ),
               _buildInfoPill(
                 label:
                     "${'receipt_price'.tr()}: ${CurrencyUtils.format(price, currencyCode: currencyCode)}",
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.grey.shade800,
+                backgroundColor: p.surface,
+                foregroundColor: p.textPrimary,
               ),
             ],
           ),
@@ -525,6 +546,7 @@ class ReceiptResultView extends StatelessWidget {
   }
 
   Widget _buildSmallEditField({
+    required AppPalette p,
     required TextEditingController controller,
     required String label,
     bool isNumber = false,
@@ -543,22 +565,22 @@ class ReceiptResultView extends StatelessWidget {
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-        color: readOnly ? Colors.grey[600] : Colors.black,
+        color: readOnly ? p.textSecondary : p.textStrong,
       ),
       maxLines: 1,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(fontSize: 12, color: Colors.grey[500]),
+        labelStyle: TextStyle(fontSize: 12, color: p.textTertiary),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: p.surface,
         isDense: false,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: p.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: p.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -582,12 +604,15 @@ class ReceiptResultView extends StatelessWidget {
   }) async {
     final localName = TextEditingController(text: nameController?.text ?? '');
     final localQty = TextEditingController(text: qtyController?.text ?? '1');
-    final localPrice = TextEditingController(text: priceController?.text ?? '0');
+    final localPrice = TextEditingController(
+      text: priceController?.text ?? '0',
+    );
     final isExistingItem = index != null;
+    final p = context.palette;
     final note = itemData?['confidence_note']?.toString().trim() ?? '';
     final score = _score(itemData?['confidence_score']);
-    final palette = _confidencePalette(score);
-    final badge = itemData == null ? null : _buildConfidenceChip(score);
+    final palette = _confidencePalette(score, p);
+    final badge = itemData == null ? null : _buildConfidenceChip(score, p);
 
     await showDialog<void>(
       context: context,
@@ -620,7 +645,9 @@ class ReceiptResultView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                index == null ? 'receipt_add_item'.tr() : 'receipt_edit_item'.tr(),
+                index == null
+                    ? 'receipt_add_item'.tr()
+                    : 'receipt_edit_item'.tr(),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -662,6 +689,7 @@ class ReceiptResultView extends StatelessWidget {
                 ),
               const SizedBox(height: 20),
               _buildSmallEditField(
+                p: p,
                 controller: localName,
                 label: 'receipt_item'.tr(),
                 isBold: true,
@@ -672,6 +700,7 @@ class ReceiptResultView extends StatelessWidget {
                   SizedBox(
                     width: 108,
                     child: _buildSmallEditField(
+                      p: p,
                       controller: localQty,
                       label: 'receipt_qty'.tr(),
                       isNumber: true,
@@ -681,6 +710,7 @@ class ReceiptResultView extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildSmallEditField(
+                      p: p,
                       controller: localPrice,
                       label: 'receipt_price'.tr(),
                       isNumber: true,
@@ -701,7 +731,7 @@ class ReceiptResultView extends StatelessWidget {
                       Navigator.of(dialogContext).pop();
                     },
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.red.shade600,
+                      foregroundColor: p.danger,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
@@ -736,7 +766,12 @@ class ReceiptResultView extends StatelessWidget {
                         if (index == null) {
                           onAddItem(name, localQty.text, localPrice.text);
                         } else {
-                          onUpdateItem(index, name, localQty.text, localPrice.text);
+                          onUpdateItem(
+                            index,
+                            name,
+                            localQty.text,
+                            localPrice.text,
+                          );
                         }
                         Navigator.of(dialogContext).pop();
                       },
@@ -762,12 +797,13 @@ class ReceiptResultView extends StatelessWidget {
   }
 
   Widget _buildActionPillButton({
+    required AppPalette p,
     required IconData icon,
     required String label,
     required VoidCallback onTap,
   }) {
     return Material(
-      color: Colors.grey.shade100,
+      color: p.surfaceVariant,
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
         onTap: onTap,
@@ -777,12 +813,12 @@ class ReceiptResultView extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 16, color: Colors.grey.shade700),
+              Icon(icon, size: 16, color: p.textMedium),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
-                  color: Colors.grey.shade800,
+                  color: p.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
@@ -795,11 +831,12 @@ class ReceiptResultView extends StatelessWidget {
   }
 
   Widget _buildSectionEditButton({
+    required AppPalette p,
     required bool isEditing,
     required VoidCallback onTap,
   }) {
     return Material(
-      color: isEditing ? const Color(0xFF00B365) : Colors.grey.shade100,
+      color: isEditing ? const Color(0xFF00B365) : p.surfaceVariant,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
@@ -809,7 +846,7 @@ class ReceiptResultView extends StatelessWidget {
           child: Icon(
             isEditing ? Icons.check_rounded : Icons.edit_outlined,
             size: 18,
-            color: isEditing ? Colors.white : Colors.grey.shade700,
+            color: isEditing ? Colors.white : p.textMedium,
           ),
         ),
       ),
@@ -817,12 +854,13 @@ class ReceiptResultView extends StatelessWidget {
   }
 
   Widget _buildChargeEditRow(
+    AppPalette p,
     String label,
     TextEditingController controller, {
     double confidenceScore = 1.0,
   }) {
-    final palette = _confidencePalette(confidenceScore);
-    final badge = _buildConfidenceChip(confidenceScore);
+    final palette = _confidencePalette(confidenceScore, p);
+    final badge = _buildConfidenceChip(confidenceScore, p);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -839,16 +877,13 @@ class ReceiptResultView extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
-                  color: Colors.grey[700],
+                  color: p.textMedium,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            if (badge != null) ...[
-              badge,
-              const SizedBox(width: 10),
-            ],
+            if (badge != null) ...[badge, const SizedBox(width: 10)],
             SizedBox(
               width: _fieldWidthFor(
                 controller.text,
@@ -857,6 +892,7 @@ class ReceiptResultView extends StatelessWidget {
                 charWidth: 14,
               ),
               child: _buildSmallEditField(
+                p: p,
                 controller: controller,
                 label: label,
                 isNumber: true,
@@ -877,8 +913,9 @@ class ReceiptResultView extends StatelessWidget {
     double confidenceScore = 1.0,
     String? confidenceNote,
   }) {
-    final palette = _confidencePalette(confidenceScore);
-    final badge = _buildConfidenceChip(confidenceScore);
+    final p = context.palette;
+    final palette = _confidencePalette(confidenceScore, p);
+    final badge = _buildConfidenceChip(confidenceScore, p);
     final note = confidenceNote?.trim() ?? '';
 
     return Padding(
@@ -897,13 +934,10 @@ class ReceiptResultView extends StatelessWidget {
                 Expanded(
                   child: Text(
                     label,
-                    style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                    style: TextStyle(color: p.textMedium, fontSize: 14),
                   ),
                 ),
-                if (badge != null) ...[
-                  badge,
-                  const SizedBox(width: 10),
-                ],
+                if (badge != null) ...[badge, const SizedBox(width: 10)],
                 Text(
                   "${isNegative ? '-' : ''}${CurrencyUtils.format(value, currencyCode: currencyCode)}",
                   style: TextStyle(
@@ -957,13 +991,13 @@ class ReceiptResultView extends StatelessWidget {
     );
   }
 
-  Widget? _buildConfidenceChip(double score) {
+  Widget? _buildConfidenceChip(double score, AppPalette p) {
     final key = _confidenceChipKey(score);
     if (key == null) return null;
-    final palette = _confidencePalette(score);
+    final palette = _confidencePalette(score, p);
     return _buildInfoPill(
       label: key.tr(),
-      backgroundColor: Colors.white,
+      backgroundColor: p.surface,
       foregroundColor: palette.accent,
     );
   }
@@ -1007,25 +1041,25 @@ class ReceiptResultView extends StatelessWidget {
     return estimated.clamp(minWidth, maxWidth).toDouble();
   }
 
-  _ConfidencePalette _confidencePalette(double score) {
+  _ConfidencePalette _confidencePalette(double score, AppPalette p) {
     if (score < 0.72) {
       return _ConfidencePalette(
-        background: Colors.red.shade50,
-        border: Colors.red.shade200,
-        accent: Colors.red.shade700,
+        background: p.dangerSoft,
+        border: p.tint(Colors.red.shade200, p.danger, darkAlpha: 0.45),
+        accent: p.dangerStrong,
       );
     }
     if (score < 0.88) {
       return _ConfidencePalette(
-        background: Colors.amber.shade50,
-        border: Colors.amber.shade200,
-        accent: Colors.amber.shade800,
+        background: p.tint(Colors.amber.shade50, Colors.amber),
+        border: p.tint(Colors.amber.shade200, Colors.amber, darkAlpha: 0.45),
+        accent: p.isDark ? Colors.amber.shade300 : Colors.amber.shade800,
       );
     }
     return _ConfidencePalette(
-      background: Colors.white,
-      border: Colors.grey.shade200,
-      accent: Colors.green.shade700,
+      background: p.surface,
+      border: p.borderSubtle,
+      accent: p.successStrong,
     );
   }
 }

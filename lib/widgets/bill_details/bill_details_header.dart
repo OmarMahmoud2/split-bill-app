@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class BillDetailsHeader extends StatelessWidget {
   final String title;
@@ -19,7 +20,7 @@ class BillDetailsHeader extends StatelessWidget {
           IconButton(
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            color: Colors.black87,
+            color: context.palette.textPrimary,
           ),
           Expanded(
             child: Text(

@@ -3,6 +3,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/services/contact_service.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class MultiContactPicker extends StatefulWidget {
   final List<String> alreadySelectedIds;
@@ -100,8 +101,9 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: p.surface,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,7 +142,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                 hintText: 'search_name_or_phone'.tr(),
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: p.surfaceVariant,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -168,12 +170,12 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                         leading: CircleAvatar(
                           backgroundColor: isSelected
                               ? Theme.of(context).primaryColor
-                              : Colors.grey[200],
+                              : p.borderSubtle,
                           child: isSelected
                               ? const Icon(Icons.check, color: Colors.white)
                               : Text(
                                   displayName.isNotEmpty ? displayName[0] : "?",
-                                  style: TextStyle(color: Colors.grey[600]),
+                                  style: TextStyle(color: p.textSecondary),
                                 ),
                         ),
                         title: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/config/feature_costs.dart';
 
@@ -7,12 +8,13 @@ class PremiumStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+        gradient: LinearGradient(
+          colors: [p.premium, p.premiumStrong],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

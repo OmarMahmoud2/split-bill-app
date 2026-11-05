@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class EditBillHeader extends StatelessWidget {
   final String storeName;
@@ -13,11 +14,12 @@ class EditBillHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -36,11 +38,12 @@ class EditBillHeader extends StatelessWidget {
           Expanded(
             child: Column(
               children: [
-                Text('editing_bill',
+                Text(
+                  'editing_bill',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
-                    color: Colors.blue[800],
+                    color: palette.infoStrong,
                     letterSpacing: 1.5,
                   ),
                 ).tr(),
@@ -58,13 +61,13 @@ class EditBillHeader extends StatelessWidget {
           IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.black,
+              decoration: BoxDecoration(
+                color: palette.inverseSurface,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.person_add_rounded,
-                color: Colors.white,
+                color: palette.onInverseSurface,
                 size: 20,
               ),
             ),

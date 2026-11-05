@@ -14,6 +14,7 @@ import 'screens/guest_bill/guest_selector_view.dart';
 import 'utils/currency_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class GuestBillScreen extends StatefulWidget {
   final String billId;
@@ -186,6 +187,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       breakdown['myItems'],
     );
     final currencyCode = breakdown['currencyCode'] as String;
+    final p = context.palette;
 
     PremiumBottomSheet.show(
       context: context,
@@ -253,7 +255,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                         child: Text(
                           'no_items_assigned_to_you',
                           style: TextStyle(
-                            color: Colors.grey[500],
+                            color: p.textTertiary,
                             fontWeight: FontWeight.w600,
                           ),
                         ).tr(),
@@ -265,9 +267,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
+                          color: p.surfaceMuted,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.shade100),
+                          border: Border.all(color: p.surfaceVariant),
                         ),
                         child: Row(
                           children: [
@@ -302,10 +304,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                                 children: [
                                   Text(
                                     item['name'],
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      color: Colors.black,
+                                      color: p.textStrong,
                                     ),
                                   ),
                                   if (item['isShared'])
@@ -318,7 +320,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                                       ),
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: Colors.grey[600],
+                                        color: p.textSecondary,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -330,10 +332,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                                 item['mySplit'] as double,
                                 currencyCode: currencyCode,
                               ),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: p.textStrong,
                               ),
                             ),
                           ],
@@ -459,16 +461,17 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     String currencyCode, {
     bool isDiscount = false,
   }) {
+    final p = context.palette;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey[700], fontSize: 14)),
+        Text(label, style: TextStyle(color: p.textMedium, fontSize: 14)),
         Text(
           "${isDiscount ? '-' : ''}${CurrencyUtils.format(amount.abs(), currencyCode: currencyCode)}",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            color: isDiscount ? Colors.red : Colors.black87,
+            color: isDiscount ? p.danger : p.textPrimary,
           ),
         ),
       ],
@@ -591,7 +594,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             content: Text(
               'error_with_details'.tr(namedArgs: {'error': e.toString()}),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.palette.danger,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -623,10 +626,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
           targetUid: hostId,
           title: 'payment_marked_as_sent'.tr(),
           body: 'payment_marked_as_sent_body'.tr(
-            namedArgs: {
-              'payer': participantName,
-              'amount': formattedAmount,
-            },
+            namedArgs: {'payer': participantName, 'amount': formattedAmount},
           ),
           historyTitleKey: 'payment_marked_as_sent',
           historyBodyKey: 'payment_marked_as_sent_body',
@@ -656,7 +656,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             content: Text(
               'error_with_details'.tr(namedArgs: {'error': e.toString()}),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.palette.danger,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -671,6 +671,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     double myTotal,
     String participantName,
   ) {
+    final p = context.palette;
     PremiumBottomSheet.show(
       context: context,
       child: Column(
@@ -700,10 +701,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             leading: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.1),
+                color: p.info.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.image_rounded, color: Colors.blue),
+              child: Icon(Icons.image_rounded, color: p.info),
             ),
             title: Text(
               'upload_screenshot',
@@ -711,7 +712,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             ).tr(),
             subtitle: Text(
               'recommended_for_digital_wallets',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: p.textSecondary),
             ).tr(),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -738,13 +739,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             leading: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
+                color: p.warning.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.check_circle_outline_rounded,
-                color: Colors.orange,
-              ),
+              child: Icon(Icons.check_circle_outline_rounded, color: p.warning),
             ),
             title: Text(
               'i_paid_skip_proof',
@@ -752,7 +750,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             ).tr(),
             subtitle: Text(
               'host_will_verify_manually',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: p.textSecondary),
             ).tr(),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -785,6 +783,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     final currencyCode = _currencyCode(billData);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = context.palette;
     final width = MediaQuery.of(context).size.width;
     final isNarrow = width < 380;
     String statusLabel = status == 'PAID'
@@ -866,15 +865,11 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.touch_app_rounded,
-                  size: 16,
-                  color: Colors.grey[400],
-                ),
+                Icon(Icons.touch_app_rounded, size: 16, color: p.textDisabled),
                 const SizedBox(width: 6),
                 Text(
                   'tap_to_see_breakdown',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                  style: TextStyle(color: p.textTertiary, fontSize: 13),
                 ).tr(),
               ],
             ),
@@ -940,6 +935,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     final List<Color> gradientColors = style['gradient'];
     final bool isLink = style['isLink'] || value.startsWith('http');
     final String logoPath = style['logo'];
+    final p = context.palette;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -969,7 +965,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('could_not_launch_payment_app').tr(),
-                    backgroundColor: Colors.red,
+                    backgroundColor: p.danger,
                   ),
                 );
               }
@@ -980,7 +976,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   content: Text(
                     'payment_method_copied'.tr(namedArgs: {'method': method}),
                   ),
-                  backgroundColor: Colors.green,
+                  backgroundColor: p.success,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -992,14 +988,12 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
-                colors: isSelected
-                    ? gradientColors
-                    : [Colors.white, Colors.white],
+                colors: isSelected ? gradientColors : [p.surface, p.surface],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               border: Border.all(
-                color: isSelected ? Colors.transparent : Colors.grey[200]!,
+                color: isSelected ? Colors.transparent : p.borderSubtle,
                 width: 2,
               ),
             ),
@@ -1011,11 +1005,12 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   height: 50,
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
+                    // White backdrop for the payment brand logo images.
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: p.shadow.withValues(alpha: 0.1),
                         blurRadius: 5,
                       ),
                     ],
@@ -1042,7 +1037,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 14,
-                          color: isSelected ? Colors.white : Colors.black87,
+                          color: isSelected ? Colors.white : p.textPrimary,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -1052,7 +1047,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                         style: TextStyle(
                           color: isSelected
                               ? Colors.white.withValues(alpha: 0.9)
-                              : Colors.grey[600],
+                              : p.textSecondary,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -1069,12 +1064,12 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? Colors.white.withValues(alpha: 0.2)
-                        : Colors.grey[100],
+                        : p.surfaceVariant,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     isLink ? Icons.open_in_new_rounded : Icons.copy_rounded,
-                    color: isSelected ? Colors.white : Colors.grey[400],
+                    color: isSelected ? Colors.white : p.textDisabled,
                     size: 20,
                   ),
                 ),
@@ -1251,6 +1246,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = context.palette;
 
     // 1. Success State
     if (_showSuccess) {
@@ -1265,11 +1261,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 'assets/animations/success.json',
                 width: 220,
                 repeat: false,
-                errorBuilder: (c, e, s) => const Icon(
-                  Icons.check_circle,
-                  size: 120,
-                  color: Colors.green,
-                ),
+                errorBuilder: (c, e, s) =>
+                    Icon(Icons.check_circle, size: 120, color: p.success),
               ),
               const SizedBox(height: 24),
               Text(
@@ -1280,7 +1273,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               const SizedBox(height: 12),
               Text(
                 'the_host_has_been_notified_and_will_review_your_payment_soon',
-                style: TextStyle(color: Colors.grey, fontSize: 15),
+                style: TextStyle(color: p.textTertiary, fontSize: 15),
                 textAlign: TextAlign.center,
               ).tr(),
               const SizedBox(height: 32),
@@ -1288,7 +1281,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 onPressed: () => setState(() => _showSuccess = false),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: p.onPrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
                     vertical: 18,
@@ -1436,10 +1429,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 hostName,
                 participant['status'] ?? 'PENDING',
                 (participant['status'] == 'PAID')
-                    ? Colors.green
+                    ? p.success
                     : (participant['status'] == 'REVIEW'
                           ? Colors.amber[700]! // Yellow/Amber for Review
-                          : Colors.orange),
+                          : p.warning),
                 billData,
                 participant['name'] ?? "Guest",
               ),
@@ -1455,20 +1448,20 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   ),
                   child: Row(
                     children: [
-                      Expanded(child: Divider(color: Colors.grey[300])),
+                      Expanded(child: Divider(color: p.border)),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           'pay_with',
                           style: TextStyle(
-                            color: Colors.grey[400],
+                            color: p.textDisabled,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                             letterSpacing: 1.5,
                           ),
                         ).tr(),
                       ),
-                      Expanded(child: Divider(color: Colors.grey[300])),
+                      Expanded(child: Divider(color: p.border)),
                     ],
                   ),
                 ),
@@ -1503,7 +1496,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     ).tr(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
-                      foregroundColor: Colors.white,
+                      foregroundColor: p.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),

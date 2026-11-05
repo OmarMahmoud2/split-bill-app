@@ -3,6 +3,7 @@ import 'package:split_bill_app/widgets/ad_modal.dart';
 import 'package:split_bill_app/widgets/premium_modal.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class NoPointsDialog extends StatelessWidget {
   final Future<void> Function() onWatchAd;
@@ -32,6 +33,7 @@ class NoPointsDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = context.palette;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -40,7 +42,7 @@ class NoPointsDialog extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.orange.withValues(alpha: 0.1),
+            color: p.warning.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -88,6 +90,7 @@ class NoPointsDialog extends StatelessWidget {
   }
 
   Widget _buildPremiumOptions(BuildContext context) {
+    final p = context.palette;
     return Column(
       children: [
         // Watch Ad Button
@@ -99,12 +102,12 @@ class NoPointsDialog extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: p.surface,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.grey.shade200),
+              border: Border.all(color: p.borderSubtle),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: p.shadow.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -115,17 +118,12 @@ class NoPointsDialog extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.purple.shade400,
-                        Colors.deepPurple.shade600,
-                      ],
-                    ),
+                    gradient: p.primaryGradient,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.play_arrow_rounded,
-                    color: Colors.white,
+                    color: p.onPrimary,
                     size: 24,
                   ),
                 ),
@@ -139,14 +137,14 @@ class NoPointsDialog extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Colors.black87,
+                          color: p.textPrimary,
                         ),
                       ).tr(),
                       SizedBox(height: 4),
                       Text(
                         'plus_1_point_instantly',
                         style: TextStyle(
-                          color: Colors.purple,
+                          color: p.primaryStrong,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
@@ -157,7 +155,7 @@ class NoPointsDialog extends StatelessWidget {
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 16,
-                  color: Colors.grey.shade400,
+                  color: p.textDisabled,
                 ),
               ],
             ),
@@ -183,7 +181,7 @@ class NoPointsDialog extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blue.withValues(alpha: 0.3),
+                  color: p.info.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),

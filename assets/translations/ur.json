@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Apple سے سائن ان کریں",
   "back": "واپس",
   "get_started": "شروع کریں",
-  "no_matches_found": "کوئی نتیجہ نہیں"
+  "no_matches_found": "کوئی نتیجہ نہیں",
+  "appearance": "ظاہری شکل",
+  "choose_appearance": "ظاہری شکل منتخب کریں",
+  "theme_mode_system": "سسٹم کے مطابق",
+  "theme_mode_system_subtitle": "آپ کے آلے کی ترتیب کے مطابق",
+  "theme_mode_light": "روشن",
+  "theme_mode_dark": "تاریک"
 }

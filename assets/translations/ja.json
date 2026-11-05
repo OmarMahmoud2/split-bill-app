@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Appleでログイン",
   "back": "戻る",
   "get_started": "はじめる",
-  "no_matches_found": "該当する結果がありません"
+  "no_matches_found": "該当する結果がありません",
+  "appearance": "外観",
+  "choose_appearance": "外観を選択",
+  "theme_mode_system": "システム設定",
+  "theme_mode_system_subtitle": "デバイスの設定に合わせます",
+  "theme_mode_light": "ライト",
+  "theme_mode_dark": "ダーク"
 }
