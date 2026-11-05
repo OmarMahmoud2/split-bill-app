@@ -22,6 +22,8 @@ import 'services/notification_payload.dart';
 import 'services/guest_session.dart';
 import 'services/notification_service.dart';
 import 'utils/app_theme.dart';
+import 'theme/app_typography.dart';
+import 'theme/font_licenses.dart';
 import 'auth_wrapper.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
@@ -36,6 +38,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  registerFontLicenses();
   debugPrint("🚀 App Launch: Widgets Initialized");
 
   Object? firebaseInitializationError;
@@ -361,7 +364,9 @@ class _MyAppState extends State<MyApp> {
           // AppBar (AppBarTheme.systemOverlayStyle covers the rest).
           builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
             value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
-            child: child ?? const SizedBox.shrink(),
+            child: AppLocaleTypography(
+              child: child ?? const SizedBox.shrink(),
+            ),
           ),
 
           home: CustomUpgrader(
