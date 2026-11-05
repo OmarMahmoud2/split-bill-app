@@ -19,6 +19,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:split_bill_app/data/activity.dart';
 import 'package:split_bill_app/data/ledger_math.dart';
 import 'package:split_bill_app/data/models.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
 
 const int recentBillsLimit = 200;
 const int groupBillsLimit = 500;
@@ -89,11 +90,15 @@ abstract class LedgerRepository {
 
   Future<String> createGroup(GroupDraft draft, {required GroupMember creator});
   Future<void> updateGroup(String groupId, Map<String, dynamic> fields);
+  Future<void> deleteGroup(String groupId);
 
   /// Records a payment (in the group when [PaymentRecord.groupId] is set) or
   /// a Quick IOU. Returns the new id.
   Future<String> recordPayment(PaymentRecord payment);
   Future<void> deletePayment(PaymentRecord payment);
+
+  /// Whether the user has unread inbox notifications (Home's bell dot).
+  Stream<bool> watchHasUnread(String uid);
 
   /// The recipient's saved payment methods (publicProfiles).
   Future<Map<String, dynamic>?> publicProfile(String uid);
@@ -244,6 +249,19 @@ class FirestoreLedgerRepository implements LedgerRepository {
       _groups.doc(groupId).update({...fields, 'updatedAt': FieldValue.serverTimestamp()});
 
   @override
+  Stream<bool> watchHasUnread(String uid) => _db
+      .collection('users')
+      .doc(uid)
+      .collection('notifications')
+      .where('read', isEqualTo: false)
+      .limit(1)
+      .snapshots()
+      .map((s) => s.docs.isNotEmpty);
+
+  @override
+  Future<void> deleteGroup(String groupId) => _groups.doc(groupId).delete();
+
+  @override
   Future<String> recordPayment(PaymentRecord payment) async {
     final uids = <String>{payment.from, payment.to}.toList();
     final col = payment.groupId != null
@@ -262,10 +280,8 @@ class FirestoreLedgerRepository implements LedgerRepository {
   }
 
   @override
-  Future<Map<String, dynamic>?> publicProfile(String uid) async {
-    final d = await _db.collection('publicProfiles').doc(uid).get();
-    return d.data();
-  }
+  Future<Map<String, dynamic>?> publicProfile(String uid) =>
+      PublicProfileService.fetch(uid);
 }
 
 /// Everything Home needs, recomputed whenever any source changes.
@@ -367,3 +383,18 @@ class HomeBalances {
 
   static void publish(HomeLedgerState state) => _subject.add(state);
 }
+
+/// One group with its bills and payments; null once the group is gone.
+Stream<GroupLedgerInput?> watchGroupLedger(
+  LedgerRepository repo,
+  String groupId, {
+  String fallbackCurrency = 'USD',
+}) => repo.watchGroup(groupId).switchMap((group) {
+  if (group == null) return Stream<GroupLedgerInput?>.value(null);
+  return Rx.combineLatest2(
+    repo.watchGroupBills(groupId, fallbackCurrency: group.currency ?? fallbackCurrency),
+    repo.watchGroupPayments(groupId),
+    (List<BillRecord> b, List<PaymentRecord> p) =>
+        GroupLedgerInput(group: group, bills: b, payments: p),
+  );
+});
