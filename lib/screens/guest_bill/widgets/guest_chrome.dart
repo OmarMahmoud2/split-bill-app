@@ -400,7 +400,7 @@ class GuestDashedBorder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _DashedRRectPainter(
+      foregroundPainter: _DashedRRectPainter(
         color: color ?? context.palette.borderStrong,
         radius: radius,
       ),

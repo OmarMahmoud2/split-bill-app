@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -387,6 +387,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     duration: AppMotion.durationFor(context, AppMotion.slow),
     switchInCurve: AppMotion.quiet,
     switchOutCurve: AppMotion.quiet,
+    // Fill the space so views lay out top-down instead of centered.
+    layoutBuilder: (current, previous) =>
+        Stack(fit: StackFit.expand, children: [...previous, ?current]),
     child: KeyedSubtree(key: ValueKey(view), child: child),
   );
 
@@ -520,15 +523,21 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
+                // Amounts read left to right in every locale (v3 RTL mock).
+                Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: MoneyText(
-                    minor: breakdown.totalMinor,
-                    currency: breakdown.currency,
-                    tone: MoneyTone.neutral,
-                    size: MoneySize.hero,
-                    style: const TextStyle(fontSize: 52),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: MoneyText(
+                        minor: breakdown.totalMinor,
+                        currency: breakdown.currency,
+                        tone: MoneyTone.neutral,
+                        size: MoneySize.hero,
+                        style: const TextStyle(fontSize: 52),
+                      ),
+                    ),
                   ),
                 ),
                 _notMeLink(me),

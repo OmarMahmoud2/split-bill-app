@@ -29,7 +29,7 @@ class GuestSelectorView extends StatelessWidget {
       'guest_people_count'.tr(
         namedArgs: {'count': bill.participants.length.toString()},
       ),
-    ].join(' · ');
+    ].map((part) => '\u2068$part\u2069').join(' · ');
 
     return SingleChildScrollView(
       key: const ValueKey('SelectorView'),

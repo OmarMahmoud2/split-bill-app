@@ -856,7 +856,7 @@
   "guest_shared_store": "شارك {host} فاتورة {store} معك",
   "guest_shared_store_on": "شارك {host} فاتورة {store} معك · {date}",
   "guest_not_you": "لست {name}؟",
-  "guest_item_shared": "{item}، ١ من {count}",
+  "guest_item_shared": "{item}، 1 من {count}",
   "guest_tax": "الضريبة",
   "guest_tax_rate": "الضريبة {rate}%",
   "guest_service": "الخدمة",

@@ -79,7 +79,8 @@ class GuestAmountRow extends StatelessWidget {
     final weight = bold ? FontWeight.w700 : FontWeight.w400;
     return MergeSemantics(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
           Expanded(
             child: Text(
