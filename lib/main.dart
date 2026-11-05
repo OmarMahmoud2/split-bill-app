@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:ui' show PlatformDispatcher;
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:app_links/app_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,6 +36,8 @@ import 'config/supported_preferences.dart';
 import 'providers/app_settings_provider.dart';
 import 'web_download_screen.dart';
 import 'screens/debug/foundation_gallery_screen.dart';
+import 'screens/guest_bill/guest_bill_model.dart' show parseGuestLink;
+import 'screens/guest_bill/guest_locale.dart';
 
 // Global Navigator Key for Deep Linking
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -92,6 +95,10 @@ Future<void> main() async {
       AppTheme.overlayStyleFor(PlatformDispatcher.instance.platformBrightness),
     );
   }
+
+  // Guest pages are used with screen readers and keyboards: build the web
+  // accessibility tree up front instead of behind Flutter's opt-in button.
+  if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
 
   debugPrint("🚀 App Launch: Calling runApp()");
   runApp(
@@ -208,17 +215,10 @@ class _MyAppState extends State<MyApp> {
 
   // --- DEEP LINK HANDLING ---
   Map<String, String?> _extractBillLinkData(Uri uri) {
-    String? billId = uri.queryParameters['billId'];
-    final uid = uri.queryParameters['uid'];
-
-    if (billId == null) {
-      final index = uri.pathSegments.indexOf('bill');
-      if (index != -1 && index + 1 < uri.pathSegments.length) {
-        billId = uri.pathSegments[index + 1];
-      }
-    }
-
-    return {'billId': billId, 'uid': uid};
+    // `/bill/<id>`, `/b/<id>` or `?billId=`; personal links add `?p=`
+    // (legacy `?uid=`).
+    final link = parseGuestLink(uri);
+    return {'billId': link?.billId, 'uid': link?.participantId};
   }
 
   Future<void> _initDeepLinks() async {
@@ -401,6 +401,8 @@ class _MyAppState extends State<MyApp> {
             }
           });
         } else if (forcedLocale.isEmpty &&
+            // A guest's own pick on the web page wins over the browser default.
+            !GuestLocale.chosen &&
             context.locale.languageCode != appSettings.locale.languageCode) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -446,16 +448,16 @@ class _MyAppState extends State<MyApp> {
             child: AppLocaleTypography(child: child ?? const SizedBox.shrink()),
           ),
 
-          home: CustomUpgrader(
-            child: billIdFromUrl != null
-                ? GuestBillScreen(
-                    billId: billIdFromUrl,
-                    initialParticipantId: uidFromUrl,
-                  )
-                : kIsWeb
-                ? const WebDownloadScreen()
-                : const AuthWrapper(),
-          ),
+          // Web has no store update prompt, so the upgrader (and its
+          // packages) stays out of the web bundle.
+          home: kIsWeb
+              ? (billIdFromUrl != null
+                    ? GuestBillScreen(
+                        billId: billIdFromUrl,
+                        initialParticipantId: uidFromUrl,
+                      )
+                    : const WebDownloadScreen())
+              : const CustomUpgrader(child: AuthWrapper()),
         );
       },
     );
