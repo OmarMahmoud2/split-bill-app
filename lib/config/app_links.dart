@@ -19,7 +19,7 @@ class AppLinks {
       'https://omarmali.net/split-bill/privacy/';
 
   static const String termsOfUseUrl =
-      'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
+      'https://omarmali.net/split-bill/terms/';
 
   static String get storeUrl =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
@@ -27,7 +27,7 @@ class AppLinks {
       : playStoreUrl;
 
   // 4. Support Email
-  static const String supportEmail = 'omar.mahmoud1@yahoo.com';
+  static const String supportEmail = 'support@omarmali.net';
 
   // 5. Share Text
   static String get shareText =>

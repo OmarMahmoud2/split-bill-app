@@ -1,3 +1,4 @@
+import 'package:split_bill_app/config/app_links.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +11,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 class ProfileDialogs {
   static Future<void> showContactUs(BuildContext context) async {
-    const String email = "omar.mahmoud1@yahoo.com";
+    const String email = AppLinks.supportEmail;
     final rootContext = Navigator.of(context, rootNavigator: true).context;
     final messenger = ScaffoldMessenger.maybeOf(rootContext);
 
@@ -65,7 +66,8 @@ class ProfileDialogs {
                       ),
                       const SizedBox(height: 16),
 
-                      Text('we_re_here_to_help',
+                      Text(
+                        'we_re_here_to_help',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
@@ -76,7 +78,8 @@ class ProfileDialogs {
                         textAlign: TextAlign.center,
                       ).tr(),
                       const SizedBox(height: 8),
-                      Text('have_a_question_or_feedback_nreach_out_to_us_anytime',
+                      Text(
+                        'have_a_question_or_feedback_nreach_out_to_us_anytime',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -98,7 +101,8 @@ class ProfileDialogs {
                               scheme: 'mailto',
                               path: email,
                               queryParameters: {
-                                'subject': 'support_request_split_bill_app'.tr(),
+                                'subject': 'support_request_split_bill_app'
+                                    .tr(),
                               },
                             );
                             if (await canLaunchUrl(emailLaunchUri)) {
@@ -129,7 +133,8 @@ class ProfileDialogs {
                               children: [
                                 Icon(Icons.email_rounded, color: Colors.white),
                                 SizedBox(width: 12),
-                                Text('send_email',
+                                Text(
+                                  'send_email',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -167,7 +172,8 @@ class ProfileDialogs {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Center(
-                              child: Text('copy_email_address',
+                              child: Text(
+                                'copy_email_address',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -183,7 +189,8 @@ class ProfileDialogs {
                       // Cancel Button
                       TextButton(
                         onPressed: () => Navigator.of(dialogContext).pop(),
-                        child: Text('maybe_later',
+                        child: Text(
+                          'maybe_later',
                           style: TextStyle(color: Colors.grey),
                         ).tr(),
                       ),
@@ -210,14 +217,18 @@ class ProfileDialogs {
       context: context,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('logout',
+        title: Text(
+          'logout',
           style: TextStyle(fontWeight: FontWeight.bold),
         ).tr(),
         content: Text('are_you_sure_you_want_to_logout').tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
+            child: Text(
+              'common_cancel',
+              style: TextStyle(color: Colors.grey),
+            ).tr(),
           ),
           TextButton(
             onPressed: () async {
@@ -261,7 +272,8 @@ class ProfileDialogs {
                 );
               }
             },
-            child: Text('logout',
+            child: Text(
+              'logout',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ).tr(),
           ),
@@ -302,13 +314,14 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
     final rootNavigator = Navigator.of(context, rootNavigator: true);
     final rootContext = rootNavigator.context;
     final messenger = ScaffoldMessenger.maybeOf(rootContext);
-    
-    final providers = user?.providerData
+
+    final providers =
+        user?.providerData
             .map((provider) => provider.providerId)
             .where((providerId) => providerId.isNotEmpty)
             .toSet() ??
         <String>{};
-        
+
     final requiresPassword =
         providers.contains('password') &&
         !providers.contains('google.com') &&
@@ -320,8 +333,12 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
         children: [
           const Icon(Icons.warning_amber_rounded, color: Colors.red),
           const SizedBox(width: 8),
-          Text('delete_account',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+          Text(
+            'delete_account',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
           ).tr(),
         ],
       ),
@@ -329,12 +346,14 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('delete_account_warning_message',
+          Text(
+            'delete_account_warning_message',
             style: const TextStyle(fontSize: 14),
           ).tr(),
           if (requiresPassword) ...[
             const SizedBox(height: 16),
-            Text('delete_account_requires_password',
+            Text(
+              'delete_account_requires_password',
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
@@ -369,14 +388,14 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('no_keep_it',
+          child: Text(
+            'no_keep_it',
             style: const TextStyle(color: Colors.grey),
           ).tr(),
         ),
         ElevatedButton(
           onPressed: () async {
-            if (requiresPassword &&
-                _passwordController.text.trim().isEmpty) {
+            if (requiresPassword && _passwordController.text.trim().isEmpty) {
               setState(() {
                 _passwordError = 'enter_current_password_to_continue'.tr();
               });
