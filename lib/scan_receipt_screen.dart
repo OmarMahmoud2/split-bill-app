@@ -23,6 +23,7 @@ import 'screens/scan_receipt/widgets/image_source_sheet.dart';
 import 'screens/scan_receipt/widgets/participants_reference_list.dart';
 import 'screens/scan_receipt/widgets/scan_empty_state.dart';
 import 'services/revenue_cat_service.dart';
+import 'theme/app_palette.dart';
 
 class ScanReceiptScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? participants;
@@ -199,7 +200,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('saved_for_later').tr(),
-            backgroundColor: Colors.green,
+            backgroundColor: context.palette.success,
           ),
         );
         Navigator.of(context).popUntil((route) => route.isFirst);
@@ -212,7 +213,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             content: Text(
               'error_saving'.tr(namedArgs: {'error': e.toString()}),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.palette.danger,
           ),
         );
       }
@@ -245,7 +246,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('bill_deleted').tr(),
-          backgroundColor: Colors.green,
+          backgroundColor: context.palette.success,
         ),
       );
       Navigator.of(context).pop();
@@ -254,7 +255,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('error_saving'.tr(namedArgs: {'error': e.toString()})),
-          backgroundColor: Colors.red,
+          backgroundColor: context.palette.danger,
         ),
       );
     } finally {
@@ -279,7 +280,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: dialogContext.palette.danger,
               foregroundColor: Colors.white,
             ),
             child: Text('common_delete').tr(),
@@ -585,7 +586,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           content: Text(
             'error_with_details'.tr(namedArgs: {'error': e.toString()}),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: context.palette.danger,
         ),
       );
     }
@@ -619,7 +620,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         SnackBar(
           content: Text('fetching_an_ad_please_try_again_in_a_moment').tr(),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: context.palette.infoAccent,
         ),
       );
       try {
@@ -639,7 +640,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
                 'you_earned_1_point_you_can_now_use_the_scanner',
               ).tr(),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.green,
+              backgroundColor: context.palette.success,
             ),
           );
         }
@@ -733,7 +734,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
                 },
               ),
             ),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: context.palette.dangerAccent,
           ),
         );
       }
@@ -743,7 +744,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.palette.surfaceMuted,
       appBar: CustomAppHeader(
         title: _receiptData == null
             ? 'scan_receipt'.tr()
@@ -793,9 +794,9 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
                   width: 40,
                   height: 40,
                 ),
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline_rounded,
-                  color: Colors.redAccent,
+                  color: context.palette.dangerAccent,
                   size: 20,
                 ),
                 tooltip: 'common_delete'.tr(),
@@ -809,13 +810,12 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   }
 
   Widget _buildProBadge() {
+    final p = context.palette;
     return Container(
       margin: const EdgeInsets.only(right: 4),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-        ),
+        gradient: LinearGradient(colors: [p.premium, p.premiumStrong]),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -889,17 +889,17 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             opacity: _loadingTextController,
             child: Text(
               _loadingMessageKey.tr(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: context.palette.textPrimary,
               ),
             ),
           ),
           const SizedBox(height: 12),
           Text(
             'pulling_the_details_from_your_receipt',
-            style: TextStyle(color: Colors.grey[500], fontSize: 14),
+            style: TextStyle(color: context.palette.textTertiary, fontSize: 14),
           ).tr(),
           const SizedBox(height: 50),
           Lottie.asset('assets/animations/loading.json', height: 60),
@@ -957,13 +957,14 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   }
 
   Widget _buildBottomAction() {
+    final p = context.palette;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: p.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: p.shadow.withValues(alpha: 0.05),
             blurRadius: 30,
             offset: const Offset(0, -10),
           ),

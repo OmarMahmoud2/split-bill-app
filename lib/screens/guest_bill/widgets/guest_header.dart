@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class GuestHeader extends StatelessWidget {
   final String storeName;
@@ -98,7 +99,7 @@ class GuestHeader extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              Divider(height: 1, color: Colors.grey[200]),
+              Divider(height: 1, color: context.palette.borderSubtle),
               const SizedBox(height: 24),
 
               // 2. Store Name

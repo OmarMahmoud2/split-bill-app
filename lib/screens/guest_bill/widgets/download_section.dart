@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class DownloadSection extends StatelessWidget {
   const DownloadSection({super.key});
@@ -11,7 +12,7 @@ class DownloadSection extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.black, // Sleek dark mode look
+        color: Colors.black, // Intentionally dark in both themes.
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
@@ -44,7 +45,7 @@ class DownloadSection extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: Colors.purple.withValues(alpha: 0.2),
+                color: context.palette.primary.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
             ),
@@ -60,7 +61,8 @@ class DownloadSection extends StatelessWidget {
                   color: Colors.white,
                 ),
                 const SizedBox(height: 20),
-                Text('join_the_party',
+                Text(
+                  'join_the_party',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 28,
@@ -70,7 +72,8 @@ class DownloadSection extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ).tr(),
                 const SizedBox(height: 12),
-                Text('don_t_just_pay_bills_manage_them_along_with_your_friends_download_splitbill_now',
+                Text(
+                  'don_t_just_pay_bills_manage_them_along_with_your_friends_download_splitbill_now',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 16,

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class OrbitingAvatars extends StatefulWidget {
   final List<dynamic> participants;
@@ -38,6 +39,7 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return LayoutBuilder(
       builder: (context, constraints) {
         final center = Offset(
@@ -57,10 +59,10 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
               height: 130,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
+                color: p.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blue.withValues(alpha: 0.15),
+                    color: p.info.withValues(alpha: 0.15),
                     blurRadius: 30,
                     spreadRadius: 2,
                   ),
@@ -76,8 +78,8 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
                     fit: BoxFit.contain,
                     errorBuilder: (c, e, s) => Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
-                        color: Colors.blueAccent,
+                      decoration: BoxDecoration(
+                        color: p.infoAccent,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -88,12 +90,13 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('select_nyour_name',
+                  Text(
+                    'select_nyour_name',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
-                      color: Colors.black87,
+                      color: p.textPrimary,
                       height: 1.2,
                     ),
                   ).tr(),
@@ -129,6 +132,7 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
 
   Widget _buildAvatar(dynamic participant) {
     final String name = participant['name'] ?? "Guest";
+    final p = context.palette;
 
     return Material(
       color: Colors.transparent,
@@ -140,12 +144,15 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
           height: 85,
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: p.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.blue.shade100, width: 2),
+            border: Border.all(
+              color: p.tint(Colors.blue.shade100, p.info, darkAlpha: 0.4),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: p.shadow.withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),
@@ -159,7 +166,7 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
                 height: 32,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: p.infoSoft,
                   shape: BoxShape.circle,
                 ),
                 child: Text(
@@ -167,7 +174,7 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
-                    color: Colors.blue.shade800,
+                    color: p.infoStrong,
                   ),
                 ),
               ),
@@ -176,9 +183,9 @@ class _OrbitingAvatarsState extends State<OrbitingAvatars>
                 name,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: Colors.black87,
+                  color: p.textPrimary,
                   fontWeight: FontWeight.w700,
                   height: 1.2,
                 ),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class ScanEmptyState extends StatelessWidget {
   final File? image;
@@ -19,6 +20,7 @@ class ScanEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -29,10 +31,10 @@ class ScanEmptyState extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: onSnapAndSave,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.blue.shade700,
+                  backgroundColor: p.surface,
+                  foregroundColor: p.infoStrong,
                   elevation: 4,
-                  shadowColor: Colors.blue.withValues(alpha: 0.2),
+                  shadowColor: p.info.withValues(alpha: 0.2),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 16,
@@ -42,7 +44,8 @@ class ScanEmptyState extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.flash_on_rounded, color: Colors.amber),
-                label: Text('snap_now_and_split_later',
+                label: Text(
+                  'snap_now_and_split_later',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ).tr(),
               ),
@@ -60,11 +63,11 @@ class ScanEmptyState extends StatelessWidget {
               width: 300,
               height: 420,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: p.surface,
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.shade200,
+                    color: p.borderSubtle,
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -85,22 +88,24 @@ class ScanEmptyState extends StatelessWidget {
                       ),
                       Container(
                         padding: const EdgeInsets.all(24),
-                        color: Colors.white,
+                        color: p.surface,
                         width: double.infinity,
                         child: Column(
                           children: [
-                            Text('receipt_ready',
+                            Text(
+                              'receipt_ready',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.green.shade700,
+                                color: p.successStrong,
                               ),
                             ).tr(),
                             const SizedBox(height: 8),
-                            Text('tap_to_analyze_results',
+                            Text(
+                              'tap_to_analyze_results',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey,
+                                color: p.textTertiary,
                               ),
                             ).tr(),
                           ],
@@ -119,7 +124,8 @@ class ScanEmptyState extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      Text('tap_to_scan',
+                      Text(
+                        'tap_to_scan',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
@@ -128,12 +134,10 @@ class ScanEmptyState extends StatelessWidget {
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text('point_your_camera_at_the_receipt_for_magic_processing',
+                        child: Text(
+                          'point_your_camera_at_the_receipt_for_magic_processing',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            height: 1.5,
-                          ),
+                          style: TextStyle(color: p.textSecondary, height: 1.5),
                         ).tr(),
                       ),
                       const Spacer(),

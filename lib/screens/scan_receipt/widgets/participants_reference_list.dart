@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 
 class ParticipantsReferenceList extends StatelessWidget {
@@ -16,17 +17,18 @@ class ParticipantsReferenceList extends StatelessWidget {
     if (participants == null || participants!.isEmpty) {
       return const SizedBox.shrink();
     }
+    final palette = context.palette;
 
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: palette.shadow.withValues(alpha: 0.04),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -40,14 +42,15 @@ class ParticipantsReferenceList extends StatelessWidget {
               Icon(
                 Icons.record_voice_over_rounded,
                 size: 16,
-                color: Colors.grey[600],
+                color: palette.textSecondary,
               ),
               const SizedBox(width: 8),
-              Text('voice_reference',
+              Text(
+                'voice_reference',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
+                  color: palette.textSecondary,
                   letterSpacing: 0.5,
                 ),
               ).tr(),
@@ -77,19 +80,19 @@ class ParticipantsReferenceList extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.grey.shade200,
+                          color: palette.borderSubtle,
                           width: 2,
                         ),
                       ),
                       child: CircleAvatar(
                         radius: 24,
-                        backgroundColor: Colors.grey.shade100,
+                        backgroundColor: palette.surfaceVariant,
                         backgroundImage: _getAvatarImage(photoUrl),
                         child: (photoUrl == null || photoUrl.isEmpty)
                             ? Text(
                                 name[0].toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.black87,
+                                style: TextStyle(
+                                  color: palette.textPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -103,10 +106,10 @@ class ParticipantsReferenceList extends StatelessWidget {
                       child: Text(
                         name,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          color: palette.textPrimary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
