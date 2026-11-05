@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class ProfileSectionTitle extends StatelessWidget {
   final String title;
@@ -14,7 +15,7 @@ class ProfileSectionTitle extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w800,
-          color: Colors.grey[400],
+          color: context.palette.textDisabled,
           letterSpacing: 1.2,
         ),
       ),
@@ -49,11 +50,12 @@ class ProfileCoolTile extends StatelessWidget {
     final iconSize = compact ? 20.0 : 24.0;
     final titleSize = compact ? 14.0 : 15.0;
     final subtitleSize = compact ? 11.5 : 12.0;
+    final p = context.palette;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: p.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -90,16 +92,14 @@ class ProfileCoolTile extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: titleSize,
-                          color: isDestructive
-                              ? Colors.red[700]
-                              : Colors.black87,
+                          color: isDestructive ? p.dangerStrong : p.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         subtitle,
                         style: TextStyle(
-                          color: Colors.grey[500],
+                          color: p.textTertiary,
                           fontSize: subtitleSize,
                         ),
                       ),
@@ -109,7 +109,7 @@ class ProfileCoolTile extends StatelessWidget {
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: compact ? 12 : 14,
-                  color: Colors.grey[300],
+                  color: p.border,
                 ),
               ],
             ),

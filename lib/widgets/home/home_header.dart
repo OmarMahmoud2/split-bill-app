@@ -6,6 +6,7 @@ import 'package:split_bill_app/notifications_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class HomeHeader extends StatelessWidget {
@@ -49,6 +50,7 @@ class HomeHeader extends StatelessWidget {
         }
 
         String firstName = name.split(' ')[0];
+        final p = context.palette;
 
         return Container(
           padding: const EdgeInsets.fromLTRB(20, 60, 20, 10),
@@ -62,15 +64,15 @@ class HomeHeader extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: p.surface,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: Colors.grey.withValues(alpha: 0.1),
+                    color: p.textTertiary.withValues(alpha: 0.1),
                     width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
+                      color: p.shadow.withValues(alpha: 0.04),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -83,7 +85,7 @@ class HomeHeader extends StatelessWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: p.surfaceVariant,
                         borderRadius: BorderRadius.circular(16),
                         image: getAvatarImage(photoUrl) != null
                             ? DecorationImage(
@@ -93,7 +95,7 @@ class HomeHeader extends StatelessWidget {
                             : null,
                       ),
                       child: getAvatarImage(photoUrl) == null
-                          ? const Icon(Icons.person_rounded, color: Colors.grey)
+                          ? Icon(Icons.person_rounded, color: p.textTertiary)
                           : null,
                     ),
                     const SizedBox(width: 14),
@@ -105,7 +107,7 @@ class HomeHeader extends StatelessWidget {
                           Text(
                             'welcome_back_2',
                             style: TextStyle(
-                              color: Colors.grey[500],
+                              color: p.textTertiary,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
@@ -123,11 +125,12 @@ class HomeHeader extends StatelessWidget {
                     ),
                     // Icons
                     _buildHeaderAction(
+                      p: p,
                       icon: Icons.qr_code_scanner_rounded,
                       onTap: () => onQrTap(name, photoUrl),
                     ),
                     const SizedBox(width: 10),
-                    _buildNotificationAction(context),
+                    _buildNotificationAction(context, p),
                   ],
                 ),
               ),
@@ -138,26 +141,28 @@ class HomeHeader extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _buildSummaryCard(
+                          p: p,
                           title: 'you_owe'.tr(),
                           value: CurrencyUtils.format(
                             iOwe,
                             currencyCode: currencyCode,
                             decimalDigits: 1,
                           ),
-                          color: Colors.orange,
+                          color: p.warning,
                           icon: Icons.outbound_rounded,
                         ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
                         child: _buildSummaryCard(
+                          p: p,
                           title: 'owed_to_you'.tr(),
                           value: CurrencyUtils.format(
                             owedToMe,
                             currencyCode: currencyCode,
                             decimalDigits: 1,
                           ),
-                          color: Colors.green,
+                          color: p.success,
                           icon: Icons.call_received_rounded,
                         ),
                       ),
@@ -168,18 +173,18 @@ class HomeHeader extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _buildSummaryCard(
+                          p: p,
                           title: 'net_balance'.tr(),
                           value:
                               '${(owedToMe - iOwe) >= 0 ? "+" : "-"}${CurrencyUtils.format((owedToMe - iOwe).abs(), currencyCode: currencyCode, decimalDigits: 1)}',
-                          color: (owedToMe - iOwe) >= 0
-                              ? Colors.blue
-                              : Colors.red,
+                          color: (owedToMe - iOwe) >= 0 ? p.info : p.danger,
                           icon: Icons.account_balance_wallet_rounded,
                         ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
                         child: _buildSummaryCard(
+                          p: p,
                           title: 'completed_bills'.tr(),
                           value: '$completedBillsCount',
                           color: Colors.deepPurple,
@@ -201,24 +206,25 @@ class HomeHeader extends StatelessWidget {
   }
 
   Widget _buildHeaderAction({
+    required AppPalette p,
     required IconData icon,
     required VoidCallback onTap,
   }) {
     return Material(
-      color: Colors.grey[100],
+      color: p.surfaceVariant,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: Container(
           padding: const EdgeInsets.all(12),
-          child: Icon(icon, color: Colors.black87, size: 22),
+          child: Icon(icon, color: p.textPrimary, size: 22),
         ),
       ),
     );
   }
 
-  Widget _buildNotificationAction(BuildContext context) {
+  Widget _buildNotificationAction(BuildContext context, AppPalette p) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -229,7 +235,7 @@ class HomeHeader extends StatelessWidget {
       builder: (context, notifSnap) {
         bool unread = notifSnap.hasData && notifSnap.data!.docs.isNotEmpty;
         return Material(
-          color: Colors.grey[100],
+          color: p.surfaceVariant,
           borderRadius: BorderRadius.circular(14),
           child: InkWell(
             onTap: () => Navigator.push(
@@ -243,8 +249,8 @@ class HomeHeader extends StatelessWidget {
               child: Center(
                 child: unread
                     ? ColorFiltered(
-                        colorFilter: const ColorFilter.mode(
-                          Colors.black,
+                        colorFilter: ColorFilter.mode(
+                          p.textStrong,
                           BlendMode.srcIn,
                         ),
                         child: Lottie.asset(
@@ -253,9 +259,9 @@ class HomeHeader extends StatelessWidget {
                           height: 26,
                         ),
                       )
-                    : const Icon(
+                    : Icon(
                         Icons.notifications_none_rounded,
-                        color: Colors.black87,
+                        color: p.textPrimary,
                         size: 22,
                       ),
               ),
@@ -267,6 +273,7 @@ class HomeHeader extends StatelessWidget {
   }
 
   Widget _buildSummaryCard({
+    required AppPalette p,
     required String title,
     required String value,
     required Color color,
@@ -284,7 +291,7 @@ class HomeHeader extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: p.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: color.withValues(alpha: 0.1), width: 1.5),
             boxShadow: [
@@ -318,7 +325,7 @@ class HomeHeader extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.visible,
                       style: TextStyle(
-                        color: Colors.grey[700],
+                        color: p.textMedium,
                         fontSize: 12,
                         height: 1.15,
                         fontWeight: FontWeight.w800,
@@ -330,7 +337,7 @@ class HomeHeader extends StatelessWidget {
                     Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 13,
-                      color: Colors.grey[400],
+                      color: p.textDisabled,
                     ),
                   ],
                 ],
@@ -360,7 +367,7 @@ class HomeHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: TextStyle(
-                    color: Colors.grey[500],
+                    color: p.textTertiary,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),

@@ -27,6 +27,7 @@ import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 import 'package:split_bill_app/screens/admin/admin_dashboard_screen.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -300,6 +301,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showCurrencySheet(AppSettingsProvider settings) {
+    final p = context.palette;
     PremiumBottomSheet.show(
       context: context,
       padding: EdgeInsets.zero,
@@ -322,8 +324,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFFF7E8), Color(0xFFFFF1CC)],
+                    gradient: LinearGradient(
+                      colors: [
+                        p.tint(const Color(0xFFFFF7E8), Colors.amber),
+                        p.tint(const Color(0xFFFFF1CC), Colors.amber),
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -370,6 +375,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final settings = context.watch<AppSettingsProvider>();
     final selectedLocale = findLocaleOption(settings.locale.languageCode);
     final selectedCurrency = findCurrencyOption(settings.currencyCode);
+    final p = context.palette;
 
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
@@ -382,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         String? photoUrl = data['photoUrl'];
 
         return Scaffold(
-          backgroundColor: Colors.grey[50],
+          backgroundColor: p.surfaceMuted,
           body: CustomScrollView(
             slivers: [
               // 1. HEADER
@@ -432,7 +438,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.account_balance_wallet_rounded,
                       title: 'payment_methods'.tr(),
                       subtitle: 'manage_how_you_pay_and_receive'.tr(),
-                      color: Colors.green,
+                      color: p.success,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -444,7 +450,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.groups_rounded,
                       title: 'my_groups'.tr(),
                       subtitle: 'view_and_manage_your_squads'.tr(),
-                      color: Colors.orange,
+                      color: p.warning,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const GroupsScreen()),
@@ -512,7 +518,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               icon: Icons.workspace_premium_rounded,
                               title: 'upgrade_to_premium'.tr(),
                               subtitle: 'unlimited_scans_no_ads_lifetime'.tr(),
-                              color: Colors.blue,
+                              color: p.info,
                               onTap: _showPremiumDialog,
                             ),
                             ProfileCoolTile(
@@ -533,7 +539,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.share_rounded,
                       title: 'share_app'.tr(),
                       subtitle: 'gift_this_app_to_your_friends'.tr(),
-                      color: Colors.blue,
+                      color: p.info,
                       onTap: () => _shareApp(context),
                     ),
                     ProfileCoolTile(
@@ -557,7 +563,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.logout_rounded,
                       title: 'logout'.tr(),
                       subtitle: 'sign_out_of_your_account'.tr(),
-                      color: Colors.red,
+                      color: p.danger,
                       isDestructive: true,
                       onTap: _showLogoutDialog,
                     ),
@@ -565,7 +571,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.person_remove_rounded,
                       title: 'delete_account'.tr(),
                       subtitle: 'dangerous_and_irreversible'.tr(),
-                      color: Colors.red,
+                      color: p.danger,
                       isDestructive: true,
                       onTap: _showDeleteAccountDialog,
                     ),
@@ -641,7 +647,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'ad_is_initializing_please_try_again_in_a_few_seconds',
           ).tr(),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: context.palette.infoAccent,
         ),
       );
 
@@ -661,7 +667,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SnackBar(
               content: Text('success_you_earned_1_scan_point').tr(),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.green,
+              backgroundColor: context.palette.success,
             ),
           );
         }
@@ -707,7 +713,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               : 'premium_status_refresh_failed',
         ).tr(),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: success ? Colors.green : Colors.orange,
+        backgroundColor: success
+            ? context.palette.success
+            : context.palette.warning,
       ),
     );
   }
@@ -720,7 +728,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       SnackBar(
         content: Text('subscription_settings_unavailable').tr(),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.orange,
+        backgroundColor: context.palette.warning,
       ),
     );
   }

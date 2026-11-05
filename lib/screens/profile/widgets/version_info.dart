@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class VersionInfo extends StatelessWidget {
@@ -7,6 +8,7 @@ class VersionInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Center(
       child: Column(
         children: [
@@ -18,18 +20,18 @@ class VersionInfo extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
-                  color: Colors.grey,
+                  color: p.textTertiary,
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.favorite, color: Colors.red, size: 14),
+              Icon(Icons.favorite, color: p.danger, size: 14),
               const SizedBox(width: 4),
               Text(
                 'for_smart_spenders'.tr(),
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
-                  color: Colors.grey,
+                  color: p.textTertiary,
                 ),
               ),
             ],
@@ -50,7 +52,7 @@ class VersionInfo extends StatelessWidget {
 
               return Text(
                 label,
-                style: TextStyle(fontSize: 12, color: Colors.grey[400]),
+                style: TextStyle(fontSize: 12, color: p.textDisabled),
               );
             },
           ),

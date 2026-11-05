@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:split_bill_app/profile_screen.dart';
@@ -245,9 +246,7 @@ class _HomeScreenState extends State<HomeScreen>
         stream: _billsStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return LoadingStateWidget(
-              message: 'loading_your_dashboard'.tr(),
-            );
+            return LoadingStateWidget(message: 'loading_your_dashboard'.tr());
           }
 
           final allDocs = snapshot.data?.docs ?? [];
@@ -288,8 +287,9 @@ class _HomeScreenState extends State<HomeScreen>
 
                     final userData =
                         snapshot.data!.data() as Map<String, dynamic>?;
-                    final isPremium =
-                        RevenueCatService.isUserActivePremium(userData);
+                    final isPremium = RevenueCatService.isUserActivePremium(
+                      userData,
+                    );
 
                     if (isPremium) return const SizedBox.shrink();
 
@@ -311,9 +311,8 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: TabBar(
@@ -322,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen>
                       color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(25),
                     ),
-                    labelColor: Colors.white,
+                    labelColor: context.palette.onPrimary,
                     unselectedLabelColor: Theme.of(
                       context,
                     ).colorScheme.onSurface.withValues(alpha: 0.58),
@@ -367,7 +366,11 @@ class _HomeScreenState extends State<HomeScreen>
         onPressed: _onAddBillTap,
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: const Icon(Icons.add_rounded, size: 32, color: Colors.white),
+        child: Icon(
+          Icons.add_rounded,
+          size: 32,
+          color: context.palette.onPrimary,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
@@ -377,12 +380,16 @@ class _HomeScreenState extends State<HomeScreen>
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.14),
+            color: Theme.of(
+              context,
+            ).colorScheme.outline.withValues(alpha: 0.14),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(
-                alpha: Theme.of(context).brightness == Brightness.dark ? 0.24 : 0.12,
+              color: context.palette.shadow.withValues(
+                alpha: Theme.of(context).brightness == Brightness.dark
+                    ? 0.24
+                    : 0.12,
               ),
               blurRadius: 20,
               offset: const Offset(0, 10),
@@ -451,9 +458,12 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             Lottie.asset('assets/animations/empty.json', height: 150),
             const SizedBox(height: 10),
-            Text('no_bills_found',
+            Text(
+              'no_bills_found',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.58),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.58),
               ),
             ).tr(),
           ],

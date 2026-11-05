@@ -6,6 +6,7 @@ import 'home_screen.dart';
 import 'services/user_preferences_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class PhoneInputScreen extends StatefulWidget {
   const PhoneInputScreen({super.key});
@@ -47,59 +48,64 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         if (mounted) {
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              title: Row(
-                children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.orange),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'phone_number_already_exists',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ).tr(),
+            builder: (context) {
+              final p = context.palette;
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: Row(
+                  children: [
+                    Icon(Icons.warning_amber_rounded, color: p.warning),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'phone_number_already_exists',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ).tr(),
+                    ),
+                  ],
+                ),
+                content: Text(
+                  "This phone number ($_fullPhoneNumber) is already associated with another account.\n\n"
+                  "If this is your number and you have another account, please use that account to sign in.\n\n"
+                  "Otherwise, please enter a different phone number.",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('try_different_number').tr(),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Clear the current phone input
+                      setState(() {
+                        _fullPhoneNumber = null;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: p.warning,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text('clear_and_retry').tr(),
                   ),
                 ],
-              ),
-              content: Text(
-                "This phone number ($_fullPhoneNumber) is already associated with another account.\n\n"
-                "If this is your number and you have another account, please use that account to sign in.\n\n"
-                "Otherwise, please enter a different phone number.",
-                style: const TextStyle(fontSize: 14),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('try_different_number').tr(),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // Clear the current phone input
-                    setState(() {
-                      _fullPhoneNumber = null;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text('clear_and_retry').tr(),
-                ),
-              ],
-            ),
+              );
+            },
           );
         }
         return;
       }
 
       // ✅ PHONE NUMBER IS UNIQUE - PROCEED TO SAVE
-      final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final userRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid);
       final existing = (await userRef.get()).data();
       await userRef.set({
         'phoneNumber': _fullPhoneNumber,
@@ -128,7 +134,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
             content: Text(
               'error_with_details'.tr(namedArgs: {'error': e.toString()}),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.palette.danger,
           ),
         );
       }
@@ -137,6 +143,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Scaffold(
       appBar: AppBar(title: Text('complete_setup').tr()),
       body: Padding(
@@ -151,7 +158,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
             const SizedBox(height: 10),
             Text(
               'this_allows_friends_to_find_you_by_your_contact_details',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: p.textTertiary),
             ).tr(),
             const SizedBox(height: 30),
 
@@ -180,10 +187,10 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                 onPressed: _isLoading ? null : _savePhone,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: p.onPrimary,
                 ),
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? CircularProgressIndicator(color: p.onPrimary)
                     : Text('save_and_continue').tr(),
               ),
             ),
