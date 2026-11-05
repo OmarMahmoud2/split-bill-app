@@ -24,6 +24,17 @@ service cloud.firestore {
       return signedIn() && !isAnonymous();
     }
 
+    // Admins can suspend an account (users/{uid}.suspended). Suspended users
+    // keep read access but cannot create or change shared data.
+    function notSuspended() {
+      return !exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('suspended', false) != true;
+    }
+
+    function isActiveUser() {
+      return isFullUser() && notSuspended();
+    }
+
     function isOwner(userId) {
       return isFullUser() && request.auth.uid == userId;
     }
@@ -165,7 +176,10 @@ service cloud.firestore {
         'premiumManagementUrl',
         'premiumLastEventType',
         'premiumLastRevenueCatEventId',
-        'premiumUpdatedAt'
+        'premiumUpdatedAt',
+        'suspended',
+        'suspendedAt',
+        'suspendedBy'
       ];
     }
 
@@ -192,7 +206,7 @@ service cloud.firestore {
     }
 
     function newBillHost() {
-      return isFullUser() && request.resource.data.hostId == request.auth.uid;
+      return isActiveUser() && request.resource.data.hostId == request.auth.uid;
     }
 
     // 2.0 bill fields: a bill can only be filed into a group its host is in,
@@ -256,7 +270,7 @@ service cloud.firestore {
       allow create: if newBillHost() && validBillLedgerFields();
 
       allow update: if isAdmin()
-        || (billHost() && (billGroupUnchanged() || validBillLedgerFields()))
+        || (billHost() && notSuspended() && (billGroupUnchanged() || validBillLedgerFields()))
         || paymentOnlyBillUpdate();
 
       allow delete: if isAdmin() || billHost();
@@ -264,7 +278,7 @@ service cloud.firestore {
 
     // --- GROUPS ---
     match /groups/{groupId} {
-      allow create: if isFullUser()
+      allow create: if isActiveUser()
         && request.resource.data.keys().hasOnly([
           'name',
           'createdBy',
@@ -302,7 +316,7 @@ service cloud.firestore {
       match /payments/{paymentId} {
         allow read: if isAdmin() || isMemberOfGroup(groupId);
 
-        allow create: if isFullUser()
+        allow create: if isActiveUser()
           && isMemberOfGroup(groupId)
           && validPaymentCreate(request.resource.data)
           && request.resource.data.kind == 'payment'
@@ -313,6 +327,49 @@ service cloud.firestore {
         allow update: if (isAdmin() || isMemberOfGroup(groupId)) && validPaymentUpdate();
         allow delete: if (isAdmin() || isMemberOfGroup(groupId)) && canDeletePayment();
       }
+
+      // --- RECURRING BILL TEMPLATES (Pro) ---
+      // A backend job turns due templates into bills.
+      match /recurring/{recurringId} {
+        allow read: if isAdmin() || isMemberOfGroup(groupId);
+
+        allow create: if isActiveUser()
+          && isMemberOfGroup(groupId)
+          && request.resource.data.keys().hasOnly(recurringKeys().concat(['createdBy', 'createdAt', 'memberIds']))
+          && request.resource.data.createdBy == request.auth.uid
+          && validRecurring(request.resource.data);
+
+        allow update: if (isAdmin() || (isActiveUser() && resource.data.createdBy == request.auth.uid))
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(recurringKeys())
+          && validRecurring(request.resource.data);
+
+        allow delete: if isAdmin()
+          || (signedIn() && resource.data.createdBy == request.auth.uid)
+          || isGroupOwner(groupDoc(groupId).data);
+      }
+    }
+
+    function recurringKeys() {
+      return ['name', 'amountMinor', 'currency', 'frequency', 'anchorDay', 'nextOn', 'active'];
+    }
+
+    function validRecurring(data) {
+      return data.name is string && data.name.size() <= 120
+        && data.amountMinor is int && data.amountMinor > 0 && data.amountMinor <= 1000000000000
+        && data.currency is string && data.currency.size() <= 8
+        && data.frequency in ['weekly', 'monthly', 'yearly'];
+    }
+
+    // --- ADMIN AUDIT LOG ---
+    // Admins append entries; nobody edits or deletes them from a client.
+    match /adminAudit/{entryId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['adminUid', 'action', 'targetUid', 'at', 'details'])
+        && request.resource.data.adminUid == request.auth.uid
+        && request.resource.data.action is string && request.resource.data.action.size() <= 60
+        && request.resource.data.at == request.time;
+      allow update, delete: if false;
     }
 
     // --- FRIEND PAYMENTS AND QUICK IOUs ---
@@ -321,7 +378,7 @@ service cloud.firestore {
       allow read: if isAdmin()
         || (signedIn() && request.auth.uid in resource.data.participants_uids);
 
-      allow create: if isFullUser()
+      allow create: if isActiveUser()
         && validPaymentCreate(request.resource.data)
         && !request.resource.data.keys().hasAny(['groupId']);
 
@@ -341,7 +398,7 @@ service cloud.firestore {
     match /publicProfiles/{userId} {
       allow read: if signedIn();
 
-      allow create, update: if isOwner(userId)
+      allow create, update: if isOwner(userId) && notSuspended()
         && request.resource.data.keys().hasOnly([
           'displayName',
           'photoUrl',
@@ -358,7 +415,7 @@ service cloud.firestore {
     match /phoneClaims/{phone} {
       allow get: if isFullUser();
 
-      allow create: if isFullUser()
+      allow create: if isActiveUser()
         && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
         && request.resource.data.uid == request.auth.uid;
 
@@ -385,7 +442,7 @@ service cloud.firestore {
         allow read: if isAdmin() || isOwner(userId);
 
         // App users and web guests can notify others, but only with the expected shape.
-        allow create: if signedIn() && validNotificationCreate();
+        allow create: if signedIn() && notSuspended() && validNotificationCreate();
 
         allow update: if (isAdmin() || isOwner(userId))
           && request.resource.data.diff(resource.data)

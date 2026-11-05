@@ -65,6 +65,7 @@ beforeEach(async () => {
     await setDoc(doc(db, 'users', HOST), { displayName: 'Host', phoneNumber: '+201000000001', fcmToken: 't1', points: 3 });
     await setDoc(doc(db, 'users', FRIEND), { displayName: 'Friend', phoneNumber: '+201000000002', points: 3 });
     await setDoc(doc(db, 'users', ADMIN), { displayName: 'Admin', isAdmin: true });
+    await setDoc(doc(db, 'users', 'suspended-uid'), { displayName: 'Banned', suspended: true });
     await setDoc(doc(db, 'users', 'fresh-uid'), { fcmToken: 'x' });
     await setDoc(doc(db, 'bills', 'b1'), bill);
     await setDoc(doc(db, 'publicProfiles', HOST), { displayName: 'Host', customPaymentMethods: [] });
@@ -398,5 +399,61 @@ describe('activity collection group', () => {
 describe('default deny', () => {
   it('denies unknown collections', async () => {
     await assertFails(getDoc(doc(google(HOST), 'secrets', 'x')));
+  });
+});
+
+describe('suspension', () => {
+  const S = 'suspended-uid';
+  it('suspended users cannot create bills, groups, payments or profiles', async () => {
+    await assertFails(setDoc(doc(google(S), 'bills', 'sb1'), { ...bill, hostId: S, participants_uids: [S] }));
+    await assertFails(setDoc(doc(google(S), 'groups', 'sg1'), { name: 'X', createdBy: S, createdAt: serverTimestamp(), members: [], memberIds: [S] }));
+    await assertFails(setDoc(doc(google(S), 'publicProfiles', S), { displayName: 'Banned' }));
+    await assertFails(setDoc(doc(google(S), 'phoneClaims', '+201000000099'), { uid: S, createdAt: serverTimestamp() }));
+  });
+  it('active users still can', async () => {
+    await assertSucceeds(setDoc(doc(google(FRIEND), 'groups', 'fg1'), { name: 'Y', createdBy: FRIEND, createdAt: serverTimestamp(), members: [], memberIds: [FRIEND] }));
+  });
+  it('users cannot suspend or unsuspend themselves, admins can', async () => {
+    await assertFails(updateDoc(doc(google(S), 'users', S), { suspended: false }));
+    await assertFails(updateDoc(doc(google(FRIEND), 'users', FRIEND), { suspended: true }));
+    await assertSucceeds(updateDoc(doc(google(ADMIN), 'users', FRIEND), { suspended: true, suspendedBy: ADMIN, suspendedAt: serverTimestamp() }));
+  });
+});
+
+describe('recurring bill templates', () => {
+  const t = (extra = {}) => ({
+    name: 'Rent', amountMinor: 1260000, currency: 'EGP', frequency: 'monthly', anchorDay: 1,
+    nextOn: Timestamp.now(), active: true, createdBy: FRIEND, createdAt: serverTimestamp(), memberIds: [HOST, FRIEND], ...extra,
+  });
+  it('members create, strangers and bad shapes fail', async () => {
+    await assertSucceeds(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), t()));
+    await assertFails(setDoc(doc(google(STRANGER), 'groups', 'g1', 'recurring', 'r2'), t({ createdBy: STRANGER })));
+    await assertFails(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r3'), t({ amountMinor: 0 })));
+    await assertFails(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r4'), t({ frequency: 'daily' })));
+    await assertFails(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r5'), t({ createdBy: HOST })));
+  });
+  it('only the creator updates, the owner can delete', async () => {
+    await assertSucceeds(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), t()));
+    await assertSucceeds(updateDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), { active: false }));
+    await assertFails(updateDoc(doc(google(HOST), 'groups', 'g1', 'recurring', 'r1'), { active: true }));
+    await assertFails(updateDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), { createdBy: HOST }));
+    await assertSucceeds(deleteDoc(doc(google(HOST), 'groups', 'g1', 'recurring', 'r1')));
+  });
+});
+
+describe('admin audit log', () => {
+  const e = (extra = {}) => ({ adminUid: ADMIN, action: 'grant_points', targetUid: FRIEND, at: serverTimestamp(), details: { points: 10 }, ...extra });
+  it('admins append, others cannot', async () => {
+    await assertSucceeds(setDoc(doc(google(ADMIN), 'adminAudit', 'a1'), e()));
+    await assertFails(setDoc(doc(google(FRIEND), 'adminAudit', 'a2'), e({ adminUid: FRIEND })));
+    await assertFails(setDoc(doc(google(ADMIN), 'adminAudit', 'a3'), e({ adminUid: HOST })));
+    await assertFails(setDoc(doc(google(ADMIN), 'adminAudit', 'a4'), e({ at: Timestamp.fromMillis(0) })));
+  });
+  it('entries are read-only for everyone and readable only by admins', async () => {
+    await assertSucceeds(setDoc(doc(google(ADMIN), 'adminAudit', 'a1'), e()));
+    await assertFails(updateDoc(doc(google(ADMIN), 'adminAudit', 'a1'), { action: 'x' }));
+    await assertFails(deleteDoc(doc(google(ADMIN), 'adminAudit', 'a1')));
+    await assertFails(getDoc(doc(google(FRIEND), 'adminAudit', 'a1')));
+    await assertSucceeds(getDoc(doc(google(ADMIN), 'adminAudit', 'a1')));
   });
 });
