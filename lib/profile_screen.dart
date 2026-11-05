@@ -22,6 +22,7 @@ import 'package:split_bill_app/screens/profile/widgets/profile_cards.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_menu_widgets.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
 import 'package:split_bill_app/screens/profile/widgets/version_info.dart';
+import 'package:split_bill_app/screens/profile/widgets/theme_mode_sheet.dart';
 import 'package:split_bill_app/widgets/searchable_selection_sheet.dart';
 import 'package:split_bill_app/screens/admin/admin_dashboard_screen.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
@@ -350,6 +351,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showThemeModeSheet(AppSettingsProvider settings) {
+    PremiumBottomSheet.show(
+      context: context,
+      child: ThemeModeSheet(
+        selected: settings.themeMode,
+        onSelected: (mode) {
+          settings.updateThemeMode(mode);
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (user == null) return const LoginScreen();
@@ -404,6 +418,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       compact: true,
                       onTap: () => _showCurrencySheet(settings),
                     ),
+                    ProfileCoolTile(
+                      key: const ValueKey('profile-appearance'),
+                      icon: themeModeIcon(settings.themeMode),
+                      title: 'appearance'.tr(),
+                      subtitle: themeModeLabelKey(settings.themeMode).tr(),
+                      color: Colors.deepPurple,
+                      compact: true,
+                      onTap: () => _showThemeModeSheet(settings),
+                    ),
                     ProfileSectionTitle(title: 'personal'.tr()),
                     ProfileCoolTile(
                       icon: Icons.account_balance_wallet_rounded,
@@ -439,8 +462,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         final userData =
                             snapshot.data!.data() as Map<String, dynamic>?;
-                        final isPremium =
-                            RevenueCatService.isUserActivePremium(userData);
+                        final isPremium = RevenueCatService.isUserActivePremium(
+                          userData,
+                        );
 
                         if (isPremium) {
                           return Column(

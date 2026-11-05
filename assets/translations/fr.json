@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Se connecter avec Apple",
   "back": "Retour",
   "get_started": "Commencer",
-  "no_matches_found": "Aucun résultat"
+  "no_matches_found": "Aucun résultat",
+  "appearance": "Apparence",
+  "choose_appearance": "Choisir l’apparence",
+  "theme_mode_system": "Paramètre du système",
+  "theme_mode_system_subtitle": "Suit le réglage de votre appareil",
+  "theme_mode_light": "Clair",
+  "theme_mode_dark": "Sombre"
 }

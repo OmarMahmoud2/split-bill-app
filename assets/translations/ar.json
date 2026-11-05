@@ -789,5 +789,11 @@
   "sign_in_with_apple": "تسجيل الدخول باستخدام Apple",
   "back": "رجوع",
   "get_started": "ابدأ الآن",
-  "no_matches_found": "لا توجد نتائج"
+  "no_matches_found": "لا توجد نتائج",
+  "appearance": "المظهر",
+  "choose_appearance": "اختر المظهر",
+  "theme_mode_system": "حسب النظام",
+  "theme_mode_system_subtitle": "يتبع إعداد جهازك",
+  "theme_mode_light": "فاتح",
+  "theme_mode_dark": "داكن"
 }

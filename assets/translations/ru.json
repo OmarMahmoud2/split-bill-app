@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Войти через Apple",
   "back": "Назад",
   "get_started": "Начать",
-  "no_matches_found": "Ничего не найдено"
+  "no_matches_found": "Ничего не найдено",
+  "appearance": "Оформление",
+  "choose_appearance": "Выберите оформление",
+  "theme_mode_system": "Как в системе",
+  "theme_mode_system_subtitle": "Следует настройке устройства",
+  "theme_mode_light": "Светлое",
+  "theme_mode_dark": "Тёмное"
 }

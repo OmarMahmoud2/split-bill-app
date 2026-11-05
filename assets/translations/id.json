@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Login dengan Apple",
   "back": "Kembali",
   "get_started": "Mulai",
-  "no_matches_found": "Tidak ada hasil"
+  "no_matches_found": "Tidak ada hasil",
+  "appearance": "Tampilan",
+  "choose_appearance": "Pilih tampilan",
+  "theme_mode_system": "Default sistem",
+  "theme_mode_system_subtitle": "Mengikuti pengaturan perangkat Anda",
+  "theme_mode_light": "Terang",
+  "theme_mode_dark": "Gelap"
 }

@@ -789,5 +789,11 @@
   "sign_in_with_apple": "Apple로 로그인",
   "back": "뒤로",
   "get_started": "시작하기",
-  "no_matches_found": "일치하는 결과 없음"
+  "no_matches_found": "일치하는 결과 없음",
+  "appearance": "화면 모드",
+  "choose_appearance": "화면 모드 선택",
+  "theme_mode_system": "시스템 기본값",
+  "theme_mode_system_subtitle": "기기 설정을 따릅니다",
+  "theme_mode_light": "라이트",
+  "theme_mode_dark": "다크"
 }
