@@ -729,10 +729,20 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
         ),
         _ => _phoneBody(view),
       };
-      body = Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: inner,
+      body = Align(
+        alignment: view == _GuestView.picker || view == _GuestView.loading
+            ? Alignment.topCenter
+            : Alignment.center,
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: view == _GuestView.picker || view == _GuestView.loading
+                ? 24
+                : 0,
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: inner,
+          ),
         ),
       );
     }

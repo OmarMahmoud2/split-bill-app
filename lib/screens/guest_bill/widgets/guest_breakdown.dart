@@ -36,7 +36,9 @@ String guestLineLabel(GuestLine line, GuestBill bill, {bool withBase = false}) {
       line.sharedWith > 1
           ? 'guest_item_shared'.tr(
               namedArgs: {
-                'item': line.label,
+                // Isolate the (often Latin) item name so RTL text keeps
+                // "1 of 3" in reading order.
+                'item': '\u2068${line.label}\u2069',
                 'count': line.sharedWith.toString(),
               },
             )
