@@ -10,6 +10,7 @@ import 'package:split_bill_app/widgets/success_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class PaymentSettingsScreen extends StatefulWidget {
   const PaymentSettingsScreen({super.key});
@@ -45,12 +46,17 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
         final data = doc.data() as Map<String, dynamic>;
 
         if (data['customPaymentMethods'] != null) {
-          _methods = List<Map<String, dynamic>>.from(data['customPaymentMethods']);
+          _methods = List<Map<String, dynamic>>.from(
+            data['customPaymentMethods'],
+          );
         } else if (data['paymentMethods'] != null) {
           final oldMethods = data['paymentMethods'] as Map<String, dynamic>;
           oldMethods.forEach((key, value) {
             if (value.toString().trim().isNotEmpty) {
-              _methods.add({'name': key.toUpperCase(), 'value': value.toString()});
+              _methods.add({
+                'name': key.toUpperCase(),
+                'value': value.toString(),
+              });
             }
           });
         }
@@ -91,7 +97,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
               namedArgs: {'error': e.toString()},
             ),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: context.palette.danger,
         ),
       );
     }
@@ -150,6 +156,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   Future<void> _showMethodEditor({int? index}) async {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final p = context.palette;
     final existingMethod = index != null ? _methods[index] : null;
     final initialName = existingMethod?['name']?.toString() ?? '';
     final initialValue = existingMethod?['value']?.toString() ?? '';
@@ -198,9 +205,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                   ),
                 ).tr(),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Method Type Selector
               Text(
                 'method_type',
@@ -250,7 +257,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                               Text(
                                 selectedPreset.subtitleKey.tr(),
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
                                 ),
                               ),
                             ],
@@ -265,7 +274,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 20),
 
               if (selectedPreset == otherPreset) ...[
@@ -289,7 +298,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
               ),
 
               const SizedBox(height: 28),
-              
+
               // Action Buttons
               Row(
                 children: [
@@ -302,9 +311,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                           Navigator.pop(context);
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.redAccent,
+                          foregroundColor: p.dangerAccent,
                           side: BorderSide(
-                            color: Colors.redAccent.withValues(alpha: 0.2),
+                            color: p.dangerAccent.withValues(alpha: 0.2),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
@@ -327,7 +336,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                         if (finalName.isEmpty || finalValue.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('please_complete_all_required_fields').tr(),
+                              content: Text(
+                                'please_complete_all_required_fields',
+                              ).tr(),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -355,18 +366,16 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                             : Icons.add_circle_rounded,
                       ),
                       label: Text(
-                        isEditing
-                            ? 'save_changes'.tr()
-                            : 'add_method'.tr(),
+                        isEditing ? 'save_changes'.tr() : 'add_method'.tr(),
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.brightness == Brightness.dark
                             ? colorScheme.primary
-                            : Colors.black,
+                            : p.inverseSurface,
                         foregroundColor: theme.brightness == Brightness.dark
                             ? colorScheme.onPrimary
-                            : Colors.white,
+                            : p.onInverseSurface,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18),
@@ -417,7 +426,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
           ),
           child: TextField(
             controller: controller,
-            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(
@@ -426,7 +437,10 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
               ),
               prefixIcon: Icon(icon, color: colorScheme.primary, size: 20),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
             ),
           ),
         ),
@@ -448,6 +462,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   }
 
   void _showInfo() {
+    final p = context.palette;
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -460,27 +475,26 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.08),
+                  color: p.info.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.info_outline_rounded,
-                  color: Colors.blueAccent,
+                  color: p.infoAccent,
                   size: 30,
                 ),
               ),
               const SizedBox(height: 16),
-              Text('how_payment_methods_work',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                ),
+              Text(
+                'how_payment_methods_work',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
                 textAlign: TextAlign.center,
               ).tr(),
               const SizedBox(height: 10),
-              Text('add_the_ways_you_prefer_to_receive_money_these_details_appear_when_a_bill_is_shared_so_people_can_pay_you_faster_without_asking_for_your_handle_again',
+              Text(
+                'add_the_ways_you_prefer_to_receive_money_these_details_appear_when_a_bill_is_shared_so_people_can_pay_you_faster_without_asking_for_your_handle_again',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade600, height: 1.45),
+                style: TextStyle(color: p.textSecondary, height: 1.45),
               ).tr(),
               const SizedBox(height: 18),
               SizedBox(
@@ -488,8 +502,8 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: p.inverseSurface,
+                    foregroundColor: p.onInverseSurface,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -507,8 +521,9 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: p.isDark ? p.background : const Color(0xFFF6F7FB),
       appBar: CustomAppHeader(
         title: 'payment_methods'.tr(),
         infoMessage: 'payment_methods_info_message'.tr(),
@@ -516,96 +531,97 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
       body: _isSaving
           ? LoadingStateWidget(message: 'saving_payment_methods'.tr())
           : _isSuccess
-              ? SuccessStateWidget(
-                  message: 'payment_methods_updated'.tr(),
-                  onAction: () => Navigator.pop(context),
-                )
-              : _isLoading
-                  ? LoadingStateWidget(message: 'loading_your_methods'.tr())
-                  : Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                          child: Container(
-                            padding: const EdgeInsets.all(18),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [Color(0xFF0A84FF), Color(0xFF5E5CE6)],
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: const Icon(
-                                    Icons.account_balance_wallet_rounded,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'payment_methods_saved_count'.tr(
-                                          namedArgs: {
-                                            'count': _methods.length.toString(),
-                                          },
-                                        ),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text('keep_the_links_and_usernames_people_actually_use_most',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontSize: 12,
-                                        ),
-                                      ).tr(),
-                                    ],
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: _showInfo,
-                                  icon: const Icon(Icons.info_outline_rounded),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Expanded(
-                          child: _methods.isEmpty
-                              ? EmptyStateWidget(
-                                  title: 'add_your_payment_methods'.tr(),
-                                  message: 'start_with_the_apps_or_wallets_you_actually_want_friends_to_use_when_they_pay_you_back'.tr(),
-                                  actionLabel: 'add_method'.tr(),
-                                  onAction: () => _showMethodEditor(),
-                                )
-                              : ListView.builder(
-                                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                                  itemCount: _methods.length,
-                                  itemBuilder: (context, index) =>
-                                      _buildMethodTile(_methods[index], index),
-                                ),
+          ? SuccessStateWidget(
+              message: 'payment_methods_updated'.tr(),
+              onAction: () => Navigator.pop(context),
+            )
+          : _isLoading
+          ? LoadingStateWidget(message: 'loading_your_methods'.tr())
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: p.surface,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: p.shadow.withValues(alpha: 0.04),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: p.primaryGradient,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(
+                            Icons.account_balance_wallet_rounded,
+                            color: p.onPrimary,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'payment_methods_saved_count'.tr(
+                                  namedArgs: {
+                                    'count': _methods.length.toString(),
+                                  },
+                                ),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'keep_the_links_and_usernames_people_actually_use_most',
+                                style: TextStyle(
+                                  color: p.textSecondary,
+                                  fontSize: 12,
+                                ),
+                              ).tr(),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: _showInfo,
+                          icon: const Icon(Icons.info_outline_rounded),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: _methods.isEmpty
+                      ? EmptyStateWidget(
+                          title: 'add_your_payment_methods'.tr(),
+                          message:
+                              'start_with_the_apps_or_wallets_you_actually_want_friends_to_use_when_they_pay_you_back'
+                                  .tr(),
+                          actionLabel: 'add_method'.tr(),
+                          onAction: () => _showMethodEditor(),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                          itemCount: _methods.length,
+                          itemBuilder: (context, index) =>
+                              _buildMethodTile(_methods[index], index),
+                        ),
+                ),
+              ],
+            ),
       floatingActionButton: (!_isLoading && !_isSaving && !_isSuccess)
           ? Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -617,14 +633,15 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                     child: ElevatedButton(
                       onPressed: _saveSettings,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
+                        backgroundColor: p.inverseSurface,
+                        foregroundColor: p.onInverseSurface,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18),
                         ),
                       ),
-                      child: Text('scan_save_changes',
+                      child: Text(
+                        'scan_save_changes',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ).tr(),
                     ),
@@ -632,7 +649,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                   const SizedBox(width: 12),
                   FloatingActionButton(
                     onPressed: () => _showMethodEditor(),
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: p.infoAccent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
                     ),
@@ -648,6 +665,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   }
 
   Widget _buildMethodTile(Map<String, dynamic> method, int index) {
+    final p = context.palette;
     final preset = _presetForName(method['name'].toString());
     final accent = preset == otherPreset ? Colors.blueGrey : preset.color;
     final icon = preset == otherPreset ? Icons.tune_rounded : preset.icon;
@@ -659,7 +677,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: p.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: accent.withValues(alpha: 0.14)),
         boxShadow: [
@@ -698,7 +716,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: Colors.grey.shade600,
+                          color: p.textSecondary,
                           fontSize: 12.5,
                           height: 1.35,
                         ),
@@ -708,19 +726,29 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                 ),
                 const SizedBox(width: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF4F6FB),
+                    color: p.isDark
+                        ? p.surfaceVariant
+                        : const Color(0xFFF4F6FB),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.edit_rounded, size: 16, color: Colors.black54),
+                      Icon(
+                        Icons.edit_rounded,
+                        size: 16,
+                        color: p.textSecondary,
+                      ),
                       const SizedBox(width: 6),
-                      Text('common_edit',
+                      Text(
+                        'common_edit',
                         style: TextStyle(
-                          color: Colors.grey.shade700,
+                          color: p.textMedium,
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),

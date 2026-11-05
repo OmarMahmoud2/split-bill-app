@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
 
 class LoadingStateWidget extends StatelessWidget {
   final String? message;
@@ -25,7 +25,7 @@ class LoadingStateWidget extends StatelessWidget {
             Text(
               message!,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondaryLight,
+                color: context.palette.textSecondary,
               ),
             ),
           ],

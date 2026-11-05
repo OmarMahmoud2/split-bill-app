@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -34,14 +35,16 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(
+              color: context.palette.shadow.withValues(
                 alpha: theme.brightness == Brightness.dark ? 0.18 : 0.06,
               ),
               blurRadius: 22,
               offset: const Offset(0, 8),
             ),
           ],
-          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.15)),
+          border: Border.all(
+            color: colorScheme.outline.withValues(alpha: 0.15),
+          ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Stack(
@@ -101,27 +104,27 @@ class CustomAppHeader extends StatelessWidget implements PreferredSizeWidget {
                   child: trailing != null
                       ? trailing!
                       : (onInfoTap != null || infoMessage != null)
-                          ? Container(
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary,
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.info_outline_rounded,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
-                                onPressed: () {
-                                  if (infoMessage != null) {
-                                    _showInfoDialog(context, title, infoMessage!);
-                                  } else if (onInfoTap != null) {
-                                    onInfoTap!();
-                                  }
-                                },
-                              ),
-                            )
-                          : const SizedBox.shrink(),
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.info_outline_rounded,
+                              size: 20,
+                              color: context.palette.onPrimary,
+                            ),
+                            onPressed: () {
+                              if (infoMessage != null) {
+                                _showInfoDialog(context, title, infoMessage!);
+                              } else if (onInfoTap != null) {
+                                onInfoTap!();
+                              }
+                            },
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                 ),
               ),
             ),

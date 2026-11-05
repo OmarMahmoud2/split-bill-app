@@ -5,6 +5,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/widgets/subscription_legal_disclosure.dart';
 
 class PremiumModal extends StatefulWidget {
@@ -139,7 +140,7 @@ class _PremiumModalState extends State<PremiumModal>
                   decoration: InputDecoration(
                     hintText: 'answer'.tr(),
                     filled: true,
-                    fillColor: Colors.grey[100],
+                    fillColor: context.palette.surfaceVariant,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -200,6 +201,9 @@ class _PremiumModalState extends State<PremiumModal>
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
+    // The premium card is intentionally dark in both themes, so the white
+    // text, white overlays and the #1A1A1A / #333333 fills stay fixed.
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(16),
@@ -224,7 +228,7 @@ class _PremiumModalState extends State<PremiumModal>
                   border: Border.all(color: Colors.white12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.5),
+                      color: p.shadow.withValues(alpha: 0.5),
                       blurRadius: 40,
                       spreadRadius: 10,
                     ),
@@ -242,12 +246,9 @@ class _PremiumModalState extends State<PremiumModal>
                           children: [
                             // Gold Gradient Background
                             Container(
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [
-                                    Color(0xFFFFD700),
-                                    Color(0xFFFFA500),
-                                  ],
+                                  colors: [p.premium, p.premiumStrong],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
@@ -330,9 +331,7 @@ class _PremiumModalState extends State<PremiumModal>
 
                             // Price & Button
                             if (_isLoading)
-                              const CircularProgressIndicator(
-                                color: Color(0xFFFFD700),
-                              )
+                              CircularProgressIndicator(color: p.premium)
                             else if (_premiumPackages.isNotEmpty)
                               Column(
                                 children: [
@@ -357,13 +356,13 @@ class _PremiumModalState extends State<PremiumModal>
                                           padding: const EdgeInsets.all(16),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? const Color(
-                                                    0xFFFFD700,
-                                                  ).withValues(alpha: 0.1)
+                                                ? p.premium.withValues(
+                                                    alpha: 0.1,
+                                                  )
                                                 : Colors.white10,
                                             border: Border.all(
                                               color: isSelected
-                                                  ? const Color(0xFFFFD700)
+                                                  ? p.premium
                                                   : Colors.white24,
                                               width: 2,
                                             ),
@@ -379,7 +378,7 @@ class _PremiumModalState extends State<PremiumModal>
                                                     : Icons
                                                           .radio_button_unchecked,
                                                 color: isSelected
-                                                    ? const Color(0xFFFFD700)
+                                                    ? p.premium
                                                     : Colors.white54,
                                               ),
                                               const SizedBox(width: 16),
@@ -420,11 +419,11 @@ class _PremiumModalState extends State<PremiumModal>
                                                     package
                                                         .storeProduct
                                                         .priceString,
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 18,
-                                                      color: Color(0xFFFFD700),
+                                                      color: p.premium,
                                                     ),
                                                   ),
                                                 ],
@@ -451,10 +450,10 @@ class _PremiumModalState extends State<PremiumModal>
                                         height: 56,
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
-                                            colors: const [
-                                              Color(0xFFFFD700),
-                                              Color(0xFFFFE57F),
-                                              Color(0xFFFFD700),
+                                            colors: [
+                                              p.premium,
+                                              const Color(0xFFFFE57F),
+                                              p.premium,
                                             ],
                                             stops: const [0.0, 0.5, 1.0],
                                             begin: Alignment(
@@ -476,9 +475,9 @@ class _PremiumModalState extends State<PremiumModal>
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(
-                                                0xFFFFD700,
-                                              ).withValues(alpha: 0.4),
+                                              color: p.premium.withValues(
+                                                alpha: 0.4,
+                                              ),
                                               blurRadius: 20,
                                               offset: const Offset(0, 8),
                                             ),
@@ -497,19 +496,19 @@ class _PremiumModalState extends State<PremiumModal>
                                             ),
                                           ),
                                           child: _isPurchasing
-                                              ? const SizedBox(
+                                              ? SizedBox(
                                                   width: 24,
                                                   height: 24,
                                                   child:
                                                       CircularProgressIndicator(
-                                                        color: Colors.black,
+                                                        color: p.onPremium,
                                                         strokeWidth: 2,
                                                       ),
                                                 )
                                               : Text(
                                                   'unlock_premium_now',
                                                   style: TextStyle(
-                                                    color: Colors.black,
+                                                    color: p.onPremium,
                                                     fontWeight: FontWeight.w900,
                                                     fontSize: 18,
                                                   ),
@@ -560,7 +559,7 @@ class _PremiumModalState extends State<PremiumModal>
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.white10),
           ),
-          child: Icon(icon, color: const Color(0xFFFFD700), size: 24),
+          child: Icon(icon, color: context.palette.premium, size: 24),
         ),
         const SizedBox(width: 16),
         Expanded(

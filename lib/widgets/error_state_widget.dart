@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_palette.dart';
 import '../theme/app_typography.dart';
 import '../theme/app_spacing.dart';
 
@@ -21,7 +22,7 @@ class ErrorStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final p = context.palette;
 
     return Center(
       child: Padding(
@@ -40,7 +41,10 @@ class ErrorStateWidget extends StatelessWidget {
                 return Container(
                   padding: AppSpacing.allXxl,
                   decoration: BoxDecoration(
-                    color: AppColors.errorLight.withValues(alpha: 0.2),
+                    color: p.tint(
+                      AppColors.errorLight.withValues(alpha: 0.2),
+                      AppColors.error,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -58,9 +62,7 @@ class ErrorStateWidget extends StatelessWidget {
             Text(
               title,
               style: AppTypography.headlineMedium.copyWith(
-                color: isDark
-                    ? AppColors.textPrimaryDark
-                    : AppColors.textPrimaryLight,
+                color: p.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -70,11 +72,7 @@ class ErrorStateWidget extends StatelessWidget {
             // Message
             Text(
               message,
-              style: AppTypography.bodyMedium.copyWith(
-                color: isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondaryLight,
-              ),
+              style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
               textAlign: TextAlign.center,
             ),
 
