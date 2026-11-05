@@ -1,46 +1,61 @@
 import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:split_bill_app/services/profile_service.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
-import 'package:split_bill_app/widgets/success_state_widget.dart';
+import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/widgets/custom_app_header.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
+/// Strips spaces, dashes and brackets; returns null unless the result is a
+/// plausible E.164 number ("+201012345678"). Empty input returns "".
+String? normalizeOptionalPhone(String raw) {
+  final cleaned = raw.replaceAll(RegExp(r'[\s\-().]'), '');
+  if (cleaned.isEmpty) return '';
+  return RegExp(r'^\+[1-9]\d{6,14}$').hasMatch(cleaned) ? cleaned : null;
+}
+
+/// v3 Edit profile: photo, name shown to friends, read-only email and an
+/// optional phone number.
 class EditProfileScreen extends StatefulWidget {
-  final Map<String, dynamic> currentData;
   const EditProfileScreen({super.key, required this.currentData});
+
+  final Map<String, dynamic> currentData;
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  late TextEditingController _nameController;
-  late TextEditingController _phoneController;
-  late TextEditingController _emailController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
   File? _newImage;
-  bool _isLoading = false;
-  bool _isSuccess = false;
+  bool _saving = false;
+  String? _nameError;
+  String? _phoneError;
 
   final ProfileService _profileService = ProfileService();
-  final user = FirebaseAuth.instance.currentUser;
+  final User? _user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(
-      text: widget.currentData['displayName'] ?? user?.displayName ?? "",
+      text: widget.currentData['displayName'] ?? _user?.displayName ?? '',
     );
     _phoneController = TextEditingController(
-      text: widget.currentData['phoneNumber'] ?? user?.phoneNumber ?? "",
+      text: widget.currentData['phoneNumber'] ?? _user?.phoneNumber ?? '',
     );
     _emailController = TextEditingController(
       text:
-          widget.currentData['email'] ?? user?.email ?? 'no_email_linked'.tr(),
+          (widget.currentData['email'] as String?) ??
+          _user?.email ??
+          'no_email_linked'.tr(),
     );
   }
 
@@ -53,43 +68,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final XFile? img = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 25,
-      maxWidth: 400,
-    );
-    if (img != null) {
-      setState(() => _newImage = File(img.path));
+    try {
+      final img = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 25,
+        maxWidth: 400,
+      );
+      if (img != null) setState(() => _newImage = File(img.path));
+    } catch (_) {
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'prof_photo_failed'.tr(),
+        type: AppToastType.error,
+      );
     }
   }
 
-  Future<void> _saveProfile() async {
-    setState(() => _isLoading = true);
+  Future<void> _save() async {
+    final name = _nameController.text.trim();
+    final phone = normalizeOptionalPhone(_phoneController.text);
+    setState(() {
+      _nameError = name.isEmpty ? 'prof_name_required'.tr() : null;
+      _phoneError = phone == null ? 'prof_phone_invalid'.tr() : null;
+    });
+    if (_nameError != null || _phoneError != null) {
+      AppHaptics.error();
+      return;
+    }
+
+    setState(() => _saving = true);
     try {
       if (_newImage != null) {
-        await _profileService.saveAvatarAsBase64(_newImage!);
+        final saved = await _profileService.saveAvatarAsBase64(_newImage!);
+        if (saved == null) throw const _PhotoSaveFailed();
       }
       await _profileService.updateProfile(
-        name: _nameController.text.trim(),
-        phone: _phoneController.text.trim(),
+        name: name,
+        // Empty means "no change": clearing a claimed number is not offered.
+        phone: (phone == null || phone.isEmpty) ? null : phone,
       );
-
-      setState(() {
-        _isLoading = false;
-        _isSuccess = true;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e is PhoneNumberTakenException
-                ? 'phone_number_already_exists'.tr()
-                : 'error_with_details'.tr(namedArgs: {'error': e.toString()}),
-          ),
-        ),
+      AppHaptics.success();
+      AppToast.show(
+        context,
+        message: 'prof_saved'.tr(),
+        type: AppToastType.success,
+      );
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      AppToast.show(
+        context,
+        message: e is PhoneNumberTakenException
+            ? 'prof_phone_taken'.tr()
+            : e is _PhotoSaveFailed
+            ? 'prof_photo_failed'.tr()
+            : 'prof_save_failed'.tr(),
+        type: AppToastType.error,
       );
     }
   }
@@ -97,201 +134,131 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final name = _nameController.text;
+    final existingPhoto = ImageUtils.getAvatarImage(
+      widget.currentData['photoUrl'] as String?,
+    );
+    final ImageProvider? photo = _newImage != null
+        ? FileImage(_newImage!)
+        : existingPhoto;
+
     return Scaffold(
-      backgroundColor: p.surface,
-      appBar: CustomAppHeader(
-        title: 'edit_profile'.tr(),
-        infoMessage: 'edit_profile_benefits_message'.tr(),
-      ),
-      body: _isLoading
-          ? LoadingStateWidget(message: 'saving_your_changes'.tr())
-          : _isSuccess
-          ? SuccessStateWidget(
-              message: 'profile_updated_successfully'.tr(),
-              onAction: () => Navigator.pop(context),
-              actionLabel: 'back_to_profile'.tr(),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
+      backgroundColor: p.canvas,
+      body: SafeArea(
+        child: Column(
+          children: [
+            V3TopBar(
+              title: 'prof_edit_profile'.tr(),
+              leading: V3IconButton.close(context),
+              trailing: _saving
+                  ? const SizedBox(
+                      width: 44,
+                      height: 44,
+                      child: Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2.4),
+                        ),
+                      ),
+                    )
+                  : TextButton(
+                      key: const ValueKey('edit-profile-save'),
+                      onPressed: _save,
+                      child: Text(
+                        'prof_save'.tr(),
+                        style: AppTypography.titleMedium.copyWith(
+                          color: p.accent,
+                        ),
+                      ),
+                    ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
                 children: [
-                  const SizedBox(height: 20),
-                  // Avatar Picker
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: p.surfaceVariant,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(
-                                context,
-                              ).primaryColor.withValues(alpha: 0.1),
-                              width: 4,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: p.shadow.withValues(alpha: 0.05),
-                                blurRadius: 15,
-                                offset: const Offset(0, 5),
+                  Center(
+                    child: Semantics(
+                      button: true,
+                      label: 'prof_change_photo'.tr(),
+                      excludeSemantics: true,
+                      child: GestureDetector(
+                        onTap: _saving ? null : _pickImage,
+                        child: photo == null
+                            ? V3Avatar(name: name, size: 88)
+                            : CircleAvatar(
+                                radius: 44,
+                                backgroundColor: p.avatarTintFor(name),
+                                foregroundImage: photo,
                               ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child: _newImage != null
-                                ? Image.file(_newImage!, fit: BoxFit.cover)
-                                : ImageUtils.getAvatarImage(
-                                        widget.currentData['photoUrl'],
-                                      ) !=
-                                      null
-                                ? Image(
-                                    image: ImageUtils.getAvatarImage(
-                                      widget.currentData['photoUrl'],
-                                    )!,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(
-                                    Icons.person,
-                                    size: 60,
-                                    color: p.textTertiary,
-                                  ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: p.surface, width: 3),
-                            ),
-                            child: Icon(
-                              Icons.camera_alt_rounded,
-                              color: p.onPrimary,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  // Name Field
-                  _buildTextField(
-                    controller: _nameController,
-                    label: 'display_name'.tr(),
-                    icon: Icons.person_outline_rounded,
-                  ),
-                  const SizedBox(height: 20),
-                  // Email Field (Read-only)
-                  _buildTextField(
-                    controller: _emailController,
-                    label: 'email_address'.tr(),
-                    icon: Icons.email_outlined,
-                    isReadOnly: true,
-                  ),
-                  const SizedBox(height: 20),
-                  // Phone Field
-                  _buildTextField(
-                    controller: _phoneController,
-                    label: 'phone_number'.tr(),
-                    icon: Icons.phone_outlined,
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 48),
-                  // Save Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: _saveProfile,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: p.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        elevation: 4,
-                        shadowColor: Theme.of(
-                          context,
-                        ).primaryColor.withValues(alpha: 0.4),
-                      ),
+                  const SizedBox(height: 4),
+                  Center(
+                    child: TextButton(
+                      onPressed: _saving ? null : _pickImage,
                       child: Text(
-                        'save_changes',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        'prof_change_photo'.tr(),
+                        style: AppTypography.labelMedium.copyWith(
+                          color: p.accent,
                         ),
-                      ).tr(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  V3FieldLabel('prof_name_label'.tr()),
+                  TextField(
+                    key: const ValueKey('edit-profile-name'),
+                    controller: _nameController,
+                    textCapitalization: TextCapitalization.words,
+                    autofillHints: const [AutofillHints.name],
+                    textInputAction: TextInputAction.next,
+                    onChanged: (_) => setState(() => _nameError = null),
+                    decoration: InputDecoration(errorText: _nameError),
+                  ),
+                  const SizedBox(height: 14),
+                  V3FieldLabel('prof_email_label'.tr()),
+                  TextField(
+                    controller: _emailController,
+                    readOnly: true,
+                    enabled: false,
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: p.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  V3FieldLabel('prof_phone_optional'.tr()),
+                  TextField(
+                    key: const ValueKey('edit-profile-phone'),
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    autofillHints: const [AutofillHints.telephoneNumber],
+                    textDirection: ui.TextDirection.ltr,
+                    onChanged: (_) => setState(() => _phoneError = null),
+                    decoration: InputDecoration(
+                      hintText: 'prof_phone_hint'.tr(),
+                      errorText: _phoneError,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'prof_privacy_caption'.tr(),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: p.textSecondary,
+                      height: 1.5,
                     ),
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
+}
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    bool isReadOnly = false,
-  }) {
-    final p = context.palette;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: p.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
-            filled: true,
-            fillColor: p.surfaceMuted,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(
-                color: p.textTertiary.withValues(alpha: 0.1),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                width: 2,
-              ),
-            ),
-            suffixIcon: isReadOnly
-                ? Icon(Icons.lock_outline_rounded, color: p.textDisabled)
-                : null,
-          ),
-          readOnly: isReadOnly,
-          enabled: !isReadOnly,
-        ),
-      ],
-    );
-  }
+class _PhotoSaveFailed implements Exception {
+  const _PhotoSaveFailed();
 }
