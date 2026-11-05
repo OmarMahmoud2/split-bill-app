@@ -23,6 +23,33 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   late final Future<bool> _onboardingStatus;
   bool _startupFinished = false;
+  final Stream<User?> _authChanges = FirebaseAuth.instance.authStateChanges();
+
+  // Cached per uid so rebuilds don't refetch the user doc or flash a loader.
+  String? _userDocUid;
+  Future<DocumentSnapshot>? _userDocFuture;
+
+  Future<DocumentSnapshot> _userDocFor(String uid) {
+    if (_userDocUid != uid || _userDocFuture == null) {
+      _userDocUid = uid;
+      _userDocFuture = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get()
+          .then((doc) {
+            if (_hasPhoneNumber(doc.data())) {
+              // Preload rewarded ad for free users as soon as we know they're logged in
+              RewardedAdHelper.warmUpIfEligible();
+              PublicProfileService.syncFromUserDoc();
+            }
+            return doc;
+          });
+    }
+    return _userDocFuture!;
+  }
+
+  static bool _hasPhoneNumber(Map<String, dynamic>? data) =>
+      data != null && data['phoneNumber'] != null && data['phoneNumber'] != "";
 
   @override
   void initState() {
@@ -94,7 +121,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         // Otherwise proceed with normal auth flow
         return StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
+          stream: _authChanges,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
@@ -106,10 +133,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
             if (memberOrNull(snapshot.data) != null) {
               return FutureBuilder<DocumentSnapshot>(
-                future: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(snapshot.data!.uid)
-                    .get(),
+                future: _userDocFor(snapshot.data!.uid),
                 builder: (context, userSnapshot) {
                   if (userSnapshot.connectionState == ConnectionState.waiting) {
                     return Scaffold(
@@ -121,15 +145,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
                       userSnapshot.data?.data() as Map<String, dynamic>?;
 
                   // CRITICAL CHECK: If phone number is missing, force setup
-                  if (data == null ||
-                      data['phoneNumber'] == null ||
-                      data['phoneNumber'] == "") {
+                  if (!_hasPhoneNumber(data)) {
                     return const PhoneInputScreen();
                   }
-
-                  // Preload rewarded ad for free users as soon as we know they're logged in
-                  RewardedAdHelper.warmUpIfEligible();
-                  PublicProfileService.syncFromUserDoc();
 
                   return const HomeScreen();
                 },
