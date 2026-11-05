@@ -111,42 +111,58 @@ class AuthService {
       final uid = user.uid;
       final db = FirebaseFirestore.instance;
 
-      // STEP 2: Delete all user data from Firestore
-      final batch = db.batch();
+      // STEP 2: Delete all user data from Firestore (App Store 5.1.1(v)).
+      final refs = <DocumentReference<Map<String, dynamic>>>{};
+      final userRef = db.collection('users').doc(uid);
+      final phone =
+          (await userRef.get()).data()?['phoneNumber']?.toString().trim() ?? '';
 
-      // A. Delete bills where user is host
+      // A. Bills the user hosts.
       final hostBills = await db
           .collection('bills')
           .where('hostId', isEqualTo: uid)
           .get();
-      for (var doc in hostBills.docs) {
-        batch.delete(doc.reference);
+      refs.addAll(hostBills.docs.map((d) => d.reference));
+
+      // B. Groups the user owns (created with `createdBy`; older ones used
+      // `ownerId`).
+      for (final field in const ['createdBy', 'ownerId']) {
+        final groups = await db
+            .collection('groups')
+            .where(field, isEqualTo: uid)
+            .get();
+        refs.addAll(groups.docs.map((d) => d.reference));
       }
 
-      // B. Delete groups where user is owner
-      final userGroups = await db
-          .collection('groups')
-          .where('ownerId', isEqualTo: uid)
-          .get();
-      for (var doc in userGroups.docs) {
-        batch.delete(doc.reference);
+      // C. Notifications.
+      final notifications = await userRef.collection('notifications').get();
+      refs.addAll(notifications.docs.map((d) => d.reference));
+
+      // D. Public profile and the phone claim (only if it is ours).
+      refs.add(db.collection('publicProfiles').doc(uid));
+      if (phone.isNotEmpty) {
+        final claimRef = db.collection('phoneClaims').doc(phone);
+        try {
+          final claim = await claimRef.get();
+          if (claim.data()?['uid'] == uid) refs.add(claimRef);
+        } catch (e) {
+          debugPrint('Phone claim lookup failed: $e');
+        }
       }
 
-      // C. Delete user's notifications subcollection
-      final notifications = await db
-          .collection('users')
-          .doc(uid)
-          .collection('notifications')
-          .get();
-      for (var doc in notifications.docs) {
-        batch.delete(doc.reference);
+      // E. The user document last.
+      refs.remove(userRef);
+      final ordered = [...refs, userRef];
+
+      // Firestore batches hold at most 500 writes.
+      const chunk = 400;
+      for (var i = 0; i < ordered.length; i += chunk) {
+        final batch = db.batch();
+        for (final ref in ordered.skip(i).take(chunk)) {
+          batch.delete(ref);
+        }
+        await batch.commit();
       }
-
-      // D. Delete user document
-      batch.delete(db.collection('users').doc(uid));
-
-      // Commit all deletions
-      await batch.commit();
 
       // STEP 3: Delete from Firebase Auth
       await user.delete();
@@ -279,7 +295,8 @@ class AuthService {
         .where((providerId) => providerId.isNotEmpty)
         .toSet();
 
-    if ((password?.trim().isNotEmpty ?? false) && providers.contains('password')) {
+    if ((password?.trim().isNotEmpty ?? false) &&
+        providers.contains('password')) {
       final email = user.email;
       if (email == null || email.isEmpty) {
         throw 'This account is missing an email address. Please sign in again.';
@@ -325,7 +342,9 @@ class AuthService {
     await RevenueCatService.syncCurrentUser();
 
     try {
-      final platformStr = kIsWeb ? 'web' : defaultTargetPlatform.name.toLowerCase();
+      final platformStr = kIsWeb
+          ? 'web'
+          : defaultTargetPlatform.name.toLowerCase();
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'loginPlatform': platformStr,
       }, SetOptions(merge: true));
