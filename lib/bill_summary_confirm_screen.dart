@@ -10,6 +10,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:split_bill_app/config/api_keys.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'success_screen.dart';
+import 'package:split_bill_app/bill_flow/bill_calculator.dart';
 import 'services/notification_service.dart';
 import 'services/revenue_cat_service.dart';
 import 'utils/currency_utils.dart';
@@ -35,7 +36,16 @@ class BillSummaryConfirmScreen extends StatefulWidget {
   final String? oldBillIdToDelete;
   final String? oldImageToDelete;
 
+  /// A whole-bill split (equal / exact / percent / shares) chosen on the
+  /// split method screen; null means "by item" from the assignments.
+  final BillDraft? methodDraft;
+
+  /// Ledger / group the bill belongs to (data contract `groupId`).
+  final String? groupId;
+
   const BillSummaryConfirmScreen({
+    this.methodDraft,
+    this.groupId,
     super.key,
     required this.receiptData,
     required this.participants,
