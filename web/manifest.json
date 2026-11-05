@@ -3,11 +3,22 @@
     "short_name": "Split Bill",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#00B365",
-    "description": "Split restaurant bills fast with editable receipt review and guest payment links.",
-    "orientation": "portrait-primary",
-    "prefer_related_applications": false,
+    "background_color": "#F7F7F5",
+    "theme_color": "#F7F7F5",
+    "description": "See your share of a bill, pay your host the way you like and let them know. No account needed.",
+    "orientation": "any",
+    "prefer_related_applications": true,
+    "related_applications": [
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=net.omarmali.splitapp",
+            "id": "net.omarmali.splitapp"
+        },
+        {
+            "platform": "itunes",
+            "url": "https://apps.apple.com/app/id6757280494"
+        }
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",

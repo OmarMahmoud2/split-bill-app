@@ -1,127 +1,131 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
+    $FLUTTER_BASE_HREF is replaced by the `--base-href` argument of
+    `flutter build web` (must start and end with "/").
   -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Split restaurant bills fast with editable receipt review, flexible sharing, and clean guest payment links.">
-  <meta name="theme-color" content="#00B365">
-  <meta name="robots" content="index,follow">
-  <meta property="og:title" content="Split Bill">
-  <meta property="og:description" content="Open a shared bill, review the receipt, and send clean guest links without friction.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="icons/Icon-512.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Split Bill">
-  <meta name="twitter:description" content="Editable receipt review and fast guest payment links.">
-  <meta name="twitter:image" content="icons/Icon-512.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Split Bill · Your share of the bill</title>
+  <meta name="description" content="Open the link to see what you owe, pay your host the way you like and let them know. No account needed.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0E0F0E" media="(prefers-color-scheme: dark)">
+  <meta name="robots" content="noindex,follow">
 
-  <!-- iOS meta tags & icons -->
+  <!-- Link previews (WhatsApp, iMessage, Slack...) read these without JS. -->
+  <meta property="og:site_name" content="Split Bill">
+  <meta property="og:title" content="Your share of the bill">
+  <meta property="og:description" content="See what you owe, pay your host the way you like and tap I've paid. No account needed.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://splitbillapp-ffc39.web.app/">
+  <meta property="og:image" content="https://splitbillapp-ffc39.web.app/icons/Icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:image:alt" content="Split Bill">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Your share of the bill">
+  <meta name="twitter:description" content="See what you owe and pay your host. No account needed.">
+  <meta name="twitter:image" content="https://splitbillapp-ffc39.web.app/icons/Icon-512.png">
+
+  <!-- iOS -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Split Bill">
+  <meta name="apple-itunes-app" content="app-id=6757280494">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png">
-
-  <title>Split Bill</title>
   <link rel="manifest" href="manifest.json">
-  
-  
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-  
-  
-  
-  
+
+  <!-- Start fetching the engine and app while the HTML skeleton paints. -->
+  <link rel="preload" href="main.dart.js" as="script">
+
   <style id="splash-screen-style">
-    html {
-      height: 100%
+    /* v3 tokens (lib/theme/app_colors.dart). */
+    :root {
+      --canvas: #F7F7F5; --surface: #FFFFFF; --hairline: #E7E6E1;
+      --divider: #EFEEEA; --ink: #111312; --muted: #5F6360;
+      --skeleton: #EFEEEA; --skeleton-hi: #F7F7F5;
+      color-scheme: light dark;
     }
-
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --canvas: #0E0F0E; --surface: #171918; --hairline: #262927;
+        --divider: #222523; --ink: #F2F3F1; --muted: #A3A8A5;
+        --skeleton: #222523; --skeleton-hi: #2A2D2B;
+      }
+    }
+    html, body { height: 100%; margin: 0; }
     body {
-      margin: 0;
-      min-height: 100%;
-      background-color: #ffffff;
-          background-size: 100% 100%;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
-
-    .center {
-      margin: 0;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
+    #splash {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; overflow: hidden;
+      transition: opacity 150ms ease-out;
     }
-
-    .contain {
-      display:block;
-      width:100%; height:100%;
-      object-fit: contain;
+    #splash.gone { opacity: 0; }
+    .sp-col { width: 100%; max-width: 560px; box-sizing: border-box; padding: 14px 20px 0; }
+    .sp-brand { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; height: 44px; display: flex; align-items: center; }
+    .sp-line { height: 14px; border-radius: 6px; margin-top: 10px; background: var(--skeleton); }
+    .sp-card { margin-top: 12px; border: 1px solid var(--hairline); border-radius: 20px; background: var(--surface); overflow: hidden; }
+    .sp-row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-top: 1px solid var(--divider); }
+    .sp-row:first-child { border-top: 0; }
+    .sp-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--skeleton); flex: none; }
+    .sp-shimmer .sp-line, .sp-shimmer .sp-dot {
+      background: linear-gradient(90deg, var(--skeleton) 0%, var(--skeleton-hi) 50%, var(--skeleton) 100%);
+      background-size: 200% 100%;
+      animation: sp-shimmer 1.2s linear infinite;
     }
-
-    .stretch {
-      display:block;
-      width:100%; height:100%;
+    @keyframes sp-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .sp-shimmer .sp-line, .sp-shimmer .sp-dot { animation: none; }
+      #splash { transition: none; }
     }
-
-    .cover {
-      display:block;
-      width:100%; height:100%;
-      object-fit: cover;
+    @media (min-width: 900px) {
+      .sp-header { width: 100%; background: var(--surface); border-bottom: 1px solid var(--hairline); display: flex; justify-content: center; }
+      .sp-header .sp-col { max-width: 1080px; padding: 14px 24px; }
+      .sp-brand { font-size: 20px; }
+      .sp-body { padding-top: 40px; }
     }
-
-    .bottom {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      -ms-transform: translate(-50%, 0);
-      transform: translate(-50%, 0);
-    }
-
-    .bottomLeft {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-    }
-
-    .bottomRight {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-    }
+    noscript p { max-width: 520px; margin: 40px auto; padding: 0 20px; color: var(--muted); }
   </style>
-  <script id="splash-screen-script">
-    function removeSplashFromWeb() {
-      document.getElementById("splash")?.remove();
-      document.getElementById("splash-branding")?.remove();
-      document.body.style.background = "transparent";
-    }
-  </script>
 </head>
 <body>
-  <picture id="splash">
-      <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
-      <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
-      <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
-  </picture>
-  
-  
-  
-  <script src="flutter_bootstrap.js" async=""></script>
+  <div id="splash" class="sp-shimmer" aria-busy="true" aria-label="Loading">
+    <div class="sp-header"><div class="sp-col"><div class="sp-brand">Split Bill</div></div></div>
+    <div class="sp-col sp-body" aria-hidden="true">
+      <div class="sp-line" style="width: 180px; margin-top: 22px"></div>
+      <div class="sp-line" style="width: 240px; height: 28px"></div>
+      <div class="sp-line" style="width: 160px"></div>
+      <div class="sp-line" style="width: 140px; height: 16px; margin-top: 30px"></div>
+      <div class="sp-card">
+        <div class="sp-row"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 60%; margin: 0"></div><div class="sp-line" style="width: 35%"></div></span></div>
+        <div class="sp-row"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 50%; margin: 0"></div><div class="sp-line" style="width: 30%"></div></span></div>
+        <div class="sp-row"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 55%; margin: 0"></div><div class="sp-line" style="width: 40%"></div></span></div>
+      </div>
+    </div>
+  </div>
+  <noscript><p>Split Bill needs JavaScript to show your bill. Please enable it and reload this page.</p></noscript>
 
-
-</body></html>
+  <script id="splash-screen-script">
+    // Flutter's own skeleton has the same shape, so fade the HTML one out
+    // on the first Flutter frame. (flutter_native_splash may also call
+    // removeSplashFromWeb.)
+    function removeSplashFromWeb() {
+      var splash = document.getElementById("splash");
+      if (!splash) return;
+      splash.classList.add("gone");
+      setTimeout(function () { splash.remove(); }, 200);
+    }
+    window.addEventListener("flutter-first-frame", removeSplashFromWeb, { once: true });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
