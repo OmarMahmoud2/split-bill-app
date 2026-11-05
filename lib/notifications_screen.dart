@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'services/notification_service.dart';
 import 'bill_details_screen.dart';
 import 'participant_bill_screen.dart';
-import 'widgets/empty_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -174,282 +174,150 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('all_notifications_cleared').tr()),
-        );
+        AppToast.show(context, message: 'all_notifications_cleared'.tr(), type: AppToastType.success);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     if (user == null) {
       return Scaffold(
+        backgroundColor: p.background,
         body: Center(child: Text('please_log_in_to_view_notifications').tr()),
       );
     }
-    final p = context.palette;
     return Scaffold(
-      backgroundColor: p.surfaceMuted,
-      body: Column(
-        children: [
-          const SizedBox(height: 65),
-          // Custom Header Card (Matching BillDetails/SplitBill style)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: p.surface,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: p.shadow.withValues(alpha: 0.04),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 20,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'notifications',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
-                      ),
-                    ).tr(),
-                  ),
-                  // Mark as Read (Pill)
-                  _buildPillAction(
-                    icon: Icons.done_all_rounded,
-                    color: p.info,
-                    onTap: () => NotificationService().markAllAsRead(),
-                    tooltip: 'mark_all_read'.tr(),
-                  ),
-                  const SizedBox(width: 8),
-                  // Clear All (Pill)
-                  _buildPillAction(
-                    icon: Icons.delete_sweep_rounded,
-                    color: p.danger,
-                    onTap: _clearAll,
-                    tooltip: 'clear_all'.tr(),
-                  ),
-                ],
-              ),
+      backgroundColor: p.background,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            LedgerTopBar(
+              title: 'notifications'.tr(),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      await NotificationService().markAllAsRead();
+                      AppHaptics.selection();
+                    } catch (_) {
+                      if (context.mounted) {
+                        AppToast.show(context, message: 'notifications_action_failed'.tr(), type: AppToastType.error);
+                      }
+                    }
+                  },
+                  style: TextButton.styleFrom(foregroundColor: p.accent),
+                  child: Text('mark_all_read'.tr()),
+                ),
+                PopupMenuButton<String>(
+                  tooltip: 'groups_more'.tr(),
+                  icon: Icon(Icons.more_horiz_rounded, color: p.textPrimary),
+                  onSelected: (_) => _clearAll(),
+                  itemBuilder: (_) => [
+                    PopupMenuItem(value: 'clear', child: Text('clear_all'.tr())),
+                  ],
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(user!.uid)
-                  .collection('notifications')
-                  .orderBy('date', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return LoadingStateWidget(
-                    message: 'loading_notifications'.tr(),
-                  );
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return EmptyStateWidget(
-                    icon: Icons.notifications_none_rounded,
-                    title: 'no_notifications'.tr(),
-                    message:
-                        'your_history_is_clean_for_now_any_alerts_will_appear_here'
-                            .tr(),
-                  );
-                }
-
-                return ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  padding: const EdgeInsets.only(top: 8, bottom: 20),
-                  itemBuilder: (context, index) {
-                    var doc = snapshot.data!.docs[index];
-                    var data = doc.data() as Map<String, dynamic>;
-                    final localizedCopy = _localizedNotificationCopy(data);
-                    String title = localizedCopy.title;
-                    String body = localizedCopy.body;
-                    bool read = data['read'] ?? false;
-                    Timestamp? ts = data['date'] as Timestamp?;
-                    String timeAgo = ts != null
-                        ? _formatTimestamp(ts)
-                        : 'unknown_time'.tr();
-
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: p.surface,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: p.shadow.withValues(
-                              alpha: read ? 0.02 : 0.05,
-                            ),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 8,
-                        ),
-                        leading: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: read
-                                ? p.surfaceVariant
-                                : Theme.of(
-                                    context,
-                                  ).primaryColor.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            read
-                                ? Icons.notifications_none_rounded
-                                : Icons.notifications_active_rounded,
-                            color: read
-                                ? p.textTertiary
-                                : Theme.of(context).primaryColor,
-                            size: 24,
-                          ),
-                        ),
-                        title: Text(
-                          title,
-                          style: TextStyle(
-                            fontWeight: read
-                                ? FontWeight.bold
-                                : FontWeight.w900,
-                            fontSize: 15,
-                            color: read ? p.textMedium : p.textStrong,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                body,
-                                style: TextStyle(
-                                  color: p.textSecondary,
-                                  fontSize: 14,
-                                  height: 1.3,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.access_time_rounded,
-                                  size: 12,
-                                  color: p.textDisabled,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  timeAgo,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: p.textDisabled,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        onTap: () async {
-                          NotificationService().markAsRead(doc.id);
-                          final notifData =
-                              data['data'] as Map<String, dynamic>?;
-                          if (notifData != null &&
-                              notifData['billId'] != null) {
-                            String billId = notifData['billId'];
-                            try {
-                              final billDoc = await FirebaseFirestore.instance
-                                  .collection('bills')
-                                  .doc(billId)
-                                  .get();
-                              if (billDoc.exists && context.mounted) {
-                                final billData = billDoc.data()!;
-                                final currentUser =
-                                    FirebaseAuth.instance.currentUser;
-                                bool amIHost =
-                                    billData['hostId'] == currentUser?.uid;
-                                String billName =
-                                    billData['storeName'] ?? 'bill'.tr();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => amIHost
-                                        ? BillDetailsScreen(
-                                            billId: billId,
-                                            billName: billName,
-                                          )
-                                        : ParticipantBillScreen(
-                                            billId: billId,
-                                            billName: billName,
-                                          ),
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              debugPrint('Error navigating to bill: $e');
-                            }
-                          }
-                        },
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user!.uid)
+                    .collection('notifications')
+                    .orderBy('date', descending: true)
+                    .limit(100)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return ErrorState(
+                      message: 'notifications_load_failed'.tr(),
+                      onRetry: () => setState(() {}),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: SkeletonShimmer(
+                        child: Column(children: [SkeletonCard(), SizedBox(height: 10), SkeletonCard(), SizedBox(height: 10), SkeletonCard()]),
                       ),
                     );
-                  },
-                );
-              },
+                  }
+                  final docs = snapshot.data?.docs ?? const [];
+                  if (docs.isEmpty) {
+                    return EmptyState(
+                      icon: Icons.notifications_none_rounded,
+                      title: 'no_notifications'.tr(),
+                      message: 'your_history_is_clean_for_now_any_alerts_will_appear_here'.tr(),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: docs.length,
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                    itemBuilder: (context, index) {
+                      final doc = docs[index];
+                      final data = doc.data() as Map<String, dynamic>;
+                      final copy = _localizedNotificationCopy(data);
+                      final read = data['read'] == true;
+                      final ts = data['date'] as Timestamp?;
+                      final when = ts != null ? _formatTimestamp(ts) : 'unknown_time'.tr();
+                      final payload = data['data'] as Map<String, dynamic>?;
+                      final isReminder = payload?['type'] == 'nudge' ||
+                          (data['titleKey'] as String?)?.startsWith('nudge_') == true;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: StaggeredEntrance(
+                          index: index,
+                          child: NotificationCard(
+                            title: copy.title,
+                            body: copy.body,
+                            when: when,
+                            read: read,
+                            reminder: isReminder,
+                            onTap: () => _open(doc.id, payload),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPillAction({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-    required String tooltip,
-  }) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, color: color, size: 20),
-          ),
+  Future<void> _open(String id, Map<String, dynamic>? payload) async {
+    NotificationService().markAsRead(id).catchError((_) {});
+    final billId = payload?['billId']?.toString();
+    if (billId == null) return;
+    try {
+      final billDoc = await FirebaseFirestore.instance.collection('bills').doc(billId).get();
+      if (!mounted) return;
+      if (!billDoc.exists) {
+        AppToast.show(context, message: 'notifications_bill_gone'.tr(), type: AppToastType.info);
+        return;
+      }
+      final billData = billDoc.data()!;
+      final amIHost = billData['hostId'] == FirebaseAuth.instance.currentUser?.uid;
+      final billName = billData['storeName'] ?? 'bill'.tr();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => amIHost
+              ? BillDetailsScreen(billId: billId, billName: billName)
+              : ParticipantBillScreen(billId: billId, billName: billName),
         ),
-      ),
-    );
+      );
+    } catch (_) {
+      if (mounted) {
+        AppToast.show(context, message: 'notifications_open_failed'.tr(), type: AppToastType.error);
+      }
+    }
   }
 
   String _formatTimestamp(Timestamp ts) {
@@ -467,5 +335,66 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       return 'days_ago'.tr(namedArgs: {'count': diff.inDays.toString()});
     }
     return DateFormat.yMd(context.locale.toLanguageTag()).format(date);
+  }
+}
+
+/// One inbox entry: unread entries sit on the surface with a colored dot
+/// (amber for reminders, teal otherwise); read ones blend into the canvas.
+class NotificationCard extends StatelessWidget {
+  const NotificationCard({
+    super.key,
+    required this.title,
+    required this.body,
+    required this.when,
+    required this.read,
+    this.reminder = false,
+    this.onTap,
+  });
+
+  final String title;
+  final String body;
+  final String when;
+  final bool read;
+  final bool reminder;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final dot = read ? null : (reminder ? p.owe : p.accent);
+    return Semantics(
+      label: read ? null : 'notifications_unread'.tr(),
+      child: LedgerCard(
+        onTap: onTap,
+        color: read ? p.background : p.surface,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(top: 7),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: dot ?? p.background.withValues(alpha: 0)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+                  if (body.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(body, style: AppTypography.bodySmall.copyWith(color: p.textSecondary, fontSize: 13, height: 1.4)),
+                  ],
+                  const SizedBox(height: 4),
+                  Text(when, style: AppTypography.caption.copyWith(color: p.textSecondary, fontSize: 12)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
