@@ -265,7 +265,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     info: Color(0xFF42A5F5), // blue 400
     infoStrong: Color(0xFF90CAF9), // blue 200
     infoSoft: Color(0xFF102A43),
-    infoAccent: Color(0xFF82B1FF), // blueAccent 100
+    // Same as light: it is used as a filled background under white icons.
+    infoAccent: Color(0xFF448AFF),
     premium: Color(0xFFFFD700),
     premiumStrong: Color(0xFFFFA500),
     onPremium: Color(0xFF000000),
