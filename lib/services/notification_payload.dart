@@ -5,7 +5,8 @@ library;
 /// Locale codes the reminder campaign has copy for.
 const Set<String> reminderLocaleCodes = {
   'en', 'ar', 'fr', 'de', 'ru', 'id', 'ur', 'hi', //
-  'pl', 'es', 'it', 'pt', 'zh', 'ko', 'ja',
+  'pl', 'es', 'it', 'pt', 'zh', 'ko', 'ja', //
+  'tr', 'nl', 'sv', 'da', 'nb', 'vi', 'th',
 };
 
 /// Source marker for `notificationsEnabled` values derived from the OS
@@ -38,8 +39,12 @@ String? normalizeLocaleCode(String? value) {
       .split('-')
       .first
       .toLowerCase();
-  if (code == null || !reminderLocaleCodes.contains(code)) return null;
-  return code;
+  // Generic Norwegian and Nynorsk are served the Bokmål copy.
+  final canonical = (code == 'no' || code == 'nn') ? 'nb' : code;
+  if (canonical == null || !reminderLocaleCodes.contains(canonical)) {
+    return null;
+  }
+  return canonical;
 }
 
 /// Decides the `notificationsEnabled` value to write on token sync, or null

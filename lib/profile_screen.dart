@@ -247,6 +247,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Colors.blue;
       case 'ja':
         return Colors.red;
+      case 'tr':
+        return Colors.red;
+      case 'nl':
+        return Colors.orange;
+      case 'sv':
+        return Colors.blue;
+      case 'da':
+        return Colors.red;
+      case 'nb':
+        return Colors.red;
+      case 'vi':
+        return Colors.red;
+      case 'th':
+        return Colors.indigo;
       default:
         return Colors.blueGrey;
     }

@@ -15,7 +15,7 @@ CATALOG_PATH = REPO_ROOT / "tooling" / "localization" / "key_catalog.json"
 TRANSLATIONS_DIR = REPO_ROOT / "assets" / "translations"
 LIB_ROOT = REPO_ROOT / "lib"
 
-LOCALES = ["en", "ar", "fr", "de", "ru", "id", "ur", "hi", "pl", "es", "it", "pt", "zh", "ko", "ja"]
+LOCALES = ["en", "ar", "fr", "de", "ru", "id", "ur", "hi", "pl", "es", "it", "pt", "zh", "ko", "ja", "tr", "nl", "sv", "da", "nb", "vi", "th"]
 
 SYSTEM_PROMPT = (
     "You translate mobile app UI strings for a bill-splitting app. "

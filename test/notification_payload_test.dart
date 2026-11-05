@@ -55,10 +55,16 @@ void main() {
       expect(normalizeLocaleCode('pt_BR'), 'pt');
       expect(normalizeLocaleCode('zh-Hans'), 'zh');
       expect(normalizeLocaleCode('AR'), 'ar');
+      expect(normalizeLocaleCode('nb_NO'), 'nb');
+    });
+
+    test('maps generic Norwegian and Nynorsk to Bokmål', () {
+      expect(normalizeLocaleCode('no'), 'nb');
+      expect(normalizeLocaleCode('nn-NO'), 'nb');
     });
 
     test('rejects unsupported languages', () {
-      expect(normalizeLocaleCode('tr'), isNull);
+      expect(normalizeLocaleCode('he'), isNull);
       expect(normalizeLocaleCode(''), isNull);
       expect(normalizeLocaleCode(null), isNull);
     });

@@ -29,6 +29,13 @@ LOCALE_FILES = {
     "zh": TRANSLATIONS_DIR / "zh.json",
     "ko": TRANSLATIONS_DIR / "ko.json",
     "ja": TRANSLATIONS_DIR / "ja.json",
+    "tr": TRANSLATIONS_DIR / "tr.json",
+    "nl": TRANSLATIONS_DIR / "nl.json",
+    "sv": TRANSLATIONS_DIR / "sv.json",
+    "da": TRANSLATIONS_DIR / "da.json",
+    "nb": TRANSLATIONS_DIR / "nb.json",
+    "vi": TRANSLATIONS_DIR / "vi.json",
+    "th": TRANSLATIONS_DIR / "th.json",
 }
 
 SYSTEM_PROMPT = (
@@ -52,6 +59,13 @@ DEEPL_TARGETS = {
     "zh": "ZH",
     "ko": "KO",
     "ja": "JA",
+    "tr": "TR",
+    "nl": "NL",
+    "sv": "SV",
+    "da": "DA",
+    "nb": "NB",
+    "vi": "VI",
+    "th": "TH",
 }
 
 

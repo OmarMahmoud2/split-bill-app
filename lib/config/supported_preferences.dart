@@ -138,7 +138,60 @@ const supportedLocaleOptions = <LocaleOption>[
     nativeName: '日本語',
     flag: '🇯🇵',
   ),
+  LocaleOption(
+    locale: Locale('tr'),
+    englishName: 'Turkish',
+    nativeName: 'Türkçe',
+    flag: '🇹🇷',
+  ),
+  LocaleOption(
+    locale: Locale('nl'),
+    englishName: 'Dutch',
+    nativeName: 'Nederlands',
+    flag: '🇳🇱',
+  ),
+  LocaleOption(
+    locale: Locale('sv'),
+    englishName: 'Swedish',
+    nativeName: 'Svenska',
+    flag: '🇸🇪',
+  ),
+  LocaleOption(
+    locale: Locale('da'),
+    englishName: 'Danish',
+    nativeName: 'Dansk',
+    flag: '🇩🇰',
+  ),
+  LocaleOption(
+    locale: Locale('nb'),
+    englishName: 'Norwegian',
+    nativeName: 'Norsk bokmål',
+    flag: '🇳🇴',
+  ),
+  LocaleOption(
+    locale: Locale('vi'),
+    englishName: 'Vietnamese',
+    nativeName: 'Tiếng Việt',
+    flag: '🇻🇳',
+  ),
+  LocaleOption(
+    locale: Locale('th'),
+    englishName: 'Thai',
+    nativeName: 'ไทย',
+    flag: '🇹🇭',
+  ),
 ];
+
+/// Language codes some devices report for a language the app ships under a
+/// different code. Generic Norwegian (`no`) and Nynorsk (`nn`) use Bokmål.
+const localeCodeAliases = <String, String>{'no': 'nb', 'nn': 'nb'};
+
+/// Maps a language code to the code of the matching [supportedLocaleOptions]
+/// entry, applying [localeCodeAliases].
+String canonicalLocaleCode(String code) {
+  final normalized = code.trim().toLowerCase();
+  return localeCodeAliases[normalized] ?? normalized;
+}
 
 const supportedCurrencyOptions = <CurrencyOption>[
   CurrencyOption(
@@ -993,8 +1046,9 @@ const supportedCurrencyOptions = <CurrencyOption>[
 ];
 
 LocaleOption findLocaleOption(String code) {
+  final canonical = canonicalLocaleCode(code);
   return supportedLocaleOptions.firstWhere(
-    (option) => option.code == code,
+    (option) => option.code == canonical,
     orElse: () => supportedLocaleOptions.first,
   );
 }
@@ -1014,9 +1068,8 @@ Locale resolveSupportedLocale(
   Locale fallback = const Locale('en'),
 }) {
   for (final locale in preferredLocales) {
-    final match = supportedLocaleOptions.where(
-      (option) => option.code == locale.languageCode,
-    );
+    final code = canonicalLocaleCode(locale.languageCode);
+    final match = supportedLocaleOptions.where((option) => option.code == code);
     if (match.isNotEmpty) {
       return match.first.locale;
     }
