@@ -86,3 +86,25 @@ Positioning: **AI receipt splitter with running balances.** Scan, say who had wh
 - Remove the legacy FCM token path in `notifications/send` after Stage B.
 - RevenueCat webhook HMAC secret to be set in production.
 - Privacy policy update before any AI provider change (voice audio, RevenueCat, ads SDK, providers list).
+
+## New features to add (from competitor research, 2026-11-05)
+
+Market context: Splitwise launched free receipt itemizing in the US and UK (16 Oct 2026); Apple Cash Split Bill ships in iOS 27 (US only, Apple Cash required). Our edge: everyone, every phone, every country — voice assignment, guest links with proof, per-country payment links, 22 locales with proper RTL, no daily limit. Full matrix: `COMPETITOR_RESEARCH.md`.
+
+Quick wins
+1. Per-country payment links on guest pages and settle up: PayPal, Revolut, Wise, Venmo, InstaPay, Vodafone Cash, UPI, Pix, Bizum, Swish, MobilePay, Vipps, Twint, IBAN (amount prefilled where the app supports it; otherwise copy handle + amount).
+2. Personal share cards for WhatsApp / iMessage ("Mona, your share is EGP 16.38").
+3. "Every cent accounted for" breakdown on every share, plus edit history.
+4. Smart receipt cleanup: subtotal/tax/tip rows misread as items, per-item tax and tip rules.
+5. Quick IOUs without a bill; split by percent and shares.
+6. Import from Splitwise and Tricount (CSV).
+
+Bigger bets
+7. Trip mode: budget, per-day remaining, recap card, settle-up prompt; test a one-time Trip Pass purchase.
+8. Offline entry with visible sync status.
+9. Home-screen and lock-screen widgets, quick actions, Live Activity for an open bill.
+10. Siri, Shortcuts and App Intents on top of voice assignment; Apple Watch glance and nudge.
+11. Household plan: recurring bills, shared shopping list.
+12. Spending insights (monthly, by category, payback speed).
+
+Design: "Quiet ledger" direction, all pages mocked up on the v3 page of https://claude.ai/artifact/R9dGrpfqb1pCPLHywf183r (app, guest web phone and desktop, landing, compare, use case, help and legal).
