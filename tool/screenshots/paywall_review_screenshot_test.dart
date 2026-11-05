@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
 // Generates the App Store review screenshot of the paywall.
 // Run: flutter test tool/screenshots/paywall_review_screenshot_test.dart
 import 'dart:convert';
