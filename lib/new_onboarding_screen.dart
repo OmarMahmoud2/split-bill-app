@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/auth_wrapper.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/utils/app_theme.dart';
 import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
 
 class NewOnboardingScreen extends StatefulWidget {
@@ -16,14 +18,34 @@ class NewOnboardingScreen extends StatefulWidget {
 }
 
 class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
-  static const _ink = Color(0xFF172C35);
-  static const _accent = Color(0xFF008A86);
+  // Onboarding has its own light-mode art direction; these are its light
+  // values. Dark mode maps them onto palette roles (see getters below).
+  static const _inkLight = Color(0xFF172C35);
+  static const _mutedLight = Color(0xFF53676E);
+  static const _accentLight = Color(0xFF008A86);
+  static const _voiceLight = Color(0xFF8056B1);
   static const _backgrounds = [
     Color(0xFFF4FAF8),
     Color(0xFFF2F6FF),
     Color(0xFFF7F3FC),
     Color(0xFFFFF8ED),
   ];
+  // Page hues used to tint the dark background.
+  static const _pageHues = [
+    Color(0xFF008A86),
+    Color(0xFF2962FF),
+    Color(0xFF8056B1),
+    Color(0xFFFF9800),
+  ];
+
+  AppPalette get _p => context.palette;
+  Color get _ink => _p.isDark ? _p.textPrimary : _inkLight;
+  Color get _muted => _p.isDark ? _p.textSecondary : _mutedLight;
+  Color get _accent => _p.isDark ? _p.primaryStrong : _accentLight;
+  Color get _voice => _p.isDark ? const Color(0xFFB39DDB) : _voiceLight;
+  Color _background(int page) => _p.isDark
+      ? Color.alphaBlend(_pageHues[page].withValues(alpha: 0.07), _p.background)
+      : _backgrounds[page];
   static const _titles = [
     'onboarding_title_scan_split',
     'onboarding_scan_title',
@@ -98,11 +120,11 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
   Widget build(BuildContext context) {
     final reducedMotion = MediaQuery.disableAnimationsOf(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
+      value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
       child: Scaffold(
         body: AnimatedContainer(
           duration: Duration(milliseconds: reducedMotion ? 0 : 320),
-          color: _backgrounds[_page],
+          color: _background(_page),
           child: SafeArea(
             child: Column(
               children: [
@@ -181,8 +203,12 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                           key: const ValueKey('onboarding-next'),
                           onPressed: _completing ? null : _next,
                           style: FilledButton.styleFrom(
-                            backgroundColor: _ink,
-                            foregroundColor: Colors.white,
+                            backgroundColor: _p.isDark
+                                ? _p.inverseSurface
+                                : _inkLight,
+                            foregroundColor: _p.isDark
+                                ? _p.onInverseSurface
+                                : Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
                               vertical: 18,
@@ -233,7 +259,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
               children: [
                 Text(
                   _titles[index].tr(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: _ink,
                     fontSize: 34,
                     height: 1.15,
@@ -244,11 +270,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                 const SizedBox(height: 16),
                 Text(
                   _descriptions[index].tr(),
-                  style: const TextStyle(
-                    color: Color(0xFF53676E),
-                    fontSize: 17,
-                    height: 1.5,
-                  ),
+                  style: TextStyle(color: _muted, fontSize: 17, height: 1.5),
                 ),
                 const SizedBox(height: 28),
                 if (index == 0 || index == 1)
@@ -268,7 +290,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.check_circle_outline_rounded,
                       size: 20,
                       color: _accent,
@@ -282,8 +304,8 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                           'onboarding_voice_hint',
                           'onboarding_currency_hint',
                         ][index].tr(),
-                        style: const TextStyle(
-                          color: Color(0xFF53676E),
+                        style: TextStyle(
+                          color: _muted,
                           fontSize: 14,
                           height: 1.5,
                         ),
@@ -304,7 +326,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     width: double.infinity,
     padding: const EdgeInsets.all(24),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: _p.surface,
       borderRadius: BorderRadius.circular(32),
     ),
     child: Column(
@@ -312,15 +334,11 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
       children: [
         Container(
           padding: const EdgeInsets.all(18),
-          decoration: const BoxDecoration(
-            color: Color(0xFFF0E7FC),
+          decoration: BoxDecoration(
+            color: _p.tint(const Color(0xFFF0E7FC), _voiceLight),
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.mic_rounded,
-            size: 42,
-            color: Color(0xFF8056B1),
-          ),
+          child: Icon(Icons.mic_rounded, size: 42, color: _voice),
         ),
         const SizedBox(height: 22),
         Row(
@@ -332,7 +350,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
               height: [12.0, 24.0, 40.0, 20.0, 32.0][i % 5],
               margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFF8056B1),
+                color: _voice,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -342,7 +360,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
         Text(
           'voice_try_example'.tr(),
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             color: _ink,
             fontSize: 18,
             height: 1.5,
@@ -356,7 +374,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
   Widget _buildCurrencyCard() {
     final currency = findCurrencyOption(_currency);
     return Material(
-      color: Colors.white,
+      color: _p.surface,
       borderRadius: BorderRadius.circular(28),
       child: InkWell(
         key: const ValueKey('onboarding-currency'),
@@ -378,23 +396,20 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                 height: 64,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF2D8),
+                  color: _p.tint(const Color(0xFFFFF2D8), Colors.orange),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: FittedBox(
                   child: Text(
                     currency.symbol,
-                    style: const TextStyle(
-                      color: _ink,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(color: _ink, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
               Text(
                 currency.code,
-                style: const TextStyle(
+                style: TextStyle(
                   color: _ink,
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
@@ -402,7 +417,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
               ),
               Text(
                 currency.name,
-                style: const TextStyle(color: Color(0xFF53676E), fontSize: 16),
+                style: TextStyle(color: _muted, fontSize: 16),
               ),
               const SizedBox(height: 24),
               Row(
@@ -410,14 +425,14 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                   Expanded(
                     child: Text(
                       'choose_currency'.tr(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: _accent,
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_rounded, color: _accent),
+                  Icon(Icons.arrow_forward_rounded, color: _accent),
                 ],
               ),
             ],
