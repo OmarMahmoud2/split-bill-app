@@ -121,7 +121,7 @@ void main() {
           key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
       final image = await boundary.toImage(pixelRatio: 3);
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
-      final out = File('assets/brand/review/paywall_yearly_1290x2796.png');
+      final out = File('docs/2.0/store/paywall_yearly_1290x2796.png');
       out.createSync(recursive: true);
       out.writeAsBytesSync(data!.buffer.asUint8List());
     });

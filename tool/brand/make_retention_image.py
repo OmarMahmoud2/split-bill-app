@@ -22,7 +22,7 @@ def main():
     d.text((2050, 760), 'Evens Pro', font=big, fill=WHITE)
     d.text((2060, 1180), 'Unlimited scans, trips,', font=small, fill=(255, 255, 255, 215))
     d.text((2060, 1340), 'exports and no ads', font=small, fill=(255, 255, 255, 215))
-    out = Path('assets/brand/evens_retention_3840x2160.png')
+    out = Path('docs/2.0/store/evens_retention_3840x2160.png')
     img.convert('RGB').save(out)
     print('wrote', out)
 
