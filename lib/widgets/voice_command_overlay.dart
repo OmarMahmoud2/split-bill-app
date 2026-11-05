@@ -1,799 +1,1349 @@
-import 'dart:ui';
 import 'dart:async';
-import 'package:easy_localization/easy_localization.dart';
+import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:split_bill_app/config/feature_costs.dart';
-import 'package:split_bill_app/services/voice_service.dart';
-import 'package:split_bill_app/services/bill_intelligence_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:split_bill_app/bill_flow/voice/speech_engine.dart';
+import 'package:split_bill_app/bill_flow/voice/voice_logic.dart';
+import 'package:split_bill_app/config/feature_costs.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
-import 'package:split_bill_app/screens/scan_receipt/widgets/no_points_dialog.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
+import 'package:split_bill_app/screens/scan_receipt/widgets/no_points_dialog.dart';
+import 'package:split_bill_app/services/bill_intelligence_service.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/services/voice_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+/// "Assign by voice" bottom sheet (People board 4, "Voice, understood live").
+///
+/// Speech is recognised on the device (`speech_to_text`) with a live
+/// transcript; only the text goes to `voice/assign/`. When on-device
+/// recognition is unavailable it records audio and has the server transcribe
+/// it instead.
+///
+/// Pops, on Done:
+/// * `Map<String, List<String>>` item index -> participant ids, when the
+///   result has no per-unit splits;
+/// * otherwise a map with `'assignments'` (as above) and `'splits'`
+///   (`Map<String, Map<String, int>>`, item -> units per participant);
+/// * `null` when cancelled or the user chose to assign by tapping.
 class VoiceCommandOverlay extends StatefulWidget {
-  final Map<String, dynamic> receiptData;
-  final List<Map<String, dynamic>> participants;
-
   const VoiceCommandOverlay({
     super.key,
     required this.receiptData,
     required this.participants,
+    this.speechEngine,
+    this.recorder,
+    this.assignService,
+    this.currentUserId,
+    this.pointsGate,
+    this.initialLanguage,
+    this.openSettings,
   });
+
+  final Map<String, dynamic> receiptData;
+  final List<Map<String, dynamic>> participants;
+
+  /// Seams for tests; real implementations are used when null.
+  final SpeechEngine? speechEngine;
+  final VoiceRecorder? recorder;
+  final BillIntelligenceService? assignService;
+
+  /// Signed-in uid (the host). Defaults to FirebaseAuth.
+  final String? Function()? currentUserId;
+
+  /// Premium / points check before listening. Defaults to the Firestore
+  /// points check with [NoPointsDialog] and rewarded ads.
+  final Future<bool> Function(BuildContext context)? pointsGate;
+
+  /// Speech language code; defaults to the app language.
+  final String? initialLanguage;
+
+  /// Opens the system settings for this app.
+  final Future<void> Function()? openSettings;
+
+  /// Pushes the sheet over the current route (dim backdrop, no page change).
+  static Future<Object?> show(
+    BuildContext context, {
+    required Map<String, dynamic> receiptData,
+    required List<Map<String, dynamic>> participants,
+  }) {
+    return Navigator.of(context).push<Object?>(
+      PageRouteBuilder<Object?>(
+        opaque: false,
+        barrierDismissible: false,
+        transitionDuration: AppMotion.durationFor(context, AppMotion.slow),
+        reverseTransitionDuration: AppMotion.durationFor(
+          context,
+          AppMotion.medium,
+        ),
+        pageBuilder: (_, _, _) => VoiceCommandOverlay(
+          receiptData: receiptData,
+          participants: participants,
+        ),
+        transitionsBuilder: (_, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
+      ),
+    );
+  }
 
   @override
   State<VoiceCommandOverlay> createState() => _VoiceCommandOverlayState();
 }
 
+enum _Phase {
+  language,
+  starting,
+  listening,
+  recording,
+  transcribing,
+  assigning,
+  review,
+  permissionDenied,
+  error,
+}
+
+enum _ErrorKind {
+  offline,
+  timeout,
+  noCredits,
+  rateLimited,
+  noSpeech,
+  noMatch,
+  unknown,
+}
+
 class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
-    with SingleTickerProviderStateMixin {
-  final VoiceService _voiceService = VoiceService();
-  final BillIntelligenceService _aiService = BillIntelligenceService();
+    with WidgetsBindingObserver {
+  late final SpeechEngine _engine = widget.speechEngine ?? SpeechToTextEngine();
+  late final VoiceRecorder _recorder = widget.recorder ?? ServerVoiceRecorder();
+  late final BillIntelligenceService _assign =
+      widget.assignService ?? BillIntelligenceService();
+  late final List<VoiceItemRow> _items = voiceItemsFrom(widget.receiptData);
 
-  // Animation
-  late AnimationController _pulseController;
+  _Phase _phase = _Phase.language;
+  _ErrorKind _errorKind = _ErrorKind.unknown;
+  bool _errorFromAssign = false;
 
-  // State
-  bool _isListening = false;
-  bool _isProcessingTranscript = false; // Processing Audio -> Text
-  bool _isProcessingAssignment = false; // Processing Text -> Assignment
-  bool _isSuccess = false;
-  bool _hasError = false;
-  bool _isLanguageSelectionStep =
-      true; // New State: Start with Language Selection
+  String _language = 'en';
   bool _languageInitialized = false;
 
-  // Transcript Logic
+  /// On-device recognition is out (unavailable / no locale): record instead.
+  bool _useServer = false;
+  bool _engineReady = false;
+  String? _localeId;
+
+  String _lastWords = '';
+  TranscriptSplit _split = const TranscriptSplit('', '');
   String? _transcript;
-  String _statusText = '';
-  String _subStatusText = '';
-  String _selectedLanguage = 'en';
+  String _source = 'on_device';
+  VoiceAssignResult? _result;
 
-  int _recordDuration = 0;
-
-  // Stopwatch
-  final Stopwatch _stopwatch = Stopwatch();
-  Timer? _timer;
+  double _level = 0;
+  final SoundLevelNormalizer _speechLevels = SoundLevelNormalizer();
+  final SoundLevelNormalizer _recordLevels = SoundLevelNormalizer.dbfs();
+  StreamSubscription<double>? _levelSub;
+  Timer? _stopSafety;
+  Timer? _recordLimit;
+  bool _stopping = false;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )..repeat(reverse: true);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_languageInitialized) return;
-
-    final localeCode = context.read<AppSettingsProvider>().locale.languageCode;
-    if (supportedLocaleOptions.any((option) => option.code == localeCode)) {
-      _selectedLanguage = localeCode;
-    }
     _languageInitialized = true;
-    _statusText = 'voice_tap_to_speak'.tr();
-    _subStatusText = 'voice_try_example'.tr();
+    var code = widget.initialLanguage;
+    if (code == null) {
+      try {
+        code = context.read<AppSettingsProvider>().locale.languageCode;
+      } on ProviderNotFoundException {
+        code = Localizations.maybeLocaleOf(context)?.languageCode;
+      }
+    }
+    if (supportedLocaleOptions.any((o) => o.code == code)) _language = code!;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Back from Settings with the microphone turned on: try again.
+    if (state == AppLifecycleState.resumed &&
+        _phase == _Phase.permissionDenied) {
+      _recheckPermission();
+    }
+  }
+
+  Future<void> _recheckPermission() async {
+    final granted = await _engine.hasPermission();
+    if (granted && mounted && _phase == _Phase.permissionDenied) {
+      _engineReady = false;
+      _startCapture();
+    }
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
-    _voiceService.dispose();
-    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _stopSafety?.cancel();
+    _recordLimit?.cancel();
+    _levelSub?.cancel();
+    if (_phase == _Phase.listening) _engine.cancel();
+    if (_phase == _Phase.recording) _recorder.cancel();
+    _recorder.dispose();
     super.dispose();
   }
 
-  Future<void> _toggleRecording() async {
-    if (_isListening) {
-      await _stopAndTranscribe();
-    } else {
-      if (_transcript != null && !_isSuccess) {
-        // If we have a transcript but user taps mic again -> Retry
-        _retryRecording();
-      } else {
-        bool canProceed = await _checkPoints();
-        if (canProceed) {
-          await _startRecording();
+  // ------------------------------------------------------------------ flow
+
+  Future<void> _selectLanguage(String code) async {
+    AppHaptics.selection();
+    setState(() => _language = code);
+    final gate = widget.pointsGate ?? _defaultPointsGate;
+    if (!await gate(context)) return;
+    if (!mounted) return;
+    _startCapture();
+  }
+
+  Future<void> _startCapture() async {
+    _stopSafety?.cancel();
+    _recordLimit?.cancel();
+    setState(() {
+      _phase = _Phase.starting;
+      _lastWords = '';
+      _split = const TranscriptSplit('', '');
+      _transcript = null;
+      _result = null;
+      _level = 0;
+      _stopping = false;
+    });
+
+    if (!_useServer && !_engineReady) {
+      final ok = await _engine.initialize(
+        onError: _onSpeechError,
+        onStatus: _onSpeechStatus,
+      );
+      if (!mounted) return;
+      if (!ok) {
+        if (!await _engine.hasPermission()) {
+          _showPermissionDenied();
+          return;
         }
+        _useServer = true;
+      } else {
+        _engineReady = true;
+        final ids = await _engine.localeIds();
+        final system = await _engine.systemLocaleId();
+        _localeId = matchSpeechLocale(_language, ids, systemLocaleId: system);
+        if (_localeId == null) _useServer = true;
       }
+    }
+    if (!mounted) return;
+    if (_useServer) {
+      await _startRecording();
+    } else {
+      await _startListening();
     }
   }
 
-  Future<bool> _checkPoints() async {
+  Future<void> _startListening() async {
+    AppHaptics.light();
+    setState(() => _phase = _Phase.listening);
+    try {
+      await _engine.listen(
+        localeId: _localeId!,
+        onResult: _onSpeechResult,
+        onSoundLevel: (raw) {
+          if (!mounted || _phase != _Phase.listening) return;
+          setState(() => _level = _speechLevels.normalize(raw));
+        },
+      );
+    } catch (e) {
+      debugPrint('Voice listen failed, using server fallback: $e');
+      if (!mounted) return;
+      _useServer = true;
+      await _startRecording();
+    }
+  }
+
+  void _onSpeechResult(String words, bool isFinal) {
+    if (!mounted || _phase != _Phase.listening) return;
+    setState(() {
+      _split = splitTranscript(_lastWords, words, isFinal: isFinal);
+      _lastWords = words;
+    });
+    if (isFinal) _finishListening();
+  }
+
+  void _onSpeechError(String code, bool permanent) {
+    if (!mounted || _phase != _Phase.listening) return;
+    debugPrint('Speech error: $code (permanent: $permanent)');
+    if (code == SpeechErrorCodes.permission) {
+      _showPermissionDenied();
+      return;
+    }
+    if (_split.full.trim().isNotEmpty) {
+      _finishListening();
+      return;
+    }
+    if (code == SpeechErrorCodes.noMatch ||
+        code == SpeechErrorCodes.speechTimeout) {
+      _showError(_ErrorKind.noSpeech, fromAssign: false);
+      return;
+    }
+    // On-device recognition can't run here (language pack, service...):
+    // keep the old path and record for the server.
+    _useServer = true;
+    _engine.cancel();
+    _startRecording();
+  }
+
+  void _onSpeechStatus(String status) {
+    if (!mounted || _phase != _Phase.listening) return;
+    if (status == 'done') {
+      _finishListening();
+    } else if (status == 'notListening' && !_stopping) {
+      // Stopped on its own (pause or time limit): wait for the final words.
+      _armStopSafety();
+    }
+  }
+
+  Future<void> _stopListening() async {
+    _stopping = true;
+    _armStopSafety();
+    try {
+      await _engine.stop();
+    } catch (e) {
+      debugPrint('Speech stop failed: $e');
+      _finishListening();
+    }
+  }
+
+  void _armStopSafety() {
+    _stopSafety?.cancel();
+    _stopSafety = Timer(const Duration(milliseconds: 2500), _finishListening);
+  }
+
+  void _finishListening() {
+    _stopSafety?.cancel();
+    if (!mounted || _phase != _Phase.listening) return;
+    final text = _split.full.trim();
+    if (text.isEmpty) {
+      _showError(_ErrorKind.noSpeech, fromAssign: false);
+      return;
+    }
+    setState(() => _split = TranscriptSplit(text, ''));
+    _runAssign(text, 'on_device');
+  }
+
+  Future<void> _startRecording() async {
+    try {
+      await _recorder.start();
+    } on VoiceCaptureException catch (e) {
+      if (!mounted) return;
+      if (e.failure == VoiceCaptureFailure.permissionDenied) {
+        _showPermissionDenied();
+      } else {
+        _showError(_ErrorKind.unknown, fromAssign: false);
+      }
+      return;
+    } catch (e) {
+      debugPrint('Voice recording failed: $e');
+      if (mounted) _showError(_ErrorKind.unknown, fromAssign: false);
+      return;
+    }
+    if (!mounted) return;
+    AppHaptics.light();
+    setState(() => _phase = _Phase.recording);
+    _levelSub?.cancel();
+    _levelSub = _recorder.levels().listen((raw) {
+      if (!mounted || _phase != _Phase.recording) return;
+      setState(() => _level = _recordLevels.normalize(raw));
+    }, onError: (_) {});
+    _recordLimit = Timer(const Duration(seconds: 60), _finishRecording);
+  }
+
+  Future<void> _finishRecording() async {
+    if (!mounted || _phase != _Phase.recording) return;
+    _recordLimit?.cancel();
+    unawaited(_levelSub?.cancel());
+    _levelSub = null;
+    setState(() {
+      _phase = _Phase.transcribing;
+      _level = 0;
+    });
+    try {
+      final text = await _recorder.stopAndTranscribe(language: _language);
+      if (!mounted) return;
+      setState(() => _split = TranscriptSplit(text.trim(), ''));
+      await _runAssign(text.trim(), 'server');
+    } on VoiceCaptureException catch (e) {
+      if (!mounted) return;
+      _showError(switch (e.failure) {
+        VoiceCaptureFailure.offline => _ErrorKind.offline,
+        VoiceCaptureFailure.timeout => _ErrorKind.timeout,
+        VoiceCaptureFailure.noSpeech => _ErrorKind.noSpeech,
+        VoiceCaptureFailure.permissionDenied ||
+        VoiceCaptureFailure.unknown => _ErrorKind.unknown,
+      }, fromAssign: false);
+    } catch (e) {
+      debugPrint('Voice transcription failed: $e');
+      if (mounted) _showError(_ErrorKind.unknown, fromAssign: false);
+    }
+  }
+
+  Future<void> _runAssign(String text, String source) async {
+    setState(() {
+      _phase = _Phase.assigning;
+      _transcript = text;
+      _source = source;
+      _result = null;
+    });
+    final uid = (widget.currentUserId ?? _defaultUid)();
+    final hostId = resolveHostId(uid, widget.participants);
+    try {
+      final result = await _assign.assignItemsByVoice(
+        receiptItems: [
+          for (final e in (widget.receiptData['items'] as List? ?? const []))
+            Map<String, dynamic>.from(e as Map),
+        ],
+        participants: widget.participants,
+        transcript: text,
+        currentUserId: hostId,
+        aliases: buildVoiceAliases(
+          participants: widget.participants,
+          hostId: hostId,
+          languageCode: _language,
+        ),
+        transcriptSource: source,
+      );
+      if (!mounted) return;
+      if (result.isEmpty) {
+        _showError(_ErrorKind.noMatch, fromAssign: false);
+        return;
+      }
+      AppHaptics.selection();
+      setState(() {
+        _result = result;
+        _phase = _Phase.review;
+      });
+    } on VoiceAssignException catch (e) {
+      if (!mounted) return;
+      _showError(switch (e.failure) {
+        VoiceAssignFailure.offline => _ErrorKind.offline,
+        VoiceAssignFailure.timeout => _ErrorKind.timeout,
+        VoiceAssignFailure.noCredits => _ErrorKind.noCredits,
+        VoiceAssignFailure.rateLimited => _ErrorKind.rateLimited,
+        VoiceAssignFailure.unknown => _ErrorKind.unknown,
+      }, fromAssign: true);
+    } catch (e) {
+      debugPrint('Voice assign failed: $e');
+      if (mounted) _showError(_ErrorKind.unknown, fromAssign: true);
+    }
+  }
+
+  void _showPermissionDenied() {
+    _stopSafety?.cancel();
+    _recordLimit?.cancel();
+    _levelSub?.cancel();
+    AppHaptics.error();
+    setState(() => _phase = _Phase.permissionDenied);
+  }
+
+  void _showError(_ErrorKind kind, {required bool fromAssign}) {
+    _stopSafety?.cancel();
+    _recordLimit?.cancel();
+    AppHaptics.error();
+    setState(() {
+      _phase = _Phase.error;
+      _errorKind = kind;
+      _errorFromAssign = fromAssign && _transcript != null;
+    });
+  }
+
+  Future<void> _retry() async {
+    if (_errorFromAssign && _transcript != null) {
+      if (_errorKind == _ErrorKind.noCredits) {
+        final gate = widget.pointsGate ?? _defaultPointsGate;
+        if (!await gate(context) || !mounted) return;
+      }
+      // The service sends a fresh requestId on every attempt.
+      await _runAssign(_transcript!, _source);
+    } else {
+      await _startCapture();
+    }
+  }
+
+  void _onDone() {
+    switch (_phase) {
+      case _Phase.listening:
+        _stopListening();
+      case _Phase.recording:
+        _finishRecording();
+      case _Phase.review:
+        final result = _result;
+        if (result == null) return;
+        AppHaptics.success();
+        Navigator.of(context).pop(voicePopValue(result));
+      default:
+        break;
+    }
+  }
+
+  void _cancel() {
+    if (_phase == _Phase.listening) _engine.cancel();
+    if (_phase == _Phase.recording) _recorder.cancel();
+    _phase = _Phase.language; // dispose must not cancel twice
+    Navigator.of(context).pop();
+  }
+
+  void _assignByTapping() => _cancel();
+
+  Future<void> _openSettings() async {
+    if (widget.openSettings != null) return widget.openSettings!();
+    var opened = false;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        opened = await launchUrl(Uri.parse('app-settings:'));
+      } catch (_) {
+        opened = false;
+      }
+    }
+    if (!opened && mounted) {
+      AppToast.show(context, message: 'bf_voice_settings_hint'.tr());
+    }
+  }
+
+  static String? _defaultUid() => FirebaseAuth.instance.currentUser?.uid;
+
+  Future<bool> _defaultPointsGate(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return false;
-
     try {
       final doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
       final data = doc.data();
-      final isPremium = RevenueCatService.isUserActivePremium(data);
+      if (RevenueCatService.isUserActivePremium(data)) return true;
       final points = (data?['points'] as num?)?.toInt() ?? 0;
-
-      if (isPremium) return true;
-
-      if (points < FeatureCosts.voiceCommandPoints) {
-        if (mounted) {
-          await NoPointsDialog.show(
-            context,
-            requiredPoints: FeatureCosts.voiceCommandPoints,
-            onWatchAd: _watchAdForPoint,
-          );
-        }
-        return false;
+      if (points >= FeatureCosts.voiceCommandPoints) return true;
+      if (context.mounted) {
+        await NoPointsDialog.show(
+          context,
+          requiredPoints: FeatureCosts.voiceCommandPoints,
+          onWatchAd: _watchAdForPoint,
+        );
       }
-      return true;
+      return false;
     } catch (e) {
+      debugPrint('Voice points check failed: $e');
+      if (context.mounted) {
+        AppToast.show(
+          context,
+          message: 'bf_voice_points_check_failed'.tr(),
+          type: AppToastType.error,
+        );
+      }
       return false;
     }
   }
 
   Future<void> _watchAdForPoint() async {
     if (!RewardedAdHelper.isReady) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'ad_is_still_loading_please_try_again_in_a_moment',
-          ).tr(),
-          backgroundColor: context.palette.info,
-        ),
+      AppToast.show(
+        context,
+        message: 'ad_is_still_loading_please_try_again_in_a_moment'.tr(),
       );
       return;
     }
-
     await RewardedAdHelper.showAdAndReward(
-      onRewardEarned: () async {
+      onRewardEarned: () {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('plus_1_point_earned').tr(),
-              backgroundColor: context.palette.success,
-            ),
+          AppToast.show(
+            context,
+            message: 'plus_1_point_earned'.tr(),
+            type: AppToastType.success,
           );
         }
       },
       onAdFailed: () {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('ad_failed_to_load_please_try_again').tr(),
-              backgroundColor: context.palette.danger,
-            ),
+          AppToast.show(
+            context,
+            message: 'ad_failed_to_load_please_try_again'.tr(),
+            type: AppToastType.error,
           );
         }
       },
     );
   }
 
-  Future<void> _startRecording() async {
-    try {
-      HapticFeedback.mediumImpact();
-      await _voiceService.startRecording();
-      _stopwatch.reset();
-      _stopwatch.start();
-      setState(() {
-        _isListening = true;
-        _isSuccess = false;
-        _statusText = 'listening'.tr();
-        _subStatusText = 'say_your_command'.tr();
-        _transcript = null;
-      });
+  // ------------------------------------------------------------------- UI
 
-      // Update timer
-      _startTimer();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'error_with_details'.tr(namedArgs: {'error': _messageFromError(e)}),
+  bool get _busy =>
+      _phase == _Phase.starting ||
+      _phase == _Phase.transcribing ||
+      _phase == _Phase.assigning;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final media = MediaQuery.of(context);
+    final reduce = AppMotion.reduceMotion(context);
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _busy ? null : _cancel,
+              child: Semantics(
+                label: 'cancel'.tr(),
+                button: true,
+                child: ColoredBox(color: p.scrim),
+              ),
+            ),
           ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: reduce ? 0 : 1, end: 0),
+              duration: AppMotion.durationFor(context, AppMotion.slow),
+              curve: AppMotion.emphasizedDecelerate,
+              builder: (context, t, child) => FractionalTranslation(
+                translation: Offset(0, t * 0.25),
+                child: Opacity(opacity: 1 - t, child: child),
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: media.size.height * 0.9,
+                  maxWidth: 600,
+                ),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: p.surface,
+                    borderRadius: AppRadii.sheetRadius,
+                    border: Border(top: BorderSide(color: p.border)),
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    minimum: const EdgeInsets.only(bottom: AppSpacing.xxl),
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.xl,
+                        10,
+                        AppSpacing.xl,
+                        AppSpacing.lg,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 5,
+                            margin: const EdgeInsets.only(bottom: 18),
+                            decoration: BoxDecoration(
+                              color: p.borderStrong,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                          Flexible(
+                            child: AnimatedSwitcher(
+                              duration: AppMotion.durationFor(
+                                context,
+                                AppMotion.medium,
+                              ),
+                              child: KeyedSubtree(
+                                key: ValueKey(_contentKey),
+                                child: _buildContent(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String get _contentKey => switch (_phase) {
+    _Phase.language => 'language',
+    _Phase.permissionDenied => 'permission',
+    _Phase.error => 'error-$_errorKind',
+    _ => 'live',
+  };
+
+  Widget _buildContent() => switch (_phase) {
+    _Phase.language => _buildLanguageStep(),
+    _Phase.permissionDenied => _buildPermissionDenied(),
+    _Phase.error => _buildError(),
+    _ => _buildLive(),
+  };
+
+  Widget _buildLanguageStep() {
+    final p = context.palette;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'select_language'.tr(),
+          textAlign: TextAlign.center,
+          style: AppTypography.titleLarge.copyWith(color: p.textPrimary),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          'choose_the_language_you_will_speak'.tr(),
+          textAlign: TextAlign.center,
+          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        Flexible(
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              alignment: WrapAlignment.center,
+              children: [
+                for (final option in supportedLocaleOptions)
+                  _LanguageChip(
+                    key: ValueKey('bf_voice_lang_${option.code}'),
+                    option: option,
+                    selected: option.code == _language,
+                    onTap: () => _selectLanguage(option.code),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        _PillButton.outline(label: 'cancel'.tr(), onPressed: _cancel),
+      ],
+    );
+  }
+
+  Widget _buildPermissionDenied() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        child: ErrorState(
+          icon: Icons.mic_off_rounded,
+          title: 'bf_voice_mic_off_title'.tr(),
+          message: 'bf_voice_mic_off_message'.tr(),
+          retryLabel: 'bf_voice_open_settings'.tr(),
+          onRetry: _openSettings,
+          secondaryLabel: 'bf_voice_assign_by_tapping'.tr(),
+          onSecondary: _assignByTapping,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError() {
+    final (title, message, icon) = switch (_errorKind) {
+      _ErrorKind.offline => (
+        'feedback_offline_title'.tr(),
+        'bf_voice_error_offline'.tr(),
+        Icons.wifi_off_rounded,
+      ),
+      _ErrorKind.timeout => (
+        'bf_voice_error_timeout_title'.tr(),
+        'bf_voice_error_timeout'.tr(),
+        Icons.hourglass_empty_rounded,
+      ),
+      _ErrorKind.noCredits => (
+        'bf_voice_error_no_credits_title'.tr(),
+        'bf_voice_error_no_credits'.tr(),
+        Icons.toll_rounded,
+      ),
+      _ErrorKind.rateLimited => (
+        'bf_voice_error_busy_title'.tr(),
+        'bf_voice_error_busy'.tr(),
+        Icons.hourglass_empty_rounded,
+      ),
+      _ErrorKind.noSpeech => (
+        'bf_voice_error_no_speech_title'.tr(),
+        'bf_voice_error_no_speech'.tr(),
+        Icons.hearing_disabled_rounded,
+      ),
+      _ErrorKind.noMatch => (
+        'bf_voice_error_no_match_title'.tr(),
+        'bf_voice_error_no_match'.tr(),
+        Icons.help_outline_rounded,
+      ),
+      _ErrorKind.unknown => (
+        'bf_voice_error_unknown_title'.tr(),
+        'bf_voice_error_unknown'.tr(),
+        Icons.error_outline_rounded,
+      ),
+    };
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        child: ErrorState(
+          icon: icon,
+          title: title,
+          message: message,
+          retryLabel: 'feedback_try_again'.tr(),
+          onRetry: _retry,
+          secondaryLabel: 'bf_voice_assign_by_tapping'.tr(),
+          onSecondary: _assignByTapping,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLive() {
+    final p = context.palette;
+    final live = _phase == _Phase.listening || _phase == _Phase.recording;
+    final result = _result;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          height: 48,
+          child: _LevelBars(level: _level, live: live),
+        ),
+        const SizedBox(height: 18),
+        _buildTranscript(),
+        const SizedBox(height: 18),
+        Flexible(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _ItemCard(
+                  items: _items,
+                  participants: widget.participants,
+                  result: result,
+                  heardText: _split.full,
+                  phase: _phase,
+                ),
+                if (result != null && result.ambiguous.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  for (final a in result.ambiguous)
+                    if (a.text.trim().isNotEmpty) _AmbiguityNote(text: a.text),
+                ],
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        if (_phase == _Phase.review)
+          Center(
+            child: TextButton(
+              onPressed: _startCapture,
+              style: TextButton.styleFrom(
+                foregroundColor: p.textPrimary,
+                minimumSize: const Size(44, 44),
+              ),
+              child: Text('bf_voice_say_again'.tr()),
+            ),
+          )
+        else
+          Text(
+            (_useServer ? 'bf_voice_server_note' : 'bf_voice_privacy_note')
+                .tr(),
+            textAlign: TextAlign.center,
+            style: AppTypography.caption.copyWith(
+              color: p.textSecondary,
+              fontSize: 12,
+            ),
+          ),
+        const SizedBox(height: AppSpacing.lg),
+        Row(
+          children: [
+            Expanded(
+              child: _PillButton.outline(
+                label: 'cancel'.tr(),
+                onPressed: _cancel,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _PillButton.ink(
+                key: const ValueKey('bf_voice_done'),
+                label: 'done'.tr(),
+                loading: _busy,
+                onPressed: (live || _phase == _Phase.review) ? _onDone : null,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTranscript() {
+    final p = context.palette;
+    final style = AppTypography.bodyLarge.copyWith(
+      fontSize: 20,
+      height: 1.4,
+      fontWeight: FontWeight.w500,
+      color: p.textPrimary,
+    );
+    if (_phase == _Phase.transcribing ||
+        (_phase == _Phase.starting && _split.isEmpty)) {
+      return Semantics(
+        label: 'bf_voice_turning_into_text'.tr(),
+        child: const Column(
+          children: [
+            Skeleton.line(width: 260, height: 20),
+            SizedBox(height: AppSpacing.sm),
+            Skeleton.line(width: 180, height: 20),
+          ],
         ),
       );
     }
-  }
-
-  void _startTimer() {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          _recordDuration = _stopwatch.elapsed.inSeconds;
-        });
-      }
-    });
-  }
-
-  Future<void> _stopAndTranscribe() async {
-    _stopwatch.stop();
-    _timer?.cancel();
-
-    setState(() {
-      _isListening = false;
-      _isProcessingTranscript = true;
-      _statusText = 'thinking'.tr();
-      _subStatusText = 'analyzing_audio'.tr();
-    });
-
-    try {
-      final path = await _voiceService.stopRecording();
-      if (path != null) {
-        final text = await _voiceService.transcribeAudio(
-          path,
-          language: _selectedLanguage,
-        );
-        if (mounted) {
-          setState(() {
-            _transcript = text;
-            _isProcessingTranscript = false;
-            _statusText = 'voice_did_you_say'.tr();
-            // The transcript is shown in the special UI, so subtext can be simpler or hidden
-            _subStatusText = "";
-          });
-        }
-      } else {
-        setState(() {
-          _isProcessingTranscript = false;
-          _statusText = 'voice_error'.tr();
-          _subStatusText = 'voice_no_audio'.tr();
-        });
-      }
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _isProcessingTranscript = false;
-        _statusText = 'voice_error'.tr();
-        _subStatusText = _messageFromError(
-          e,
-          fallback: 'voice_could_not_understand'.tr(),
-        );
-      });
-      debugPrint("Voice Error: $e");
+    if (_split.isEmpty) {
+      return Text(
+        _phase == _Phase.recording
+            ? 'bf_voice_recording_hint'.tr()
+            : 'bf_voice_hint'.tr(),
+        key: const ValueKey('bf_voice_transcript_hint'),
+        textAlign: TextAlign.center,
+        style: style.copyWith(color: p.textSecondary),
+      );
     }
+    final listening = _phase == _Phase.listening;
+    final settled = _split.settled;
+    final tail = _split.tail;
+    return Semantics(
+      liveRegion: true,
+      label: _split.full,
+      child: ExcludeSemantics(
+        child: Text.rich(
+          key: const ValueKey('bf_voice_transcript'),
+          TextSpan(
+            children: [
+              TextSpan(text: '“$settled'),
+              if (tail.isNotEmpty)
+                TextSpan(
+                  text: '${settled.isEmpty ? '' : ' '}$tail',
+                  style: TextStyle(color: p.textSecondary),
+                ),
+              TextSpan(
+                text: listening ? '…”' : '”',
+                style: TextStyle(
+                  color: listening ? p.textSecondary : p.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+          style: style,
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------- pieces
+
+class _LanguageChip extends StatelessWidget {
+  const _LanguageChip({
+    super.key,
+    required this.option,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final LocaleOption option;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: option.nativeName,
+      child: Material(
+        color: selected ? p.accentSoft : p.surface,
+        shape: StadiumBorder(
+          side: BorderSide(color: selected ? p.accent : p.border),
+        ),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 44),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ExcludeSemantics(
+                    child: Text(
+                      option.flag,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    option.nativeName,
+                    style: AppTypography.labelLarge.copyWith(
+                      color: selected ? p.onAccentSoft : p.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Eight level bars. They follow the microphone level while [live]; static
+/// under reduce motion.
+class _LevelBars extends StatefulWidget {
+  const _LevelBars({required this.level, required this.live});
+  final double level;
+  final bool live;
+
+  @override
+  State<_LevelBars> createState() => _LevelBarsState();
+}
+
+class _LevelBarsState extends State<_LevelBars>
+    with SingleTickerProviderStateMixin {
+  static const _delays = [0.0, .1, .2, .3, .15, .25, .05, .35];
+  static const _still = [.45, .7, 1.0, .6, .85, .5, .9, .4];
+  late final AnimationController _wave = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _sync();
   }
 
-  void _retryRecording() {
-    _startRecording();
+  @override
+  void didUpdateWidget(covariant _LevelBars oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _sync();
   }
 
-  Future<void> _confirmAssignment() async {
-    if (_transcript == null) return;
-
-    setState(() {
-      _isProcessingAssignment = true;
-      _hasError = false; // Reset error state
-      _statusText = 'voice_assigning_items'.tr();
-      _subStatusText = 'voice_applying_command'.tr();
-    });
-
-    Map<String, List<String>>? assignments;
-
-    try {
-      // 1. Perform API Call logic safely
-      assignments = await _aiService.assignItemsByVoice(
-        receiptItems: (widget.receiptData['items'] as List)
-            .map((e) => Map<String, dynamic>.from(e))
-            .toList(),
-        participants: widget.participants,
-        transcript: _transcript!,
-        transcriptSource: 'server',
-      ).then((r) => r.assignments);
-
-      // 2. Update State on Success
-      if (mounted) {
-        setState(() {
-          _isProcessingAssignment = false;
-          _isSuccess = true;
-          _statusText = 'voice_done'.tr();
-          _subStatusText = 'voice_assignments_updated'.tr();
-        });
-        HapticFeedback.lightImpact();
-      }
-    } catch (e) {
-      // 3. Handle API Errors Only
-      if (mounted) {
-        setState(() {
-          _isProcessingAssignment = false;
-          _hasError = true;
-          _statusText = 'voice_failed_to_assign'.tr();
-          _subStatusText = _messageFromError(
-            e,
-            fallback: 'voice_please_try_again'.tr(),
-          );
-        });
-      }
-      return; // Exit early, do not attempt navigation
-    }
-
-    // 4. Navigation (Isolated from try-catch)
-    // Wait briefly for the user to see "Done!"
-    await Future.delayed(const Duration(milliseconds: 1500));
-
-    if (mounted) {
-      try {
-        Navigator.pop(context, assignments);
-      } catch (e) {
-        debugPrint("Navigation pop failed (likely already closed): $e");
-      }
+  void _sync() {
+    final animate = widget.live && !AppMotion.reduceMotion(context);
+    if (animate && !_wave.isAnimating) {
+      _wave.repeat();
+    } else if (!animate && _wave.isAnimating) {
+      _wave.stop();
     }
   }
 
   @override
+  void dispose() {
+    _wave.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    bool isProcessing = _isProcessingTranscript || _isProcessingAssignment;
-    bool showConfirmation =
-        _transcript != null && !isProcessing && !_isSuccess && !_isListening;
     final p = context.palette;
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // Minimal Blur
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-              child: Container(
-                color: Colors.black.withValues(
-                  alpha: 0.01,
-                ), // Almost clear as requested
-              ),
-            ),
-          ),
-
-          // Dismiss area
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () {
-                // Prevent dismissal if success (auto-closing) or processing
-                if (!isProcessing &&
-                    !showConfirmation &&
-                    !_isListening &&
-                    !_isSuccess) {
-                  Navigator.pop(context);
-                }
-              },
-              behavior: HitTestBehavior.translucent,
-              child: Container(),
-            ),
-          ),
-
-          // Close Button
-          Positioned(
-            top: 50,
-            left: 20,
-            child: GestureDetector(
-              onTap: () {
-                if (!_isSuccess) Navigator.of(context).maybePop();
-              },
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: p.textStrong.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white24),
-                ),
-                child: Icon(
-                  Icons.close_rounded,
-                  color: p.textPrimary,
-                  size: 24,
-                ),
-              ),
-            ),
-          ),
-
-          // Removed Positioned Language Selector (Now handled in Main Content)
-
-          // Main Content
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 50),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: _isLanguageSelectionStep
-                      ? _buildLanguageSelectionView()
-                      : Column(
-                          key: const ValueKey("RecordingUI"),
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (showConfirmation)
-                              _buildConfirmationUI()
-                            else
-                              _buildStatusUI(),
-
-                            const SizedBox(height: 40),
-
-                            // The Orb
-                            if (showConfirmation)
-                              const SizedBox(height: 100)
-                            else
-                              _buildOrb(isProcessing),
-                          ],
-                        ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusUI() {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      key: ValueKey(_statusText),
-      child: Column(
-        children: [
-          Text(
-            _statusText,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              shadows: [
-                Shadow(
-                  color: Colors.black45,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.black26,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              _isListening ? _formatDuration(_recordDuration) : _subStatusText,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildConfirmationUI() {
-    final p = context.palette;
-    return Column(
-      children: [
-        // Transcript Box
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: p.surface.withValues(alpha: 0.95),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 20,
-                offset: Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Text(
-                'you_said',
-                style: TextStyle(
-                  color: p.textTertiary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ).tr(),
-              const SizedBox(height: 8),
-              Text(
-                _transcript!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: p.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        if (_hasError)
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: p.dangerAccent.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                _subStatusText, // "Please try again"
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
-        const SizedBox(height: 30),
-
-        // Actions
-        Row(
+    final reduce = AppMotion.reduceMotion(context);
+    final color = widget.live ? p.accent : p.borderStrong;
+    return ExcludeSemantics(
+      child: AnimatedBuilder(
+        animation: _wave,
+        builder: (context, _) => Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Retry Button
-            _buildActionButton(
-              icon: Icons.refresh_rounded,
-              color: Colors.white,
-              bgColor: p.textTertiary.withValues(alpha: 0.8),
-              onTap: _retryRecording,
-              label: 're_record'.tr(),
-            ),
-            const SizedBox(width: 40),
-            // Confirm Button
-            _buildActionButton(
-              icon: Icons.check_rounded,
-              color: Colors.white,
-              bgColor: const Color(0xFF00B365),
-              onTap: _confirmAssignment,
-              size: 70,
-              label: 'confirm'.tr(),
-            ),
+            for (var i = 0; i < _delays.length; i++) ...[
+              if (i > 0) const SizedBox(width: 5),
+              Container(
+                width: 4,
+                height: 40 * _scale(i, reduce),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ],
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required Color color,
-    required Color bgColor,
-    required VoidCallback onTap,
-    double size = 60,
-    String? label,
-  }) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              color: bgColor,
-              shape: BoxShape.circle,
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
+  double _scale(int i, bool reduce) {
+    if (reduce || !widget.live) return widget.live ? _still[i] : .25;
+    final wave = 0.5 - 0.5 * math.cos(2 * math.pi * (_wave.value - _delays[i]));
+    final amp = 0.3 + 0.7 * widget.level.clamp(0.0, 1.0);
+    return (0.25 + 0.75 * wave * amp).clamp(0.25, 1.0);
+  }
+}
+
+class _ItemCard extends StatelessWidget {
+  const _ItemCard({
+    required this.items,
+    required this.participants,
+    required this.result,
+    required this.heardText,
+    required this.phase,
+  });
+
+  final List<VoiceItemRow> items;
+  final List<Map<String, dynamic>> participants;
+  final VoiceAssignResult? result;
+  final String heardText;
+  final _Phase phase;
+
+  String _nameOf(String id) {
+    for (final p in participants) {
+      if (p['id']?.toString() == id) {
+        final first = firstNameOf(p['name']);
+        return first.isEmpty ? id : first;
+      }
+    }
+    return id;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Container(
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: AppRadii.cardRadius,
+        border: Border.all(color: p.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          for (var i = 0; i < items.length; i++) _row(context, items[i], i),
+        ],
+      ),
+    );
+  }
+
+  Widget _row(BuildContext context, VoiceItemRow item, int index) {
+    final p = context.palette;
+    final r = result;
+    final people = r == null ? const <String>[] : peopleOnItem(r, item.key);
+    final unassigned =
+        r != null &&
+        (people.isEmpty || r.unassignedItemKeys.contains(item.key));
+    final label = item.qty > 1 ? '${item.name} ×${item.qty}' : item.name;
+
+    Widget trailing;
+    if (r != null && !unassigned) {
+      final units = r.splits[item.key];
+      trailing = Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        alignment: WrapAlignment.end,
+        children: [
+          for (final id in people)
+            AvatarHop(
+              child: _PersonChip(
+                label: units?[id] != null
+                    ? '${_nameOf(id)} ×${units![id]}'
+                    : _nameOf(id),
+                tint: p.avatarTintFor(id),
+              ),
             ),
-            child: Icon(icon, color: color, size: size * 0.5),
-          ),
+        ],
+      );
+    } else if (unassigned) {
+      trailing = Text(
+        'bf_voice_not_assigned'.tr(),
+        style: AppTypography.bodySmall.copyWith(color: p.oweInk, fontSize: 13),
+      );
+    } else if (phase == _Phase.assigning) {
+      trailing = const Skeleton(
+        width: 56,
+        height: 28,
+        borderRadius: AppRadii.fullRadius,
+      );
+    } else if (phase == _Phase.listening &&
+        itemMentioned(item.name, heardText)) {
+      trailing = Text(
+        'bf_voice_listening'.tr(),
+        style: AppTypography.bodySmall.copyWith(
+          color: p.textSecondary,
+          fontSize: 13,
         ),
-        if (label != null) ...[
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              shadows: [Shadow(blurRadius: 2, color: Colors.black)],
+      );
+    } else {
+      trailing = const SizedBox.shrink();
+    }
+
+    return Container(
+      constraints: const BoxConstraints(minHeight: 50),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      decoration: BoxDecoration(
+        color: unassigned ? p.oweSoft : null,
+        border: index == 0
+            ? null
+            : Border(top: BorderSide(color: p.borderSubtle)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: AppTypography.bodyMedium.copyWith(
+                color: p.textPrimary,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Flexible(child: trailing),
+        ],
+      ),
+    );
+  }
+}
+
+class _PersonChip extends StatelessWidget {
+  const _PersonChip({required this.label, required this.tint});
+  final String label;
+  final Color tint;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Container(
+      height: 28,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: tint, borderRadius: AppRadii.fullRadius),
+      child: Text(
+        label,
+        style: AppTypography.labelMedium.copyWith(
+          color: p.textPrimary,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _AmbiguityNote extends StatelessWidget {
+  const _AmbiguityNote({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, size: 16, color: p.owe),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTypography.bodySmall.copyWith(
+                color: p.oweInk,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
-      ],
+      ),
     );
   }
+}
 
-  Widget _buildLanguageSelectionView() {
+class _PillButton extends StatelessWidget {
+  const _PillButton.ink({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.loading = false,
+  }) : outlined = false;
+
+  const _PillButton.outline({required this.label, required this.onPressed})
+    : outlined = true,
+      loading = false;
+
+  final String label;
+  final VoidCallback? onPressed;
+  final bool outlined;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
     final p = context.palette;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'select_language',
-          style: TextStyle(
-            color: p.textPrimary,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+    final text = Text(
+      label,
+      style: AppTypography.labelLarge.copyWith(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+    if (outlined) {
+      return SizedBox(
+        height: 52,
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            shape: const StadiumBorder(),
+            backgroundColor: p.surface,
+            foregroundColor: p.textPrimary,
+            side: BorderSide(color: p.borderStrong),
           ),
-        ).tr(),
-        const SizedBox(height: 8),
-        Text(
-          'choose_the_language_you_will_speak',
-          style: TextStyle(color: p.textSecondary, fontSize: 14),
-        ).tr(),
-        const SizedBox(height: 32),
-        Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          alignment: WrapAlignment.center,
-          children: supportedLocaleOptions.map(_buildLanguageCard).toList(),
+          child: text,
         ),
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
-  Widget _buildLanguageCard(LocaleOption option) {
-    final p = context.palette;
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.mediumImpact();
-        setState(() {
-          _selectedLanguage = option.code;
-          _isLanguageSelectionStep = false;
-        });
-      },
-      child: Container(
-        width: 90,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: p.surface,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: p.shadow.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-          border: Border.all(color: p.surfaceVariant),
+      );
+    }
+    return SizedBox(
+      height: 52,
+      child: FilledButton(
+        onPressed: loading ? null : onPressed,
+        style: FilledButton.styleFrom(
+          shape: const StadiumBorder(),
+          backgroundColor: p.inverseSurface,
+          foregroundColor: p.onInverseSurface,
+          disabledBackgroundColor: loading ? p.inverseSurface : p.surfaceMuted,
+          disabledForegroundColor: loading
+              ? p.onInverseSurface
+              : p.textDisabled,
         ),
-        child: Column(
-          children: [
-            Text(option.flag, style: const TextStyle(fontSize: 26)),
-            const SizedBox(height: 6),
-            Text(
-              option.nativeName,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: p.textPrimary,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrb(bool isProcessing) {
-    return GestureDetector(
-      onTap: _toggleRecording,
-      child: SizedBox(
-        height: 100,
-        width: 100,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Pulse Ring
-            if (_isListening || isProcessing)
-              AnimatedBuilder(
-                animation: _pulseController,
-                builder: (context, child) {
-                  return Container(
-                    width: 100 + (_pulseController.value * 40),
-                    height: 100 + (_pulseController.value * 40),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _getOrbColor().withValues(
-                        alpha: 0.3 - (_pulseController.value * 0.3),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            // Main Orb
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: _getOrbGradient(),
+        child: loading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: p.onInverseSurface,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: _getOrbColor().withValues(alpha: 0.6),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: isProcessing
-                    ? const SizedBox(
-                        width: 30,
-                        height: 30,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 3,
-                        ),
-                      )
-                    : Icon(
-                        _isSuccess
-                            ? Icons.check_rounded
-                            : (_isListening
-                                  ? Icons.graphic_eq_rounded
-                                  : Icons.mic_rounded),
-                        color: Colors.white,
-                        size: 40,
-                      ),
-              ),
-            ),
-          ],
-        ),
+              )
+            : text,
       ),
     );
-  }
-
-  // The orb is a vivid state-colored button with a white icon, so its
-  // success / listening / idle hues stay fixed in both themes.
-  Color _getOrbColor() {
-    if (_isSuccess) return Colors.greenAccent;
-    if (_isProcessingAssignment || _isProcessingTranscript) {
-      return context.palette.primary;
-    }
-    if (_isListening) return Colors.redAccent;
-    return Colors.blueAccent;
-  }
-
-  List<Color> _getOrbGradient() {
-    if (_isSuccess) return [Colors.green.shade400, Colors.green.shade600];
-    if (_isProcessingAssignment || _isProcessingTranscript) {
-      return context.palette.primaryGradient.colors;
-    }
-    if (_isListening) return [const Color(0xFFFF5252), const Color(0xFFD50000)];
-    return [const Color(0xFF448AFF), const Color(0xFF2979FF)]; // Idle Blue
-  }
-
-  String _messageFromError(
-    Object error, {
-    String fallback = 'Something went wrong',
-  }) {
-    final message = error.toString().replaceFirst('Exception: ', '').trim();
-    if (message.isEmpty) {
-      return fallback;
-    }
-    return message;
-  }
-
-  String _formatDuration(int seconds) {
-    final m = (seconds ~/ 60).toString().padLeft(2, '0');
-    final s = (seconds % 60).toString().padLeft(2, '0');
-    return "$m:$s";
   }
 }
