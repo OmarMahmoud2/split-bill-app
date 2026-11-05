@@ -190,7 +190,7 @@ class RevenueCatService {
       if (user.email != null && user.email!.isNotEmpty) {
         await Purchases.setEmail(user.email!);
       }
-      return syncPremiumStatus(user);
+      return await syncPremiumStatus(user);
     } catch (e) {
       if (kDebugMode) debugPrint('RevenueCat auth sync error: $e');
       return false;

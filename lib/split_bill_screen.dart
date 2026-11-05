@@ -6,7 +6,6 @@ import 'services/group_service.dart';
 import 'services/friend_scanner_service.dart';
 import 'services/contact_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'home_screen.dart';
 import 'bill_summary_confirm_screen.dart';
 import 'package:split_bill_app/widgets/multi_contact_picker.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -1338,64 +1337,6 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class BillSummaryScreen extends StatelessWidget {
-  final String billId;
-  final Map<String, double> shares;
-  final List<Map<String, dynamic>> participants;
-
-  const BillSummaryScreen({
-    super.key,
-    required this.billId,
-    required this.shares,
-    required this.participants,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.teal,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.check_circle_outline_rounded,
-              color: Colors.white,
-              size: 80,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'bill_sent',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ).tr(),
-            const SizedBox(height: 10),
-            Text(
-              'your_friends_have_been_notified',
-              style: TextStyle(color: Colors.white70),
-            ).tr(),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (c) => const HomeScreen()),
-                (r) => false,
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.teal,
-              ),
-              child: Text('back_to_home').tr(),
-            ),
-          ],
-        ),
       ),
     );
   }
