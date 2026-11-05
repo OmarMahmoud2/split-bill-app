@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evens landing v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --table: #E8EEEB;      /* tablecloth: cool mint grey the receipt sits on */
+  --paper: #FFFFFF;
+  --ink: #16201D;
+  --print: #5E6A65;      /* thermal print grey */
+  --teal: #0F766E;
+  --teal-soft: #D5E8E4;
+  --owe: #B45309;
+  --rule: #CBD5D1;
+  --display: 'Inter Tight', system-ui, sans-serif;
+  --body: 'Inter', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --table: #121816; --paper: #F4F6F5; --ink: #EDF2F0; --print: #9AA6A1;
+    --teal: #34C5B0; --teal-soft: #173430; --owe: #F0B35E; --rule: #2A3431;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--table); color: var(--ink); font: 400 17px/1.55 var(--body); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 4px; }
+.wrap { width: min(1180px, 100% - 32px); margin-inline: auto; }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+.brand { display: flex; gap: 10px; align-items: center; font: 700 22px/1 var(--display); letter-spacing: -.6px; text-decoration: none; }
+.brand svg .c { fill: var(--teal); } .brand svg .l { fill: var(--ink); }
+.top nav { display: flex; gap: 28px; font-size: 15px; }
+.top nav a { text-decoration: none; color: var(--print); }
+.top nav a:hover { color: var(--ink); }
+@media (max-width: 760px) { .top nav { display: none; } }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; padding: 24px 0 72px; }
+.hero h1 { font: 800 clamp(44px, 6.4vw, 84px)/.98 var(--display); letter-spacing: -.035em; margin: 0 0 26px; max-width: 11ch; }
+.hero p.lede { font-size: 20px; color: var(--print); max-width: 34ch; margin: 0 0 34px; }
+.stores { display: flex; flex-wrap: wrap; gap: 12px; }
+.store { display: inline-flex; align-items: center; gap: 10px; height: 54px; padding: 0 22px; border-radius: 14px; background: var(--ink); color: var(--table); text-decoration: none; font-weight: 600; font-size: 16px; }
+.store.alt { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.price-note { margin-top: 18px; font-size: 15px; color: var(--print); }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 16px; } }
+
+/* The receipt */
+.stage { position: relative; height: 600px; align-self: start; }
+.receipt { position: absolute; left: 50%; top: 0; width: 330px; margin-left: -165px; font: 400 14px/1.6 var(--mono); color: #2B3330; }
+.piece { position: relative; background: var(--paper); padding: 0 26px; transition: transform .9s cubic-bezier(.2,.8,.2,1); }
+.piece.head { padding-top: 26px; }
+.piece.foot { padding-bottom: 30px; }
+/* zigzag tear edges */
+.piece.tear-b::after, .piece.tear-t::before { content: ""; position: absolute; left: 0; right: 0; height: 8px; background:
+  linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0/12px 8px repeat-x,
+  linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0/12px 8px repeat-x; }
+.piece.tear-b::after { bottom: -8px; }
+.piece.tear-t::before { top: -8px; transform: scaleY(-1); }
+.piece.head::before { content: ""; position: absolute; left: 0; right: 0; top: -8px; height: 8px; background:
+  linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0/12px 8px repeat-x,
+  linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0/12px 8px repeat-x; transform: scaleY(-1); }
+.shop { text-align: center; font-weight: 500; letter-spacing: .02em; }
+.meta { text-align: center; color: #75807B; font-size: 12.5px; margin-bottom: 14px; }
+.row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: baseline; }
+.row .who { display: inline-flex; gap: 3px; }
+.tag { font: 600 10.5px/1 var(--body); width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; opacity: 0; transform: scale(.4); transition: opacity .25s, transform .35s cubic-bezier(.3,1.6,.5,1); }
+.tag.a { background: #0F766E; } .tag.s { background: #7C5CC4; } .tag.m { background: #C2410C; }
+.on .tag { opacity: 1; transform: none; }
+.dash { border-top: 1.5px dashed #C6CECA; margin: 12px 0; }
+.total { font-weight: 500; font-size: 16px; }
+.stub-title { display: flex; justify-content: space-between; align-items: baseline; padding-top: 18px; font-family: var(--body); }
+.stub-title b { font: 700 15px var(--display); color: var(--ink); }
+.stub-amt { font: 700 30px/1.1 var(--display); color: #16201D; letter-spacing: -.02em; padding: 4px 0 6px; }
+.stub-pay { font: 500 13px/1 var(--body); color: #0F766E; padding-bottom: 18px; display: block; }
+.stub { opacity: 0; max-height: 0; overflow: hidden; transition: opacity .4s, max-height .6s; }
+.split .stub { opacity: 1; max-height: 200px; }
+.split .p1 { transform: translate(-70px, -6px) rotate(-3deg); }
+.split .p2 { transform: translate(64px, 14px) rotate(2.5deg); }
+.split .p3 { transform: translate(-26px, 26px) rotate(-1.5deg); }
+.piece { filter: drop-shadow(0 1px 0 rgba(22,32,29,.06)) drop-shadow(0 14px 22px rgba(22,32,29,.08)); }
+.print-in { animation: print 1.1s steps(18) both; }
+@keyframes print { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+.replay { position: absolute; right: 0; bottom: -8px; font: 500 14px var(--body); background: none; border: 0; color: var(--print); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+@media (max-width: 520px) {
+  .stage { height: 760px; }
+  .receipt { width: 300px; margin-left: -150px; }
+  .split .p1 { transform: translate(-18px, -4px) rotate(-2deg); }
+  .split .p2 { transform: translate(18px, 24px) rotate(2deg); }
+  .split .p3 { transform: translate(-10px, 52px) rotate(-1deg); }
+}
+@media (prefers-reduced-motion: reduce) { .piece, .tag, .stub { transition: none; } .print-in { animation: none; } }
+
+/* Sections */
+section { padding: 96px 0; }
+h2 { font: 800 clamp(34px, 4.4vw, 56px)/1.02 var(--display); letter-spacing: -.03em; margin: 0 0 20px; max-width: 16ch; }
+.sub { font-size: 19px; color: var(--print); max-width: 46ch; margin: 0; }
+
+/* The dinner, three moments */
+.moments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 56px; counter-reset: m; }
+.moment h3 { font: 700 22px/1.2 var(--display); margin: 18px 0 8px; letter-spacing: -.01em; }
+.moment p { margin: 0; color: var(--print); }
+.moment .pic { height: 190px; border-radius: 22px; background: var(--paper); position: relative; overflow: hidden; }
+.moment .step { font: 600 14px var(--body); color: var(--teal); }
+.pic .cam { position: absolute; inset: 22px 40px; border: 2px solid #C6CECA; border-radius: 12px; }
+.pic .cam::before, .pic .cam::after { content: ""; position: absolute; left: 14px; right: 14px; height: 2px; background: #0F766E; top: 40%; box-shadow: 0 0 12px #0F766E; }
+.pic .cam::after { display: none; }
+.pic .line { position: absolute; left: 62px; height: 6px; border-radius: 3px; background: #DDE3E0; }
+.bubble { position: absolute; font: 500 15px/1.35 var(--body); padding: 12px 15px; border-radius: 18px; background: #EEF1F0; color: #16201D; max-width: 78%; }
+.bubble.me { right: 18px; background: #0F766E; color: #fff; border-bottom-right-radius: 6px; }
+.bubble.them { left: 18px; border-bottom-left-radius: 6px; }
+@media (max-width: 860px) { .moments { grid-template-columns: 1fr; } }
+
+/* Friends without the app */
+.guest { display: grid; grid-template-columns: .9fr 1.1fr; gap: 72px; align-items: center; }
+.phone { width: 300px; margin-inline: auto; background: #FFFFFF; border-radius: 42px; padding: 26px 22px 30px; box-shadow: 0 0 0 10px #16201D, 0 40px 60px rgba(22,32,29,.16); color: #16201D; }
+.phone .url { font: 500 12px var(--body); color: #75807B; text-align: center; margin-bottom: 22px; }
+.phone .from { font-size: 14px; color: #5E6A65; }
+.phone .big { font: 800 44px/1 var(--display); letter-spacing: -.03em; margin: 6px 0 4px; }
+.phone .what { font-size: 13.5px; color: #5E6A65; margin-bottom: 20px; }
+.phone .btn { display: block; text-align: center; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 15px; margin-top: 10px; }
+.phone .btn.p { background: #0F766E; color: #fff; }
+.phone .btn.s { box-shadow: inset 0 0 0 1.5px #CBD5D1; }
+.facts { list-style: none; padding: 0; margin: 36px 0 0; display: grid; gap: 22px; }
+.facts li { display: grid; grid-template-columns: 28px 1fr; gap: 14px; }
+.facts li svg { margin-top: 3px; }
+.facts b { display: block; font: 700 18px var(--display); }
+.facts span { color: var(--print); }
+@media (max-width: 860px) { .guest { grid-template-columns: 1fr; gap: 48px; } }
+
+/* Math on paper */
+.math { background: var(--ink); color: var(--table); border-radius: 36px; padding: 72px clamp(24px, 6vw, 80px); display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.math h2 { color: var(--table); }
+.math .sub { color: color-mix(in srgb, var(--table) 70%, transparent); }
+.ledger { background: var(--paper); color: #2B3330; border-radius: 4px; padding: 26px; font: 400 14px/1.9 var(--mono); }
+.ledger .row { grid-template-columns: 1fr auto; }
+.ledger .note { color: #75807B; font-size: 12.5px; }
+.ledger .owe { color: #B45309; font-weight: 500; }
+@media (max-width: 860px) { .math { grid-template-columns: 1fr; } }
+
+/* Pay back */
+.countries { margin-top: 48px; display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 64px; }
+.countries div { display: flex; justify-content: space-between; gap: 16px; padding: 15px 0; border-bottom: 1px solid var(--rule); }
+.countries dt { color: var(--print); } .countries dd { margin: 0; font-weight: 600; text-align: right; }
+@media (max-width: 760px) { .countries { grid-template-columns: 1fr; } }
+
+/* Pricing */
+.plans { margin-top: 48px; display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 0; background: var(--paper); border-radius: 28px; overflow: hidden; color: #16201D; }
+.plan { padding: 34px 30px; }
+.plan + .plan { border-left: 1px solid #E3E8E6; }
+.plan.pro { background: #0F766E; color: #fff; }
+.plan h3 { font: 700 20px var(--display); margin: 0 0 14px; }
+.plan .amt { font: 800 46px/1 var(--display); letter-spacing: -.03em; }
+.plan .per { font-size: 15px; opacity: .75; margin: 6px 0 22px; }
+.plan ul { padding: 0; margin: 0; list-style: none; display: grid; gap: 9px; font-size: 15.5px; }
+.plan ul li::before { content: "✓"; margin-right: 10px; font-weight: 700; }
+@media (max-width: 860px) { .plans { grid-template-columns: 1fr; } .plan + .plan { border-left: 0; border-top: 1px solid #E3E8E6; } }
+
+/* FAQ */
+.faq { display: grid; grid-template-columns: .8fr 1.2fr; gap: 64px; }
+details { border-bottom: 1px solid var(--rule); padding: 20px 0; }
+summary { font: 700 19px var(--display); cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 20px; }
+summary::after { content: "+"; font-weight: 500; color: var(--print); }
+details[open] summary::after { content: "–"; }
+details p { color: var(--print); margin: 10px 0 0; max-width: 60ch; }
+@media (max-width: 860px) { .faq { grid-template-columns: 1fr; gap: 24px; } }
+
+/* End */
+.end { text-align: left; padding-bottom: 120px; }
+.end h2 { max-width: 14ch; }
+footer { border-top: 1px solid var(--rule); padding: 32px 0 48px; color: var(--print); font-size: 14.5px; display: flex; flex-wrap: wrap; gap: 24px 40px; justify-content: space-between; }
+footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
+footer a { text-decoration: none; }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand" href="#"><svg viewBox="0 0 120 120" width="30" height="30" aria-hidden="true"><path class="c" d="M55.5 13.2A43 43 0 0 0 55.5 92.8Z M64.5 13.2A43 43 0 0 1 64.5 92.8Z"/><rect class="l" x="17" y="104" width="86" height="7" rx="3.5"/></svg>Evens</a>
+  <nav aria-label="Main"><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">Questions</a><a href="#">Help</a></nav>
+</header>
+
+<main>
+<div class="wrap hero">
+  <div>
+    <h1>Hand over the receipt. Get paid back to the cent.</h1>
+    <p class="lede">Evens reads every line, splits it by who had what, and sends each friend a link with their exact share. They pay you back with the app they already use.</p>
+    <div class="stores">
+      <a class="store" href="#"><svg width="18" height="20" viewBox="0 0 17 20" fill="currentColor" aria-hidden="true"><path d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM11.6 3c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"/></svg>App Store</a>
+      <a class="store alt" href="#"><svg width="18" height="20" viewBox="0 0 18 20" fill="currentColor" aria-hidden="true"><path d="M1 .6 10.4 10 1 19.4c-.3-.2-.5-.6-.5-1V1.6c0-.4.2-.8.5-1zm11 7.8L3.1.1l10.6 6.2-1.7 2.1zm0 3.2 1.7 2.1L3.1 19.9 12 11.6zm4.4-3.6c.7.4.7 1.6 0 2l-2.4 1.4-1.9-2 1.9-2.3 2.4.9z"/></svg>Google Play</a>
+    </div>
+    <p class="price-note">Free for everyday splitting. Pro is $2.99 a month.</p>
+  </div>
+
+  <div class="stage" aria-label="A dinner receipt that splits into each friend's share">
+    <div class="receipt" id="receipt">
+      <div class="piece head p0 tear-b">
+        <div class="shop">CORNER BISTRO</div>
+        <div class="meta">Table 6 · 3 guests · 21:40</div>
+        <div class="dash"></div>
+        <div class="row"><span>Lemon mint ×3</span><span class="who"><i class="tag a">A</i><i class="tag s">S</i><i class="tag m">M</i></span><span>9.00</span></div>
+        <div class="row"><span>Fries</span><span class="who"><i class="tag a">A</i><i class="tag s">S</i></span><span>6.00</span></div>
+        <div class="row"><span>Tax 8%</span><span></span><span>4.60</span></div>
+        <div class="row"><span>Tip 18%</span><span></span><span>10.35</span></div>
+        <div class="dash"></div>
+        <div class="row total"><span>Total</span><span></span><span>72.45</span></div>
+        <div style="height:14px"></div>
+      </div>
+      <div class="piece p1 tear-t tear-b">
+        <div class="row" style="padding-top:14px"><span>Beef burger</span><span class="who"><i class="tag a">A</i></span><span>14.00</span></div>
+        <div class="stub"><div class="stub-title"><b>You, Ali</b><span style="font-size:12.5px;color:#75807B">paid the bill</span></div><div class="stub-amt">$25.20</div><span class="stub-pay">Your part, already paid</span></div>
+        <div style="height:14px"></div>
+      </div>
+      <div class="piece p2 tear-t tear-b">
+        <div class="row" style="padding-top:14px"><span>Grilled fish</span><span class="who"><i class="tag s">S</i></span><span>18.50</span></div>
+        <div class="stub"><div class="stub-title"><b>Sara</b><span style="font-size:12.5px;color:#75807B">fish, half the fries, a mint</span></div><div class="stub-amt">$30.87</div><span class="stub-pay">Link sent · pays with Venmo</span></div>
+        <div style="height:14px"></div>
+      </div>
+      <div class="piece p3 foot tear-t">
+        <div class="row" style="padding-top:14px"><span>Caesar salad</span><span class="who"><i class="tag m">M</i></span><span>10.00</span></div>
+        <div class="stub"><div class="stub-title"><b>Mona</b><span style="font-size:12.5px;color:#75807B">salad, a mint</span></div><div class="stub-amt">$16.38</div><span class="stub-pay">Link sent · pays with PayPal</span></div>
+      </div>
+    </div>
+    <button class="replay" id="replay" type="button">Play again</button>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <h2>From the last bite to everyone paid</h2>
+    <p class="sub">The whole thing happens at the table, before the waiter is back with the card machine.</p>
+    <div class="moments">
+      <div class="moment">
+        <div class="pic"><div class="cam"></div><div class="line" style="top:52px;width:120px"></div><div class="line" style="top:70px;width:150px"></div><div class="line" style="top:88px;width:96px"></div><div class="line" style="top:106px;width:140px"></div><div class="line" style="top:124px;width:110px"></div></div>
+        <div class="step" style="margin-top:18px">First</div>
+        <h3>Snap the receipt</h3>
+        <p>Every line, the tax, service and tip are read in a few seconds, in any language. You check them on one screen.</p>
+      </div>
+      <div class="moment">
+        <div class="pic"><div class="bubble me" style="top:26px">Ali had the burger, Sara the fish, we split the fries</div><div class="bubble them" style="top:112px;font-family:var(--mono);font-size:13px">Burger → A · Fish → S · Fries → A+S</div></div>
+        <div class="step" style="margin-top:18px">Then</div>
+        <h3>Say who had what</h3>
+        <p>Talk it through like you would at the table, or tap faces. Shared plates split exactly, down to the last cent.</p>
+      </div>
+      <div class="moment">
+        <div class="pic"><div class="bubble me" style="top:24px">Your share of Corner Bistro is $30.87 evens.app/b/k3f</div><div class="bubble them" style="top:116px">Paid 👍</div></div>
+        <div class="step" style="margin-top:18px">Done</div>
+        <h3>Send each friend a link</h3>
+        <p>They open it in any browser, see their part and pay you with their own app. You get a note when they do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap guest">
+    <div class="phone" aria-label="What a friend sees when they open the link">
+      <div class="url">evens.app/b/k3f</div>
+      <div class="from">Ali paid for dinner at Corner Bistro</div>
+      <div class="big">$30.87</div>
+      <div class="what">Grilled fish, half the fries, a lemon mint, plus tax and tip</div>
+      <span class="btn p">Pay Ali with Venmo</span>
+      <span class="btn s">I've paid, add a screenshot</span>
+    </div>
+    <div>
+      <h2>Your friends don't need the app</h2>
+      <p class="sub">Most people won't install something to pay back $30. With Evens they don't have to.</p>
+      <ul class="facts">
+        <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><div><b>One link per person</b><span>Each friend sees only their own share and how to pay you.</span></div></li>
+        <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><div><b>Proof, not promises</b><span>They attach a screenshot. You confirm in one tap and the balance updates.</span></div></li>
+        <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg><div><b>One polite reminder a week</b><span>Sent at a sensible local time, so you never have to ask twice.</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="math">
+      <div>
+        <h2>The maths holds up to the sharpest friend</h2>
+        <p class="sub">Tax and tip follow what each person ordered. Shares always add up to the bill, and the odd cent goes to someone openly, never lost.</p>
+      </div>
+      <div class="ledger" aria-label="Mona's share, line by line">
+        <div class="row"><span>Caesar salad</span><span>10.00</span></div>
+        <div class="row"><span>Lemon mint, 1 of 3</span><span>3.00</span></div>
+        <div class="row"><span>Tax 8% <span class="note">of 13.00</span></span><span>1.04</span></div>
+        <div class="row"><span>Tip 18% <span class="note">of 13.00</span></span><span>2.34</span></div>
+        <div class="dash"></div>
+        <div class="row owe"><span>Mona owes Ali</span><span>$16.38</span></div>
+        <div class="note" style="margin-top:8px">Ali 25.20 + Sara 30.87 + Mona 16.38 = 72.45</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Paid back the way your friends already pay</h2>
+    <p class="sub">Add your handles once. Where the app allows it, the link opens with the amount filled in.</p>
+    <dl class="countries">
+      <div><dt>Everywhere</dt><dd>PayPal, Revolut, Wise, bank transfer</dd></div>
+      <div><dt>United States</dt><dd>Venmo</dd></div>
+      <div><dt>Egypt</dt><dd>InstaPay, Vodafone Cash</dd></div>
+      <div><dt>India</dt><dd>UPI</dd></div>
+      <div><dt>Brazil</dt><dd>Pix</dd></div>
+      <div><dt>Spain</dt><dd>Bizum</dd></div>
+      <div><dt>Sweden</dt><dd>Swish</dd></div>
+      <div><dt>Denmark and Finland</dt><dd>MobilePay</dd></div>
+      <div><dt>Norway</dt><dd>Vipps</dd></div>
+      <div><dt>Switzerland</dt><dd>Twint</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Free for dinners. Pro for trips.</h2>
+    <p class="sub">Bills, groups, balances and guest links are free forever. Pro takes the limits off the AI and adds what long trips need.</p>
+    <div class="plans">
+      <div class="plan"><h3>Free</h3><div class="amt">$0</div><div class="per">No card needed</div><ul><li>Unlimited bills and groups</li><li>Guest links and payment proof</li><li>5 scans and 10 voice splits a month</li></ul></div>
+      <div class="plan pro"><h3>Pro</h3><div class="amt">$24.99</div><div class="per">a year after 7 free days, or $2.99 a month</div><ul><li>Unlimited scans and voice</li><li>Trips in several currencies</li><li>Recurring bills, PDF and CSV</li><li>No ads</li></ul></div>
+      <div class="plan"><h3>Lifetime</h3><div class="amt">$59.99</div><div class="per">Once, for good</div><ul><li>Everything in Pro</li><li>Fair use on AI</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap faq">
+    <h2>Questions people ask at the table</h2>
+    <div>
+      <details open><summary>Do my friends need the app?</summary><p>No. Each friend gets a link that opens in any browser with their share and your payment details.</p></details>
+      <details><summary>How accurate is the scan?</summary><p>It reads clear receipts line by line, including tax and service. You see every line before the bill is made, and can fix anything in a tap.</p></details>
+      <details><summary>Does Evens move money?</summary><p>No. Friends pay you directly with PayPal, Venmo, InstaPay or whatever you use. Evens keeps track of who has paid.</p></details>
+      <details><summary>Which languages and currencies?</summary><p>22 languages, including Arabic and Urdu written right to left, and any currency, with several on one trip in Pro.</p></details>
+      <details><summary>What happens to my receipt photos?</summary><p>They are used to read the receipt and are not used to train AI models. You can delete your account and data from the app at any time.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap">
+    <h2>Next dinner, nobody reaches for a calculator</h2>
+    <div class="stores" style="margin-top:28px">
+      <a class="store" href="#">App Store</a>
+      <a class="store alt" href="#">Google Play</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <span>Evens. support@omarmali.net</span>
+  <nav aria-label="Footer"><a href="#">vs Splitwise</a><a href="#">vs Tricount</a><a href="#">Trips</a><a href="#">Roommates</a><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></nav>
+</footer>
+
+<script>
+(() => {
+  const r = document.getElementById('receipt');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const timers = [];
+  function play() {
+    timers.splice(0).forEach(clearTimeout);
+    r.classList.remove('on', 'split', 'print-in');
+    if (reduce) { r.classList.add('on', 'split'); return; }
+    void r.offsetWidth;
+    r.classList.add('print-in');
+    timers.push(setTimeout(() => r.classList.remove('print-in'), 1150));
+    timers.push(setTimeout(() => r.classList.add('on'), 1300));
+    timers.push(setTimeout(() => r.classList.add('split'), 2300));
+  }
+  document.getElementById('replay').addEventListener('click', play);
+  play();
+})();
+</script>
+</body>
+</html>
