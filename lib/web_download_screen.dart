@@ -1,241 +1,133 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:split_bill_app/config/app_links.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:flutter/material.dart';
 
+import 'package:split_bill_app/theme/theme.dart';
+
+import 'screens/guest_bill/widgets/guest_chrome.dart';
+
+/// The web root without a bill link: send people to the stores (v3 style).
 class WebDownloadScreen extends StatelessWidget {
   const WebDownloadScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final width = MediaQuery.sizeOf(context).width;
-    final isCompact = width < 820;
-    final p = context.palette;
+    final desktop = width >= 900;
 
-    return Scaffold(
-      backgroundColor: p.isDark ? p.background : const Color(0xFFF6F8FB),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: isCompact ? 24 : 48,
-              vertical: isCompact ? 28 : 44,
-            ),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1120),
-              child: isCompact
-                  ? Column(
-                      children: [
-                        _DownloadCopy(isCompact: isCompact),
-                        const SizedBox(height: 40),
-                        _PhonePreview(isCompact: isCompact),
-                      ],
-                    )
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          flex: 6,
-                          child: _DownloadCopy(isCompact: isCompact),
-                        ),
-                        const SizedBox(width: 56),
-                        const Expanded(
-                          flex: 5,
-                          child: _PhonePreview(isCompact: false),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DownloadCopy extends StatelessWidget {
-  const _DownloadCopy({required this.isCompact});
-
-  final bool isCompact;
-
-  Future<void> _openUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      await launchUrl(uri);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final p = context.palette;
-
-    return Column(
-      crossAxisAlignment: isCompact
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
+    final copy = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Image.asset(
-                'assets/logo.png',
-                width: 52,
-                height: 52,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Text(
-              'Split Bill',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: p.isDark ? p.textPrimary : const Color(0xFF111827),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 34),
-        Text(
-          'web_download_headline'.tr(),
-          textAlign: isCompact ? TextAlign.center : TextAlign.start,
-          style: theme.textTheme.displaySmall?.copyWith(
-            fontWeight: FontWeight.w900,
-            height: 1.05,
-            color: p.isDark ? p.textPrimary : const Color(0xFF0F172A),
+        Semantics(
+          header: true,
+          child: Text(
+            'web_download_headline'.tr(),
+            style:
+                (desktop
+                        ? AppTypography.displayLarge
+                        : AppTypography.displaySmall)
+                    .copyWith(color: p.textPrimary),
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 16),
         Text(
           'web_download_body'.tr(),
-          textAlign: isCompact ? TextAlign.center : TextAlign.start,
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: p.isDark ? p.textSecondary : const Color(0xFF526070),
-            height: 1.45,
-            fontWeight: FontWeight.w500,
+          style: AppTypography.bodyLarge.copyWith(
+            fontSize: 16,
+            height: 1.5,
+            color: p.textSecondary,
           ),
         ),
-        const SizedBox(height: 30),
-        Wrap(
-          spacing: 14,
-          runSpacing: 14,
-          alignment: isCompact ? WrapAlignment.center : WrapAlignment.start,
-          children: [
-            _StoreButton(
-              icon: Icons.apple,
-              label: 'web_download_app_store'.tr(),
-              onTap: () => _openUrl(AppLinks.appStoreUrl),
-            ),
-            _StoreButton(
-              icon: Icons.android_rounded,
-              label: 'web_download_play_store'.tr(),
-              onTap: () => _openUrl(AppLinks.playStoreUrl),
-            ),
-          ],
-        ),
-        const SizedBox(height: 26),
+        const SizedBox(height: 24),
+        const GuestStoreButtons(),
+        const SizedBox(height: 20),
         Text(
           'web_download_guest_note'.tr(),
-          textAlign: isCompact ? TextAlign.center : TextAlign.start,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: p.isDark ? p.textTertiary : const Color(0xFF667085),
-            height: 1.45,
+          style: AppTypography.bodyMedium.copyWith(
+            height: 1.5,
+            color: p.textSecondary,
           ),
         ),
       ],
     );
-  }
-}
 
-class _StoreButton extends StatelessWidget {
-  const _StoreButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final maxWidth = (MediaQuery.sizeOf(context).width - 48)
-        .clamp(232.0, 360.0)
-        .toDouble();
-    final p = context.palette;
-    final foreground = p.isDark ? p.onInverseSurface : Colors.white;
-
-    return ConstrainedBox(
-      constraints: BoxConstraints(minWidth: 232, maxWidth: maxWidth),
-      child: Material(
-        color: p.isDark ? p.inverseSurface : const Color(0xFF111827),
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: foreground, size: 24),
-                const SizedBox(width: 10),
-                Flexible(
-                  child: Text(
-                    label,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: foreground,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      height: 1.15,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+    final preview = ExcludeSemantics(
+      child: Container(
+        constraints: BoxConstraints(maxWidth: desktop ? 340 : 260),
+        decoration: BoxDecoration(
+          color: p.surfaceVariant,
+          borderRadius: AppRadii.cardRadius,
+          border: Border.all(color: p.border),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Image.asset(
+          'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
+          fit: BoxFit.contain,
         ),
       ),
     );
-  }
-}
 
-class _PhonePreview extends StatelessWidget {
-  const _PhonePreview({required this.isCompact});
-
-  final bool isCompact;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        width: isCompact ? 260 : 330,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          // Phone bezel: intentionally dark in both themes.
-          color: const Color(0xFF111827),
-          borderRadius: BorderRadius.circular(34),
-          boxShadow: [
-            BoxShadow(
-              color: context.palette.shadow.withValues(alpha: 0.18),
-              blurRadius: 36,
-              offset: const Offset(0, 22),
+    return Scaffold(
+      backgroundColor: p.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: desktop ? p.surface : p.background,
+                border: desktop
+                    ? Border(bottom: BorderSide(color: p.border))
+                    : null,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1080),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: desktop ? 24 : 20,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      children: [
+                        GuestBrand(large: desktop),
+                        const Spacer(),
+                        const GuestLanguageButton(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: desktop ? 24 : 20,
+                  vertical: desktop ? 56 : 28,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1080),
+                    child: desktop
+                        ? Row(
+                            children: [
+                              Expanded(flex: 6, child: copy),
+                              const SizedBox(width: 56),
+                              Expanded(flex: 5, child: Center(child: preview)),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              copy,
+                              const SizedBox(height: 36),
+                              Center(child: preview),
+                            ],
+                          ),
+                  ),
+                ),
+              ),
             ),
           ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(26),
-          child: Image.asset(
-            'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
-            fit: BoxFit.cover,
-          ),
         ),
       ),
     );
