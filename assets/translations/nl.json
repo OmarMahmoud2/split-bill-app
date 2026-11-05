@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Waarschuwing",
   "feedback_toast_error": "Fout",
   "settings_haptics": "Haptische feedback",
-  "settings_haptics_subtitle": "Zachte trillingen als er geld beweegt"
+  "settings_haptics_subtitle": "Zachte trillingen als er geld beweegt",
+  "v3_pro_badge": "PRO"
 }

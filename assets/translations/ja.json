@@ -844,5 +844,6 @@
   "feedback_toast_warning": "注意",
   "feedback_toast_error": "エラー",
   "settings_haptics": "触覚フィードバック",
-  "settings_haptics_subtitle": "お金が動くときに軽く振動します"
+  "settings_haptics_subtitle": "お金が動くときに軽く振動します",
+  "v3_pro_badge": "PRO"
 }

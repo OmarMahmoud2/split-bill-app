@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Uyarı",
   "feedback_toast_error": "Hata",
   "settings_haptics": "Dokunsal geri bildirim",
-  "settings_haptics_subtitle": "Para hareket ettiğinde hafif titreşim"
+  "settings_haptics_subtitle": "Para hareket ettiğinde hafif titreşim",
+  "v3_pro_badge": "PRO"
 }

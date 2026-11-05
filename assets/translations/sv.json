@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Varning",
   "feedback_toast_error": "Fel",
   "settings_haptics": "Haptik",
-  "settings_haptics_subtitle": "Mjuka vibrationer när pengar rör sig"
+  "settings_haptics_subtitle": "Mjuka vibrationer när pengar rör sig",
+  "v3_pro_badge": "PRO"
 }

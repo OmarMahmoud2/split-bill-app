@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Внимание",
   "feedback_toast_error": "Ошибка",
   "settings_haptics": "Тактильная отдача",
-  "settings_haptics_subtitle": "Лёгкая вибрация при движении денег"
+  "settings_haptics_subtitle": "Лёгкая вибрация при движении денег",
+  "v3_pro_badge": "PRO"
 }

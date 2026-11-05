@@ -844,5 +844,6 @@
   "feedback_toast_warning": "警告",
   "feedback_toast_error": "错误",
   "settings_haptics": "触感反馈",
-  "settings_haptics_subtitle": "资金变动时轻微振动"
+  "settings_haptics_subtitle": "资金变动时轻微振动",
+  "v3_pro_badge": "PRO"
 }

@@ -844,5 +844,6 @@
   "feedback_toast_warning": "คำเตือน",
   "feedback_toast_error": "ข้อผิดพลาด",
   "settings_haptics": "การสั่นตอบสนอง",
-  "settings_haptics_subtitle": "สั่นเบาๆ เมื่อมีการเคลื่อนไหวของเงิน"
+  "settings_haptics_subtitle": "สั่นเบาๆ เมื่อมีการเคลื่อนไหวของเงิน",
+  "v3_pro_badge": "PRO"
 }

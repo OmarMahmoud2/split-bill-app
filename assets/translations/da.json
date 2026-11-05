@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Advarsel",
   "feedback_toast_error": "Fejl",
   "settings_haptics": "Haptisk feedback",
-  "settings_haptics_subtitle": "Blide vibrationer, når penge flytter sig"
+  "settings_haptics_subtitle": "Blide vibrationer, når penge flytter sig",
+  "v3_pro_badge": "PRO"
 }

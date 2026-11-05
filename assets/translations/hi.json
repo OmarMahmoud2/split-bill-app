@@ -844,5 +844,6 @@
   "feedback_toast_warning": "चेतावनी",
   "feedback_toast_error": "त्रुटि",
   "settings_haptics": "हैप्टिक्स",
-  "settings_haptics_subtitle": "पैसे के लेन-देन पर हल्का कंपन"
+  "settings_haptics_subtitle": "पैसे के लेन-देन पर हल्का कंपन",
+  "v3_pro_badge": "प्रो"
 }

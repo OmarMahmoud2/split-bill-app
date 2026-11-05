@@ -844,5 +844,6 @@
   "feedback_toast_warning": "تنبيه",
   "feedback_toast_error": "خطأ",
   "settings_haptics": "الاهتزاز اللمسي",
-  "settings_haptics_subtitle": "اهتزازات خفيفة عند تحرك المال"
+  "settings_haptics_subtitle": "اهتزازات خفيفة عند تحرك المال",
+  "v3_pro_badge": "برو"
 }

@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Cảnh báo",
   "feedback_toast_error": "Lỗi",
   "settings_haptics": "Phản hồi xúc giác",
-  "settings_haptics_subtitle": "Rung nhẹ khi tiền được chuyển"
+  "settings_haptics_subtitle": "Rung nhẹ khi tiền được chuyển",
+  "v3_pro_badge": "PRO"
 }

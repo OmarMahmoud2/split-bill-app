@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Peringatan",
   "feedback_toast_error": "Kesalahan",
   "settings_haptics": "Haptik",
-  "settings_haptics_subtitle": "Getaran lembut saat uang berpindah"
+  "settings_haptics_subtitle": "Getaran lembut saat uang berpindah",
+  "v3_pro_badge": "PRO"
 }

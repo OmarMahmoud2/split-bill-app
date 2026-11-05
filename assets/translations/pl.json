@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Ostrzeżenie",
   "feedback_toast_error": "Błąd",
   "settings_haptics": "Haptyka",
-  "settings_haptics_subtitle": "Delikatne wibracje, gdy przepływają pieniądze"
+  "settings_haptics_subtitle": "Delikatne wibracje, gdy przepływają pieniądze",
+  "v3_pro_badge": "PRO"
 }

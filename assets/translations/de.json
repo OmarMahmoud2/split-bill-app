@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Warnung",
   "feedback_toast_error": "Fehler",
   "settings_haptics": "Haptisches Feedback",
-  "settings_haptics_subtitle": "Sanfte Vibration, wenn Geld fließt"
+  "settings_haptics_subtitle": "Sanfte Vibration, wenn Geld fließt",
+  "v3_pro_badge": "PRO"
 }

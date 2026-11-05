@@ -844,5 +844,6 @@
   "feedback_toast_warning": "انتباہ",
   "feedback_toast_error": "خرابی",
   "settings_haptics": "ہیپٹکس",
-  "settings_haptics_subtitle": "پیسے کی منتقلی پر ہلکی وائبریشن"
+  "settings_haptics_subtitle": "پیسے کی منتقلی پر ہلکی وائبریشن",
+  "v3_pro_badge": "پرو"
 }

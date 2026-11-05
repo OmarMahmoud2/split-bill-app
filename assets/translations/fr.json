@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Attention",
   "feedback_toast_error": "Erreur",
   "settings_haptics": "Retour haptique",
-  "settings_haptics_subtitle": "Légères vibrations quand l'argent bouge"
+  "settings_haptics_subtitle": "Légères vibrations quand l'argent bouge",
+  "v3_pro_badge": "PRO"
 }

@@ -844,5 +844,6 @@
   "feedback_toast_warning": "Warning",
   "feedback_toast_error": "Error",
   "settings_haptics": "Haptics",
-  "settings_haptics_subtitle": "Gentle vibrations when money moves"
+  "settings_haptics_subtitle": "Gentle vibrations when money moves",
+  "v3_pro_badge": "PRO"
 }

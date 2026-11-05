@@ -844,5 +844,6 @@
   "feedback_toast_warning": "경고",
   "feedback_toast_error": "오류",
   "settings_haptics": "햅틱",
-  "settings_haptics_subtitle": "돈이 오갈 때 부드러운 진동"
+  "settings_haptics_subtitle": "돈이 오갈 때 부드러운 진동",
+  "v3_pro_badge": "PRO"
 }
