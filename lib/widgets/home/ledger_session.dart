@@ -51,15 +51,18 @@ String preferredCurrency(BuildContext context) {
   }
 }
 
+/// The app locale as a BCP 47 tag, or null outside EasyLocalization.
+String? localeTag(BuildContext context) {
+  try {
+    return context.locale.toLanguageTag();
+  } catch (_) {
+    return null;
+  }
+}
+
 /// Formats an amount for use inside a sentence ("Ali owes me $20.00").
 String moneyLabel(BuildContext context, int minor, String currency, {MoneySign sign = MoneySign.none}) {
-  String? locale;
-  try {
-    locale = context.locale.toLanguageTag();
-  } catch (_) {
-    locale = null;
-  }
-  return formatMoneyMinor(minor, currency, sign: sign, locale: locale);
+  return formatMoneyMinor(minor, currency, sign: sign, locale: localeTag(context));
 }
 
 /// Display name for a person id: "You" for the user.

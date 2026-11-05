@@ -84,7 +84,7 @@ class HomeDashboard extends StatelessWidget {
     final p = context.palette;
     final me = LedgerMe.current();
     if (me == null) return ErrorState(title: 'please_log_in_2'.tr());
-    return ColoredBox(
+    return Material(
       color: p.background,
       child: SafeArea(
         bottom: false,
@@ -463,7 +463,7 @@ class _InsightsTeaser extends StatelessWidget {
     final now = DateTime.now();
     final i = computeInsights(me: me, month: now, currency: preferredCurrency(context), bills: state.recentBills);
     if (i.billCount == 0) return const SizedBox.shrink();
-    final month = DateFormat.MMMM(context.locale.toLanguageTag()).format(now);
+    final month = DateFormat.MMMM(localeTag(context)).format(now);
     return LedgerCard(
       margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

@@ -128,7 +128,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final df = DateFormat.MMMd(context.locale.toLanguageTag());
+    final df = DateFormat.MMMd(localeTag(context));
     final ready = _name.text.trim().isNotEmpty && !_saving;
     return Scaffold(
       backgroundColor: p.background,

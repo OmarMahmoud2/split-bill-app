@@ -46,7 +46,7 @@ class ActivityRow extends StatelessWidget {
     } else if (diff.inHours < 24) {
       ago = 'hours_ago'.tr(namedArgs: {'count': '${diff.inHours}'});
     } else {
-      ago = DateFormat.MMMd(context.locale.toLanguageTag()).format(item.date);
+      ago = DateFormat.MMMd(localeTag(context)).format(item.date);
     }
     final extra = <String>[ago];
     if (item.hasProof) extra.add('activity_proof_attached'.tr());
@@ -197,7 +197,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
   String _dayLabel(BuildContext context, DateTime day) => switch (dayBucket(day, DateTime.now())) {
     DayBucket.today => 'activity_today'.tr(),
     DayBucket.yesterday => 'activity_yesterday'.tr(),
-    DayBucket.earlier => DateFormat.MMMMEEEEd(context.locale.toLanguageTag()).format(day),
+    DayBucket.earlier => DateFormat.MMMMEEEEd(localeTag(context)).format(day),
   };
 
   @override

@@ -197,7 +197,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     final view = g.view;
     final isOwner = group.createdBy == me;
     final currencies = {group.currency ?? preferredCurrency(context), ...totalsByCurrency(g.bills).keys}.toList();
-    final df = DateFormat.MMMd(context.locale.toLanguageTag());
+    final df = DateFormat.MMMd(localeTag(context));
     final subtitle = [
       if (group.startDate != null && group.endDate != null) '${df.format(group.startDate!)} – ${df.format(group.endDate!)}',
       plainMemberCount(group.members.length),
@@ -370,7 +370,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         ),
       );
     }
-    final df = DateFormat.MMMd(context.locale.toLanguageTag());
+    final df = DateFormat.MMMd(localeTag(context));
     return LedgerCard(
       margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: LedgerRows(

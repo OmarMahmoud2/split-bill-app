@@ -152,7 +152,7 @@ Future<void> nudgePerson(
       if (!context.mounted) return;
       final day = next == null
           ? ''
-          : DateFormat.MMMEd(context.locale.toLanguageTag()).format(next);
+          : DateFormat.MMMEd(localeTag(context)).format(next);
       AppToast.show(
         context,
         message: 'nudge_too_soon'.tr(namedArgs: {'name': targetName, 'date': day}),

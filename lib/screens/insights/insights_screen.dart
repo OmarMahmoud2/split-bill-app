@@ -45,7 +45,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final title = DateFormat.yMMMM(context.locale.toLanguageTag()).format(_month);
+    final title = DateFormat.yMMMM(localeTag(context)).format(_month);
     final now = DateTime.now();
     final isCurrent = _month.year == now.year && _month.month == now.month;
     final rtl = Directionality.of(context) == TextDirection.rtl;
