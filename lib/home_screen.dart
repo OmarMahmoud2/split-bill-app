@@ -1,74 +1,77 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:split_bill_app/profile_screen.dart';
-import 'package:split_bill_app/widgets/banner_ad_widget.dart';
-import 'package:lottie/lottie.dart';
-import 'package:split_bill_app/manual_entry_screen.dart';
-import 'package:split_bill_app/screens/completed_bills_screen.dart';
-import 'package:split_bill_app/scan_receipt_screen.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
-import 'package:split_bill_app/widgets/bill_tile.dart';
-import 'package:split_bill_app/widgets/create_bill_sheet.dart';
-import 'package:split_bill_app/widgets/home/home_header.dart';
-import 'package:split_bill_app/widgets/home/qr_dialog.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
-import 'package:split_bill_app/services/revenue_cat_service.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:split_bill_app/data/ledger_repository.dart';
+import 'package:split_bill_app/groups_screen.dart';
+import 'package:split_bill_app/notifications_screen.dart';
+import 'package:split_bill_app/profile_screen.dart';
+import 'package:split_bill_app/screens/activity/activity_screen.dart';
+import 'package:split_bill_app/screens/groups/create_group_screen.dart';
+import 'package:split_bill_app/screens/settle/quick_iou_sheet.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/banner_ad_widget.dart';
+import 'package:split_bill_app/widgets/home/home_dashboard.dart';
+import 'package:split_bill_app/widgets/home/ledger_session.dart';
+import 'package:split_bill_app/widgets/home/new_sheet.dart';
+
+/// The signed-in shell: Home, Groups, a raised Scan action, Activity, You.
+///
+/// One [watchHomeLedger] stream feeds Home, Groups and the friend screens,
+/// and is published to [HomeBalances] for the home screen widgets.
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.showAds = true});
+
+  /// Off in tests.
+  final bool showAds;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  final user = FirebaseAuth.instance.currentUser;
-
-  // Navigation State
-  int _selectedIndex = 0; // 0 = Home, 1 = Profile
-
-  // Tab/Filter State
-  late TabController _tabController;
-  int _selectedFilterIndex = 0;
-
-  // Stream State
-  late Stream<QuerySnapshot> _billsStream;
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  int _tab = 0;
+  Stream<HomeLedgerState>? _ledger;
+  Stream<bool>? _unread;
+  StreamSubscription<HomeLedgerState>? _publish;
+  LedgerMe? _me;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
+    if (widget.showAds) unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
+  }
 
-    // 0 = Recent, 1 = Unfinished, 2 = Later
-    _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        setState(() {
-          _selectedFilterIndex = _tabController.index;
-        });
-      }
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_ledger == null) _connect();
+  }
 
-    // Initialize Stream once to prevent reloading on setState
-    if (user != null) {
-      _billsStream = FirebaseFirestore.instance
-          .collection('bills')
-          .where('participants_uids', arrayContains: user!.uid)
-          .snapshots();
-    }
+  void _connect() {
+    _me = LedgerMe.current();
+    final me = _me;
+    if (me == null) return;
+    final repo = LedgerRepository.instance;
+    _ledger = watchHomeLedger(
+      repo,
+      me.uid,
+      fallbackCurrency: preferredCurrency(context),
+      looseLabel: 'friend_direct_label'.tr(),
+    ).shareReplay(maxSize: 1);
+    _unread = repo.watchHasUnread(me.uid).shareReplay(maxSize: 1);
+    _publish?.cancel();
+    _publish = _ledger!.listen(HomeBalances.publish, onError: (_) {});
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && widget.showAds) {
       unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
     }
   }
@@ -76,399 +79,179 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _tabController.dispose();
+    _publish?.cancel();
     super.dispose();
   }
 
-  void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
+  void _select(int i) {
+    if (i == _tab) return;
+    AppHaptics.selection();
+    setState(() => _tab = i);
   }
 
-  // --- LOGIC: Filter Bills ---
-  List<QueryDocumentSnapshot> _filterBills(List<QueryDocumentSnapshot> docs) {
-    DateTime now = DateTime.now();
-    DateTime threeDaysAgo = now.subtract(const Duration(days: 3));
-
-    // We sort by date descending first
-    docs.sort((a, b) {
-      Timestamp tA = (a.data() as Map)['date'] ?? Timestamp.now();
-      Timestamp tB = (b.data() as Map)['date'] ?? Timestamp.now();
-      return tB.compareTo(tA);
-    });
-
-    return docs.where((doc) {
-      try {
-        var data = doc.data() as Map<String, dynamic>? ?? {};
-        if (!data.containsKey('hostId') || !data.containsKey('participants')) {
-          return false;
-        }
-
-        bool amIHost = data['hostId'] == user!.uid;
-        List parts = data['participants'] ?? [];
-        Timestamp? timestamp = data['date'];
-        DateTime date = timestamp?.toDate() ?? DateTime(2000);
-
-        // Determine Settled Status
-        bool isSettled = false;
-        if (amIHost) {
-          // Host: Settled if ALL participants (including host) have paid
-          bool anyPending = parts.any(
-            (p) => p['status'] == 'PENDING' || p['status'] == 'REVIEW',
-          );
-          isSettled = !anyPending;
-        } else {
-          // Participant: Settled if I paid
-          var me = parts.firstWhere(
-            (p) => p['id'] == user!.uid,
-            orElse: () => null,
-          );
-          isSettled = (me != null && me['status'] == 'PAID');
-        }
-
-        if (_selectedFilterIndex == 2) {
-          // LATER TAB
-          return data['status'] == 'UNATTEMPTED';
-        } else if (_selectedFilterIndex == 0) {
-          // RECENT TAB
-          return !isSettled &&
-              data['status'] != 'UNATTEMPTED' &&
-              date.isAfter(threeDaysAgo);
-        } else {
-          // UNFINISHED TAB
-          return !isSettled &&
-              data['status'] != 'UNATTEMPTED' &&
-              date.isBefore(threeDaysAgo);
-        }
-      } catch (e) {
-        return false;
-      }
-    }).toList();
+  void _quickIou() {
+    final s = HomeBalances.latest;
+    showQuickIouSheet(context, people: s == null ? const [] : peopleAsMembers(s.summary));
   }
 
-  Map<String, double> _calculateTotals(List<QueryDocumentSnapshot> docs) {
-    double iOwe = 0.0;
-    double owedToMe = 0.0;
+  void _startGroup() => Navigator.of(context).push(
+    MaterialPageRoute(fullscreenDialog: true, builder: (_) => const CreateGroupScreen()),
+  );
 
-    for (var doc in docs) {
-      var data = doc.data() as Map<String, dynamic>? ?? {};
-      bool amIHost = data['hostId'] == user!.uid;
-      List participants = data['participants'] ?? [];
-
-      if (amIHost) {
-        for (var p in participants) {
-          if (p['id'] != user!.uid &&
-              (p['status'] == 'PENDING' || p['status'] == 'REVIEW')) {
-            owedToMe += (p['share'] as num? ?? 0.0).toDouble();
-          }
-        }
-      } else {
-        var me = participants.firstWhere(
-          (p) => p['id'] == user!.uid,
-          orElse: () => null,
-        );
-        if (me != null &&
-            (me['status'] == 'PENDING' || me['status'] == 'REVIEW')) {
-          iOwe += (me['share'] as num? ?? 0.0).toDouble();
-        }
-      }
-    }
-    return {'iOwe': iOwe, 'owedToMe': owedToMe};
-  }
-
-  int _calculateCompletedBillsCount(List<QueryDocumentSnapshot> docs) {
-    if (user == null) return 0;
-
-    int count = 0;
-    for (var doc in docs) {
-      final data = doc.data() as Map<String, dynamic>? ?? {};
-      if (!data.containsKey('hostId') || !data.containsKey('participants')) {
-        continue;
-      }
-
-      final amIHost = data['hostId'] == user!.uid;
-      final participants = data['participants'] as List? ?? [];
-      bool isSettled = false;
-
-      if (amIHost) {
-        isSettled = !participants.any(
-          (p) => p['status'] == 'PENDING' || p['status'] == 'REVIEW',
-        );
-      } else {
-        final me = participants.firstWhere(
-          (p) => p['id'] == user!.uid,
-          orElse: () => null,
-        );
-        isSettled = me != null && me['status'] == 'PAID';
-      }
-
-      if (isSettled && data['status'] != 'UNATTEMPTED') {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  // --- UI BUILDING BLOCKS ---
-
-  void _onAddBillTap() {
-    PremiumBottomSheet.show<void>(
-      context: context,
-      child: CreateBillSheet(
-        onScanTap: () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ScanReceiptScreen()),
-          );
-        },
-        onManualTap: () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ManualEntryScreen()),
-          );
-        },
-      ),
-    );
-  }
+  void _openNew() => showNewSheet(context, onQuickIou: _quickIou, onStartGroup: _startGroup);
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
-      return Scaffold(body: Center(child: Text('please_log_in_2').tr()));
+    final p = context.palette;
+    if (_me == null || _ledger == null) {
+      return Scaffold(body: Center(child: Text('please_log_in_2'.tr())));
     }
-
-    Widget content;
-    if (_selectedIndex == 1) {
-      content = const ProfileScreen();
-    } else {
-      content = StreamBuilder<QuerySnapshot>(
-        stream: _billsStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return LoadingStateWidget(message: 'loading_your_dashboard'.tr());
-          }
-
-          final allDocs = snapshot.data?.docs ?? [];
-          final totals = _calculateTotals(allDocs);
-          final completedBillsCount = _calculateCompletedBillsCount(allDocs);
-          final filteredDocs = _filterBills(allDocs);
-
-          return CustomScrollView(
-            slivers: [
-              // SCROLLABLE HEADER
-              SliverToBoxAdapter(
-                child: HomeHeader(
-                  user: user,
-                  iOwe: totals['iOwe']!,
-                  owedToMe: totals['owedToMe']!,
-                  completedBillsCount: completedBillsCount,
-                  onQrTap: (name, photoUrl) =>
-                      QrDialog.show(context, name, photoUrl, user?.uid ?? ""),
-                  onCompletedBillsTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const CompletedBillsScreen(),
-                    ),
-                  ),
-                  getAvatarImage: ImageUtils.getAvatarImage,
-                ),
-              ),
-
-              // Banner Ad (only for non-premium users)
-              SliverToBoxAdapter(
-                child: StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(user!.uid)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox.shrink();
-
-                    final userData =
-                        snapshot.data!.data() as Map<String, dynamic>?;
-                    final isPremium = RevenueCatService.isUserActivePremium(
-                      userData,
-                    );
-
-                    if (isPremium) return const SizedBox.shrink();
-
-                    return const Padding(
-                      padding: EdgeInsets.only(
-                        top: 10,
-                        left: 25,
-                        right: 25,
-                        bottom: 10,
-                      ),
-                      child: BannerAdWidget(),
-                    );
-                  },
-                ),
-              ),
-
-              // Filter Tabs
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.8),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: TabBar(
-                    controller: _tabController,
-                    indicator: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    labelColor: context.palette.onPrimary,
-                    unselectedLabelColor: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.58),
-                    labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    dividerColor: Colors.transparent,
-                    tabs: [
-                      Tab(text: 'recent'.tr()),
-                      Tab(text: 'unfinished'.tr()),
-                      Tab(text: 'later'.tr()),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Bills List
-              if (filteredDocs.isEmpty)
-                SliverToBoxAdapter(child: _buildEmptyState())
-              else
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return BillTile(
-                      data: filteredDocs[index].data() as Map<String, dynamic>,
-                      billId: filteredDocs[index].id,
-                      currentUserId: user!.uid,
-                    );
-                  }, childCount: filteredDocs.length),
-                ),
-
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
-            ],
-          );
+    final actions = HomeActions(
+      onNew: _openNew,
+      onQuickIou: _quickIou,
+      onStartGroup: _startGroup,
+      onOpenGroups: () => _select(1),
+      onOpenActivity: () => _select(2),
+      onOpenProfile: () => _select(3),
+      onOpenNotifications: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+    );
+    final pages = [
+      HomeDashboard(
+        stream: _ledger!,
+        unread: _unread,
+        actions: actions,
+        onRetry: () => setState(_connect),
+        footer: widget.showAds ? const _AdFooter() : null,
+      ),
+      GroupsScreen(state: _ledger, embedded: true),
+      const ActivityScreen(embedded: true),
+      const ProfileScreen(),
+    ];
+    return Scaffold(
+      backgroundColor: p.background,
+      extendBody: true,
+      body: IndexedStack(index: _tab, children: pages),
+      bottomNavigationBar: _TabBar(
+        index: _tab,
+        onSelect: _select,
+        onScan: () {
+          AppHaptics.light();
+          BillEntryPoints.scan(context);
         },
+        onScanLongPress: _openNew,
+      ),
+    );
+  }
+}
+
+class _TabBar extends StatelessWidget {
+  const _TabBar({required this.index, required this.onSelect, required this.onScan, required this.onScanLongPress});
+  final int index;
+  final ValueChanged<int> onSelect;
+  final VoidCallback onScan;
+  final VoidCallback onScanLongPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    Widget item(int i, IconData icon, IconData active, String label) {
+      final on = i == index;
+      return Expanded(
+        child: Semantics(
+          selected: on,
+          button: true,
+          label: label,
+          child: InkWell(
+            onTap: () => onSelect(i),
+            child: ExcludeSemantics(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 6),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(on ? active : icon, size: 22, color: on ? p.textPrimary : p.textTertiary),
+                    const SizedBox(height: 4),
+                    Text(label, maxLines: 1, style: AppTypography.labelSmall.copyWith(fontSize: 11, fontWeight: FontWeight.w600, color: on ? p.textPrimary : p.textTertiary)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      extendBody: true,
-      body: content,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onAddBillTap,
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Icon(
-          Icons.add_rounded,
-          size: 32,
-          color: context.palette.onPrimary,
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        color: p.background.withValues(alpha: 0.94),
+        border: Border(top: BorderSide(color: p.border)),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Container(
-        height: 70,
-        margin: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: Theme.of(
-              context,
-            ).colorScheme.outline.withValues(alpha: 0.14),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: context.palette.shadow.withValues(
-                alpha: Theme.of(context).brightness == Brightness.dark
-                    ? 0.24
-                    : 0.12,
-              ),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavBarItem(0, CupertinoIcons.home, CupertinoIcons.house_fill),
-            const SizedBox(width: 40),
-            _buildNavBarItem(
-              1,
-              CupertinoIcons.settings,
-              CupertinoIcons.settings_solid,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavBarItem(
-    int index,
-    IconData iconOutline,
-    IconData iconFilled,
-  ) {
-    bool isSelected = _selectedIndex == index;
-    return Expanded(
-      child: InkWell(
-        onTap: () => _onItemTapped(index),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              isSelected ? iconFilled : iconOutline,
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.48),
-              size: 28,
-            ),
-            if (isSelected)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                width: 4,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              item(0, Icons.home_outlined, Icons.home_rounded, 'home_tab_home'.tr()),
+              item(1, Icons.group_outlined, Icons.group_rounded, 'groups'.tr()),
+              Expanded(
+                child: Center(
+                  child: Transform.translate(
+                    offset: const Offset(0, -14),
+                    child: Semantics(
+                      button: true,
+                      label: 'home_scan_receipt'.tr(),
+                      onLongPressHint: 'new_title'.tr(),
+                      child: GestureDetector(
+                        onLongPress: onScanLongPress,
+                        child: Material(
+                          color: p.accent,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: onScan,
+                            child: SizedBox(
+                              width: 58,
+                              height: 58,
+                              child: Icon(Icons.document_scanner_outlined, color: p.onAccent, size: 26),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-          ],
+              item(2, Icons.show_chart_rounded, Icons.show_chart_rounded, 'activity_title'.tr()),
+              item(3, Icons.person_outline_rounded, Icons.person_rounded, 'home_tab_you'.tr()),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40),
-      child: Center(
-        child: Column(
-          children: [
-            Lottie.asset('assets/animations/empty.json', height: 150),
-            const SizedBox(height: 10),
-            Text(
-              'no_bills_found',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.58),
-              ),
-            ).tr(),
-          ],
-        ),
-      ),
+/// Banner ad for free users (premium hides it).
+class _AdFooter extends StatelessWidget {
+  const _AdFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return const SizedBox.shrink();
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      builder: (context, snap) {
+        if (!snap.hasData || RevenueCatService.isUserActivePremium(snap.data!.data())) {
+          return const SizedBox.shrink();
+        }
+        return const Padding(
+          padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+          child: BannerAdWidget(),
+        );
+      },
     );
   }
 }

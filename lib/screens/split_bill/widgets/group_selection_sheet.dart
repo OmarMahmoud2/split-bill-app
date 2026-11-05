@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/add_people_screen.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
@@ -29,14 +30,18 @@ AddPeopleGroup _groupFrom(String id, Map<String, dynamic> data) =>
     );
 
 /// Pick one of the host's groups; calls [onGroupSelected] with its members.
+/// [onGroupPicked] also gets the group id so the bill can be filed into the
+/// group's ledger.
 class GroupSelectionSheet extends StatelessWidget {
   final GroupService groupService;
   final Function(List<dynamic>) onGroupSelected;
+  final void Function(String groupId, LedgerGroup group)? onGroupPicked;
 
   const GroupSelectionSheet({
     super.key,
     required this.groupService,
     required this.onGroupSelected,
+    this.onGroupPicked,
   });
 
   @override
@@ -101,6 +106,11 @@ class GroupSelectionSheet extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             Navigator.pop(context);
+                            final id = docs[index].id;
+                            onGroupPicked?.call(
+                              id,
+                              LedgerGroup.fromMap(id, data),
+                            );
                             onGroupSelected(members);
                           },
                           child: Container(
