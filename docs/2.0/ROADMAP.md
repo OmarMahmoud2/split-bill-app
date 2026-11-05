@@ -21,10 +21,10 @@ Positioning: **AI receipt splitter with running balances.** Scan, say who had wh
 
 1. **Name** (recommended *Nusso*, runner-up *Qismo*) — blocks icon, palette final, store titles, landing, domain, support address on the new domain.
 2. **Design direction** — approve or redirect the mockups (colors, type, home layout, settle up, guest page, landing hero).
-3. **Pro pricing** — recommended $3.99/mo, $24.99/yr (7-day trial on yearly), $59.99 lifetime with AI fair use; per-country tiers in each store.
+3. **Pro pricing** — DECIDED: $2.99/month, $24.99/year (7-day trial on yearly), $59.99 lifetime with AI fair use; per-country tiers in each store.
 4. **Free tier limits** — recommended: unlimited manual bills, balances, guest links; 5 AI scans and 10 voice commands a month; rewarded ad = +1 scan.
-5. **New locales** (to reach 22) — default proposal: Turkish, Dutch, Swedish, Danish, Norwegian, Vietnamese, Thai. Swap for others if you prefer (e.g. Hebrew, Malay, Filipino, Persian).
-6. **Anthropic** — voice assignment on Claude Haiku trial; receipt scan stays on OpenAI until the bake-off; transcription stays on OpenAI.
+5. **New locales** (to reach 22) — DECIDED, done on release/2.0.0: Turkish, Dutch, Swedish, Danish, Norwegian, Vietnamese, Thai. Swap for others if you prefer (e.g. Hebrew, Malay, Filipino, Persian).
+6. **Anthropic** — DECIDED: move every AI feature that Claude supports (receipt scan, voice assign) with a hardened pipeline; voice input moves to on-device speech recognition (Claude has no speech-to-text), OpenAI transcription kept only as a fallback.
 7. **Firestore Stage B** — not before 2026-12-02 and ≥90% of active users on 1.2.0+.
 8. **Governing law** for the terms page (country/jurisdiction).
 9. **Deploy approval** for the backend commits (landing fixes, subscription terms, support email migration, Anthropic route switched off by default).
