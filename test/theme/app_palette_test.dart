@@ -144,10 +144,7 @@ void main() {
       }
       test('${entry.key}: ink on every avatar tint', () {
         for (final tint in p.avatarTints) {
-          expect(
-            contrastRatio(p.textPrimary, tint),
-            greaterThanOrEqualTo(4.5),
-          );
+          expect(contrastRatio(p.textPrimary, tint), greaterThanOrEqualTo(4.5));
         }
       });
       test('${entry.key}: amounts reach 7:1 on surface for ink', () {

@@ -364,9 +364,7 @@ class _MyAppState extends State<MyApp> {
           // AppBar (AppBarTheme.systemOverlayStyle covers the rest).
           builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
             value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
-            child: AppLocaleTypography(
-              child: child ?? const SizedBox.shrink(),
-            ),
+            child: AppLocaleTypography(child: child ?? const SizedBox.shrink()),
           ),
 
           home: CustomUpgrader(

@@ -9,9 +9,13 @@ import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/services/notification_payload.dart';
 import 'package:split_bill_app/services/user_preferences_service.dart';
 import 'package:split_bill_app/services/guest_session.dart';
+import 'package:split_bill_app/theme/app_haptics.dart';
 
 /// shared_preferences key for the device-local appearance setting.
 const String themeModePreferenceKey = 'themeMode';
+
+/// shared_preferences key for the device-local haptics setting.
+const String hapticsEnabledPreferenceKey = 'hapticsEnabled';
 
 /// Parses a persisted [ThemeMode] name; unknown or missing -> system.
 ThemeMode themeModeFromName(String? name) => ThemeMode.values.firstWhere(
@@ -28,6 +32,7 @@ class AppSettingsProvider extends ChangeNotifier {
   Locale _locale = resolveSupportedLocale(PlatformDispatcher.instance.locales);
   String _currencyCode = UserPreferencesService.defaultCurrencyCode;
   ThemeMode _themeMode = ThemeMode.system;
+  bool _hapticsEnabled = true;
 
   StreamSubscription<User?>? _authSubscription;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
@@ -38,6 +43,9 @@ class AppSettingsProvider extends ChangeNotifier {
   Locale get locale => _locale;
   String get currencyCode => _currencyCode;
   ThemeMode get themeMode => _themeMode;
+
+  /// Whether [AppHaptics] fires. Device-local, defaults to on.
+  bool get hapticsEnabled => _hapticsEnabled;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -60,6 +68,8 @@ class AppSettingsProvider extends ChangeNotifier {
         sanitizeCurrencyCode(prefs.getString('currencyCode')) ??
         UserPreferencesService.defaultCurrencyCode;
     _themeMode = themeModeFromName(prefs.getString(themeModePreferenceKey));
+    _hapticsEnabled = prefs.getBool(hapticsEnabledPreferenceKey) ?? true;
+    AppHaptics.enabled = _hapticsEnabled;
     notifyListeners();
   }
 
@@ -130,6 +140,16 @@ class AppSettingsProvider extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(themeModePreferenceKey, mode.name);
+  }
+
+  /// Haptics are a device preference: stored locally only.
+  Future<void> updateHapticsEnabled(bool enabled) async {
+    if (_hapticsEnabled == enabled) return;
+    _hapticsEnabled = enabled;
+    AppHaptics.enabled = enabled;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(hapticsEnabledPreferenceKey, enabled);
   }
 
   @override
