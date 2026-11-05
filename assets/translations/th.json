@@ -828,5 +828,21 @@
   "payment_handle_account_details": "รายละเอียดบัญชี",
   "payment_handle_invalid": "ดูเหมือนว่า {kind} นี้ไม่ถูกต้อง",
   "payment_methods_popular_in": "ยอดนิยมใน {country}",
-  "payment_methods_worldwide": "ใช้ได้ทั่วโลก"
+  "payment_methods_worldwide": "ใช้ได้ทั่วโลก",
+  "feedback_try_again": "ลองอีกครั้ง",
+  "feedback_dismiss": "ปิด",
+  "feedback_error_title": "เกิดข้อผิดพลาด",
+  "feedback_error_message": "ไม่สามารถดำเนินการให้เสร็จได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "feedback_offline_title": "คุณออฟไลน์อยู่",
+  "feedback_offline_message": "การเปลี่ยนแปลงของคุณถูกบันทึกไว้ในโทรศัพท์เครื่องนี้ และจะซิงค์เมื่อคุณกลับมาออนไลน์",
+  "feedback_offline_banner": "ออฟไลน์ การเปลี่ยนแปลงจะซิงค์เมื่อคุณกลับมา",
+  "feedback_loading": "กำลังโหลด",
+  "feedback_success_title": "เรียบร้อยแล้ว",
+  "feedback_empty_title": "ยังไม่มีอะไรที่นี่",
+  "feedback_toast_success": "สำเร็จ",
+  "feedback_toast_info": "หมายเหตุ",
+  "feedback_toast_warning": "คำเตือน",
+  "feedback_toast_error": "ข้อผิดพลาด",
+  "settings_haptics": "การสั่นตอบสนอง",
+  "settings_haptics_subtitle": "สั่นเบาๆ เมื่อมีการเคลื่อนไหวของเงิน"
 }

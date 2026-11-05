@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Account details",
   "payment_handle_invalid": "That doesn't look like a valid {kind}.",
   "payment_methods_popular_in": "Popular in {country}",
-  "payment_methods_worldwide": "Works worldwide"
+  "payment_methods_worldwide": "Works worldwide",
+  "feedback_try_again": "Try again",
+  "feedback_dismiss": "Dismiss",
+  "feedback_error_title": "Something went wrong",
+  "feedback_error_message": "We couldn't finish that. Check your connection and try again.",
+  "feedback_offline_title": "You're offline",
+  "feedback_offline_message": "Your changes are saved on this phone and will sync when you're back online.",
+  "feedback_offline_banner": "Offline. Changes will sync when you're back.",
+  "feedback_loading": "Loading",
+  "feedback_success_title": "All done",
+  "feedback_empty_title": "Nothing here yet",
+  "feedback_toast_success": "Success",
+  "feedback_toast_info": "Note",
+  "feedback_toast_warning": "Warning",
+  "feedback_toast_error": "Error",
+  "settings_haptics": "Haptics",
+  "settings_haptics_subtitle": "Gentle vibrations when money moves"
 }

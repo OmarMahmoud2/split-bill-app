@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Kontodaten",
   "payment_handle_invalid": "Das sieht nicht nach einer gültigen Angabe aus: {kind}.",
   "payment_methods_popular_in": "Beliebt in {country}",
-  "payment_methods_worldwide": "Funktioniert weltweit"
+  "payment_methods_worldwide": "Funktioniert weltweit",
+  "feedback_try_again": "Erneut versuchen",
+  "feedback_dismiss": "Ausblenden",
+  "feedback_error_title": "Etwas ist schiefgelaufen",
+  "feedback_error_message": "Das hat nicht geklappt. Prüfe deine Verbindung und versuche es erneut.",
+  "feedback_offline_title": "Du bist offline",
+  "feedback_offline_message": "Deine Änderungen sind auf diesem Telefon gespeichert und werden synchronisiert, sobald du wieder online bist.",
+  "feedback_offline_banner": "Offline. Änderungen werden synchronisiert, sobald du zurück bist.",
+  "feedback_loading": "Wird geladen",
+  "feedback_success_title": "Alles erledigt",
+  "feedback_empty_title": "Hier ist noch nichts",
+  "feedback_toast_success": "Erfolgreich",
+  "feedback_toast_info": "Hinweis",
+  "feedback_toast_warning": "Warnung",
+  "feedback_toast_error": "Fehler",
+  "settings_haptics": "Haptisches Feedback",
+  "settings_haptics_subtitle": "Sanfte Vibration, wenn Geld fließt"
 }

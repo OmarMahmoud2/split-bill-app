@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Detail rekening",
   "payment_handle_invalid": "Sepertinya ini bukan {kind} yang valid.",
   "payment_methods_popular_in": "Populer di {country}",
-  "payment_methods_worldwide": "Berlaku di seluruh dunia"
+  "payment_methods_worldwide": "Berlaku di seluruh dunia",
+  "feedback_try_again": "Coba lagi",
+  "feedback_dismiss": "Tutup",
+  "feedback_error_title": "Terjadi kesalahan",
+  "feedback_error_message": "Kami tidak dapat menyelesaikannya. Periksa koneksi Anda dan coba lagi.",
+  "feedback_offline_title": "Anda sedang offline",
+  "feedback_offline_message": "Perubahan Anda tersimpan di ponsel ini dan akan disinkronkan saat Anda kembali online.",
+  "feedback_offline_banner": "Offline. Perubahan akan disinkronkan saat Anda kembali.",
+  "feedback_loading": "Memuat",
+  "feedback_success_title": "Semua beres",
+  "feedback_empty_title": "Belum ada apa-apa di sini",
+  "feedback_toast_success": "Berhasil",
+  "feedback_toast_info": "Info",
+  "feedback_toast_warning": "Peringatan",
+  "feedback_toast_error": "Kesalahan",
+  "settings_haptics": "Haptik",
+  "settings_haptics_subtitle": "Getaran lembut saat uang berpindah"
 }

@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Dados da conta",
   "payment_handle_invalid": "Isso não parece um(a) {kind} válido(a).",
   "payment_methods_popular_in": "Popular em {country}",
-  "payment_methods_worldwide": "Funciona no mundo todo"
+  "payment_methods_worldwide": "Funciona no mundo todo",
+  "feedback_try_again": "Tentar novamente",
+  "feedback_dismiss": "Dispensar",
+  "feedback_error_title": "Algo deu errado",
+  "feedback_error_message": "Não conseguimos concluir. Verifique sua conexão e tente novamente.",
+  "feedback_offline_title": "Você está offline",
+  "feedback_offline_message": "Suas alterações estão salvas neste telefone e serão sincronizadas quando você voltar a ficar online.",
+  "feedback_offline_banner": "Offline. As alterações serão sincronizadas quando você voltar.",
+  "feedback_loading": "Carregando",
+  "feedback_success_title": "Tudo pronto",
+  "feedback_empty_title": "Nada por aqui ainda",
+  "feedback_toast_success": "Sucesso",
+  "feedback_toast_info": "Aviso",
+  "feedback_toast_warning": "Atenção",
+  "feedback_toast_error": "Erro",
+  "settings_haptics": "Resposta tátil",
+  "settings_haptics_subtitle": "Vibrações suaves quando o dinheiro se move"
 }

@@ -7,10 +7,27 @@ import 'package:split_bill_app/theme/app_colors.dart';
 /// through `context.palette` and never hard-code `Colors.*` for surfaces,
 /// text or brand colors.
 ///
-/// The light values reproduce the current look exactly (they are the
-/// Material shades the screens used before the token migration). A rebrand
-/// is a change to [AppPalette.light] / [AppPalette.dark] (and the
-/// primitives in [AppColors]) only.
+/// Values follow the v3 "Quiet ledger" system (design `v3/System.dc.html`):
+/// warm neutrals, one teal [accent], amber for what you owe ([owe]), red
+/// ([error]) only for errors and destructive actions. A sign or a word must
+/// always sit next to a color.
+///
+/// The pre-v3 role names ([primary], [success], [danger], [warning], ...)
+/// are kept and mapped onto v3 values so existing call sites keep compiling:
+///
+/// | legacy role          | v3 meaning                         |
+/// |----------------------|------------------------------------|
+/// | background           | canvas                             |
+/// | border               | hairline                           |
+/// | borderSubtle         | row divider                        |
+/// | primary / accent     | teal accent                        |
+/// | primarySoft          | teal soft ([accentSoft])           |
+/// | success              | teal accent (owed to you)          |
+/// | danger / dangerAccent| error red                          |
+/// | warning              | owe amber                          |
+///
+/// Note: `danger` is error red, not "you owe". Use [owe] for amounts the
+/// user owes.
 @immutable
 class AppPalette extends ThemeExtension<AppPalette> {
   const AppPalette({
@@ -21,6 +38,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.surfaceMuted,
     required this.border,
     required this.borderSubtle,
+    required this.borderStrong,
     required this.textPrimary,
     required this.textStrong,
     required this.textMedium,
@@ -34,6 +52,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.primaryGradient,
     required this.accent,
     required this.onAccent,
+    required this.accentSoft,
+    required this.onAccentSoft,
+    required this.owe,
+    required this.oweSoft,
+    required this.oweInk,
+    required this.error,
+    required this.onError,
+    required this.errorSoft,
     required this.success,
     required this.successStrong,
     required this.successSoft,
@@ -53,6 +79,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.onPremium,
     required this.inverseSurface,
     required this.onInverseSurface,
+    required this.skeleton,
+    required this.skeletonHighlight,
     required this.shadow,
     required this.scrim,
   });
@@ -60,82 +88,97 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Brightness brightness;
 
   // ---------------------------------------------------------------- surfaces
-  /// Scaffold / page background.
+  /// Scaffold / page background (v3 canvas).
   final Color background;
 
-  /// Cards, sheets, dialogs, inputs (white in light mode).
+  /// Cards, sheets, dialogs, inputs.
   final Color surface;
 
-  /// Muted fill on top of a surface: chips, tiles, input backgrounds
-  /// (light: Material grey 100).
+  /// Muted fill on top of a surface: chips, tiles, segmented controls.
   final Color surfaceVariant;
 
-  /// Very subtle fill / alternative page background (light: grey 50).
+  /// Very subtle fill / alternative page background.
   final Color surfaceMuted;
 
-  /// Default border and divider (light: grey 300).
+  /// Default border: the v3 1 px hairline around cards and inputs.
   final Color border;
 
-  /// Hairline / subtle border (light: grey 200).
+  /// Divider between rows inside a card.
   final Color borderSubtle;
 
+  /// Stronger outline: secondary (ghost) buttons, radio rings.
+  final Color borderStrong;
+
   // -------------------------------------------------------------------- text
-  /// Body text and titles (light: #212121, the same as black87 on white).
+  /// Body text and titles (v3 ink).
   final Color textPrimary;
 
-  /// Maximum-emphasis text: pure black in light mode, white in dark mode.
+  /// Maximum-emphasis text.
   final Color textStrong;
 
-  /// Between primary and secondary (light: grey 700).
+  /// Between primary and secondary.
   final Color textMedium;
 
-  /// Secondary text, captions, icons (light: grey 600 / black54).
+  /// Secondary text, captions, icons (v3 muted).
   final Color textSecondary;
 
-  /// Tertiary text, hints, placeholder icons (light: grey 500).
+  /// Tertiary text and hints (still 4.5:1 on every surface).
   final Color textTertiary;
 
-  /// Disabled text and icons (light: grey 400).
+  /// Disabled text and icons (exempt from contrast rules).
   final Color textDisabled;
 
   // ------------------------------------------------------------------- brand
-  /// Brand color for buttons, links, selection.
+  /// Teal accent for selection, links, switches and focus. Primary filled
+  /// buttons use [inverseSurface] (ink), per the v3 mockups.
   final Color primary;
 
-  /// Higher-contrast brand color for brand-colored text on surfaces.
+  /// Higher-contrast teal for small accent text.
   final Color primaryStrong;
 
-  /// Brand tint for selected chips / badges backgrounds.
+  /// Teal tint for selected chips / badge backgrounds.
   final Color primarySoft;
 
   /// Text and icons on [primary] and on [primaryGradient].
   final Color onPrimary;
 
-  /// Brand gradient for headers and hero cards.
+  /// Legacy brand gradient (now a quiet teal ramp).
   final LinearGradient primaryGradient;
 
-  /// Secondary brand accent (coral).
+  /// The one v3 accent (teal). Same as [primary].
   final Color accent;
   final Color onAccent;
 
+  /// Teal soft fill and the text color to use on it.
+  final Color accentSoft;
+  final Color onAccentSoft;
+
+  // ------------------------------------------------------------------ money
+  /// "You owe" amounts: amber, never red.
+  final Color owe;
+
+  /// Amber soft fill and the text color to use on it.
+  final Color oweSoft;
+  final Color oweInk;
+
   // ---------------------------------------------------------------- semantic
-  /// Positive state; also "owed to you" amounts.
+  /// Errors and destructive actions only.
+  final Color error;
+  final Color onError;
+  final Color errorSoft;
+
+  /// Positive state (teal, like owed-to-you amounts).
   final Color success;
-
-  /// Success color for text on surfaces.
   final Color successStrong;
-
-  /// Success tint background.
   final Color successSoft;
 
-  /// Errors, destructive actions; also "you owe" amounts.
+  /// Legacy name for [error].
   final Color danger;
   final Color dangerStrong;
   final Color dangerSoft;
-
-  /// Brighter red (Material redAccent) used for destructive icons/badges.
   final Color dangerAccent;
 
+  /// Caution (amber, the same hue as [owe]).
   final Color warning;
   final Color warningStrong;
   final Color warningSoft;
@@ -143,8 +186,6 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color info;
   final Color infoStrong;
   final Color infoSoft;
-
-  /// Material blueAccent, used for secondary actions / links.
   final Color infoAccent;
 
   /// Premium gold (fixed in both modes).
@@ -153,12 +194,16 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color onPremium;
 
   // ------------------------------------------------------------------ inverse
-  /// High-contrast "inverted" fill (black buttons in light mode, near-white in
-  /// dark mode) and its foreground.
+  /// Ink fill (primary pill buttons, offline banner, toasts) and its
+  /// foreground.
   final Color inverseSurface;
   final Color onInverseSurface;
 
   // ------------------------------------------------------------------ effects
+  /// Skeleton loader base and shimmer highlight.
+  final Color skeleton;
+  final Color skeletonHighlight;
+
   /// Base shadow color; apply alpha at the call site.
   final Color shadow;
 
@@ -168,112 +213,167 @@ class AppPalette extends ThemeExtension<AppPalette> {
   // ----------------------------------------------------------------- aliases
   bool get isDark => brightness == Brightness.dark;
 
-  /// Amount someone owes the current user.
-  Color get owed => success;
+  /// v3 name for [background].
+  Color get canvas => background;
 
-  /// Amount the current user owes.
-  Color get owe => danger;
+  /// v3 name for [border].
+  Color get hairline => border;
+
+  /// Amount someone owes the current user (teal).
+  Color get owed => accent;
+
+  /// Soft fill / ink for "owed to you" chips.
+  Color get owedSoft => accentSoft;
+  Color get owedInk => onAccentSoft;
+
+  /// Neutral amount (settled or informational).
+  Color get neutralAmount => textPrimary;
+
+  /// Avatar tints for telling people apart; text on them is [textPrimary].
+  List<Color> get avatarTints =>
+      isDark ? AppColors.avatarTintsDark : AppColors.avatarTintsLight;
+
+  /// Stable avatar tint for a person id/name.
+  Color avatarTintFor(String key) {
+    final tints = avatarTints;
+    var hash = 0;
+    for (final unit in key.codeUnits) {
+      hash = (hash * 31 + unit) & 0x7fffffff;
+    }
+    return tints[hash % tints.length];
+  }
+
+  /// The one soft shadow v3 allows (sheets and menus), light mode only. In
+  /// dark mode depth comes from a lighter surface tone, so this is empty.
+  List<BoxShadow> get sheetShadow => isDark
+      ? const []
+      : [
+          BoxShadow(
+            color: shadow.withValues(alpha: 0.08),
+            offset: const Offset(0, 8),
+            blurRadius: 24,
+          ),
+        ];
 
   /// Light tint background for a category hue: returns [lightTint] in light
-  /// mode (so the existing look is kept) and [hue] at [darkAlpha] in dark
-  /// mode, e.g. `p.tint(Colors.blueGrey[50]!, Colors.blueGrey)`.
+  /// mode and [hue] at [darkAlpha] in dark mode, e.g.
+  /// `p.tint(Colors.blueGrey[50]!, Colors.blueGrey)`.
   Color tint(Color lightTint, Color hue, {double darkAlpha = 0.18}) =>
       isDark ? hue.withValues(alpha: darkAlpha) : lightTint;
 
   // ----------------------------------------------------------------- presets
   static const AppPalette light = AppPalette(
     brightness: Brightness.light,
-    background: AppColors.backgroundLight, // #F5F7FA
+    background: AppColors.canvasLight, // #F7F7F5
     surface: AppColors.surfaceLight, // #FFFFFF
-    surfaceVariant: Color(0xFFF5F5F5), // grey 100
-    surfaceMuted: Color(0xFFFAFAFA), // grey 50
-    border: AppColors.borderLight, // #E0E0E0 grey 300
-    borderSubtle: Color(0xFFEEEEEE), // grey 200
-    textPrimary: AppColors.textPrimaryLight, // #212121
-    textStrong: Color(0xFF000000),
-    textMedium: Color(0xFF616161), // grey 700
-    textSecondary: AppColors.textSecondaryLight, // #757575 grey 600
-    textTertiary: Color(0xFF9E9E9E), // grey 500
-    textDisabled: AppColors.textDisabledLight, // #BDBDBD grey 400
-    primary: AppColors.primary, // #00ACC1
-    primaryStrong: AppColors.primaryDark, // #00838F
-    primarySoft: Color(0xFFE0F7FA), // cyan 50
+    surfaceVariant: AppColors.surface2Light, // #F2F1EE
+    surfaceMuted: AppColors.canvasLight,
+    border: AppColors.hairlineLight, // #E7E6E1
+    borderSubtle: AppColors.dividerSubtleLight, // #EFEEEA
+    borderStrong: AppColors.borderStrongLight, // #D9D8D3
+    textPrimary: AppColors.inkLight, // #111312
+    textStrong: AppColors.inkLight,
+    textMedium: AppColors.inkMediumLight, // #3A3D3B
+    textSecondary: AppColors.mutedLight, // #5F6360
+    textTertiary: AppColors.tertiaryLight, // #6B6F6C
+    textDisabled: AppColors.disabledLight,
+    primary: AppColors.tealLight, // #0F766E
+    primaryStrong: AppColors.tealStrongLight,
+    primarySoft: AppColors.tealSoftLight, // #E6F2F0
     onPrimary: Color(0xFFFFFFFF),
     primaryGradient: AppColors.primaryGradient,
-    accent: AppColors.secondary, // #FF7043
+    accent: AppColors.tealLight,
     onAccent: Color(0xFFFFFFFF),
-    success: Color(0xFF4CAF50), // Colors.green
-    successStrong: Color(0xFF388E3C), // green 700
-    successSoft: Color(0xFFE8F5E9), // green 50
-    danger: Color(0xFFF44336), // Colors.red
-    dangerStrong: Color(0xFFD32F2F), // red 700
-    dangerSoft: Color(0xFFFFEBEE), // red 50
-    dangerAccent: AppColors.owingRed, // #FF5252 redAccent
-    warning: Color(0xFFFF9800), // Colors.orange
-    warningStrong: Color(0xFFEF6C00), // orange 800
-    warningSoft: Color(0xFFFFF3E0), // orange 50
-    info: Color(0xFF2196F3), // Colors.blue
-    infoStrong: Color(0xFF1565C0), // blue 800
-    infoSoft: Color(0xFFE3F2FD), // blue 50
-    infoAccent: Color(0xFF448AFF), // blueAccent
+    accentSoft: AppColors.tealSoftLight,
+    onAccentSoft: AppColors.tealInkLight, // #0B4F49
+    owe: AppColors.amberLight, // #B45309
+    oweSoft: AppColors.amberSoftLight, // #FBF1E6
+    oweInk: AppColors.amberInkLight, // #7A3E06
+    error: AppColors.errorRedLight, // #B42318
+    onError: Color(0xFFFFFFFF),
+    errorSoft: AppColors.errorSoftLight,
+    success: AppColors.tealLight,
+    successStrong: AppColors.tealStrongLight,
+    successSoft: AppColors.tealSoftLight,
+    danger: AppColors.errorRedLight,
+    dangerStrong: AppColors.errorStrongLight,
+    dangerSoft: AppColors.errorSoftLight,
+    dangerAccent: AppColors.errorRedLight,
+    warning: AppColors.amberLight,
+    warningStrong: AppColors.amberInkLight,
+    warningSoft: AppColors.amberSoftLight,
+    info: AppColors.info, // #3B5B7A
+    infoStrong: Color(0xFF2A445E),
+    infoSoft: AppColors.infoLight,
+    infoAccent: AppColors.info,
     premium: Color(0xFFFFD700),
     premiumStrong: Color(0xFFFFA500),
     onPremium: Color(0xFF000000),
-    inverseSurface: Color(0xFF000000),
+    inverseSurface: AppColors.inkLight,
     onInverseSurface: Color(0xFFFFFFFF),
-    shadow: Color(0xFF000000),
-    scrim: Color(0x8A000000), // black54
+    skeleton: AppColors.dividerSubtleLight, // #EFEEEA
+    skeletonHighlight: AppColors.canvasLight,
+    shadow: AppColors.inkLight,
+    scrim: Color(0x59111312), // ink 35%
   );
 
   static const AppPalette dark = AppPalette(
     brightness: Brightness.dark,
-    background: AppColors.backgroundDark, // #121212
-    surface: AppColors.surfaceDark, // #1E1E1E
-    surfaceVariant: AppColors.cardDark, // #2C2C2C
-    surfaceMuted: Color(0xFF121212), // = background, so surface cards separate
-    border: AppColors.borderDark, // #404040
-    borderSubtle: Color(0xFF333333),
-    textPrimary: AppColors.textPrimaryDark, // #FFFFFF
-    textStrong: Color(0xFFFFFFFF),
-    textMedium: Color(0xFFC2C2C2),
-    textSecondary: AppColors.textSecondaryDark, // #B0B0B0
-    textTertiary: Color(0xFF9A9A9A),
-    textDisabled: AppColors.textDisabledDark, // #707070
-    // Brand stays the same in dark mode so buttons, chips and partially
-    // migrated widgets keep white-on-primary.
-    primary: AppColors.primary, // #00ACC1
-    primaryStrong: AppColors.primaryLight, // #4DD0E1
-    primarySoft: Color(0xFF0D3236),
-    onPrimary: Color(0xFFFFFFFF),
+    background: AppColors.canvasDark, // #0E0F0E
+    surface: AppColors.surfaceDarkV3, // #171918
+    surfaceVariant: AppColors.surface2Dark, // #1F221F
+    surfaceMuted: Color(0xFF131514),
+    border: AppColors.hairlineDark, // #262927
+    borderSubtle: AppColors.dividerSubtleDark, // #222523
+    borderStrong: AppColors.borderStrongDark,
+    textPrimary: AppColors.inkDark, // #F2F3F1
+    textStrong: AppColors.inkDark,
+    textMedium: AppColors.inkMediumDark,
+    textSecondary: AppColors.mutedDark, // #A3A8A5
+    textTertiary: AppColors.tertiaryDark,
+    textDisabled: AppColors.disabledDark,
+    primary: AppColors.tealDark, // #34C5B0
+    primaryStrong: AppColors.tealStrongDark,
+    primarySoft: AppColors.tealSoftDark, // #12322E
+    onPrimary: AppColors.canvasDark,
     primaryGradient: LinearGradient(
-      colors: [Color(0xFF0097A7), Color(0xFF006064)], // cyan 700 -> 900
+      colors: [AppColors.tealDark, Color(0xFF2BA894)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
-    accent: Color(0xFFFF8A65), // deep orange 300
-    onAccent: Color(0xFF000000),
-    success: Color(0xFF66BB6A), // green 400
-    successStrong: Color(0xFF81C784), // green 300
-    successSoft: Color(0xFF1B2E1C),
-    danger: Color(0xFFEF5350), // red 400
-    dangerStrong: Color(0xFFE57373), // red 300
-    dangerSoft: Color(0xFF3A1C1C),
-    dangerAccent: Color(0xFFFF6E6E),
-    warning: Color(0xFFFFA726), // orange 400
-    warningStrong: Color(0xFFFFB74D), // orange 300
-    warningSoft: Color(0xFF3A2A14),
-    info: Color(0xFF42A5F5), // blue 400
-    infoStrong: Color(0xFF90CAF9), // blue 200
-    infoSoft: Color(0xFF102A43),
-    // Same as light: it is used as a filled background under white icons.
-    infoAccent: Color(0xFF448AFF),
+    accent: AppColors.tealDark,
+    onAccent: AppColors.canvasDark,
+    accentSoft: AppColors.tealSoftDark,
+    onAccentSoft: AppColors.tealInkDark,
+    owe: AppColors.amberDark, // #F0B35E
+    oweSoft: AppColors.amberSoftDark,
+    oweInk: AppColors.amberInkDark,
+    error: AppColors.errorRedDark,
+    onError: AppColors.canvasDark,
+    errorSoft: AppColors.errorSoftDark,
+    success: AppColors.tealDark,
+    successStrong: AppColors.tealStrongDark,
+    successSoft: AppColors.tealSoftDark,
+    danger: AppColors.errorRedDark,
+    dangerStrong: AppColors.errorStrongDark,
+    dangerSoft: AppColors.errorSoftDark,
+    dangerAccent: AppColors.errorRedDark,
+    warning: AppColors.amberDark,
+    warningStrong: AppColors.amberInkDark,
+    warningSoft: AppColors.amberSoftDark,
+    info: Color(0xFF8DB3D9),
+    infoStrong: Color(0xFFB5CDE6),
+    infoSoft: Color(0xFF16222E),
+    infoAccent: Color(0xFF8DB3D9),
     premium: Color(0xFFFFD700),
     premiumStrong: Color(0xFFFFA500),
     onPremium: Color(0xFF000000),
-    inverseSurface: Color(0xFFF5F5F5),
-    onInverseSurface: Color(0xFF000000),
+    inverseSurface: AppColors.inkDark,
+    onInverseSurface: AppColors.canvasDark,
+    skeleton: AppColors.dividerSubtleDark,
+    skeletonHighlight: Color(0xFF2A2D2B),
     shadow: Color(0xFF000000),
-    scrim: Color(0xB3000000), // black 70%
+    scrim: Color(0x99000000), // black 60%
   );
 
   @override
@@ -285,6 +385,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     Color? surfaceMuted,
     Color? border,
     Color? borderSubtle,
+    Color? borderStrong,
     Color? textPrimary,
     Color? textStrong,
     Color? textMedium,
@@ -298,6 +399,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
     LinearGradient? primaryGradient,
     Color? accent,
     Color? onAccent,
+    Color? accentSoft,
+    Color? onAccentSoft,
+    Color? owe,
+    Color? oweSoft,
+    Color? oweInk,
+    Color? error,
+    Color? onError,
+    Color? errorSoft,
     Color? success,
     Color? successStrong,
     Color? successSoft,
@@ -317,6 +426,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     Color? onPremium,
     Color? inverseSurface,
     Color? onInverseSurface,
+    Color? skeleton,
+    Color? skeletonHighlight,
     Color? shadow,
     Color? scrim,
   }) {
@@ -328,6 +439,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       surfaceMuted: surfaceMuted ?? this.surfaceMuted,
       border: border ?? this.border,
       borderSubtle: borderSubtle ?? this.borderSubtle,
+      borderStrong: borderStrong ?? this.borderStrong,
       textPrimary: textPrimary ?? this.textPrimary,
       textStrong: textStrong ?? this.textStrong,
       textMedium: textMedium ?? this.textMedium,
@@ -341,6 +453,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
       primaryGradient: primaryGradient ?? this.primaryGradient,
       accent: accent ?? this.accent,
       onAccent: onAccent ?? this.onAccent,
+      accentSoft: accentSoft ?? this.accentSoft,
+      onAccentSoft: onAccentSoft ?? this.onAccentSoft,
+      owe: owe ?? this.owe,
+      oweSoft: oweSoft ?? this.oweSoft,
+      oweInk: oweInk ?? this.oweInk,
+      error: error ?? this.error,
+      onError: onError ?? this.onError,
+      errorSoft: errorSoft ?? this.errorSoft,
       success: success ?? this.success,
       successStrong: successStrong ?? this.successStrong,
       successSoft: successSoft ?? this.successSoft,
@@ -360,6 +480,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
       onPremium: onPremium ?? this.onPremium,
       inverseSurface: inverseSurface ?? this.inverseSurface,
       onInverseSurface: onInverseSurface ?? this.onInverseSurface,
+      skeleton: skeleton ?? this.skeleton,
+      skeletonHighlight: skeletonHighlight ?? this.skeletonHighlight,
       shadow: shadow ?? this.shadow,
       scrim: scrim ?? this.scrim,
     );
@@ -377,6 +499,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       surfaceMuted: c(surfaceMuted, other.surfaceMuted),
       border: c(border, other.border),
       borderSubtle: c(borderSubtle, other.borderSubtle),
+      borderStrong: c(borderStrong, other.borderStrong),
       textPrimary: c(textPrimary, other.textPrimary),
       textStrong: c(textStrong, other.textStrong),
       textMedium: c(textMedium, other.textMedium),
@@ -394,6 +517,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
       )!,
       accent: c(accent, other.accent),
       onAccent: c(onAccent, other.onAccent),
+      accentSoft: c(accentSoft, other.accentSoft),
+      onAccentSoft: c(onAccentSoft, other.onAccentSoft),
+      owe: c(owe, other.owe),
+      oweSoft: c(oweSoft, other.oweSoft),
+      oweInk: c(oweInk, other.oweInk),
+      error: c(error, other.error),
+      onError: c(onError, other.onError),
+      errorSoft: c(errorSoft, other.errorSoft),
       success: c(success, other.success),
       successStrong: c(successStrong, other.successStrong),
       successSoft: c(successSoft, other.successSoft),
@@ -413,6 +544,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
       onPremium: c(onPremium, other.onPremium),
       inverseSurface: c(inverseSurface, other.inverseSurface),
       onInverseSurface: c(onInverseSurface, other.onInverseSurface),
+      skeleton: c(skeleton, other.skeleton),
+      skeletonHighlight: c(skeletonHighlight, other.skeletonHighlight),
       shadow: c(shadow, other.shadow),
       scrim: c(scrim, other.scrim),
     );

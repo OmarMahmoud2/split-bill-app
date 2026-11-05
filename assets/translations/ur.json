@@ -828,5 +828,21 @@
   "payment_handle_account_details": "اکاؤنٹ کی تفصیلات",
   "payment_handle_invalid": "یہ درست {kind} نہیں لگتا۔",
   "payment_methods_popular_in": "{country} میں مقبول",
-  "payment_methods_worldwide": "دنیا بھر میں کام کرتا ہے"
+  "payment_methods_worldwide": "دنیا بھر میں کام کرتا ہے",
+  "feedback_try_again": "دوبارہ کوشش کریں",
+  "feedback_dismiss": "ہٹائیں",
+  "feedback_error_title": "کچھ غلط ہو گیا",
+  "feedback_error_message": "ہم اسے مکمل نہیں کر سکے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "feedback_offline_title": "آپ آف لائن ہیں",
+  "feedback_offline_message": "آپ کی تبدیلیاں اس فون پر محفوظ ہیں اور آن لائن ہوتے ہی سنک ہو جائیں گی۔",
+  "feedback_offline_banner": "آف لائن۔ واپس آنے پر تبدیلیاں سنک ہو جائیں گی۔",
+  "feedback_loading": "لوڈ ہو رہا ہے",
+  "feedback_success_title": "سب ہو گیا",
+  "feedback_empty_title": "یہاں ابھی کچھ نہیں ہے",
+  "feedback_toast_success": "کامیاب",
+  "feedback_toast_info": "نوٹ",
+  "feedback_toast_warning": "انتباہ",
+  "feedback_toast_error": "خرابی",
+  "settings_haptics": "ہیپٹکس",
+  "settings_haptics_subtitle": "پیسے کی منتقلی پر ہلکی وائبریشن"
 }

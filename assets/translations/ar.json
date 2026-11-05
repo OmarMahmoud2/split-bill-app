@@ -828,5 +828,21 @@
   "payment_handle_account_details": "تفاصيل الحساب",
   "payment_handle_invalid": "يبدو أن هذا ليس {kind} صالحًا.",
   "payment_methods_popular_in": "شائع في {country}",
-  "payment_methods_worldwide": "يعمل في كل مكان"
+  "payment_methods_worldwide": "يعمل في كل مكان",
+  "feedback_try_again": "حاول مرة أخرى",
+  "feedback_dismiss": "إخفاء",
+  "feedback_error_title": "حدث خطأ ما",
+  "feedback_error_message": "لم نتمكن من إكمال ذلك. تحقق من اتصالك وحاول مرة أخرى.",
+  "feedback_offline_title": "أنت غير متصل",
+  "feedback_offline_message": "تغييراتك محفوظة على هذا الهاتف وستتم مزامنتها عند عودة الاتصال.",
+  "feedback_offline_banner": "غير متصل. ستتم مزامنة التغييرات عند عودتك.",
+  "feedback_loading": "جارٍ التحميل",
+  "feedback_success_title": "تم كل شيء",
+  "feedback_empty_title": "لا يوجد شيء هنا بعد",
+  "feedback_toast_success": "تم بنجاح",
+  "feedback_toast_info": "ملاحظة",
+  "feedback_toast_warning": "تنبيه",
+  "feedback_toast_error": "خطأ",
+  "settings_haptics": "الاهتزاز اللمسي",
+  "settings_haptics_subtitle": "اهتزازات خفيفة عند تحرك المال"
 }

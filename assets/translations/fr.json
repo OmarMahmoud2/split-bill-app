@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Coordonnées du compte",
   "payment_handle_invalid": "Cela ne ressemble pas à une valeur valide : {kind}.",
   "payment_methods_popular_in": "Populaire en {country}",
-  "payment_methods_worldwide": "Fonctionne partout"
+  "payment_methods_worldwide": "Fonctionne partout",
+  "feedback_try_again": "Réessayer",
+  "feedback_dismiss": "Fermer",
+  "feedback_error_title": "Un problème est survenu",
+  "feedback_error_message": "Nous n'avons pas pu terminer. Vérifiez votre connexion et réessayez.",
+  "feedback_offline_title": "Vous êtes hors ligne",
+  "feedback_offline_message": "Vos modifications sont enregistrées sur ce téléphone et seront synchronisées dès votre retour en ligne.",
+  "feedback_offline_banner": "Hors ligne. Les modifications seront synchronisées à votre retour.",
+  "feedback_loading": "Chargement",
+  "feedback_success_title": "C'est fait",
+  "feedback_empty_title": "Rien pour l'instant",
+  "feedback_toast_success": "Réussi",
+  "feedback_toast_info": "Info",
+  "feedback_toast_warning": "Attention",
+  "feedback_toast_error": "Erreur",
+  "settings_haptics": "Retour haptique",
+  "settings_haptics_subtitle": "Légères vibrations quand l'argent bouge"
 }

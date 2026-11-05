@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Thông tin tài khoản",
   "payment_handle_invalid": "{kind} này có vẻ không hợp lệ.",
   "payment_methods_popular_in": "Phổ biến tại {country}",
-  "payment_methods_worldwide": "Dùng được toàn cầu"
+  "payment_methods_worldwide": "Dùng được toàn cầu",
+  "feedback_try_again": "Thử lại",
+  "feedback_dismiss": "Đóng",
+  "feedback_error_title": "Đã xảy ra lỗi",
+  "feedback_error_message": "Chúng tôi chưa thể hoàn tất. Hãy kiểm tra kết nối và thử lại.",
+  "feedback_offline_title": "Bạn đang ngoại tuyến",
+  "feedback_offline_message": "Các thay đổi đã được lưu trên điện thoại này và sẽ đồng bộ khi bạn trực tuyến trở lại.",
+  "feedback_offline_banner": "Ngoại tuyến. Thay đổi sẽ đồng bộ khi bạn quay lại.",
+  "feedback_loading": "Đang tải",
+  "feedback_success_title": "Đã xong",
+  "feedback_empty_title": "Chưa có gì ở đây",
+  "feedback_toast_success": "Thành công",
+  "feedback_toast_info": "Lưu ý",
+  "feedback_toast_warning": "Cảnh báo",
+  "feedback_toast_error": "Lỗi",
+  "settings_haptics": "Phản hồi xúc giác",
+  "settings_haptics_subtitle": "Rung nhẹ khi tiền được chuyển"
 }

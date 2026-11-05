@@ -204,3 +204,51 @@ class AppSpacing {
   /// 60px - Extra large button
   static const double buttonXl = 60.0;
 }
+
+/// v3 "Quiet ledger" shape tokens.
+///
+/// 6 for chips, 12 for rows and inputs, 20 for cards, 28 for bottom-sheet
+/// top corners, full for pill buttons and avatars. Depth comes from 1 px
+/// [hairline] borders, not shadows; only sheets and menus cast one soft
+/// shadow, in light mode (`context.palette.sheetShadow`).
+class AppRadii {
+  AppRadii._();
+
+  static const double chip = 6;
+  static const double row = 12;
+  static const double card = 20;
+  static const double sheet = 28;
+  static const double full = 999;
+
+  /// Hairline border width.
+  static const double hairline = 1;
+
+  static const BorderRadius chipRadius = BorderRadius.all(
+    Radius.circular(chip),
+  );
+  static const BorderRadius rowRadius = BorderRadius.all(Radius.circular(row));
+  static const BorderRadius cardRadius = BorderRadius.all(
+    Radius.circular(card),
+  );
+  static const BorderRadius sheetRadius = BorderRadius.vertical(
+    top: Radius.circular(sheet),
+  );
+  static const BorderRadius fullRadius = BorderRadius.all(
+    Radius.circular(full),
+  );
+
+  static const StadiumBorder pill = StadiumBorder();
+
+  /// A card shape with a hairline border in [color].
+  static RoundedRectangleBorder cardShape(Color color) =>
+      RoundedRectangleBorder(
+        borderRadius: cardRadius,
+        side: BorderSide(color: color, width: hairline),
+      );
+
+  /// A 12-radius row/input shape with a hairline border in [color].
+  static RoundedRectangleBorder rowShape(Color color) => RoundedRectangleBorder(
+    borderRadius: rowRadius,
+    side: BorderSide(color: color, width: hairline),
+  );
+}

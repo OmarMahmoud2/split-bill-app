@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Rekeninggegevens",
   "payment_handle_invalid": "Dit lijkt geen geldig(e) {kind}.",
   "payment_methods_popular_in": "Populair in {country}",
-  "payment_methods_worldwide": "Werkt wereldwijd"
+  "payment_methods_worldwide": "Werkt wereldwijd",
+  "feedback_try_again": "Opnieuw proberen",
+  "feedback_dismiss": "Sluiten",
+  "feedback_error_title": "Er ging iets mis",
+  "feedback_error_message": "Dat is niet gelukt. Controleer je verbinding en probeer het opnieuw.",
+  "feedback_offline_title": "Je bent offline",
+  "feedback_offline_message": "Je wijzigingen zijn op deze telefoon opgeslagen en worden gesynchroniseerd zodra je weer online bent.",
+  "feedback_offline_banner": "Offline. Wijzigingen worden gesynchroniseerd zodra je terug bent.",
+  "feedback_loading": "Laden",
+  "feedback_success_title": "Helemaal klaar",
+  "feedback_empty_title": "Hier staat nog niets",
+  "feedback_toast_success": "Gelukt",
+  "feedback_toast_info": "Let op",
+  "feedback_toast_warning": "Waarschuwing",
+  "feedback_toast_error": "Fout",
+  "settings_haptics": "Haptische feedback",
+  "settings_haptics_subtitle": "Zachte trillingen als er geld beweegt"
 }

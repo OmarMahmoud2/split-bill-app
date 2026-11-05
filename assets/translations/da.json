@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Kontooplysninger",
   "payment_handle_invalid": "Det ligner ikke et gyldigt {kind}.",
   "payment_methods_popular_in": "Populær i {country}",
-  "payment_methods_worldwide": "Virker overalt"
+  "payment_methods_worldwide": "Virker overalt",
+  "feedback_try_again": "Prøv igen",
+  "feedback_dismiss": "Luk",
+  "feedback_error_title": "Noget gik galt",
+  "feedback_error_message": "Vi kunne ikke gøre det færdigt. Tjek din forbindelse, og prøv igen.",
+  "feedback_offline_title": "Du er offline",
+  "feedback_offline_message": "Dine ændringer er gemt på denne telefon og synkroniseres, når du er online igen.",
+  "feedback_offline_banner": "Offline. Ændringer synkroniseres, når du er tilbage.",
+  "feedback_loading": "Indlæser",
+  "feedback_success_title": "Færdig",
+  "feedback_empty_title": "Her er intet endnu",
+  "feedback_toast_success": "Gennemført",
+  "feedback_toast_info": "Bemærk",
+  "feedback_toast_warning": "Advarsel",
+  "feedback_toast_error": "Fejl",
+  "settings_haptics": "Haptisk feedback",
+  "settings_haptics_subtitle": "Blide vibrationer, når penge flytter sig"
 }

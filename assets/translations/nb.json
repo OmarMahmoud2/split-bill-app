@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Kontodetaljer",
   "payment_handle_invalid": "Dette ser ikke ut som et gyldig {kind}.",
   "payment_methods_popular_in": "Populær i {country}",
-  "payment_methods_worldwide": "Fungerer overalt"
+  "payment_methods_worldwide": "Fungerer overalt",
+  "feedback_try_again": "Prøv igjen",
+  "feedback_dismiss": "Lukk",
+  "feedback_error_title": "Noe gikk galt",
+  "feedback_error_message": "Vi fikk ikke fullført. Sjekk tilkoblingen og prøv igjen.",
+  "feedback_offline_title": "Du er frakoblet",
+  "feedback_offline_message": "Endringene dine er lagret på denne telefonen og synkroniseres når du er på nett igjen.",
+  "feedback_offline_banner": "Frakoblet. Endringer synkroniseres når du er tilbake.",
+  "feedback_loading": "Laster inn",
+  "feedback_success_title": "Alt klart",
+  "feedback_empty_title": "Ingenting her ennå",
+  "feedback_toast_success": "Fullført",
+  "feedback_toast_info": "Merk",
+  "feedback_toast_warning": "Advarsel",
+  "feedback_toast_error": "Feil",
+  "settings_haptics": "Haptikk",
+  "settings_haptics_subtitle": "Lette vibrasjoner når penger flyttes"
 }

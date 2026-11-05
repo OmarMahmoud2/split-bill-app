@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Dane konta",
   "payment_handle_invalid": "To nie wygląda na prawidłowy {kind}.",
   "payment_methods_popular_in": "Popularne w {country}",
-  "payment_methods_worldwide": "Działa na całym świecie"
+  "payment_methods_worldwide": "Działa na całym świecie",
+  "feedback_try_again": "Spróbuj ponownie",
+  "feedback_dismiss": "Zamknij",
+  "feedback_error_title": "Coś poszło nie tak",
+  "feedback_error_message": "Nie udało się tego dokończyć. Sprawdź połączenie i spróbuj ponownie.",
+  "feedback_offline_title": "Jesteś offline",
+  "feedback_offline_message": "Zmiany są zapisane na tym telefonie i zsynchronizują się, gdy wrócisz do sieci.",
+  "feedback_offline_banner": "Offline. Zmiany zsynchronizują się po powrocie.",
+  "feedback_loading": "Wczytywanie",
+  "feedback_success_title": "Wszystko gotowe",
+  "feedback_empty_title": "Na razie nic tu nie ma",
+  "feedback_toast_success": "Sukces",
+  "feedback_toast_info": "Informacja",
+  "feedback_toast_warning": "Ostrzeżenie",
+  "feedback_toast_error": "Błąd",
+  "settings_haptics": "Haptyka",
+  "settings_haptics_subtitle": "Delikatne wibracje, gdy przepływają pieniądze"
 }

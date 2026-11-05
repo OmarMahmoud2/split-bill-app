@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Реквизиты счёта",
   "payment_handle_invalid": "Похоже, это неверное значение: {kind}.",
   "payment_methods_popular_in": "Популярно: {country}",
-  "payment_methods_worldwide": "Работает по всему миру"
+  "payment_methods_worldwide": "Работает по всему миру",
+  "feedback_try_again": "Повторить",
+  "feedback_dismiss": "Скрыть",
+  "feedback_error_title": "Что-то пошло не так",
+  "feedback_error_message": "Не удалось завершить действие. Проверьте подключение и попробуйте снова.",
+  "feedback_offline_title": "Нет подключения",
+  "feedback_offline_message": "Изменения сохранены на этом телефоне и синхронизируются, когда вы снова будете в сети.",
+  "feedback_offline_banner": "Нет сети. Изменения синхронизируются, когда вы вернётесь.",
+  "feedback_loading": "Загрузка",
+  "feedback_success_title": "Готово",
+  "feedback_empty_title": "Здесь пока ничего нет",
+  "feedback_toast_success": "Успешно",
+  "feedback_toast_info": "Примечание",
+  "feedback_toast_warning": "Внимание",
+  "feedback_toast_error": "Ошибка",
+  "settings_haptics": "Тактильная отдача",
+  "settings_haptics_subtitle": "Лёгкая вибрация при движении денег"
 }

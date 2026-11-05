@@ -828,5 +828,21 @@
   "payment_handle_account_details": "Kontouppgifter",
   "payment_handle_invalid": "Det ser inte ut som ett giltigt {kind}.",
   "payment_methods_popular_in": "Populärt i {country}",
-  "payment_methods_worldwide": "Fungerar överallt"
+  "payment_methods_worldwide": "Fungerar överallt",
+  "feedback_try_again": "Försök igen",
+  "feedback_dismiss": "Stäng",
+  "feedback_error_title": "Något gick fel",
+  "feedback_error_message": "Vi kunde inte slutföra det. Kontrollera anslutningen och försök igen.",
+  "feedback_offline_title": "Du är offline",
+  "feedback_offline_message": "Dina ändringar sparas på den här telefonen och synkas när du är online igen.",
+  "feedback_offline_banner": "Offline. Ändringar synkas när du är tillbaka.",
+  "feedback_loading": "Läser in",
+  "feedback_success_title": "Allt klart",
+  "feedback_empty_title": "Inget här än",
+  "feedback_toast_success": "Klart",
+  "feedback_toast_info": "Obs",
+  "feedback_toast_warning": "Varning",
+  "feedback_toast_error": "Fel",
+  "settings_haptics": "Haptik",
+  "settings_haptics_subtitle": "Mjuka vibrationer när pengar rör sig"
 }

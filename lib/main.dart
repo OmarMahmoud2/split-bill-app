@@ -22,6 +22,8 @@ import 'services/notification_payload.dart';
 import 'services/guest_session.dart';
 import 'services/notification_service.dart';
 import 'utils/app_theme.dart';
+import 'theme/app_typography.dart';
+import 'theme/font_licenses.dart';
 import 'auth_wrapper.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
@@ -29,6 +31,7 @@ import 'helpers/rewarded_ad_helper.dart';
 import 'config/supported_preferences.dart';
 import 'providers/app_settings_provider.dart';
 import 'web_download_screen.dart';
+import 'screens/debug/foundation_gallery_screen.dart';
 
 // Global Navigator Key for Deep Linking
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -36,6 +39,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  registerFontLicenses();
   debugPrint("🚀 App Launch: Widgets Initialized");
 
   Object? firebaseInitializationError;
@@ -357,11 +361,17 @@ class _MyAppState extends State<MyApp> {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: appSettings.themeMode,
+          // Debug-only QA gallery of the v3 foundation (never in release).
+          routes: {
+            if (kDebugMode)
+              FoundationGalleryScreen.routeName: (_) =>
+                  const FoundationGalleryScreen(),
+          },
           // Status bar icons follow the active theme on screens without an
           // AppBar (AppBarTheme.systemOverlayStyle covers the rest).
           builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
             value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
-            child: child ?? const SizedBox.shrink(),
+            child: AppLocaleTypography(child: child ?? const SizedBox.shrink()),
           ),
 
           home: CustomUpgrader(

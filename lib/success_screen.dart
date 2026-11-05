@@ -7,6 +7,9 @@ import 'package:split_bill_app/utils/share_link_utils.dart';
 import 'home_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+// TODO(v3-screens): replace with the reusable v3 SuccessScreen in
+// lib/widgets/feedback/success_screen.dart (SuccessScreen.show), then delete
+// this Lottie version.
 class SuccessScreen extends StatelessWidget {
   final String storeName;
   final String billId;
