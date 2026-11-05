@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class AssignmentMethodSheet extends StatelessWidget {
   final VoidCallback onVoiceCommand;
@@ -14,7 +15,6 @@ class AssignmentMethodSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -33,7 +33,7 @@ class AssignmentMethodSheet extends StatelessWidget {
           icon: Icons.mic_rounded,
           title: 'voice_command'.tr(),
           subtitle: 'just_say_who_ate_what_cost_1_credit'.tr(),
-          color: const Color(0xFF007AFF),
+          color: context.palette.accent,
           onTap: () {
             Navigator.pop(context);
             onVoiceCommand();
@@ -45,7 +45,7 @@ class AssignmentMethodSheet extends StatelessWidget {
           icon: Icons.touch_app_rounded,
           title: 'manual_assignment'.tr(),
           subtitle: 'tap_to_assign_items_manually_free'.tr(),
-          color: colorScheme.secondary,
+          color: context.palette.textPrimary,
           onTap: () {
             Navigator.pop(context);
             onManualAssignment();

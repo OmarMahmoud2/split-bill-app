@@ -1,151 +1,151 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/theme.dart';
 
+/// The scan start screen: take or choose a photo, type it in, or snap now
+/// and split later. With an [image] (a resumed draft, or after a failed
+/// read) it shows the photo with "Read receipt" and "Retake photo".
+///
+/// [errorCard] (a `ScanErrorCard`) sits on top when the last try failed.
 class ScanEmptyState extends StatelessWidget {
-  final File? image;
-  final VoidCallback onSnapAndSave;
-  final VoidCallback onAnalyze;
-  final VoidCallback onPickImage;
-
   const ScanEmptyState({
     super.key,
     required this.image,
     required this.onSnapAndSave,
     required this.onAnalyze,
-    required this.onPickImage,
+    required this.onTakePhoto,
+    required this.onChoosePhoto,
+    required this.onTypeItIn,
+    this.errorCard,
   });
+
+  final File? image;
+  final VoidCallback onSnapAndSave;
+  final VoidCallback onAnalyze;
+  final VoidCallback onTakePhoto;
+  final VoidCallback onChoosePhoto;
+  final VoidCallback onTypeItIn;
+  final Widget? errorCard;
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Center(
+    final hasImage = image != null;
+
+    final card = Container(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: AppRadii.cardRadius,
+        border: Border.all(color: p.border),
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (image == null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: ElevatedButton.icon(
-                onPressed: onSnapAndSave,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: p.surface,
-                  foregroundColor: p.infoStrong,
-                  elevation: 4,
-                  shadowColor: p.info.withValues(alpha: 0.2),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+          if (hasImage)
+            ClipRRect(
+              borderRadius: AppRadii.rowRadius,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 280),
+                child: Image.file(
+                  image!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  semanticLabel: 'bf_scan_ready_title'.tr(),
+                  errorBuilder: (_, _, _) => const SizedBox(height: 120),
                 ),
-                icon: const Icon(Icons.flash_on_rounded, color: Colors.amber),
-                label: Text(
-                  'snap_now_and_split_later',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ).tr(),
               ),
-            ),
-          const SizedBox(height: 25),
-          GestureDetector(
-            onTap: () {
-              if (image != null) {
-                onAnalyze();
-              } else {
-                onPickImage();
-              }
-            },
-            child: Container(
-              width: 300,
-              height: 420,
-              decoration: BoxDecoration(
-                color: p.surface,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: p.borderSubtle,
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (image != null) ...[
-                      Expanded(
-                        child: Image.file(
-                          image!,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        color: p.surface,
-                        width: double.infinity,
-                        child: Column(
-                          children: [
-                            Text(
-                              'receipt_ready',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: p.successStrong,
-                              ),
-                            ).tr(),
-                            const SizedBox(height: 8),
-                            Text(
-                              'tap_to_analyze_results',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: p.textTertiary,
-                              ),
-                            ).tr(),
-                          ],
-                        ),
-                      ),
-                    ] else ...[
-                      const Spacer(),
-                      Lottie.asset(
-                        'assets/animations/scan.json',
-                        height: 120,
-                        repeat: false,
-                        errorBuilder: (c, e, s) => const Icon(
-                          Icons.qr_code_scanner_rounded,
-                          size: 80,
-                          color: Color(0xFF00B365),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      Text(
-                        'tap_to_scan',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ).tr(),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          'point_your_camera_at_the_receipt_for_magic_processing',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: p.textSecondary, height: 1.5),
-                        ).tr(),
-                      ),
-                      const Spacer(),
-                    ],
-                  ],
+            )
+          else
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: p.accentSoft,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.document_scanner_outlined,
+                  color: p.onAccentSoft,
+                  size: 26,
                 ),
               ),
             ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            hasImage ? 'bf_scan_ready_title'.tr() : 'bf_scan_title'.tr(),
+            style: AppTypography.headlineMedium.copyWith(
+              fontSize: 24,
+              color: p.textPrimary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            hasImage ? 'bf_scan_ready_hint'.tr() : 'bf_scan_idle_hint'.tr(),
+            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          if (hasImage) ...[
+            FilledButton.icon(
+              key: const ValueKey('scan-read-now'),
+              onPressed: onAnalyze,
+              icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+              label: Text('bf_scan_read_now'.tr()),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            OutlinedButton.icon(
+              onPressed: onTakePhoto,
+              icon: const Icon(Icons.photo_camera_outlined, size: 18),
+              label: Text('bf_scan_retake'.tr()),
+            ),
+          ] else ...[
+            FilledButton.icon(
+              key: const ValueKey('scan-take-photo'),
+              onPressed: onTakePhoto,
+              icon: const Icon(Icons.photo_camera_outlined, size: 18),
+              label: Text('bf_scan_take_photo'.tr()),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            OutlinedButton.icon(
+              onPressed: onChoosePhoto,
+              icon: const Icon(Icons.photo_library_outlined, size: 18),
+              label: Text('bf_scan_choose_photo'.tr()),
+            ),
+          ],
+        ],
+      ),
+    );
+
+    return SingleChildScrollView(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (errorCard != null) ...[errorCard!, const SizedBox(height: 14)],
+          card,
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: AppSpacing.sm,
+            children: [
+              TextButton.icon(
+                onPressed: onTypeItIn,
+                style: TextButton.styleFrom(foregroundColor: p.accent),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: Text('bf_scan_type_it_in'.tr()),
+              ),
+              if (!hasImage)
+                TextButton.icon(
+                  onPressed: onSnapAndSave,
+                  style: TextButton.styleFrom(foregroundColor: p.accent),
+                  icon: const Icon(Icons.bolt_outlined, size: 18),
+                  label: Text('snap_now_and_split_later'.tr()),
+                ),
+            ],
           ),
         ],
       ),
