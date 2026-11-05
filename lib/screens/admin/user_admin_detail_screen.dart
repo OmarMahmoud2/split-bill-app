@@ -1,91 +1,173 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/countries.dart';
-import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:split_bill_app/services/admin_user_actions.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
+import 'admin_user_filters.dart';
 import 'widgets/admin_avatar.dart';
 import 'widgets/send_notification_sheet.dart';
 
-/// Admin: one user's profile, plan, points and bills (v3 "User detail").
-class UserAdminDetailScreen extends StatelessWidget {
-  final String uid;
-  final Map<String, dynamic> userData;
+/// Bills and groups a user is part of.
+class AdminUserCounts {
+  const AdminUserCounts({this.bills, this.groups});
+  final int? bills;
+  final int? groups;
+}
 
+/// Admin: everything about one user and every admin action (v3 "User
+/// detail"). Each action asks for confirmation, shows a success or error
+/// toast, and is written with an `adminAudit` entry by [AdminUserActions].
+class UserAdminDetailScreen extends StatefulWidget {
   const UserAdminDetailScreen({
     super.key,
     required this.uid,
     required this.userData,
+    @visibleForTesting this.userStream,
+    @visibleForTesting this.actions,
+    @visibleForTesting this.adminUid,
+    @visibleForTesting this.loadCounts,
+    @visibleForTesting this.loadBills,
+    @visibleForTesting this.notificationSender,
   });
 
-  static String platformLabel(Map<String, dynamic> data) {
-    final loginPlatform =
-        (data['loginPlatform'] ?? data['fcmPlatform']) as String?;
-    if (loginPlatform != null && loginPlatform.isNotEmpty) {
-      switch (loginPlatform.toLowerCase()) {
-        case 'ios':
-          return 'iOS';
-        case 'android':
-          return 'Android';
-        case 'web':
-          return 'Web';
-      }
-      return loginPlatform;
-    }
-    final email = data['email'] as String? ?? '';
-    if (email.endsWith('@privaterelay.appleid.com')) return 'iOS';
-    return '';
+  final String uid;
+  final Map<String, dynamic> userData;
+  final Stream<Map<String, dynamic>?>? userStream;
+  final AdminUserActions? actions;
+  final String? adminUid;
+  final Future<AdminUserCounts> Function()? loadCounts;
+  final Future<List<Map<String, dynamic>>> Function()? loadBills;
+  final Future<bool> Function({
+    required String targetUid,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
+  })?
+  notificationSender;
+
+  static String platformLabel(Map<String, dynamic> data) =>
+      switch (adminPlatformOf(data)) {
+        'ios' => 'iOS',
+        'android' => 'Android',
+        'web' => 'Web',
+        null => '',
+        final other => other,
+      };
+
+  @override
+  State<UserAdminDetailScreen> createState() => _UserAdminDetailScreenState();
+}
+
+class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
+  late final String _adminUid =
+      widget.adminUid ?? FirebaseAuth.instance.currentUser?.uid ?? '';
+  late final AdminUserActions _actions =
+      widget.actions ??
+      AdminUserActions(
+        backend: FirestoreAdminActionBackend(),
+        adminUid: _adminUid,
+      );
+  late final Stream<Map<String, dynamic>?> _userStream =
+      widget.userStream ??
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.uid)
+          .snapshots()
+          .map((s) => s.data());
+  late final Future<AdminUserCounts> _counts = _loadCounts();
+  late Future<List<Map<String, dynamic>>> _bills = _loadBills();
+  bool _busy = false;
+
+  String get uid => widget.uid;
+
+  Future<AdminUserCounts> _loadCounts() async {
+    if (widget.loadCounts != null) return widget.loadCounts!();
+    final db = FirebaseFirestore.instance;
+    int? bills, groups;
+    try {
+      bills =
+          (await db
+                  .collection('bills')
+                  .where('participants_uids', arrayContains: uid)
+                  .count()
+                  .get())
+              .count;
+    } catch (_) {}
+    try {
+      groups =
+          (await db
+                  .collection('groups')
+                  .where('memberIds', arrayContains: uid)
+                  .count()
+                  .get())
+              .count;
+    } catch (_) {}
+    return AdminUserCounts(bills: bills, groups: groups);
+  }
+
+  Future<List<Map<String, dynamic>>> _loadBills() async {
+    if (widget.loadBills != null) return widget.loadBills!();
+    final snap = await FirebaseFirestore.instance
+        .collection('bills')
+        .where('participants_uids', arrayContains: uid)
+        .limit(100)
+        .get();
+    final bills = [for (final d in snap.docs) d.data()];
+    bills.sort((a, b) {
+      final da = a['date'], db = b['date'];
+      if (da is! Timestamp && db is! Timestamp) return 0;
+      if (da is! Timestamp) return 1;
+      if (db is! Timestamp) return -1;
+      return db.compareTo(da);
+    });
+    return bills;
+  }
+
+  String _date(Object? v, String locale) {
+    final d = v is Timestamp
+        ? v.toDate()
+        : v is DateTime
+        ? v
+        : v is String
+        ? DateTime.tryParse(v)
+        : null;
+    return d == null ? '—' : DateFormat.yMMMd(locale).format(d.toLocal());
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .snapshots(),
+    return StreamBuilder<Map<String, dynamic>?>(
+      stream: _userStream,
       builder: (context, snapshot) {
         final p = context.palette;
-        final currentData =
-            (snapshot.data?.data() as Map<String, dynamic>?) ?? userData;
-        final String name =
-            (currentData['displayName'] as String?)?.trim().isNotEmpty == true
-            ? currentData['displayName']
-            : 'unknown_user'.tr();
-        final isPremium = RevenueCatService.isUserActivePremium(currentData);
-        final isAdmin = currentData['isAdmin'] == true;
-        final int points = (currentData['points'] as num?)?.toInt() ?? 0;
-        final locale = context.locale.toLanguageTag();
-        final createdAt = currentData['createdAt'];
-        final joined = createdAt is Timestamp
-            ? DateFormat.yMMMd(locale).format(createdAt.toDate())
-            : null;
-        final lastSync = currentData['fcmTokenUpdatedAt'];
-
-        final String? isoCode = currentData['isoCode'] as String?;
-        String countryName = 'unknown'.tr();
-        if (isoCode != null) {
-          try {
-            countryName = countries.firstWhere((c) => c.code == isoCode).name;
-          } catch (_) {
-            countryName = isoCode;
-          }
+        if (snapshot.hasData && snapshot.data == null) {
+          return Scaffold(
+            backgroundColor: p.canvas,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  V3TopBar(
+                    leading: V3IconButton.back(context),
+                    title: 'adm3_user_title'.tr(),
+                  ),
+                  Expanded(
+                    child: EmptyState(
+                      icon: Icons.person_off_outlined,
+                      title: 'adm3_user_gone'.tr(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
-        final platform = platformLabel(currentData);
-        final plan = isAdmin
-            ? 'admin'.tr()
-            : (isPremium ? 'adm3_plan_pro'.tr() : 'adm3_plan_free'.tr());
-        final caption = [
-          if (joined != null) 'adm3_joined'.tr(namedArgs: {'date': joined}),
-          if (platform.isNotEmpty) platform,
-          plan,
-        ].join(' · ');
-        final expires = currentData['premiumExpiresAt']?.toString() ?? '';
-
+        final data = snapshot.data ?? widget.userData;
         return Scaffold(
           backgroundColor: p.canvas,
           body: SafeArea(
@@ -98,148 +180,7 @@ class UserAdminDetailScreen extends StatelessWidget {
                     title: 'adm3_user_title'.tr(),
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      20,
-                      16,
-                      20,
-                      0,
-                    ),
-                    child: Row(
-                      children: [
-                        AdminAvatar(
-                          name: name,
-                          photoUrl: currentData['photoUrl'] as String?,
-                          size: 52,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name,
-                                style: AppTypography.titleLarge.copyWith(
-                                  color: p.textPrimary,
-                                ),
-                              ),
-                              Text(
-                                caption,
-                                style: AppTypography.bodySmall.copyWith(
-                                  color: p.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 14)),
-                SliverToBoxAdapter(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('bills')
-                        .where('participants_uids', arrayContains: uid)
-                        .snapshots(),
-                    builder: (context, billSnap) {
-                      final bills = [...?billSnap.data?.docs];
-                      bills.sort((a, b) {
-                        final dateA =
-                            (a.data() as Map<String, dynamic>?)?['date']
-                                as Timestamp?;
-                        final dateB =
-                            (b.data() as Map<String, dynamic>?)?['date']
-                                as Timestamp?;
-                        if (dateA == null && dateB == null) return 0;
-                        if (dateA == null) return 1;
-                        if (dateB == null) return -1;
-                        return dateB.compareTo(dateA);
-                      });
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SettingsCard(
-                            children: [
-                              _InfoRow(
-                                'adm3_bills'.tr(),
-                                billSnap.hasData ? '${bills.length}' : '—',
-                                numeric: true,
-                              ),
-                              _InfoRow(
-                                'adm3_points_balance'.tr(),
-                                '$points',
-                                numeric: true,
-                              ),
-                              _InfoRow(
-                                'adm3_last_sync'.tr(),
-                                lastSync is Timestamp
-                                    ? DateFormat.yMMMd(
-                                        locale,
-                                      ).format(lastSync.toDate())
-                                    : '—',
-                              ),
-                              if (isPremium && expires.isNotEmpty)
-                                _InfoRow(
-                                  'adm3_premium_expires'.tr(),
-                                  expires.split('T').first,
-                                ),
-                              _InfoRow(
-                                'email'.tr(),
-                                (currentData['email'] as String?) ??
-                                    'not_provided'.tr(),
-                              ),
-                              _InfoRow(
-                                'phone'.tr(),
-                                (currentData['phoneNumber'] as String?) ??
-                                    'not_provided'.tr(),
-                              ),
-                              _InfoRow('country'.tr(), countryName),
-                              _InfoRow('UID', uid, selectable: true),
-                            ],
-                          ),
-                          _actions(
-                            context,
-                            currentData,
-                            points,
-                            isPremium,
-                            isAdmin,
-                          ),
-                          SettingsSectionLabel('user_bills_summary'.tr()),
-                          if (billSnap.hasError)
-                            ErrorState.inline(
-                              message: 'error_loading_bills'.tr(),
-                            )
-                          else if (!billSnap.hasData)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: SkeletonCard(),
-                            )
-                          else if (bills.isEmpty)
-                            EmptyState(
-                              compact: true,
-                              icon: Icons.receipt_long_outlined,
-                              title: 'no_bills_found'.tr(),
-                            )
-                          else
-                            SettingsCard(
-                              children: [
-                                for (final doc in bills)
-                                  _billRow(
-                                    context,
-                                    doc.data() as Map<String, dynamic>,
-                                    locale,
-                                  ),
-                              ],
-                            ),
-                          const SizedBox(height: 48),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+                SliverToBoxAdapter(child: _content(context, data)),
               ],
             ),
           ),
@@ -248,22 +189,240 @@ class UserAdminDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _actions(
-    BuildContext context,
-    Map<String, dynamic> currentData,
-    int points,
-    bool isPremium,
-    bool isAdmin,
-  ) {
+  Widget _content(BuildContext context, Map<String, dynamic> data) {
     final p = context.palette;
+    final locale = context.locale.toLanguageTag();
+    final name = adminDisplayName(data).isEmpty
+        ? 'unknown_user'.tr()
+        : adminDisplayName(data);
+    final isPro = adminIsPro(data);
+    final isAdmin = data['isAdmin'] == true;
+    final suspended = data['suspended'] == true;
+    final points = (data['points'] as num?)?.toInt() ?? 0;
+    final platform = UserAdminDetailScreen.platformLabel(data);
+    final joined = adminCreatedAt(data);
+    final caption = [
+      if (joined != null)
+        'adm3_joined'.tr(
+          namedArgs: {'date': DateFormat.yMMMd(locale).format(joined)},
+        ),
+      if (platform.isNotEmpty) platform,
+      isAdmin
+          ? 'admin'.tr()
+          : (isPro ? 'adm3_plan_pro'.tr() : 'adm3_plan_free'.tr()),
+    ].join(' · ');
+    final isoCode = data['isoCode'] as String?;
+    var country = '—';
+    if (isoCode != null && isoCode.isNotEmpty) {
+      country = countries
+          .where((c) => c.code == isoCode)
+          .map((c) => c.name)
+          .firstWhere((_) => true, orElse: () => isoCode);
+    }
+    final phone = (data['phoneNumber'] as String?)?.trim() ?? '';
+    final email = (data['email'] as String?)?.trim() ?? '';
+    final appVersion = (data['appVersion'] ?? data['loginAppVersion'])
+        ?.toString();
+    final willRenew = data['premiumWillRenew'];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
+          child: Row(
+            children: [
+              AdminAvatar(
+                name: name,
+                photoUrl: data['photoUrl'] as String?,
+                size: 52,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: AppTypography.titleLarge.copyWith(
+                        color: p.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      caption,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: p.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (suspended)
+          Container(
+            key: const ValueKey('admin-suspended-banner'),
+            margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: p.oweSoft,
+              borderRadius: AppRadii.rowRadius,
+            ),
+            child: Text(
+              'adm3_suspended_note'.tr(
+                namedArgs: {'date': _date(data['suspendedAt'], locale)},
+              ),
+              style: AppTypography.titleSmall.copyWith(color: p.oweInk),
+            ),
+          ),
+        SettingsSectionLabel('adm3_section_profile'.tr()),
+        SettingsCard(
+          children: [
+            _InfoRow('email'.tr(), email.isEmpty ? 'not_provided'.tr() : email),
+            _InfoRow('phone'.tr(), phone.isEmpty ? 'not_provided'.tr() : phone),
+            _InfoRow('country'.tr(), country),
+            _InfoRow('adm3_platform'.tr(), platform.isEmpty ? '—' : platform),
+            if (appVersion != null && appVersion.isNotEmpty)
+              _InfoRow('adm3_app_version'.tr(), appVersion),
+            _InfoRow('adm3_signed_up'.tr(), _date(data['createdAt'], locale)),
+            _InfoRow(
+              'adm3_last_active'.tr(),
+              _date(adminLastActive(data), locale),
+            ),
+            _InfoRow('UID', uid, selectable: true),
+          ],
+        ),
+        SettingsSectionLabel('adm3_section_plan'.tr()),
+        SettingsCard(
+          children: [
+            _InfoRow(
+              'adm3_plan'.tr(),
+              data['premiumStore'] == 'admin_override' && isPro
+                  ? 'adm3_plan_override'.tr()
+                  : (isPro ? 'adm3_plan_pro'.tr() : 'adm3_plan_free'.tr()),
+            ),
+            if ((data['premiumProductId'] ?? '').toString().isNotEmpty)
+              _InfoRow('adm3_product'.tr(), '${data['premiumProductId']}'),
+            if ((data['premiumStore'] ?? '').toString().isNotEmpty)
+              _InfoRow('adm3_store'.tr(), '${data['premiumStore']}'),
+            _InfoRow(
+              'adm3_premium_expires'.tr(),
+              data['premiumExpiresAt'] == null
+                  ? (isPro ? 'adm3_never'.tr() : '—')
+                  : _date(data['premiumExpiresAt'], locale),
+            ),
+            if (willRenew is bool)
+              _InfoRow(
+                'adm3_auto_renew'.tr(),
+                willRenew ? 'adm3_yes'.tr() : 'adm3_no'.tr(),
+              ),
+            if ((data['premiumEnvironment'] ?? '').toString().isNotEmpty)
+              _InfoRow(
+                'adm3_environment'.tr(),
+                '${data['premiumEnvironment']}',
+              ),
+          ],
+        ),
+        SettingsSectionLabel('adm3_section_activity'.tr()),
+        FutureBuilder<AdminUserCounts>(
+          future: _counts,
+          builder: (context, snap) {
+            String n(int? v) => snap.hasData && v != null ? '$v' : '—';
+            return SettingsCard(
+              children: [
+                _InfoRow('adm3_points_balance'.tr(), '$points', numeric: true),
+                _InfoRow('adm3_bills'.tr(), n(snap.data?.bills), numeric: true),
+                _InfoRow(
+                  'adm3_groups'.tr(),
+                  n(snap.data?.groups),
+                  numeric: true,
+                ),
+                _InfoRow('adm3_ai_usage_user'.tr(), 'adm3_not_available'.tr()),
+              ],
+            );
+          },
+        ),
+        _actionsSection(context, data, points, isPro, isAdmin, suspended),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+          child: Text(
+            'adm3_audit_caption'.tr(),
+            style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
+          ),
+        ),
+        SettingsSectionLabel('user_bills_summary'.tr()),
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: _bills,
+          builder: (context, snap) {
+            if (snap.hasError) {
+              return ErrorState.inline(
+                message: 'error_loading_bills'.tr(),
+                onRetry: () => setState(() => _bills = _loadBills()),
+              );
+            }
+            if (!snap.hasData) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: SkeletonCard(),
+              );
+            }
+            final bills = snap.data!;
+            if (bills.isEmpty) {
+              return EmptyState(
+                compact: true,
+                icon: Icons.receipt_long_outlined,
+                title: 'no_bills_found'.tr(),
+              );
+            }
+            return SettingsCard(
+              children: [for (final b in bills) _billRow(context, b, locale)],
+            );
+          },
+        ),
+        const SizedBox(height: 48),
+      ],
+    );
+  }
+
+  Widget _destructiveButton({
+    required Key key,
+    required String label,
+    required VoidCallback? onPressed,
+  }) {
+    final p = context.palette;
+    return OutlinedButton(
+      key: key,
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: p.error,
+        side: BorderSide(color: p.errorSoft),
+      ),
+      child: Text(label),
+    );
+  }
+
+  Widget _actionsSection(
+    BuildContext context,
+    Map<String, dynamic> data,
+    int points,
+    bool isPro,
+    bool isAdmin,
+    bool suspended,
+  ) {
+    final phone = (data['phoneNumber'] as String?)?.trim() ?? '';
+    final self = uid == _adminUid;
+    final busy = _busy;
+    const gap = SizedBox(height: 10);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          SettingsSectionLabel('adm3_section_actions'.tr()),
           OutlinedButton(
             key: const ValueKey('admin-grant-10'),
-            onPressed: () => _modifyPoints(context, points, 10),
+            onPressed: busy ? null : () => _changePoints(points, points + 10),
             child: Text('adm3_grant_points'.tr(namedArgs: {'count': '10'})),
           ),
           const SizedBox(height: 8),
@@ -275,47 +434,424 @@ class UserAdminDetailScreen extends StatelessWidget {
                 V3ChoiceChip(
                   label: delta > 0 ? '+$delta' : '−${-delta}',
                   selected: false,
-                  onTap: () => _modifyPoints(context, points, delta),
+                  onTap: () => _changePoints(points, points + delta),
                 ),
               V3ChoiceChip(
                 label: 'set_custom_points'.tr(),
                 selected: false,
-                onTap: () => _showCustomPointsDialog(context, points),
+                onTap: () => _customPoints(points),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          gap,
           OutlinedButton(
-            onPressed: () => _sendNotification(context, currentData),
+            key: const ValueKey('admin-send-message'),
+            onPressed: busy ? null : () => _sendNotification(data),
             child: Text('adm3_send_message'.tr()),
           ),
-          const SizedBox(height: 10),
-          OutlinedButton(
-            onPressed: () => _togglePremium(context, isPremium),
-            style: isPremium
-                ? OutlinedButton.styleFrom(
-                    foregroundColor: p.error,
-                    side: BorderSide(color: p.errorSoft),
-                  )
-                : null,
-            child: Text(
-              isPremium ? 'revoke_premium'.tr() : 'grant_premium'.tr(),
+          gap,
+          isPro
+              ? _destructiveButton(
+                  key: const ValueKey('admin-premium'),
+                  label: 'revoke_premium'.tr(),
+                  onPressed: busy ? null : () => _togglePremium(true),
+                )
+              : OutlinedButton(
+                  key: const ValueKey('admin-premium'),
+                  onPressed: busy ? null : () => _togglePremium(false),
+                  child: Text('grant_premium'.tr()),
+                ),
+          gap,
+          if (isAdmin)
+            _destructiveButton(
+              key: const ValueKey('admin-role'),
+              label: 'adm3_remove_admin'.tr(),
+              onPressed: busy || self ? null : () => _toggleAdmin(true),
+            )
+          else
+            OutlinedButton(
+              key: const ValueKey('admin-role'),
+              onPressed: busy ? null : () => _toggleAdmin(false),
+              child: Text('adm3_make_admin'.tr()),
             ),
-          ),
-          const SizedBox(height: 10),
-          OutlinedButton(
-            onPressed: () => _toggleAdminRole(context, isAdmin),
-            style: isAdmin
-                ? OutlinedButton.styleFrom(
-                    foregroundColor: p.error,
-                    side: BorderSide(color: p.errorSoft),
-                  )
-                : null,
-            child: Text(
-              isAdmin ? 'adm3_remove_admin'.tr() : 'adm3_make_admin'.tr(),
+          if (self && isAdmin)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'adm3_self_note'.tr(),
+                style: AppTypography.bodySmall.copyWith(
+                  color: context.palette.textSecondary,
+                ),
+              ),
             ),
+          gap,
+          if (suspended)
+            OutlinedButton(
+              key: const ValueKey('admin-suspend'),
+              onPressed: busy ? null : () => _toggleSuspend(true),
+              child: Text('adm3_unsuspend'.tr()),
+            )
+          else
+            _destructiveButton(
+              key: const ValueKey('admin-suspend'),
+              label: 'adm3_suspend'.tr(),
+              onPressed: busy || self ? null : () => _toggleSuspend(false),
+            ),
+          if (phone.isNotEmpty) ...[
+            gap,
+            _destructiveButton(
+              key: const ValueKey('admin-reset-phone'),
+              label: 'adm3_reset_phone'.tr(),
+              onPressed: busy ? null : () => _resetPhone(phone),
+            ),
+          ],
+          gap,
+          _destructiveButton(
+            key: const ValueKey('admin-delete-data'),
+            label: 'adm3_delete_data'.tr(),
+            onPressed: busy || self ? null : () => _deleteData(data),
           ),
         ],
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------- actions
+
+  Future<bool> _confirm({
+    required String title,
+    required String message,
+    required String action,
+    bool destructive = false,
+  }) async {
+    if (destructive) AppHaptics.warning();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        final p = ctx.palette;
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('cancel'.tr()),
+            ),
+            FilledButton(
+              key: const ValueKey('admin-confirm'),
+              style: destructive
+                  ? FilledButton.styleFrom(
+                      backgroundColor: p.error,
+                      foregroundColor: p.onError,
+                    )
+                  : null,
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(action),
+            ),
+          ],
+        );
+      },
+    );
+    return ok == true;
+  }
+
+  /// Runs [run], then shows a success or error toast.
+  Future<bool> _perform(
+    Future<AdminActionResult> Function() run, {
+    required String success,
+  }) async {
+    setState(() => _busy = true);
+    try {
+      final result = await run();
+      if (!mounted) return true;
+      AppToast.show(
+        context,
+        message: result.auditLogged
+            ? success
+            : '$success ${'adm3_audit_not_logged'.tr()}',
+        type: AppToastType.success,
+      );
+      return true;
+    } on AdminActionException catch (e) {
+      if (mounted) {
+        AppToast.show(
+          context,
+          message: switch (e.error) {
+            AdminActionError.selfTarget => 'adm3_self_note'.tr(),
+            AdminActionError.invalidAmount => 'adm3_points_invalid'.tr(),
+            AdminActionError.confirmationMismatch =>
+              'adm3_delete_mismatch'.tr(),
+          },
+          type: AppToastType.error,
+        );
+      }
+      return false;
+    } catch (_) {
+      if (mounted) {
+        AppToast.show(
+          context,
+          message: 'adm3_update_failed'.tr(),
+          type: AppToastType.error,
+        );
+      }
+      return false;
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _changePoints(int from, int to) async {
+    final target = to.clamp(0, adminMaxPoints);
+    final ok = await _confirm(
+      title: 'adm3_points_confirm_title'.tr(),
+      message: 'adm3_points_confirm'.tr(
+        namedArgs: {'from': '$from', 'to': '$target'},
+      ),
+      action: 'adm3_save'.tr(),
+      destructive: target < from,
+    );
+    if (!ok || !mounted) return;
+    await _perform(
+      () => _actions.setPoints(uid, currentPoints: from, newPoints: target),
+      success: 'adm3_points_saved'.tr(namedArgs: {'count': '$target'}),
+    );
+  }
+
+  Future<void> _customPoints(int current) async {
+    final controller = TextEditingController(text: '$current');
+    final value = await showDialog<int>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('set_custom_points'.tr()),
+        content: TextField(
+          key: const ValueKey('admin-custom-points'),
+          controller: controller,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: InputDecoration(labelText: 'points'.tr()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(ctx, int.tryParse(controller.text.trim())),
+            child: Text('adm3_save'.tr()),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (value == null || !mounted) return;
+    if (value < 0 || value > adminMaxPoints) {
+      AppToast.show(
+        context,
+        message: 'adm3_points_invalid'.tr(),
+        type: AppToastType.error,
+      );
+      return;
+    }
+    await _changePoints(current, value);
+  }
+
+  Future<void> _togglePremium(bool currentlyPro) async {
+    final label = currentlyPro ? 'revoke_premium'.tr() : 'grant_premium'.tr();
+    final ok = await _confirm(
+      title: label,
+      message: currentlyPro
+          ? 'adm3_premium_revoke_confirm'.tr()
+          : 'adm3_premium_grant_confirm'.tr(),
+      action: label,
+      destructive: currentlyPro,
+    );
+    if (!ok || !mounted) return;
+    await _perform(
+      () => _actions.setPremium(uid, grant: !currentlyPro),
+      success: currentlyPro
+          ? 'adm3_premium_revoked'.tr()
+          : 'adm3_premium_granted'.tr(),
+    );
+  }
+
+  Future<void> _toggleAdmin(bool currentlyAdmin) async {
+    final label = currentlyAdmin
+        ? 'adm3_remove_admin'.tr()
+        : 'adm3_make_admin'.tr();
+    final ok = await _confirm(
+      title: label,
+      message: 'confirm_admin_toggle'.tr(),
+      action: label,
+      destructive: currentlyAdmin,
+    );
+    if (!ok || !mounted) return;
+    await _perform(
+      () => _actions.setAdmin(uid, admin: !currentlyAdmin),
+      success: 'user_updated_success'.tr(),
+    );
+  }
+
+  Future<void> _toggleSuspend(bool currentlySuspended) async {
+    final label = currentlySuspended
+        ? 'adm3_unsuspend'.tr()
+        : 'adm3_suspend'.tr();
+    final ok = await _confirm(
+      title: label,
+      message: currentlySuspended
+          ? 'adm3_unsuspend_confirm'.tr()
+          : 'adm3_suspend_confirm'.tr(),
+      action: label,
+      destructive: !currentlySuspended,
+    );
+    if (!ok || !mounted) return;
+    await _perform(
+      () => _actions.setSuspended(uid, suspended: !currentlySuspended),
+      success: currentlySuspended
+          ? 'adm3_unsuspended'.tr()
+          : 'adm3_suspended'.tr(),
+    );
+  }
+
+  Future<void> _resetPhone(String phone) async {
+    AppHaptics.warning();
+    var clear = true;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) {
+          final p = ctx.palette;
+          return AlertDialog(
+            title: Text('adm3_reset_phone'.tr()),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'adm3_reset_phone_confirm'.tr(namedArgs: {'phone': phone}),
+                ),
+                const SizedBox(height: 8),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: clear,
+                  onChanged: (v) => setLocal(() => clear = v ?? false),
+                  title: Text('adm3_reset_phone_clear'.tr()),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('cancel'.tr()),
+              ),
+              FilledButton(
+                key: const ValueKey('admin-confirm'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: p.error,
+                  foregroundColor: p.onError,
+                ),
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text('adm3_reset_phone'.tr()),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    if (ok != true || !mounted) return;
+    await _perform(
+      () => _actions.resetPhoneClaim(uid, phone: phone, clearPhone: clear),
+      success: 'adm3_phone_reset_done'.tr(),
+    );
+  }
+
+  Future<void> _deleteData(Map<String, dynamic> data) async {
+    AppHaptics.warning();
+    final email = (data['email'] as String?)?.trim();
+    final target = deleteConfirmationTarget(uid: uid, email: email);
+    final controller = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) {
+          final p = ctx.palette;
+          final valid = isDeleteConfirmationValid(
+            typed: controller.text,
+            uid: uid,
+            email: email,
+          );
+          return AlertDialog(
+            title: Text('adm3_delete_data'.tr()),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('adm3_delete_data_message'.tr()),
+                  const SizedBox(height: 12),
+                  Text(
+                    'adm3_delete_type'.tr(namedArgs: {'target': target}),
+                    style: AppTypography.titleSmall.copyWith(
+                      color: p.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    key: const ValueKey('admin-delete-confirm-field'),
+                    controller: controller,
+                    autocorrect: false,
+                    onChanged: (_) => setLocal(() {}),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('cancel'.tr()),
+              ),
+              FilledButton(
+                key: const ValueKey('admin-confirm'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: p.error,
+                  foregroundColor: p.onError,
+                ),
+                onPressed: valid ? () => Navigator.pop(ctx, true) : null,
+                child: Text('adm3_delete_data'.tr()),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    final typed = controller.text;
+    controller.dispose();
+    if (ok != true || !mounted) return;
+    final done = await _perform(
+      () => _actions.deleteUserData(
+        uid,
+        typedConfirmation: typed,
+        email: email,
+        phone: data['phoneNumber'] as String?,
+      ),
+      success: 'adm3_delete_done'.tr(),
+    );
+    if (done && mounted) Navigator.of(context).maybePop();
+  }
+
+  void _sendNotification(Map<String, dynamic> data) {
+    PremiumBottomSheet.show(
+      context: context,
+      child: SendNotificationSheet(
+        targetUid: uid,
+        targetToken: data['fcmToken'] as String?,
+        userName: (data['displayName'] as String?) ?? 'user'.tr(),
+        sender: widget.notificationSender,
+        onSent: (title) {
+          _actions
+              .logNotificationSent(uid, title: title)
+              .catchError((_) => const AdminActionResult(auditLogged: false));
+        },
       ),
     );
   }
@@ -337,206 +873,11 @@ class UserAdminDetailScreen extends StatelessWidget {
         if (date is Timestamp) DateFormat.yMMMd(locale).format(date.toDate()),
       ].join(' · '),
       trailing: status == 'PAID' ? SoftChip('adm3_paid'.tr()) : null,
-      onTap: () => _showBillSummarySheet(context, billData),
-    );
-  }
-
-  Future<void> _saveUser(
-    BuildContext context,
-    Map<String, dynamic> updates, {
-    String? successMessage,
-    bool merge = false,
-  }) async {
-    try {
-      final ref = FirebaseFirestore.instance.collection('users').doc(uid);
-      if (merge) {
-        await ref.set(updates, SetOptions(merge: true));
-      } else {
-        await ref.update(updates);
-      }
-      if (context.mounted) {
-        AppToast.show(
-          context,
-          message: successMessage ?? 'user_updated_success'.tr(),
-          type: AppToastType.success,
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        AppToast.show(
-          context,
-          message: 'adm3_update_failed'.tr(),
-          type: AppToastType.error,
-        );
-      }
-    }
-  }
-
-  Future<void> _modifyPoints(
-    BuildContext context,
-    int currentPoints,
-    int delta,
-  ) {
-    final newPoints = (currentPoints + delta).clamp(0, 999999);
-    return _saveUser(
-      context,
-      {'points': newPoints},
-      successMessage: 'adm3_points_saved'.tr(
-        namedArgs: {'count': '$newPoints'},
+      onTap: () => PremiumBottomSheet.show(
+        context: context,
+        isScrollable: true,
+        child: _BillSummarySheet(billData: billData),
       ),
-    );
-  }
-
-  Future<void> _showCustomPointsDialog(
-    BuildContext context,
-    int currentPoints,
-  ) async {
-    final controller = TextEditingController(text: currentPoints.toString());
-    final result = await showDialog<int>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('set_custom_points'.tr()),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          autofocus: true,
-          decoration: InputDecoration(labelText: 'points'.tr()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('cancel'.tr()),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.pop(ctx, int.tryParse(controller.text.trim())),
-            child: Text('adm3_save'.tr()),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    if (result != null && context.mounted) {
-      final safePoints = result.clamp(0, 999999);
-      await _saveUser(
-        context,
-        {'points': safePoints},
-        successMessage: 'adm3_points_saved'.tr(
-          namedArgs: {'count': '$safePoints'},
-        ),
-      );
-    }
-  }
-
-  Future<bool> _confirm(
-    BuildContext context, {
-    required String title,
-    required String message,
-    required String action,
-    required bool destructive,
-  }) async {
-    if (destructive) AppHaptics.warning();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final p = ctx.palette;
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text('cancel'.tr()),
-            ),
-            FilledButton(
-              style: destructive
-                  ? FilledButton.styleFrom(
-                      backgroundColor: p.error,
-                      foregroundColor: p.onError,
-                    )
-                  : null,
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(action),
-            ),
-          ],
-        );
-      },
-    );
-    return confirmed == true;
-  }
-
-  Future<void> _togglePremium(
-    BuildContext context,
-    bool currentlyPremium,
-  ) async {
-    final label = currentlyPremium
-        ? 'revoke_premium'.tr()
-        : 'grant_premium'.tr();
-    final ok = await _confirm(
-      context,
-      title: label,
-      message: currentlyPremium
-          ? 'confirm_premium_revoke'.tr()
-          : 'confirm_premium_grant'.tr(),
-      action: label,
-      destructive: currentlyPremium,
-    );
-    if (!ok || !context.mounted) return;
-    final updates = currentlyPremium
-        ? <String, dynamic>{
-            'isPremium': false,
-            'premiumUpdatedAt': FieldValue.serverTimestamp(),
-          }
-        : <String, dynamic>{
-            'isPremium': true,
-            'premiumExpiresAt': null,
-            'premiumEntitlementId': 'premium',
-            'premiumProductId': 'admin_granted_lifetime',
-            'premiumUpdatedAt': FieldValue.serverTimestamp(),
-          };
-    await _saveUser(context, updates, merge: true);
-  }
-
-  Future<void> _toggleAdminRole(
-    BuildContext context,
-    bool currentlyAdmin,
-  ) async {
-    final label = currentlyAdmin
-        ? 'adm3_remove_admin'.tr()
-        : 'adm3_make_admin'.tr();
-    final ok = await _confirm(
-      context,
-      title: label,
-      message: 'confirm_admin_toggle'.tr(),
-      action: label,
-      destructive: currentlyAdmin,
-    );
-    if (!ok || !context.mounted) return;
-    await _saveUser(context, {'isAdmin': !currentlyAdmin});
-  }
-
-  void _sendNotification(
-    BuildContext context,
-    Map<String, dynamic> currentData,
-  ) {
-    PremiumBottomSheet.show(
-      context: context,
-      child: SendNotificationSheet(
-        targetUid: uid,
-        targetToken: currentData['fcmToken'],
-        userName: currentData['displayName'] ?? 'user'.tr(),
-      ),
-    );
-  }
-
-  void _showBillSummarySheet(
-    BuildContext context,
-    Map<String, dynamic> billData,
-  ) {
-    PremiumBottomSheet.show(
-      context: context,
-      isScrollable: true,
-      child: _BillSummarySheet(billData: billData),
     );
   }
 }

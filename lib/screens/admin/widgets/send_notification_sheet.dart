@@ -21,12 +21,16 @@ class SendNotificationSheet extends StatefulWidget {
   })?
   sender;
 
+  /// Called with the title after a successful send (audit logging).
+  final void Function(String title)? onSent;
+
   const SendNotificationSheet({
     super.key,
     required this.targetUid,
     this.targetToken,
     required this.userName,
     this.sender,
+    this.onSent,
   });
 
   @override
@@ -95,6 +99,7 @@ class _SendNotificationSheetState extends State<SendNotificationSheet> {
       );
       if (!mounted) return;
       if (!ok) throw StateError('send failed');
+      widget.onSent?.call(title);
       // The toast lives in the root overlay, so it outlives the sheet.
       AppToast.show(
         context,
