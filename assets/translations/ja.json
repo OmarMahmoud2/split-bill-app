@@ -795,5 +795,21 @@
   "theme_mode_system": "システム設定",
   "theme_mode_system_subtitle": "デバイスの設定に合わせます",
   "theme_mode_light": "ライト",
-  "theme_mode_dark": "ダーク"
+  "theme_mode_dark": "ダーク",
+  "feedback_try_again": "再試行",
+  "feedback_dismiss": "閉じる",
+  "feedback_error_title": "問題が発生しました",
+  "feedback_error_message": "完了できませんでした。接続を確認して、もう一度お試しください。",
+  "feedback_offline_title": "オフラインです",
+  "feedback_offline_message": "変更はこの端末に保存され、オンラインに戻ると同期されます。",
+  "feedback_offline_banner": "オフラインです。戻ると変更が同期されます。",
+  "feedback_loading": "読み込み中",
+  "feedback_success_title": "完了しました",
+  "feedback_empty_title": "まだ何もありません",
+  "feedback_toast_success": "成功",
+  "feedback_toast_info": "お知らせ",
+  "feedback_toast_warning": "注意",
+  "feedback_toast_error": "エラー",
+  "settings_haptics": "触覚フィードバック",
+  "settings_haptics_subtitle": "お金が動くときに軽く振動します"
 }

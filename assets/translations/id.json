@@ -795,5 +795,21 @@
   "theme_mode_system": "Default sistem",
   "theme_mode_system_subtitle": "Mengikuti pengaturan perangkat Anda",
   "theme_mode_light": "Terang",
-  "theme_mode_dark": "Gelap"
+  "theme_mode_dark": "Gelap",
+  "feedback_try_again": "Coba lagi",
+  "feedback_dismiss": "Tutup",
+  "feedback_error_title": "Terjadi kesalahan",
+  "feedback_error_message": "Kami tidak dapat menyelesaikannya. Periksa koneksi Anda dan coba lagi.",
+  "feedback_offline_title": "Anda sedang offline",
+  "feedback_offline_message": "Perubahan Anda tersimpan di ponsel ini dan akan disinkronkan saat Anda kembali online.",
+  "feedback_offline_banner": "Offline. Perubahan akan disinkronkan saat Anda kembali.",
+  "feedback_loading": "Memuat",
+  "feedback_success_title": "Semua beres",
+  "feedback_empty_title": "Belum ada apa-apa di sini",
+  "feedback_toast_success": "Berhasil",
+  "feedback_toast_info": "Info",
+  "feedback_toast_warning": "Peringatan",
+  "feedback_toast_error": "Kesalahan",
+  "settings_haptics": "Haptik",
+  "settings_haptics_subtitle": "Getaran lembut saat uang berpindah"
 }

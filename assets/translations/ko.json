@@ -795,5 +795,21 @@
   "theme_mode_system": "시스템 기본값",
   "theme_mode_system_subtitle": "기기 설정을 따릅니다",
   "theme_mode_light": "라이트",
-  "theme_mode_dark": "다크"
+  "theme_mode_dark": "다크",
+  "feedback_try_again": "다시 시도",
+  "feedback_dismiss": "닫기",
+  "feedback_error_title": "문제가 발생했습니다",
+  "feedback_error_message": "완료하지 못했습니다. 연결을 확인하고 다시 시도하세요.",
+  "feedback_offline_title": "오프라인 상태입니다",
+  "feedback_offline_message": "변경 사항은 이 휴대폰에 저장되며 다시 온라인이 되면 동기화됩니다.",
+  "feedback_offline_banner": "오프라인입니다. 다시 연결되면 변경 사항이 동기화됩니다.",
+  "feedback_loading": "불러오는 중",
+  "feedback_success_title": "모두 완료",
+  "feedback_empty_title": "아직 아무것도 없습니다",
+  "feedback_toast_success": "성공",
+  "feedback_toast_info": "알림",
+  "feedback_toast_warning": "경고",
+  "feedback_toast_error": "오류",
+  "settings_haptics": "햅틱",
+  "settings_haptics_subtitle": "돈이 오갈 때 부드러운 진동"
 }

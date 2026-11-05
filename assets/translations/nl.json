@@ -795,5 +795,21 @@
   "theme_mode_system": "Systeemstandaard",
   "theme_mode_system_subtitle": "Volgt de instelling van je apparaat",
   "theme_mode_light": "Licht",
-  "theme_mode_dark": "Donker"
+  "theme_mode_dark": "Donker",
+  "feedback_try_again": "Opnieuw proberen",
+  "feedback_dismiss": "Sluiten",
+  "feedback_error_title": "Er ging iets mis",
+  "feedback_error_message": "Dat is niet gelukt. Controleer je verbinding en probeer het opnieuw.",
+  "feedback_offline_title": "Je bent offline",
+  "feedback_offline_message": "Je wijzigingen zijn op deze telefoon opgeslagen en worden gesynchroniseerd zodra je weer online bent.",
+  "feedback_offline_banner": "Offline. Wijzigingen worden gesynchroniseerd zodra je terug bent.",
+  "feedback_loading": "Laden",
+  "feedback_success_title": "Helemaal klaar",
+  "feedback_empty_title": "Hier staat nog niets",
+  "feedback_toast_success": "Gelukt",
+  "feedback_toast_info": "Let op",
+  "feedback_toast_warning": "Waarschuwing",
+  "feedback_toast_error": "Fout",
+  "settings_haptics": "Haptische feedback",
+  "settings_haptics_subtitle": "Zachte trillingen als er geld beweegt"
 }

@@ -795,5 +795,21 @@
   "theme_mode_system": "Sistem varsayılanı",
   "theme_mode_system_subtitle": "Cihaz ayarınızı izler",
   "theme_mode_light": "Açık",
-  "theme_mode_dark": "Koyu"
+  "theme_mode_dark": "Koyu",
+  "feedback_try_again": "Tekrar dene",
+  "feedback_dismiss": "Kapat",
+  "feedback_error_title": "Bir şeyler ters gitti",
+  "feedback_error_message": "Bunu tamamlayamadık. Bağlantını kontrol edip tekrar dene.",
+  "feedback_offline_title": "Çevrimdışısın",
+  "feedback_offline_message": "Değişikliklerin bu telefona kaydedildi ve tekrar çevrimiçi olduğunda eşitlenecek.",
+  "feedback_offline_banner": "Çevrimdışı. Değişiklikler geri döndüğünde eşitlenecek.",
+  "feedback_loading": "Yükleniyor",
+  "feedback_success_title": "Her şey tamam",
+  "feedback_empty_title": "Burada henüz bir şey yok",
+  "feedback_toast_success": "Başarılı",
+  "feedback_toast_info": "Not",
+  "feedback_toast_warning": "Uyarı",
+  "feedback_toast_error": "Hata",
+  "settings_haptics": "Dokunsal geri bildirim",
+  "settings_haptics_subtitle": "Para hareket ettiğinde hafif titreşim"
 }

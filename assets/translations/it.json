@@ -795,5 +795,21 @@
   "theme_mode_system": "Predefinito di sistema",
   "theme_mode_system_subtitle": "Segue l'impostazione del dispositivo",
   "theme_mode_light": "Chiaro",
-  "theme_mode_dark": "Scuro"
+  "theme_mode_dark": "Scuro",
+  "feedback_try_again": "Riprova",
+  "feedback_dismiss": "Chiudi",
+  "feedback_error_title": "Qualcosa è andato storto",
+  "feedback_error_message": "Non siamo riusciti a completare l'operazione. Controlla la connessione e riprova.",
+  "feedback_offline_title": "Sei offline",
+  "feedback_offline_message": "Le modifiche sono salvate su questo telefono e verranno sincronizzate quando tornerai online.",
+  "feedback_offline_banner": "Offline. Le modifiche verranno sincronizzate al tuo ritorno.",
+  "feedback_loading": "Caricamento",
+  "feedback_success_title": "Tutto fatto",
+  "feedback_empty_title": "Ancora niente qui",
+  "feedback_toast_success": "Fatto",
+  "feedback_toast_info": "Nota",
+  "feedback_toast_warning": "Attenzione",
+  "feedback_toast_error": "Errore",
+  "settings_haptics": "Feedback aptico",
+  "settings_haptics_subtitle": "Vibrazioni leggere quando il denaro si muove"
 }

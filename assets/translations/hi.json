@@ -795,5 +795,21 @@
   "theme_mode_system": "सिस्टम डिफ़ॉल्ट",
   "theme_mode_system_subtitle": "आपके डिवाइस की सेटिंग के अनुसार",
   "theme_mode_light": "लाइट",
-  "theme_mode_dark": "डार्क"
+  "theme_mode_dark": "डार्क",
+  "feedback_try_again": "फिर से कोशिश करें",
+  "feedback_dismiss": "हटाएँ",
+  "feedback_error_title": "कुछ गड़बड़ हो गई",
+  "feedback_error_message": "हम इसे पूरा नहीं कर सके। अपना कनेक्शन जाँचें और फिर से कोशिश करें।",
+  "feedback_offline_title": "आप ऑफ़लाइन हैं",
+  "feedback_offline_message": "आपके बदलाव इस फ़ोन पर सेव हैं और ऑनलाइन होते ही सिंक हो जाएँगे।",
+  "feedback_offline_banner": "ऑफ़लाइन। वापस आने पर बदलाव सिंक हो जाएँगे।",
+  "feedback_loading": "लोड हो रहा है",
+  "feedback_success_title": "सब हो गया",
+  "feedback_empty_title": "यहाँ अभी कुछ नहीं है",
+  "feedback_toast_success": "सफल",
+  "feedback_toast_info": "सूचना",
+  "feedback_toast_warning": "चेतावनी",
+  "feedback_toast_error": "त्रुटि",
+  "settings_haptics": "हैप्टिक्स",
+  "settings_haptics_subtitle": "पैसे के लेन-देन पर हल्का कंपन"
 }

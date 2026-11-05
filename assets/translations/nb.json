@@ -795,5 +795,21 @@
   "theme_mode_system": "Systemstandard",
   "theme_mode_system_subtitle": "Følger innstillingen på enheten",
   "theme_mode_light": "Lyst",
-  "theme_mode_dark": "Mørkt"
+  "theme_mode_dark": "Mørkt",
+  "feedback_try_again": "Prøv igjen",
+  "feedback_dismiss": "Lukk",
+  "feedback_error_title": "Noe gikk galt",
+  "feedback_error_message": "Vi fikk ikke fullført. Sjekk tilkoblingen og prøv igjen.",
+  "feedback_offline_title": "Du er frakoblet",
+  "feedback_offline_message": "Endringene dine er lagret på denne telefonen og synkroniseres når du er på nett igjen.",
+  "feedback_offline_banner": "Frakoblet. Endringer synkroniseres når du er tilbake.",
+  "feedback_loading": "Laster inn",
+  "feedback_success_title": "Alt klart",
+  "feedback_empty_title": "Ingenting her ennå",
+  "feedback_toast_success": "Fullført",
+  "feedback_toast_info": "Merk",
+  "feedback_toast_warning": "Advarsel",
+  "feedback_toast_error": "Feil",
+  "settings_haptics": "Haptikk",
+  "settings_haptics_subtitle": "Lette vibrasjoner når penger flyttes"
 }

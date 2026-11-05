@@ -795,5 +795,21 @@
   "theme_mode_system": "跟随系统",
   "theme_mode_system_subtitle": "跟随设备设置",
   "theme_mode_light": "浅色",
-  "theme_mode_dark": "深色"
+  "theme_mode_dark": "深色",
+  "feedback_try_again": "重试",
+  "feedback_dismiss": "关闭",
+  "feedback_error_title": "出了点问题",
+  "feedback_error_message": "未能完成操作。请检查网络连接后重试。",
+  "feedback_offline_title": "你已离线",
+  "feedback_offline_message": "你的更改已保存在这台手机上，恢复联网后会自动同步。",
+  "feedback_offline_banner": "已离线。恢复联网后将同步更改。",
+  "feedback_loading": "正在加载",
+  "feedback_success_title": "全部完成",
+  "feedback_empty_title": "这里还没有内容",
+  "feedback_toast_success": "成功",
+  "feedback_toast_info": "提示",
+  "feedback_toast_warning": "警告",
+  "feedback_toast_error": "错误",
+  "settings_haptics": "触感反馈",
+  "settings_haptics_subtitle": "资金变动时轻微振动"
 }
