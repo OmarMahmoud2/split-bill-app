@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Saldo</string>
+    <string name="widget_balance_description">Tu saldo neto en las cuentas abiertas.</string>
+    <string name="widget_scan_name">Escaneo rápido</string>
+    <string name="widget_scan_description">Ve directo a escanear un recibo.</string>
+    <string name="widget_settle_name">Saldar con</string>
+    <string name="widget_settle_description">Las personas con quienes tienes más pendiente.</string>
+    <string name="widget_open_app">Abre Split Bill para ver tus saldos</string>
+    <string name="widget_you_are_owed_sample">Te deben</string>
+    <string name="widget_scan_receipt_sample">Escanear un recibo</string>
+</resources>

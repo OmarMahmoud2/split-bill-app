@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the design's 26dp corners; Android 12+ uses the system radius. -->
+    <dimen name="widget_corner_radius">24dp</dimen>
+    <dimen name="widget_padding">16dp</dimen>
+</resources>

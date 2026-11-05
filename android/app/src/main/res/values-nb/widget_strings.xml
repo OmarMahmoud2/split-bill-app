@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Saldo</string>
+    <string name="widget_balance_description">Nettosaldoen din på tvers av åpne regninger.</string>
+    <string name="widget_scan_name">Hurtigskanning</string>
+    <string name="widget_scan_description">Gå rett til skanning av en kvittering.</string>
+    <string name="widget_settle_name">Gjør opp med</string>
+    <string name="widget_settle_description">Personene du har størst mellomværende med.</string>
+    <string name="widget_open_app">Åpne Split Bill for å se saldoene dine</string>
+    <string name="widget_you_are_owed_sample">Du har til gode</string>
+    <string name="widget_scan_receipt_sample">Skann en kvittering</string>
+</resources>

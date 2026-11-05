@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Bakiye</string>
+    <string name="widget_balance_description">Açık hesaplardaki net bakiyeniz.</string>
+    <string name="widget_scan_name">Hızlı tarama</string>
+    <string name="widget_scan_description">Doğrudan fiş taramaya geçin.</string>
+    <string name="widget_settle_name">Hesaplaşılacaklar</string>
+    <string name="widget_settle_description">En çok hesabınızın olduğu kişiler.</string>
+    <string name="widget_open_app">Bakiyelerinizi görmek için Split Bill\'i açın</string>
+    <string name="widget_you_are_owed_sample">Alacağınız</string>
+    <string name="widget_scan_receipt_sample">Fiş tara</string>
+</resources>

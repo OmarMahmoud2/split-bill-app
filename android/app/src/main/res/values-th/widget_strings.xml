@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">ยอดคงเหลือ</string>
+    <string name="widget_balance_description">ยอดสุทธิของคุณจากบิลที่ยังเปิดอยู่</string>
+    <string name="widget_scan_name">สแกนด่วน</string>
+    <string name="widget_scan_description">ไปที่การสแกนใบเสร็จทันที</string>
+    <string name="widget_settle_name">เคลียร์ยอดกับ</string>
+    <string name="widget_settle_description">คนที่คุณมียอดค้างกันมากที่สุด</string>
+    <string name="widget_open_app">เปิด Split Bill เพื่อดูยอดคงเหลือ</string>
+    <string name="widget_you_are_owed_sample">ยอดที่คุณจะได้รับ</string>
+    <string name="widget_scan_receipt_sample">สแกนใบเสร็จ</string>
+</resources>

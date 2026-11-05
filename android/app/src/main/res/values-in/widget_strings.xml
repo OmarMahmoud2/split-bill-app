@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Saldo</string>
+    <string name="widget_balance_description">Saldo bersih Anda dari tagihan yang terbuka.</string>
+    <string name="widget_scan_name">Pindai cepat</string>
+    <string name="widget_scan_description">Langsung pindai struk.</string>
+    <string name="widget_settle_name">Selesaikan dengan</string>
+    <string name="widget_settle_description">Orang-orang dengan selisih terbesar dengan Anda.</string>
+    <string name="widget_open_app">Buka Split Bill untuk melihat saldo Anda</string>
+    <string name="widget_you_are_owed_sample">Piutang Anda</string>
+    <string name="widget_scan_receipt_sample">Pindai struk</string>
+</resources>

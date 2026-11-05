@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Solde</string>
+    <string name="widget_balance_description">Votre solde net sur les additions en cours.</string>
+    <string name="widget_scan_name">Scan rapide</string>
+    <string name="widget_scan_description">Accédez directement au scan d\'un ticket.</string>
+    <string name="widget_settle_name">Régler avec</string>
+    <string name="widget_settle_description">Les personnes avec qui l\'écart est le plus grand.</string>
+    <string name="widget_open_app">Ouvrez Split Bill pour voir vos soldes</string>
+    <string name="widget_you_are_owed_sample">On vous doit</string>
+    <string name="widget_scan_receipt_sample">Scanner un ticket</string>
+</resources>

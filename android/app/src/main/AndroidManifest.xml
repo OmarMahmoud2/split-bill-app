@@ -5,7 +5,8 @@
     <application
         android:label="Split Bill"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:supportsRtl="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,11 +31,49 @@
                 <data android:scheme="https" android:host="splitbillapp-ffc39.web.app" />
                 <data android:scheme="http" android:host="splitbillapp-ffc39.web.app" />
             </intent-filter>
+            <!-- Home-screen widget taps (home_widget HomeWidgetLaunchIntent). -->
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.LAUNCH" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Home-screen widgets (docs/2.0/WIDGETS.md). -->
+        <receiver
+            android:name=".widgets.BalanceWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_balance_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_balance_info" />
+        </receiver>
+        <receiver
+            android:name=".widgets.ScanWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_scan_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_scan_info" />
+        </receiver>
+        <receiver
+            android:name=".widgets.SettleWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_settle_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_settle_info" />
+        </receiver>
         <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
         android:value="ca-app-pub-8581075015023620~7651102100"/>

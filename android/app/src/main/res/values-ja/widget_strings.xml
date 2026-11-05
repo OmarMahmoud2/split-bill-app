@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">残高</string>
+    <string name="widget_balance_description">未精算の割り勘全体の差引残高。</string>
+    <string name="widget_scan_name">クイックスキャン</string>
+    <string name="widget_scan_description">すぐにレシートをスキャンできます。</string>
+    <string name="widget_settle_name">精算する相手</string>
+    <string name="widget_settle_description">差額が大きい相手を表示します。</string>
+    <string name="widget_open_app">Split Bill を開いて残高を表示</string>
+    <string name="widget_you_are_owed_sample">受け取る金額</string>
+    <string name="widget_scan_receipt_sample">レシートをスキャン</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with the widget string table; see docs/2.0/WIDGETS.md -->
+<resources>
+    <string name="widget_balance_name">Saldo</string>
+    <string name="widget_balance_description">Je nettosaldo over alle openstaande rekeningen.</string>
+    <string name="widget_scan_name">Snel scannen</string>
+    <string name="widget_scan_description">Direct een bon scannen.</string>
+    <string name="widget_settle_name">Verrekenen met</string>
+    <string name="widget_settle_description">De mensen met wie je het meest open hebt staan.</string>
+    <string name="widget_open_app">Open Split Bill om je saldi te zien</string>
+    <string name="widget_you_are_owed_sample">Te ontvangen</string>
+    <string name="widget_scan_receipt_sample">Scan een bon</string>
+</resources>
