@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/theme.dart';
 
 /// A standardized premium bottom sheet container that is bottom-anchored,
 /// responsive, and keyboard-aware.
@@ -19,21 +19,15 @@ class PremiumBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = context.palette;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
       decoration: BoxDecoration(
-        color: context.palette.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        boxShadow: [
-          BoxShadow(
-            color: context.palette.shadow.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        color: p.surface,
+        borderRadius: AppRadii.sheetRadius,
+        // v3: the one soft shadow sheets cast, light mode only.
+        boxShadow: p.sheetShadow,
       ),
       // Transparent Material so ListTiles and InkWells inside the sheet
       // paint their ripples above the decorated background.
@@ -54,15 +48,15 @@ class PremiumBottomSheet extends StatelessWidget {
                   if (showPullHandle) ...[
                     Center(
                       child: Container(
-                        width: 40,
-                        height: 4,
+                        width: 36,
+                        height: 5,
                         decoration: BoxDecoration(
-                          color: colorScheme.outline.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(2),
+                          color: p.borderStrong,
+                          borderRadius: BorderRadius.circular(3),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                   ],
                   if (isScrollable)
                     Flexible(
@@ -95,6 +89,7 @@ class PremiumBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: isScrollControlled,
       backgroundColor: Colors.transparent,
+      barrierColor: context.palette.scrim,
       elevation: 0,
       builder: (context) => PremiumBottomSheet(
         padding: padding,
