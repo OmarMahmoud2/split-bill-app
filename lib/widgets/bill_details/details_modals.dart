@@ -1,633 +1,342 @@
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/currency_utils.dart';
+import 'dart:typed_data';
+
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/bill_flow/bill_calculator.dart'
+    show minorFromAny;
+import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_breakdown_card.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_details_header.dart';
+import 'package:split_bill_app/widgets/bill_details/participant_tile.dart';
+import 'package:split_bill_app/widgets/money_text.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
-class BillDetailsModals {
-  static String _currencyCode(Map<String, dynamic> billData) =>
-      (billData['currencyCode'] ?? billData['currency_code'] ?? 'USD')
-          .toString();
+/// One line of the whole-bill sheet (item or charge), in minor units.
+class BillLine {
+  const BillLine({
+    required this.label,
+    required this.amountMinor,
+    this.muted = false,
+  });
 
-  static List<Map<String, dynamic>> _otherCharges(
-    Map<String, dynamic> billData,
-  ) {
-    final charges = billData['charges'] as Map<String, dynamic>? ?? {};
-    return List<Map<String, dynamic>>.from(charges['otherCharges'] ?? const []);
+  final String label;
+  final int amountMinor;
+  final bool muted;
+}
+
+/// Items then charges of the whole bill, read through [BillReader] so 1.x
+/// docs (doubles) and 2.0 docs (minor units) read the same. The lines sum
+/// to the items subtotal plus charges minus discount.
+List<BillLine> wholeBillLines(BillReader reader) {
+  final lines = <BillLine>[];
+  for (final item in reader.items) {
+    final qty = (item['qty'] as num?)?.round() ?? 1;
+    final name = item['name']?.toString().trim() ?? '';
+    final label = name.isEmpty ? 'bf_bill_item_unnamed'.tr() : name;
+    lines.add(
+      BillLine(
+        label: qty > 1
+            ? 'bf_bill_line_item_qty'.tr(
+                namedArgs: {'item': label, 'qty': '$qty'},
+              )
+            : label,
+        amountMinor: reader.itemUnitPriceMinor(item) * (qty < 1 ? 1 : qty),
+      ),
+    );
+  }
+  void charge(String key, String minorKey, String legacyKey) {
+    final v = reader.chargeMinor(minorKey, legacyKey);
+    if (v != 0) {
+      lines.add(BillLine(label: key.tr(), amountMinor: v, muted: true));
+    }
   }
 
-  static void showFullBillDetails(
+  charge('receipt_tax', 'tax', 'taxAmount');
+  charge('receipt_service_charge', 'service', 'serviceCharge');
+  charge('receipt_tip', 'tip', 'tipAmount');
+  charge('receipt_delivery_fee', 'delivery', 'deliveryFeeAmount');
+  final other = reader.charges['otherCharges'];
+  if (other is List) {
+    for (final c in other) {
+      if (c is! Map) continue;
+      final amount = c['amountMinor'] is num
+          ? (c['amountMinor'] as num).round()
+          : minorFromAny(c['amount'], reader.currency);
+      if (amount == 0) continue;
+      final label = c['label']?.toString().trim() ?? '';
+      lines.add(
+        BillLine(
+          label: label.isEmpty ? 'receipt_other_charge_label'.tr() : label,
+          amountMinor: amount,
+          muted: true,
+        ),
+      );
+    }
+  }
+  final discount = reader.chargeMinor('discount', 'discountAmount');
+  if (discount != 0) {
+    lines.add(
+      BillLine(
+        label: 'receipt_discount'.tr(),
+        amountMinor: -discount.abs(),
+        muted: true,
+      ),
+    );
+  }
+  return lines;
+}
+
+class BillDetailsModals {
+  BillDetailsModals._();
+
+  /// Whole bill: every item and charge, and the grand total.
+  static Future<void> showFullBillDetails(
     BuildContext context,
     Map<String, dynamic> data,
   ) {
-    final List<dynamic> items = data['items'] ?? [];
-    final Map<String, dynamic> charges = data['charges'] ?? {};
-    final String storeName = data['storeName'] ?? 'bill_details'.tr();
-    final String currencyCode = _currencyCode(data);
+    final reader = BillReader(data);
+    final currency = reader.currency;
+    final lines = wholeBillLines(reader);
     final p = context.palette;
-
-    PremiumBottomSheet.show(
+    final store = data['storeName']?.toString().trim();
+    return PremiumBottomSheet.show(
       context: context,
-      padding: EdgeInsets.zero,
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.76,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-              child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            (store == null || store.isEmpty)
+                ? 'bf_bill_full_title'.tr()
+                : store,
+            style: AppTypography.headlineSmall.copyWith(color: p.textPrimary),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'bill_breakdown',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
-                            color: p.infoStrong,
-                            letterSpacing: 2.0,
+                  for (final line in lines)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              line.label,
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: line.muted
+                                    ? p.textSecondary
+                                    : p.textPrimary,
+                              ),
+                            ),
                           ),
-                        ).tr(),
-                        const SizedBox(height: 4),
-                        Text(
-                          storeName,
-                          style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -0.5,
+                          Text(
+                            formatMoneyMinor(
+                              line.amountMinor,
+                              currency,
+                              showSymbol: false,
+                            ),
+                            style: AppTypography.amountSmall.copyWith(
+                              fontSize: 14,
+                              color: line.muted
+                                  ? p.textSecondary
+                                  : p.textPrimary,
+                            ),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: SizedBox(
-                      width: 45,
-                      height: 45,
-                      child: Lottie.asset('assets/animations/food.json'),
-                    ),
-                  ),
                 ],
               ),
             ),
-            const Divider(height: 1),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 20,
+          ),
+          Divider(height: AppSpacing.xl, color: p.borderSubtle),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'grand_total'.tr(),
+                  style: AppTypography.titleSmall.copyWith(
+                    color: p.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  final List? assignedTo = item['assignedTo'] as List?;
-                  final int splitCount = assignedTo?.length ?? 1;
+              ),
+              MoneyText(
+                minor: reader.totalMinor,
+                currency: currency,
+                tone: MoneyTone.neutral,
+                size: MoneySize.row,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          BillPillButton(
+            label: 'bf_bill_done'.tr(),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+  }
 
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: p.surfaceMuted,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: p.surfaceVariant),
+  /// One person's exact breakdown (same numbers they see).
+  static Future<void> showUserShareDetails(
+    BuildContext context,
+    Map<String, dynamic> participant,
+    Map<String, dynamic> billData,
+  ) {
+    final reader = BillReader(billData);
+    final id = participant['id']?.toString() ?? '';
+    final name = participant['name']?.toString() ?? '';
+    final p = context.palette;
+    return PremiumBottomSheet.show(
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              BillAvatar(
+                name: name,
+                photoUrl: participant['photoUrl']?.toString(),
+                tintKey: id,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  'bf_bill_breakdown_for'.tr(namedArgs: {'name': name}),
+                  style: AppTypography.titleLarge.copyWith(
+                    color: p.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Flexible(
+            child: SingleChildScrollView(
+              child: BillBreakdownCard(
+                breakdown: reader.breakdownFor(id),
+                currency: reader.currency,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          BillPillButton(
+            label: 'bf_bill_done'.tr(),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Full-size proof with Confirm.
+  static Future<void> showProof(
+    BuildContext context, {
+    required String name,
+    required Uint8List image,
+    required VoidCallback onConfirm,
+  }) {
+    final p = context.palette;
+    return showDialog<void>(
+      context: context,
+      barrierColor: p.scrim,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: p.surface,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.cardRadius),
+        child: Padding(
+          padding: AppSpacing.allLg,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'bf_bill_proof_from'.tr(namedArgs: {'name': name}),
+                style: AppTypography.titleMedium.copyWith(color: p.textPrimary),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Flexible(
+                child: ClipRRect(
+                  borderRadius: AppRadii.rowRadius,
+                  child: InteractiveViewer(
+                    child: Image.memory(
+                      image,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, _, _) => Padding(
+                        padding: AppSpacing.allXl,
+                        child: Text(
+                          'bf_bill_proof_unreadable'.tr(),
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: p.textSecondary,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: p.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: p.shadow.withValues(alpha: 0.03),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            'quantity_suffix'.tr(
-                              namedArgs: {'qty': (item['qty'] ?? 1).toString()},
-                            ),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              color: p.infoStrong,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item['name'] ?? 'unknown_item'.tr(),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              if (splitCount > 1)
-                                Text(
-                                  'split_between_people'.tr(
-                                    namedArgs: {'count': splitCount.toString()},
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: p.textTertiary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              CurrencyUtils.format(
-                                ((item['price'] as num? ?? 0.0) *
-                                        (item['qty'] as num? ?? 1))
-                                    .toDouble(),
-                                currencyCode: currencyCode,
-                              ),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              BillPillButton(
+                label: 'bf_bill_proof_confirm_paid'.tr(),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  onConfirm();
                 },
               ),
-            ),
-            _buildChargesFooter(
-              context,
-              charges,
-              (data['total'] as num? ?? 0.0).toDouble(),
-              currencyCode,
-              _otherCharges(data),
-            ),
-          ],
+              const SizedBox(height: AppSpacing.sm),
+              BillPillButton(
+                label: 'common_cancel'.tr(),
+                ghost: true,
+                onPressed: () => Navigator.of(dialogContext).pop(),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  static void showUserShareDetails(
-    BuildContext context,
-    Map<String, dynamic> participant,
-    Map<String, dynamic> billData,
-  ) {
-    final List<dynamic> allItems = billData['items'] ?? [];
-    final Map<String, dynamic> charges = billData['charges'] ?? {};
-    final String uid = participant['id'];
-    final String currencyCode = _currencyCode(billData);
+  /// Destructive confirmation. Resolves true when confirmed.
+  static Future<bool> confirmDelete(BuildContext context) async {
     final p = context.palette;
-
-    final userItems = allItems.where((item) {
-      final assigned = item['assignedTo'] as List?;
-      return assigned?.contains(uid) ?? false;
-    }).toList();
-
-    showDialog(
+    final result = await showDialog<bool>(
       context: context,
-      builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(35)),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(35),
-          child: Container(
-            color: p.surface,
-            padding: const EdgeInsets.all(28),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: p.infoStrong.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.receipt_long_rounded,
-                    color: p.infoStrong,
-                    size: 36,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'participant_details_title'.tr(
-                    namedArgs: {'name': participant['name'].toString()},
-                  ),
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'detailed_items_and_proportions',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: p.textTertiary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ).tr(),
-                const SizedBox(height: 24),
-                Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: userItems.length,
-                    itemBuilder: (context, index) {
-                      final item = userItems[index];
-                      final num assignedCount =
-                          (item['assignedTo'] as List).length;
-                      final double userPrice =
-                          ((item['price'] as num) * (item['qty'] as num)) /
-                          assignedCount;
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: BoxDecoration(
-                                color: Colors.blue[300],
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'item_assignment_ratio'.tr(
-                                  namedArgs: {
-                                    'name': item['name'].toString(),
-                                    'count': assignedCount.toString(),
-                                  },
-                                ),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: p.textPrimary,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Text(
-                              CurrencyUtils.format(
-                                userPrice,
-                                currencyCode: currencyCode,
-                              ),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 14,
-                                color: p.infoStrong,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(height: 1, thickness: 1),
-                ),
-                _buildSimpleCharges(
-                  p,
-                  participant,
-                  charges,
-                  billData,
-                  currencyCode,
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
-                  decoration: BoxDecoration(
-                    color: p.successStrong.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: p.successStrong.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'my_total',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          color: p.successStrong,
-                          fontSize: 14,
-                          letterSpacing: 1.2,
-                        ),
-                      ).tr(),
-                      Text(
-                        CurrencyUtils.format(
-                          (participant['share'] as num).toDouble(),
-                          currencyCode: currencyCode,
-                        ),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                          color: p.successStrong,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: p.textPrimary,
-                      foregroundColor: p.surface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'got_it_3',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 16,
-                      ),
-                    ).tr(),
-                  ),
-                ),
-              ],
-            ),
-          ),
+      barrierColor: p.scrim,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: p.surface,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.cardRadius),
+        title: Text(
+          'bf_bill_delete_title'.tr(),
+          style: AppTypography.titleLarge.copyWith(color: p.textPrimary),
         ),
-      ),
-    );
-  }
-
-  static Widget _buildChargesFooter(
-    BuildContext context,
-    Map<String, dynamic> charges,
-    double total,
-    String currencyCode,
-    List<Map<String, dynamic>> otherCharges,
-  ) {
-    final tax = (charges['taxAmount'] as num? ?? 0.0).toDouble();
-    final service = (charges['serviceCharge'] as num? ?? 0.0).toDouble();
-    final tip = (charges['tipAmount'] as num? ?? 0.0).toDouble();
-    final discount = (charges['discountAmount'] as num? ?? 0.0).toDouble();
-    final delivery = (charges['deliveryFeeAmount'] as num? ?? 0.0).toDouble();
-
-    final p = context.palette;
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: p.surfaceMuted,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            if (tax > 0)
-              _buildChargeRow(
-                p,
-                'receipt_tax'.tr(),
-                tax,
-                currencyCode: currencyCode,
-              ),
-            if (service > 0)
-              _buildChargeRow(
-                p,
-                'receipt_service_charge'.tr(),
-                service,
-                currencyCode: currencyCode,
-              ),
-            if (tip > 0)
-              _buildChargeRow(
-                p,
-                'receipt_tip'.tr(),
-                tip,
-                currencyCode: currencyCode,
-              ),
-            if (delivery > 0)
-              _buildChargeRow(
-                p,
-                'receipt_delivery_fee'.tr(),
-                delivery,
-                currencyCode: currencyCode,
-              ),
-            ...otherCharges.map(
-              (charge) => _buildChargeRow(
-                p,
-                (charge['label'] ?? 'receipt_other_charge_label'.tr())
-                    .toString(),
-                ((charge['amount'] as num?)?.toDouble() ?? 0.0),
-                currencyCode: currencyCode,
-              ),
-            ),
-            if (discount > 0)
-              _buildChargeRow(
-                p,
-                'receipt_discount'.tr(),
-                -discount,
-                isDiscount: true,
-                currencyCode: currencyCode,
-              ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'grand_total',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-                ).tr(),
-                Text(
-                  CurrencyUtils.format(total, currencyCode: currencyCode),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 22,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ],
+        content: Text(
+          'bf_bill_delete_message'.tr(),
+          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
         ),
-      ),
-    );
-  }
-
-  static Widget _buildSimpleCharges(
-    AppPalette p,
-    Map<String, dynamic> participant,
-    Map<String, dynamic> charges,
-    Map<String, dynamic> billData,
-    String currencyCode,
-  ) {
-    final items = billData['items'] as List? ?? const [];
-    final participants = billData['participants'] as List? ?? const [];
-    final participantCount = participants.isEmpty ? 1 : participants.length;
-    final otherCharges = _otherCharges(billData);
-    final uid = participant['id'];
-
-    final double totalItems = items.fold(0.0, (sum, item) {
-      return sum + ((item['price'] as num) * (item['qty'] as num)).toDouble();
-    });
-
-    if (totalItems == 0) return const SizedBox.shrink();
-
-    double userItemsTotal = 0.0;
-    for (final item in items) {
-      final assigned = item['assignedTo'] as List? ?? const [];
-      if (assigned.contains(uid) && assigned.isNotEmpty) {
-        final itemTotal = ((item['price'] as num) * (item['qty'] as num? ?? 1))
-            .toDouble();
-        userItemsTotal += itemTotal / assigned.length;
-      }
-    }
-
-    final double userProportion = userItemsTotal / totalItems;
-
-    final tax =
-        (charges['taxAmount'] as num? ?? 0.0).toDouble() * userProportion;
-    final service =
-        (charges['serviceCharge'] as num? ?? 0.0).toDouble() * userProportion;
-    final tip =
-        (charges['tipAmount'] as num? ?? 0.0).toDouble() * userProportion;
-    final delivery =
-        (charges['deliveryFeeAmount'] as num? ?? 0.0).toDouble() /
-        participantCount;
-    final discount =
-        (charges['discountAmount'] as num? ?? 0.0).toDouble() * userProportion;
-
-    return Column(
-      children: [
-        if (tax > 0)
-          _buildChargeRow(
-            p,
-            'tax_portion'.tr(),
-            tax,
-            small: true,
-            currencyCode: currencyCode,
-          ),
-        if (service > 0)
-          _buildChargeRow(
-            p,
-            'service_portion'.tr(),
-            service,
-            small: true,
-            currencyCode: currencyCode,
-          ),
-        if (tip > 0)
-          _buildChargeRow(
-            p,
-            'tip_portion'.tr(),
-            tip,
-            small: true,
-            currencyCode: currencyCode,
-          ),
-        if (delivery > 0)
-          _buildChargeRow(
-            p,
-            'delivery_portion'.tr(),
-            delivery,
-            small: true,
-            currencyCode: currencyCode,
-          ),
-        ...otherCharges.map((charge) {
-          final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
-          final splitMethod = charge['splitMethod'] ?? charge['split_method'];
-          final share = splitMethod == 'equal'
-              ? amount / participantCount
-              : amount * userProportion;
-          if (share <= 0) {
-            return null;
-          }
-          return _buildChargeRow(
-            p,
-            'charge_portion'.tr(
-              namedArgs: {
-                'label': (charge['label'] ?? 'receipt_other_charge_label'.tr())
-                    .toString(),
-              },
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(
+              'common_cancel'.tr(),
+              style: TextStyle(color: p.textPrimary),
             ),
-            share,
-            small: true,
-            currencyCode: currencyCode,
-          );
-        }).whereType<Widget>(),
-        if (discount > 0)
-          _buildChargeRow(
-            p,
-            'discount_portion'.tr(),
-            -discount,
-            small: true,
-            isDiscount: true,
-            currencyCode: currencyCode,
           ),
-      ],
-    );
-  }
-
-  static Widget _buildChargeRow(
-    AppPalette p,
-    String label,
-    double amount, {
-    bool isDiscount = false,
-    bool small = false,
-    String currencyCode = 'USD',
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(color: p.textSecondary, fontSize: small ? 11 : 13),
-          ),
-          Text(
-            "${amount > 0 ? '+' : ''}${CurrencyUtils.format(amount.abs(), currencyCode: currencyCode)}",
-            style: TextStyle(
-              color: isDiscount ? p.danger : p.textPrimary,
-              fontWeight: small ? FontWeight.w500 : FontWeight.bold,
-              fontSize: small ? 11 : 13,
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(
+              'bf_bill_delete_confirm'.tr(),
+              style: TextStyle(color: p.error, fontWeight: FontWeight.w600),
             ),
           ),
         ],
       ),
     );
+    return result == true;
   }
 }

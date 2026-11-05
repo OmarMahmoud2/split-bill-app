@@ -1,27 +1,70 @@
-import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:split_bill_app/config/api_keys.dart';
-import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
-import 'success_screen.dart';
-import 'services/notification_service.dart';
-import 'services/revenue_cat_service.dart';
-import 'utils/currency_utils.dart';
-import 'utils/image_utils.dart';
-import 'widgets/bill_summary_widgets.dart';
-import 'widgets/custom_app_header.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
+import 'package:split_bill_app/bill_flow/bill_calculator.dart';
+import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/config/api_keys.dart';
+import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/screens/split_bill/bill_roulette_screen.dart';
+import 'package:split_bill_app/screens/split_bill/bill_share_screen.dart';
+import 'package:split_bill_app/screens/split_bill/split_method_screen.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
+import 'package:split_bill_app/services/notification_service.dart';
+import 'package:split_bill_app/services/revenue_cat_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_breakdown_card.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/money_text.dart';
 
+/// Friendly key + args for the first issue of a computation. Pure.
+(String, Map<String, String>)? summaryIssueCopy(
+  BillComputation c, {
+  List<String> itemNames = const [],
+}) {
+  if (c.issues.isEmpty) return null;
+  String money(int m) => formatMoneyMinor(m, c.draft.currency);
+  String item(int i) => i < itemNames.length ? itemNames[i] : '#${i + 1}';
+  return switch (c.issues.first) {
+    NoParticipantsIssue() => ('bf_summary_issue_no_people', const {}),
+    UnassignedItemIssue(:final index) => (
+      'bf_summary_issue_unassigned',
+      {'item': item(index)},
+    ),
+    OverAssignedItemIssue(:final index) => (
+      'bf_summary_issue_unassigned',
+      {'item': item(index)},
+    ),
+    ExactMismatchIssue(:final remainingMinor) => (
+      'bf_summary_issue_split',
+      {'amount': money(remainingMinor.abs())},
+    ),
+    PercentMismatchIssue() => ('bf_summary_issue_percent', const {}),
+    NoSharesIssue() => ('bf_split_shares_none', const {}),
+    DiscountTooLargeIssue() => ('bf_split_discount_too_large', const {}),
+    OverrideExceedsTotalIssue(:final totalMinor) => (
+      'bf_summary_issue_override',
+      {'amount': money(totalMinor)},
+    ),
+    OverrideMismatchIssue(:final totalMinor) => (
+      'bf_summary_issue_override',
+      {'amount': money(totalMinor)},
+    ),
+  };
+}
+
+/// Summary, "every cent accounted for" (Split.dc.html, second board):
+/// the total, each person's share with an expandable breakdown, charge
+/// editing, bill roulette, and "Save and share".
 class BillSummaryConfirmScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
   final List<Map<String, dynamic>> participants;
@@ -35,7 +78,21 @@ class BillSummaryConfirmScreen extends StatefulWidget {
   final String? oldBillIdToDelete;
   final String? oldImageToDelete;
 
+  /// A whole-bill split (equal / exact / percent / shares) chosen on the
+  /// split method screen; null means "by item" from the assignments.
+  final BillDraft? methodDraft;
+
+  /// Ledger / group the bill belongs to (data contract `groupId`).
+  final String? groupId;
+
+  /// Test seam: when set, the screen does not touch Firebase or ads and
+  /// calls this instead of saving.
+  @visibleForTesting
+  final Future<String> Function(Map<String, dynamic> billData)? debugSave;
+
   const BillSummaryConfirmScreen({
+    this.methodDraft,
+    this.groupId,
     super.key,
     required this.receiptData,
     required this.participants,
@@ -48,6 +105,7 @@ class BillSummaryConfirmScreen extends StatefulWidget {
     this.deliveryFeeAmount = 0.0,
     this.oldBillIdToDelete,
     this.oldImageToDelete,
+    this.debugSave,
   });
 
   @override
@@ -56,1050 +114,181 @@ class BillSummaryConfirmScreen extends StatefulWidget {
 }
 
 class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
+  late BillDraft _draft;
   bool _isCreating = false;
-  Map<String, double> _finalShares = {};
-  final Map<String, double> _manualShareOverrides = {};
+  String? _expandedId;
   InterstitialAd? _interstitialAd;
-  bool _isAdLoaded = false;
-  final NotificationService _notificationService = NotificationService();
-  String? _rouletteWinnerId;
+  late final NotificationService _notificationService = NotificationService();
 
-  // Editing logic
-  bool _isEditing = false;
-  late TextEditingController _taxController;
-  late TextEditingController _serviceController;
-  late TextEditingController _tipController;
-  late TextEditingController _discountController;
-  late TextEditingController _deliveryFeeController;
+  bool get _testing => widget.debugSave != null;
 
-  String get _currencyCode =>
-      widget.receiptData['currency_code'] ??
-      widget.receiptData['currencyCode'] ??
-      Provider.of<AppSettingsProvider>(context, listen: false).currencyCode;
+  String get _storeName =>
+      (widget.receiptData['restaurant_name'] ??
+              widget.receiptData['storeName'] ??
+              'bf_summary_default_store'.tr())
+          .toString();
 
-  List<Map<String, dynamic>> get _otherCharges =>
-      List<Map<String, dynamic>>.from(
-        widget.receiptData['other_charges'] ?? const [],
-      );
-
-  double get _otherChargesTotal => _otherCharges.fold(
-    0.0,
-    (runningTotal, charge) =>
-        runningTotal + ((charge['amount'] as num?)?.toDouble() ?? 0.0),
-  );
-
-  int get _participantCount =>
-      widget.participants.isEmpty ? 1 : widget.participants.length;
-
-  double get _grandTotalFromCharges =>
-      _calculateTotalItemCost() +
-      (double.tryParse(_taxController.text) ?? 0.0) +
-      (double.tryParse(_serviceController.text) ?? 0.0) +
-      (double.tryParse(_tipController.text) ?? 0.0) +
-      (double.tryParse(_deliveryFeeController.text) ?? 0.0) +
-      _otherChargesTotal -
-      (double.tryParse(_discountController.text) ?? 0.0);
-
-  double get _grandTotalFromShares => _finalShares.values.fold(
-    0.0,
-    (runningTotal, value) => runningTotal + value,
-  );
-
-  double _shareForCharge(Map<String, dynamic> charge, double proportion) {
-    final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
-    final splitMethod = charge['split_method'] ?? charge['splitMethod'];
-    if (splitMethod == 'equal') {
-      return amount / _participantCount;
+  String _currencyCode() {
+    final fromReceipt =
+        widget.receiptData['currency_code'] ??
+        widget.receiptData['currencyCode'] ??
+        widget.receiptData['currency'];
+    if (fromReceipt != null && fromReceipt.toString().trim().isNotEmpty) {
+      return fromReceipt.toString();
     }
-    return amount * proportion;
+    try {
+      return context.read<AppSettingsProvider>().currencyCode;
+    } catch (_) {
+      return 'USD';
+    }
   }
+
+  List<String> get _ids => [
+    for (final p in widget.participants) (p['id'] ?? '').toString(),
+  ];
+
+  List<String> get _itemNames => [
+    for (final i in (widget.receiptData['items'] as List?) ?? const [])
+      if (i is Map) (i['name'] ?? '').toString(),
+  ];
 
   @override
   void initState() {
     super.initState();
-    _taxController = TextEditingController(text: widget.taxAmount.toString());
-    _serviceController = TextEditingController(
-      text: widget.serviceChargeAmount.toString(),
-    );
-    _tipController = TextEditingController(text: widget.tipAmount.toString());
-    _discountController = TextEditingController(
-      text: widget.discountAmount.toString(),
-    );
-    _deliveryFeeController = TextEditingController(
-      text: widget.deliveryFeeAmount.toString(),
-    );
-
-    _calculateFinalShares();
-    _loadInterstitialAd();
+    _draft =
+        widget.methodDraft ??
+        draftFromReceipt(
+          receiptData: widget.receiptData,
+          participantIds: _ids,
+          currency: _currencyCode(),
+          itemAssignments: widget.itemAssignments,
+          quantityAssignments: widget.quantityAssignments,
+          tax: widget.taxAmount,
+          service: widget.serviceChargeAmount,
+          tip: widget.tipAmount,
+          discount: widget.discountAmount,
+          delivery: widget.deliveryFeeAmount,
+        );
+    if (!_testing) _loadInterstitialAd();
   }
 
   @override
   void dispose() {
-    _taxController.dispose();
-    _serviceController.dispose();
-    _tipController.dispose();
-    _discountController.dispose();
-    _deliveryFeeController.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
   Future<void> _loadInterstitialAd() async {
     if (kIsWeb) return;
-
-    // Check Premium Status
-    final isPremium = await RevenueCatService.isPremium();
-    if (isPremium) return;
-
-    String adUnitId;
-    if (kDebugMode) {
-      adUnitId = Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/1033173712'
-          : 'ca-app-pub-3940256099942544/4411468910';
-    } else {
-      adUnitId = Platform.isAndroid
-          ? ApiKeys.adMobAndroidInterstitial
-          : ApiKeys.adMobIosInterstitial;
+    try {
+      if (await RevenueCatService.isPremium()) return;
+    } catch (_) {
+      return;
     }
-
+    final adUnitId = kDebugMode
+        ? (Platform.isAndroid
+              ? 'ca-app-pub-3940256099942544/1033173712'
+              : 'ca-app-pub-3940256099942544/4411468910')
+        : (Platform.isAndroid
+              ? ApiKeys.adMobAndroidInterstitial
+              : ApiKeys.adMobIosInterstitial);
     InterstitialAd.load(
       adUnitId: adUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
-          _interstitialAd = ad;
-          _isAdLoaded = true;
-        },
+        onAdLoaded: (ad) => _interstitialAd = ad,
         onAdFailedToLoad: (error) {
-          if (kDebugMode) {
-            debugPrint('InterstitialAd failed to load: $error');
-          }
+          if (kDebugMode) debugPrint('InterstitialAd failed: $error');
         },
       ),
     );
   }
 
-  void _calculateFinalShares() {
-    Map<String, double> shares = {};
-    for (var p in widget.participants) {
-      shares[p['id']] = 0.0;
+  Map<String, dynamic> _participant(String id) {
+    for (final p in widget.participants) {
+      if (p['id']?.toString() == id) return Map<String, dynamic>.from(p);
     }
-
-    List items = widget.receiptData['items'];
-    for (int i = 0; i < items.length; i++) {
-      double price = (items[i]['price'] as num).toDouble();
-      int qty = (items[i]['qty'] as num?)?.toInt() ?? 1;
-
-      if (qty > 1 &&
-          widget.quantityAssignments.containsKey(i) &&
-          widget.quantityAssignments[i]!.isNotEmpty) {
-        double pricePerUnit = price;
-        widget.quantityAssignments[i]!.forEach((uid, assignedQty) {
-          if (shares.containsKey(uid)) {
-            shares[uid] = (shares[uid]!) + (pricePerUnit * assignedQty);
-          }
-        });
-      } else {
-        List<String>? assignedIds = widget.itemAssignments[i];
-        if (assignedIds != null && assignedIds.isNotEmpty) {
-          double totalPrice = price * qty;
-          double splitPrice = totalPrice / assignedIds.length;
-          for (String uid in assignedIds) {
-            if (shares.containsKey(uid)) {
-              shares[uid] = (shares[uid]!) + splitPrice;
-            }
-          }
-        }
-      }
-    }
-
-    double totalItemsCost = shares.values.fold(
-      0,
-      (runningTotal, val) => runningTotal + val,
-    );
-    if (totalItemsCost == 0) totalItemsCost = 1;
-
-    double tax = double.tryParse(_taxController.text) ?? 0.0;
-    double service = double.tryParse(_serviceController.text) ?? 0.0;
-    double tip = double.tryParse(_tipController.text) ?? 0.0;
-    double discount = double.tryParse(_discountController.text) ?? 0.0;
-    double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
-    final proportionalOtherCharges = _otherCharges
-        .where((charge) => charge['split_method'] != 'equal')
-        .fold(
-          0.0,
-          (runningTotal, charge) =>
-              runningTotal + ((charge['amount'] as num?)?.toDouble() ?? 0.0),
-        );
-    final equalOtherCharges = _otherCharges
-        .where((charge) => charge['split_method'] == 'equal')
-        .fold(
-          0.0,
-          (runningTotal, charge) =>
-              runningTotal + ((charge['amount'] as num?)?.toDouble() ?? 0.0),
-        );
-
-    final calculatedShares = <String, double>{};
-    shares.forEach((uid, amount) {
-      double userProportion = amount / totalItemsCost;
-      calculatedShares[uid] =
-          amount +
-          (tax * userProportion) +
-          (service * userProportion) +
-          (tip * userProportion) +
-          (delivery / _participantCount) +
-          (proportionalOtherCharges * userProportion) +
-          (equalOtherCharges / _participantCount) -
-          (discount * userProportion);
-    });
-
-    if (_rouletteWinnerId != null &&
-        calculatedShares.containsKey(_rouletteWinnerId)) {
-      final rouletteTotal = calculatedShares.values.fold(
-        0.0,
-        (runningTotal, value) => runningTotal + value,
-      );
-      calculatedShares.updateAll(
-        (participantId, _) =>
-            participantId == _rouletteWinnerId ? rouletteTotal : 0.0,
-      );
-    }
-
-    for (final entry in _manualShareOverrides.entries) {
-      if (calculatedShares.containsKey(entry.key)) {
-        calculatedShares[entry.key] = entry.value;
-      }
-    }
-
-    _finalShares = calculatedShares;
+    return {'id': id};
   }
 
-  Future<void> _createBill() async {
-    setState(() => _isCreating = true);
-
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    double tax = double.tryParse(_taxController.text) ?? 0.0;
-    double service = double.tryParse(_serviceController.text) ?? 0.0;
-    double tip = double.tryParse(_tipController.text) ?? 0.0;
-    double discount = double.tryParse(_discountController.text) ?? 0.0;
-
-    final billData = {
-      'hostId': user.uid,
-      'hostName': user.displayName,
-      'storeName':
-          widget.receiptData['restaurant_name'] ??
-          widget.receiptData['storeName'],
-      'date': widget.receiptData['date'] != null
-          ? Timestamp.fromDate(
-              DateTime.tryParse(widget.receiptData['date'].toString()) ??
-                  DateTime.now(),
-            )
-          : FieldValue.serverTimestamp(),
-      'total': _grandTotalFromShares > 0
-          ? _grandTotalFromShares
-          : _grandTotalFromCharges,
-      'currencyCode': _currencyCode,
-      'charges': {
-        'taxAmount': tax,
-        'serviceCharge': service,
-        'tipAmount': tip,
-        'discountAmount': discount,
-        'deliveryFeeAmount':
-            double.tryParse(_deliveryFeeController.text) ?? 0.0,
-        'otherCharges': _otherCharges,
-      },
-      'items': widget.receiptData['items'].asMap().entries.map((entry) {
-        int idx = entry.key;
-        var item = entry.value;
-        List<String> assigned = [];
-        if (widget.quantityAssignments.containsKey(idx)) {
-          assigned = widget.quantityAssignments[idx]!.keys.toList();
-        } else {
-          assigned = widget.itemAssignments[idx] ?? [];
-        }
-
-        List<String> realAssigned = assigned
-            .map((id) => id == 'current_user' ? user.uid : id)
-            .toList();
-        return {
-          'name': item['name'],
-          'price': item['price'],
-          'qty': item['qty'] ?? 1,
-          'assignedTo': realAssigned,
-        };
-      }).toList(),
-      'participants': widget.participants.map((p) {
-        String realId = p['id'] == 'current_user' ? user.uid : p['id'];
-        return {
-          'id': realId,
-          'name': p['name'],
-          'photoUrl': p['photoUrl'],
-          'share': _finalShares[p['id']] ?? 0.0,
-          'isPaid': realId == user.uid,
-          'phoneNumber': p['phoneNumber'],
-          'status': realId == user.uid ? 'PAID' : 'PENDING',
-        };
-      }).toList(),
-      'participants_uids': widget.participants
-          .map((p) => p['id'] == 'current_user' ? user.uid : p['id'])
-          .toList(),
-    };
-
-    // Fetch and add payment methods from user profile
-    try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      if (userDoc.exists) {
-        final userData = userDoc.data() as Map<String, dynamic>;
-
-        // Check for new format (customPaymentMethods - list)
-        if (userData['customPaymentMethods'] != null) {
-          final List<dynamic> customMethods = userData['customPaymentMethods'];
-          if (customMethods.isNotEmpty) {
-            // Convert list to map for guest screen compatibility
-            Map<String, String> methodsMap = {};
-            for (var method in customMethods) {
-              if (method is Map) {
-                final name = method['name'] ?? '';
-                final value = method['value'] ?? '';
-                if (name.isNotEmpty && value.isNotEmpty) {
-                  methodsMap[name] = value;
-                }
-              }
-            }
-            if (methodsMap.isNotEmpty) {
-              billData['paymentMethods'] = methodsMap;
-            }
-          }
-        }
-        // Fallback to old format (paymentMethods - map)
-        else if (userData['paymentMethods'] != null) {
-          final Map<String, dynamic> oldMethods = userData['paymentMethods'];
-          if (oldMethods.isNotEmpty) {
-            billData['paymentMethods'] = oldMethods;
-          }
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Error fetching payment methods: $e');
-      }
-      // Continue without payment methods - not critical
+  String _displayName(Map<String, dynamic> p) {
+    final name = (p['name'] ?? '?').toString();
+    if (p['isHost'] == true) {
+      return 'bf_summary_you_suffix'.tr(namedArgs: {'name': name});
     }
-
-    try {
-      final billRef = await FirebaseFirestore.instance
-          .collection('bills')
-          .add(billData);
-      final billId = billRef.id;
-
-      // --- CLEANUP RESUMED BILL ---
-      if (widget.oldBillIdToDelete != null) {
-        try {
-          await FirebaseFirestore.instance
-              .collection('bills')
-              .doc(widget.oldBillIdToDelete)
-              .delete();
-          if (kDebugMode) {
-            debugPrint("Deleted old bill: ${widget.oldBillIdToDelete}");
-          }
-        } catch (e) {
-          if (kDebugMode) {
-            debugPrint("Error deleting old bill: $e");
-          }
-        }
-      }
-
-      if (widget.oldImageToDelete != null) {
-        try {
-          final file = File(widget.oldImageToDelete!);
-          if (await file.exists()) {
-            await file.delete();
-            if (kDebugMode) {
-              debugPrint("Deleted old local image: ${widget.oldImageToDelete}");
-            }
-          }
-        } catch (e) {
-          if (kDebugMode) {
-            debugPrint("Error deleting old local image: $e");
-          }
-        }
-      }
-      // -----------------------------
-
-      List<String> appUserNames = [];
-      for (var p in widget.participants) {
-        if (!p['isGuest'] && p['id'] != user.uid) {
-          appUserNames.add(p['name']);
-          _notifyAppUser(
-            p['id'],
-            p['name'],
-            widget.receiptData['restaurant_name'] ?? "a new bill",
-            billId,
-          );
-        }
-      }
-
-      if (_isAdLoaded && _interstitialAd != null) {
-        _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-          onAdDismissedFullScreenContent: (ad) {
-            ad.dispose();
-            _navigateToSuccess(appUserNames, billId);
-          },
-          onAdFailedToShowFullScreenContent: (ad, error) {
-            ad.dispose();
-            _navigateToSuccess(appUserNames, billId);
-          },
-        );
-        await _interstitialAd!.show();
-      } else {
-        _navigateToSuccess(appUserNames, billId);
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('error_saving'.tr(namedArgs: {'error': e.toString()})),
-        ),
-      );
-      setState(() => _isCreating = false);
-    }
+    return name;
   }
 
-  void _navigateToSuccess(List<String> appUserNames, String billId) {
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SuccessScreen(
-            storeName:
-                widget.receiptData['restaurant_name'] ??
-                widget.receiptData['storeName'] ??
-                "Bill",
-            billId: billId,
-            notifiedUsers: appUserNames,
-            currencyCode: _currencyCode,
-            guestUsers: widget.participants
-                .where((p) => p['isGuest'] == true)
-                .map((p) {
-                  final uid = p['id'];
-                  return {
-                    'name': p['name'],
-                    'amount': _finalShares[uid] ?? 0.0,
-                    'id': uid,
-                  };
-                })
-                .toList(),
-          ),
-        ),
-      );
-    }
-  }
+  // --- Editing ---------------------------------------------------------
 
-  Future<void> _notifyAppUser(
-    String uid,
-    String name,
-    String store,
-    String billId,
-  ) async {
-    try {
-      final formattedAmount = CurrencyUtils.format(
-        _finalShares[uid] ?? 0.0,
-        currencyCode: _currencyCode,
-        decimalDigits: 1,
-      );
-      await _notificationService.sendNotification(
-        targetUid: uid,
-        title: 'split_bill_notification_title'.tr(namedArgs: {'store': store}),
-        body: 'split_bill_notification_body'.tr(
-          namedArgs: {'amount': formattedAmount},
-        ),
-        historyTitleKey: 'split_bill_notification_title',
-        historyBodyKey: 'split_bill_notification_body',
-        historyTitleArgs: {'store': store},
-        historyBodyArgs: {'amount': formattedAmount},
-        data: {"type": "new_bill", "uid": uid, "billId": billId},
-      );
-    } catch (e) {
-      debugPrint("Error notifying user $name: $e");
-    }
-  }
-
-  ImageProvider? _getAvatarImage(String? url) {
-    return ImageUtils.getAvatarImage(url);
-  }
-
-  void _showUserBreakdown(Map<String, dynamic> participant) {
-    final uid = participant['id'];
-    List<Map<String, dynamic>> userItems = [];
-    double itemTotal = 0.0;
-
-    List items = widget.receiptData['items'];
-    for (int i = 0; i < items.length; i++) {
-      var item = items[i];
-      double price = (item['price'] as num).toDouble();
-      int totalQty = (item['qty'] as num?)?.toInt() ?? 1;
-      if (totalQty > 1 &&
-          widget.quantityAssignments.containsKey(i) &&
-          widget.quantityAssignments[i]!.isNotEmpty) {
-        if (widget.quantityAssignments[i]!.containsKey(uid)) {
-          int assignedQty = widget.quantityAssignments[i]![uid]!;
-          double userCost = price * assignedQty;
-          itemTotal += userCost;
-          userItems.add({
-            'name': item['name'],
-            'detail': 'got_qty_of_total'.tr(
-              namedArgs: {
-                'assigned': assignedQty.toString(),
-                'total': totalQty.toString(),
-              },
-            ),
-            'cost': userCost,
-          });
-        }
-      } else if (widget.itemAssignments.containsKey(i)) {
-        List<String> assigned = widget.itemAssignments[i]!;
-        if (assigned.contains(uid)) {
-          double totalPrice = price * totalQty;
-          double splitPrice = totalPrice / assigned.length;
-          itemTotal += splitPrice;
-          userItems.add({
-            'name': item['name'],
-            'detail': assigned.length > 1
-                ? 'split_with_others'.tr(
-                    namedArgs: {'count': (assigned.length - 1).toString()},
-                  )
-                : 'full_item'.tr(),
-            'cost': splitPrice,
-          });
-        }
-      }
-    }
-
-    double proportion = itemTotal / _calculateTotalItemCost();
-    double finalShare = _finalShares[uid] ?? 0.0;
-    double tax = double.tryParse(_taxController.text) ?? 0.0;
-    double service = double.tryParse(_serviceController.text) ?? 0.0;
-    double tip = double.tryParse(_tipController.text) ?? 0.0;
-    double discount = double.tryParse(_discountController.text) ?? 0.0;
-    double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
-    final deliveryShare = delivery / _participantCount;
-
-    PremiumBottomSheet.show(
+  Future<void> _editCharges() async {
+    final result = await showModalBottomSheet<BillDraft>(
       context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: participant['color'] ?? Colors.blue,
-                backgroundImage: _getAvatarImage(participant['photoUrl']),
-                child:
-                    (_getAvatarImage(participant['photoUrl']) == null &&
-                        participant['name'].isNotEmpty)
-                    ? Text(
-                        participant['name'][0],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      )
-                    : null,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      participant['name'],
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    Text(
-                      'final_share_amount'.tr(
-                        namedArgs: {
-                          'amount': CurrencyUtils.format(
-                            finalShare,
-                            currencyCode: _currencyCode,
-                            decimalDigits: 1,
-                          ),
-                        },
-                      ),
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _showAdjustParticipantShareDialog(participant);
-                },
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.edit_rounded,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 20,
-                  ),
-                ),
-                tooltip: 'common_edit'.tr(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const Divider(),
-          const SizedBox(height: 16),
-          Text(
-            'item_breakdown',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-          ).tr(),
-          const SizedBox(height: 16),
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.4,
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: userItems.length,
-              itemBuilder: (context, index) {
-                final uItem = userItems[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              uItem['name'],
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              uItem['detail'],
-                              style: TextStyle(
-                                color: context.palette.textSecondary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        CurrencyUtils.format(
-                          (uItem['cost'] as double),
-                          currencyCode: _currencyCode,
-                          decimalDigits: 1,
-                        ),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          const Divider(height: 32),
-          _buildAmountRow('tax_vat'.tr(), tax * proportion),
-          _buildAmountRow('service_charge'.tr(), service * proportion),
-          _buildAmountRow('tip'.tr(), tip * proportion),
-          _buildAmountRow('delivery_fee'.tr(), deliveryShare),
-          ..._otherCharges.map(
-            (charge) => _buildAmountRow(
-              (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
-              _shareForCharge(charge, proportion),
-            ),
-          ),
-          _buildAmountRow(
-            'discount'.tr(),
-            discount * proportion,
-            isNegative: true,
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
+      isScrollControlled: true,
+      backgroundColor: context.palette.surface,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadii.sheetRadius),
+      builder: (_) => _ChargesSheet(draft: _draft),
     );
+    if (result == null || !mounted) return;
+    AppHaptics.success();
+    setState(() => _draft = result.copyWith(overrides: const {}));
   }
 
-  Widget _buildAmountRow(
-    String title,
-    double amount, {
-    bool isNegative = false,
-  }) {
-    if (amount == 0) {
-      return const SizedBox.shrink();
-    }
-    final palette = context.palette;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 16, color: palette.textMedium),
-          ),
-          Text(
-            "${isNegative ? '-' : ''}${CurrencyUtils.format(amount.abs(), currencyCode: _currencyCode, decimalDigits: 1)}",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isNegative ? palette.danger : palette.textStrong,
-            ),
-          ),
-        ],
-      ),
+  Future<void> _editSplit() async {
+    final result = await SplitMethodScreen.open(
+      context,
+      draft: _draft,
+      participants: widget.participants,
     );
-  }
-
-  double _calculateTotalItemCost() {
-    double total = 0.0;
-    for (var item in widget.receiptData['items']) {
-      total +=
-          (item['price'] as num).toDouble() *
-          ((item['qty'] as num?)?.toInt() ?? 1);
-    }
-    return total;
-  }
-
-  void _showRouletteModal() {
-    if (widget.participants.length < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('need_at_least_two_people_for_bill_roulette').tr(),
-          backgroundColor: context.palette.dangerAccent,
-        ),
-      );
+    if (result == null || !mounted) return;
+    if (result.method == SplitMethod.items &&
+        result.itemAssignments.isEmpty &&
+        result.quantityAssignments.isEmpty) {
+      // Nothing assigned yet: go back to the "who had what" screen.
+      Navigator.of(context).maybePop();
       return;
     }
-
-    final selected = StreamController<int>();
-    final participants = widget.participants;
-    double tax = double.tryParse(_taxController.text) ?? 0.0;
-    double service = double.tryParse(_serviceController.text) ?? 0.0;
-    double tip = double.tryParse(_tipController.text) ?? 0.0;
-    double discount = double.tryParse(_discountController.text) ?? 0.0;
-    double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
-    final totalBill =
-        _calculateTotalItemCost() +
-        tax +
-        service +
-        tip +
-        delivery +
-        _otherChargesTotal -
-        discount;
-
-    bool isSpinning = false;
-
-    PremiumBottomSheet.show(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, setModalState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'bill_roulette_2',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                ),
-              ).tr(),
-              const SizedBox(height: 8),
-              Text(
-                'one_lucky_person_pays_the_whole_bill',
-                style: TextStyle(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.6),
-                  fontWeight: FontWeight.w500,
-                ),
-              ).tr(),
-              const SizedBox(height: 32),
-              SizedBox(
-                height: 300,
-                child: FortuneWheel(
-                  selected: selected.stream,
-                  animateFirst: false,
-                  items: [
-                    for (int i = 0; i < participants.length; i++)
-                      FortuneItem(
-                        child: Text(
-                          participants[i]['name'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: FortuneItemStyle(
-                          color: participants[i]['color'] ?? Colors.blue,
-                          borderColor: Colors.white,
-                          borderWidth: 2,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: isSpinning
-                    ? null
-                    : () async {
-                        setModalState(() => isSpinning = true);
-                        final int randomIndex = Fortune.randomInt(
-                          0,
-                          participants.length,
-                        );
-                        selected.add(randomIndex);
-                        await Future.delayed(const Duration(seconds: 5));
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          _showWinnerDialog(
-                            participants[randomIndex],
-                            totalBill,
-                          );
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: context.palette.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  minimumSize: const Size(double.infinity, 56),
-                  elevation: 0,
-                ),
-                child: Text(
-                  isSpinning ? "SPINNING..." : "SPIN THE WHEEL!",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          );
-        },
-      ),
-    ).whenComplete(() {
-      selected.close();
-    });
+    setState(() => _draft = result.copyWith(overrides: const {}));
   }
 
-  void _showWinnerDialog(Map<String, dynamic> winner, double totalBill) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        contentPadding: const EdgeInsets.all(24),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Lottie.asset(
-              'assets/animations/confetti.json',
-              height: 150,
-              repeat: true,
-            ),
-            Text(
-              'we_have_a_winner',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 20,
-                color: context.palette.dangerAccent,
-              ),
-            ).tr(),
-            const SizedBox(height: 24),
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: winner['color'] ?? Colors.blue,
-              backgroundImage: _getAvatarImage(winner['photoUrl']),
-              child:
-                  (_getAvatarImage(winner['photoUrl']) == null &&
-                      winner['name'].isNotEmpty)
-                  ? Text(
-                      winner['name'][0],
-                      style: const TextStyle(
-                        fontSize: 40,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  : null,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              winner['name'],
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              "The universe has spoken. ${winner['name']} gets the honor of paying the whole bill! 😂",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: context.palette.textSecondary),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Total: ${CurrencyUtils.format(totalBill, currencyCode: _currencyCode, decimalDigits: 1)}",
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-                color: context.palette.textStrong,
-              ),
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'mercy_shown_bill_splitting_remains_as_is',
-                          ).tr(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'pardon_them',
-                      style: TextStyle(color: context.palette.textTertiary),
-                    ).tr(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _applyRouletteResult(winner['id']);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.palette.inverseSurface,
-                      foregroundColor: context.palette.onInverseSurface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: Text('assign_bill').tr(),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _applyRouletteResult(String winnerId) {
-    setState(() {
-      _manualShareOverrides.clear();
-      _rouletteWinnerId = winnerId;
-      _calculateFinalShares();
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('bill_successfully_assigned_to_the_loser').tr(),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
-
-  Future<void> _showAdjustParticipantShareDialog(
-    Map<String, dynamic> participant,
-  ) async {
-    final participantId = participant['id'] as String;
+  Future<void> _editShare(String id) async {
+    final p = context.palette;
+    final current = computeBill(_draft).shareOf(id);
+    final decimals = currencyDecimals(_draft.currency);
     final controller = TextEditingController(
-      text: (_finalShares[participantId] ?? 0.0).toStringAsFixed(1),
+      text: fromMinorUnits(current, _draft.currency).toStringAsFixed(decimals),
     );
-
-    await showDialog<void>(
+    final name = _displayName(_participant(id));
+    final value = await showDialog<int>(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      builder: (ctx) => AlertDialog(
+        backgroundColor: p.surface,
+        shape: AppRadii.cardShape(p.hairline),
         title: Text(
-          'edit_final_share'.tr(),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          'bf_summary_edit_share_title'.tr(namedArgs: {'name': name}),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'final_share_for_name'.tr(
-                namedArgs: {'name': participant['name'].toString()},
-              ),
-              style: TextStyle(
-                color: context.palette.textMedium,
-                fontWeight: FontWeight.w600,
-              ),
+              'bf_summary_edit_share_body'.tr(),
+              style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
             ),
             const SizedBox(height: 12),
-            Text(
-              'enter_final_amount'.tr(),
-              style: TextStyle(color: context.palette.textSecondary),
-            ),
-            const SizedBox(height: 16),
             TextField(
               controller: controller,
               autofocus: true,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
+              keyboardType: TextInputType.numberWithOptions(
+                decimal: decimals > 0,
               ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+              ],
               decoration: InputDecoration(
-                prefixText: '$_currencyCode ',
-                filled: true,
-                fillColor: context.palette.surfaceMuted,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: context.palette.borderSubtle),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: context.palette.borderSubtle),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 1.5,
-                  ),
+                prefixText: '${_draft.currency} ',
+                border: const OutlineInputBorder(
+                  borderRadius: AppRadii.rowRadius,
                 ),
               ),
             ),
@@ -1107,280 +296,1019 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('common_cancel').tr(),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('common_cancel'.tr()),
           ),
-          ElevatedButton(
-            onPressed: () {
-              final parsedValue = double.tryParse(controller.text.trim());
-              if (parsedValue == null || parsedValue < 0) {
-                return;
-              }
-
-              setState(() {
-                _rouletteWinnerId = null;
-                _manualShareOverrides[participantId] = parsedValue;
-                _calculateFinalShares();
-              });
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: context.palette.onPrimary,
+          FilledButton(
+            onPressed: () => Navigator.pop(
+              ctx,
+              minorFromAny(controller.text, _draft.currency),
             ),
-            child: Text('update_total').tr(),
+            child: Text('bf_summary_edit_share_save'.tr()),
           ),
         ],
       ),
     );
+    controller.dispose();
+    if (value == null || !mounted) return;
+    final next = _draft.copyWith(
+      overrides: {..._draft.overrides, id: value},
+      clearRoulette: true,
+    );
+    final c = computeBill(next);
+    if (!c.isValid) {
+      AppHaptics.error();
+      final copy = summaryIssueCopy(c, itemNames: _itemNames);
+      AppToast.show(
+        context,
+        message: copy == null ? '' : copy.$1.tr(namedArgs: copy.$2),
+        type: AppToastType.error,
+      );
+      return;
+    }
+    AppHaptics.selection();
+    setState(() => _draft = next);
+    AppToast.show(
+      context,
+      message: 'bf_summary_rebalanced'.tr(),
+      type: AppToastType.info,
+    );
   }
+
+  void _resetShares() {
+    AppHaptics.selection();
+    setState(
+      () => _draft = _draft.copyWith(overrides: const {}, clearRoulette: true),
+    );
+  }
+
+  Future<void> _roulette() async {
+    if (widget.participants.length < 2) {
+      AppToast.show(
+        context,
+        message: 'need_at_least_two_people_for_bill_roulette'.tr(),
+        type: AppToastType.warning,
+      );
+      return;
+    }
+    final winner = await BillRouletteScreen.open(
+      context,
+      participants: widget.participants,
+      totalMinor: _draft.grandTotalMinor,
+      currency: _draft.currency,
+    );
+    if (winner == null || !mounted) return;
+    setState(
+      () => _draft = _draft.copyWith(
+        overrides: const {},
+        rouletteWinnerId: winner,
+      ),
+    );
+    AppToast.show(
+      context,
+      message: 'bf_summary_roulette_applied'.tr(
+        namedArgs: {'name': (_participant(winner)['name'] ?? '').toString()},
+      ),
+      type: AppToastType.success,
+    );
+  }
+
+  // --- Saving ----------------------------------------------------------
+
+  Map<String, dynamic> _buildBillData(
+    BillComputation c,
+    String hostUid,
+    String? hostName,
+  ) {
+    final fields = buildBillFields(
+      computation: c,
+      participants: [
+        for (final p in widget.participants) BillParticipantInfo.fromMap(p),
+      ],
+      hostUid: hostUid,
+      storeName: _storeName,
+      groupId: widget.groupId,
+    );
+    final rawDate = widget.receiptData['date'];
+    final parsedDate = rawDate == null
+        ? null
+        : DateTime.tryParse(rawDate.toString());
+    return {
+      ...fields,
+      'hostId': hostUid,
+      'hostName': hostName,
+      'date': parsedDate != null
+          ? Timestamp.fromDate(parsedDate)
+          : _testing
+          ? Timestamp.now()
+          : FieldValue.serverTimestamp(),
+      'history': appendHistory(null, [
+        BillHistoryEntry(
+          by: hostUid,
+          byName: hostName,
+          at: DateTime.now(),
+          change: 'created',
+        ),
+      ]),
+    };
+  }
+
+  Future<Map<String, String>?> _hostPaymentMethods(String uid) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+      final data = doc.data();
+      if (data == null) return null;
+      final custom = data['customPaymentMethods'];
+      if (custom is List && custom.isNotEmpty) {
+        final map = <String, String>{};
+        for (final m in custom) {
+          if (m is Map) {
+            final name = (m['name'] ?? '').toString();
+            final value = (m['value'] ?? '').toString();
+            if (name.isNotEmpty && value.isNotEmpty) map[name] = value;
+          }
+        }
+        return map.isEmpty ? null : map;
+      }
+      final old = data['paymentMethods'];
+      if (old is Map && old.isNotEmpty) {
+        return old.map((k, v) => MapEntry(k.toString(), v.toString()));
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('payment methods: $e');
+    }
+    return null;
+  }
+
+  Future<void> _save() async {
+    final c = computeBill(_draft);
+    if (!c.isValid) {
+      AppHaptics.error();
+      final copy = summaryIssueCopy(c, itemNames: _itemNames)!;
+      AppToast.show(
+        context,
+        message: copy.$1.tr(namedArgs: copy.$2),
+        type: AppToastType.error,
+      );
+      return;
+    }
+    if (_isCreating) return;
+    setState(() => _isCreating = true);
+    AppHaptics.light();
+
+    String billId;
+    Map<String, dynamic> billData;
+    try {
+      if (_testing) {
+        billData = _buildBillData(c, 'host', 'Host');
+        billId = await widget.debugSave!(billData);
+      } else {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) throw StateError('signed out');
+        billData = _buildBillData(c, user.uid, user.displayName);
+        final methods = await _hostPaymentMethods(user.uid);
+        if (methods != null) billData['paymentMethods'] = methods;
+        final ref = await FirebaseFirestore.instance
+            .collection('bills')
+            .add(billData);
+        billId = ref.id;
+        await _cleanupResumed();
+        _notifyAppUsers(c, billId, user.uid);
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('save bill: $e');
+      if (!mounted) return;
+      setState(() => _isCreating = false);
+      AppHaptics.error();
+      AppToast.show(
+        context,
+        message: 'bf_summary_save_failed'.tr(),
+        type: AppToastType.error,
+        actionLabel: 'feedback_try_again'.tr(),
+        onAction: _save,
+      );
+      return;
+    }
+    if (!mounted) return;
+    final ad = _interstitialAd;
+    if (ad != null) {
+      ad.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (a) {
+          a.dispose();
+          _showSuccess(billId, billData);
+        },
+        onAdFailedToShowFullScreenContent: (a, _) {
+          a.dispose();
+          _showSuccess(billId, billData);
+        },
+      );
+      _interstitialAd = null;
+      await ad.show();
+    } else {
+      _showSuccess(billId, billData);
+    }
+  }
+
+  Future<void> _cleanupResumed() async {
+    if (widget.oldBillIdToDelete != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('bills')
+            .doc(widget.oldBillIdToDelete)
+            .delete();
+      } catch (e) {
+        if (kDebugMode) debugPrint('delete resumed bill: $e');
+      }
+    }
+    if (widget.oldImageToDelete != null) {
+      try {
+        final file = File(widget.oldImageToDelete!);
+        if (await file.exists()) await file.delete();
+      } catch (e) {
+        if (kDebugMode) debugPrint('delete resumed image: $e');
+      }
+    }
+  }
+
+  void _notifyAppUsers(BillComputation c, String billId, String hostUid) {
+    for (final p in widget.participants) {
+      final id = (p['id'] ?? '').toString();
+      if (p['isGuest'] == true || id == hostUid || id.isEmpty) continue;
+      final amount = formatMoneyMinor(c.shareOf(id), _draft.currency);
+      _notificationService
+          .sendNotification(
+            targetUid: id,
+            title: 'split_bill_notification_title'.tr(
+              namedArgs: {'store': _storeName},
+            ),
+            body: 'split_bill_notification_body'.tr(
+              namedArgs: {'amount': amount},
+            ),
+            historyTitleKey: 'split_bill_notification_title',
+            historyBodyKey: 'split_bill_notification_body',
+            historyTitleArgs: {'store': _storeName},
+            historyBodyArgs: {'amount': amount},
+            data: {'type': 'new_bill', 'uid': id, 'billId': billId},
+          )
+          .then<void>(
+            (_) {},
+            onError: (Object e) {
+              if (kDebugMode) debugPrint('notify $id: $e');
+            },
+          );
+    }
+  }
+
+  List<ShareTarget> _shareTargets(Map<String, dynamic> billData) {
+    final hostId = billData['hostId']?.toString();
+    final reader = BillReader(billData);
+    return [
+      for (final p in reader.participants)
+        ShareTarget(
+          id: (p['id'] ?? '').toString(),
+          name: (p['name'] ?? '').toString(),
+          shareMinor: reader.shareMinorOf(p),
+          photoUrl: p['photoUrl']?.toString(),
+          phoneNumber: p['phoneNumber']?.toString(),
+          isHost: p['id']?.toString() == hostId,
+          isAppUser: p['isGuest'] != true,
+        ),
+    ];
+  }
+
+  void _showSuccess(String billId, Map<String, dynamic> billData) {
+    if (!mounted) return;
+    final navigator = Navigator.of(context);
+    final targets = _shareTargets(billData);
+    final hasOthers = targets.any((t) => !t.isHost);
+    navigator.pushAndRemoveUntil(
+      PageRouteBuilder<void>(
+        transitionDuration: AppMotion.slow,
+        pageBuilder: (ctx, _, _) => SuccessScreen(
+          title: 'bf_share_title'.tr(),
+          message: 'bf_summary_success_message'.tr(
+            namedArgs: {'store': _storeName},
+          ),
+          amountMinor: _draft.grandTotalMinor,
+          currency: _draft.currency,
+          primaryLabel: hasOthers
+              ? 'bf_summary_send_links'.tr()
+              : 'bf_share_done'.tr(),
+          onPrimary: () {
+            if (!hasOthers) {
+              Navigator.of(ctx).pop();
+              return;
+            }
+            Navigator.of(ctx).pushReplacement(
+              MaterialPageRoute<void>(
+                builder: (_) => BillShareScreen(
+                  billId: billId,
+                  storeName: _storeName,
+                  currency: _draft.currency,
+                  targets: targets,
+                ),
+              ),
+            );
+          },
+          secondaryLabel: hasOthers ? 'bf_share_done'.tr() : null,
+          onSecondary: hasOthers ? () => Navigator.of(ctx).pop() : null,
+        ),
+        transitionsBuilder: (_, a, _, child) =>
+            FadeTransition(opacity: a, child: child),
+      ),
+      (route) => route.isFirst,
+    );
+  }
+
+  // --- Build -------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
-    double subTotal = _calculateTotalItemCost();
-    double tax = double.tryParse(_taxController.text) ?? 0.0;
-    double service = double.tryParse(_serviceController.text) ?? 0.0;
-    double tip = double.tryParse(_tipController.text) ?? 0.0;
-    double discount = double.tryParse(_discountController.text) ?? 0.0;
-    double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
-    double grandTotal = _grandTotalFromShares > 0
-        ? _grandTotalFromShares
-        : subTotal +
-              tax +
-              service +
-              tip +
-              delivery +
-              _otherChargesTotal -
-              discount;
-    final palette = context.palette;
+    final p = context.palette;
+    final c = computeBill(_draft);
+    final issue = summaryIssueCopy(c, itemNames: _itemNames);
+    final adjusted =
+        _draft.overrides.isNotEmpty || _draft.rouletteWinnerId != null;
 
     return Scaffold(
-      backgroundColor: palette.surfaceMuted,
-      appBar: CustomAppHeader(
-        title: 'split_summary'.tr(),
-        trailing: IconButton(
-          icon: Icon(
-            _isEditing ? Icons.save_rounded : Icons.edit_rounded,
-            color: const Color(0xFF00B365),
-          ),
-          onPressed: () {
-            setState(() {
-              if (_isEditing) {
-                _calculateFinalShares();
-                _isEditing = false;
-                HapticFeedback.mediumImpact();
-              } else {
-                _isEditing = true;
-              }
-            });
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      backgroundColor: p.canvas,
+      body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: palette.surface,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: palette.shadow.withValues(alpha: 0.05),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 12, 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    tooltip: 'bf_split_back'.tr(),
+                    constraints: const BoxConstraints(
+                      minWidth: 44,
+                      minHeight: 44,
+                    ),
+                    style: IconButton.styleFrom(
+                      backgroundColor: p.surface,
+                      side: BorderSide(color: p.hairline),
+                    ),
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    icon: Icon(Icons.arrow_back_rounded, color: p.textPrimary),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'bf_summary_title'.tr(),
+                      style: AppTypography.titleMedium.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: p.textPrimary,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    key: const ValueKey('summary_edit_charges'),
+                    onPressed: _editCharges,
+                    style: TextButton.styleFrom(
+                      foregroundColor: p.accent,
+                      minimumSize: const Size(44, 44),
+                    ),
+                    child: Text(
+                      'bf_summary_edit'.tr(),
+                      style: AppTypography.labelLarge.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              child: Column(
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 16),
                 children: [
-                  BillSummaryRow(
-                    label: 'grand_total'.tr(),
-                    amount: grandTotal,
-                    isBold: true,
-                    fontSize: 26,
-                    isPrimary: true,
-                    currency: _currencyCode,
+                  Text(
+                    'bf_summary_paid_by_you'.tr(
+                      namedArgs: {'store': _storeName},
+                    ),
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: p.textSecondary,
+                    ),
                   ),
-                  const Divider(height: 40),
-                  BillSummaryRow(
-                    label: 'sub_total'.tr(),
-                    amount: subTotal,
-                    currency: _currencyCode,
+                  MoneyText(
+                    minor: c.grandTotalMinor,
+                    currency: _draft.currency,
+                    size: MoneySize.hero,
+                    tone: MoneyTone.neutral,
+                    animate: true,
+                    animateFromZero: false,
+                    style: const TextStyle(fontSize: 40),
+                  ),
+                  const SizedBox(height: 4),
+                  _ChargesLine(draft: _draft),
+                  if (issue != null) ...[
+                    const SizedBox(height: 12),
+                    Semantics(
+                      liveRegion: true,
+                      child: Container(
+                        key: const ValueKey('summary_issue'),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: p.oweSoft,
+                          borderRadius: AppRadii.rowRadius,
+                        ),
+                        child: Text(
+                          issue.$1.tr(namedArgs: issue.$2),
+                          style: AppTypography.bodySmall.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: p.oweInk,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: p.surface,
+                      borderRadius: AppRadii.cardRadius,
+                      border: Border.all(color: p.hairline),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < _ids.length; i++)
+                          StaggeredEntrance(
+                            index: i,
+                            child: _PersonRow(
+                              key: ValueKey('summary_person_${_ids[i]}'),
+                              participant: _participant(_ids[i]),
+                              name: _displayName(_participant(_ids[i])),
+                              breakdown:
+                                  c.people[_ids[i]] ??
+                                  PersonBreakdown(id: _ids[i], lines: const []),
+                              currency: _draft.currency,
+                              first: i == 0,
+                              expanded: _expandedId == _ids[i],
+                              isWinner: _draft.rouletteWinnerId == _ids[i],
+                              onTap: () {
+                                AppHaptics.selection();
+                                setState(
+                                  () => _expandedId = _expandedId == _ids[i]
+                                      ? null
+                                      : _ids[i],
+                                );
+                              },
+                              onEdit: () => _editShare(_ids[i]),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  if (_isEditing) ...[
-                    _buildEditChargeField('tax_vat'.tr(), _taxController),
-                    _buildEditChargeField(
-                      'service_charge'.tr(),
-                      _serviceController,
-                    ),
-                    _buildEditChargeField('tip'.tr(), _tipController),
-                    _buildEditChargeField('discount'.tr(), _discountController),
-                    _buildEditChargeField(
-                      'delivery_fee'.tr(),
-                      _deliveryFeeController,
-                    ),
-                  ] else ...[
-                    BillSummaryRow(
-                      label: 'tax_vat'.tr(),
-                      amount: tax,
-                      currency: _currencyCode,
-                    ),
+                  _ActionCard(
+                    key: const ValueKey('summary_split_method'),
+                    icon: Icons.call_split_rounded,
+                    title: 'bf_summary_split_method'.tr(),
+                    subtitle: 'bf_split_seg_${_draft.method.wireName}'.tr(),
+                    onTap: _editSplit,
+                  ),
+                  if (adjusted) ...[
                     const SizedBox(height: 12),
-                    BillSummaryRow(
-                      label: 'service_charge'.tr(),
-                      amount: service,
-                      currency: _currencyCode,
+                    _ActionCard(
+                      key: const ValueKey('summary_reset'),
+                      icon: Icons.undo_rounded,
+                      title: 'bf_summary_reset_title'.tr(),
+                      subtitle: 'bf_summary_reset_body'.tr(),
+                      onTap: _resetShares,
                     ),
+                  ],
+                  if (widget.participants.length > 1) ...[
                     const SizedBox(height: 12),
-                    BillSummaryRow(
-                      label: 'tip'.tr(),
-                      amount: tip,
-                      currency: _currencyCode,
-                    ),
-                    const SizedBox(height: 12),
-                    BillSummaryRow(
-                      label: 'discount'.tr(),
-                      amount: discount,
-                      currency: _currencyCode,
-                    ),
-                    const SizedBox(height: 12),
-                    BillSummaryRow(
-                      label: 'delivery_fee'.tr(),
-                      amount: delivery,
-                      currency: _currencyCode,
-                    ),
-                    ..._otherCharges.expand(
-                      (charge) => [
-                        const SizedBox(height: 12),
-                        BillSummaryRow(
-                          label:
-                              (charge['label'] ??
-                                      'receipt_other_charge_label'.tr())
-                                  .toString(),
-                          amount:
-                              ((charge['amount'] as num?)?.toDouble() ?? 0.0),
-                          currency: _currencyCode,
-                        ),
-                      ],
+                    _ActionCard(
+                      key: const ValueKey('summary_roulette'),
+                      icon: Icons.donut_large_rounded,
+                      title: 'bill_roulette'.tr(),
+                      subtitle: 'bf_summary_roulette_body'.tr(),
+                      onTap: _roulette,
                     ),
                   ],
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            if (widget.participants.length > 1) ...[
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: _showRouletteModal,
-                  icon: Icon(Icons.casino_rounded, color: palette.dangerAccent),
-                  label: Text(
-                    'bill_roulette',
-                    style: TextStyle(
-                      color: palette.dangerAccent,
-                      fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+              child: _isCreating
+                  ? SizedBox(
+                      height: 52,
+                      child: FilledButton(
+                        onPressed: null,
+                        style: FilledButton.styleFrom(
+                          disabledBackgroundColor: p.inverseSurface,
+                          shape: const StadiumBorder(),
+                        ),
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            color: p.onInverseSurface,
+                            semanticsLabel: 'bf_summary_saving'.tr(),
+                          ),
+                        ),
+                      ),
+                    )
+                  : AssignPillButton(
+                      key: const ValueKey('summary_save'),
+                      label: 'bf_summary_save'.tr(),
+                      muted: !c.isValid,
+                      onPressed: _save,
                     ),
-                  ).tr(),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: palette.dangerAccent, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-            ] else
-              const SizedBox(height: 12),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: widget.participants.length,
-              separatorBuilder: (c, i) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final p = widget.participants[index];
-                return ParticipantShareCard(
-                  participant: p,
-                  share: _finalShares[p['id']] ?? 0.0,
-                  isWinner: _rouletteWinnerId == p['id'],
-                  onTap: () => _showUserBreakdown(p),
-                  onEdit: () => _showAdjustParticipantShareDialog(p),
-                  getAvatarImage: _getAvatarImage,
-                  currency: _currencyCode,
-                );
-              },
             ),
-            const SizedBox(height: 120),
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        decoration: BoxDecoration(
-          color: palette.surface,
-          boxShadow: [
-            BoxShadow(
-              color: palette.shadow.withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
+    );
+  }
+}
+
+class _ChargesLine extends StatelessWidget {
+  const _ChargesLine({required this.draft});
+
+  final BillDraft draft;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    String m(int v) => formatMoneyMinor(v, draft.currency);
+    String part(String key, int v) => key.tr(namedArgs: {'amount': m(v)});
+    final parts = <String>[
+      part('bf_summary_items_part', draft.itemsSubtotalMinor),
+      if (draft.taxMinor > 0) part('bf_summary_tax_part', draft.taxMinor),
+      if (draft.serviceMinor > 0)
+        part('bf_summary_service_part', draft.serviceMinor),
+      if (draft.tipMinor > 0) part('bf_summary_tip_part', draft.tipMinor),
+      if (draft.deliveryMinor > 0)
+        part('bf_summary_delivery_part', draft.deliveryMinor),
+      if (draft.otherChargesMinor > 0)
+        part('bf_summary_other_part', draft.otherChargesMinor),
+      if (draft.discountMinor > 0)
+        part('bf_summary_discount_part', draft.discountMinor),
+    ];
+    return Text(
+      parts.join(' · '),
+      style: AppTypography.bodySmall.copyWith(
+        fontSize: 13,
+        color: p.textSecondary,
+      ),
+    );
+  }
+}
+
+class _PersonRow extends StatelessWidget {
+  const _PersonRow({
+    super.key,
+    required this.participant,
+    required this.name,
+    required this.breakdown,
+    required this.currency,
+    required this.first,
+    required this.expanded,
+    required this.isWinner,
+    required this.onTap,
+    required this.onEdit,
+  });
+
+  final Map<String, dynamic> participant;
+  final String name;
+  final PersonBreakdown breakdown;
+  final String currency;
+  final bool first;
+  final bool expanded;
+  final bool isWinner;
+  final VoidCallback onTap;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final reduce = AppMotion.reduceMotion(context);
+    return Container(
+      decoration: BoxDecoration(
+        border: first ? null : Border(top: BorderSide(color: p.borderSubtle)),
+      ),
+      child: Column(
+        children: [
+          Semantics(
+            button: true,
+            expanded: expanded,
+            label: 'bf_summary_person_semantics'.tr(
+              namedArgs: {
+                'name': name,
+                'amount': formatMoneyMinor(breakdown.totalMinor, currency),
+              },
             ),
-          ],
-        ),
-        child: SizedBox(
-          height: 60,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: _isCreating ? null : _createBill,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00B365),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+            child: InkWell(
+              onTap: onTap,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 60),
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 8, 10),
+                  child: Row(
+                    children: [
+                      PersonAvatar(participant: participant, size: 36),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ExcludeSemantics(
+                          child: Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.titleSmall.copyWith(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: p.textPrimary,
+                                  ),
+                                ),
+                              ),
+                              if (isWinner) ...[
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: p.oweSoft,
+                                    borderRadius: AppRadii.chipRadius,
+                                  ),
+                                  child: Text(
+                                    'bf_summary_pays_all'.tr(),
+                                    style: AppTypography.labelSmall.copyWith(
+                                      color: p.oweInk,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      MoneyText(
+                        minor: breakdown.totalMinor,
+                        currency: currency,
+                        tone: MoneyTone.neutral,
+                        showSymbol: false,
+                        animate: true,
+                        animateFromZero: false,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      AnimatedRotation(
+                        turns: expanded ? 0.5 : 0,
+                        duration: reduce ? Duration.zero : AppMotion.fast,
+                        child: Icon(
+                          Icons.expand_more_rounded,
+                          color: p.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              elevation: 0,
             ),
-            child: _isCreating
-                ? const CircularProgressIndicator(color: Colors.white)
-                : Text(
-                    'create_bill',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ).tr(),
+          ),
+          if (reduce)
+            expanded
+                ? Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      64,
+                      0,
+                      16,
+                      12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        BillBreakdownCard(
+                          breakdown: breakdown,
+                          currency: currency,
+                          bordered: false,
+                          showTotal: false,
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: TextButton.icon(
+                            key: ValueKey('summary_edit_${breakdown.id}'),
+                            onPressed: onEdit,
+                            style: TextButton.styleFrom(
+                              foregroundColor: p.accent,
+                              minimumSize: const Size(44, 44),
+                              padding: EdgeInsets.zero,
+                            ),
+                            icon: const Icon(Icons.edit_rounded, size: 16),
+                            label: Text('bf_summary_edit_share'.tr()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : const SizedBox(width: double.infinity)
+          else
+            AnimatedSize(
+              duration: AppMotion.medium,
+              curve: AppMotion.quiet,
+              alignment: AlignmentDirectional.topStart,
+              child: expanded
+                  ? Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        64,
+                        0,
+                        16,
+                        12,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          BillBreakdownCard(
+                            breakdown: breakdown,
+                            currency: currency,
+                            bordered: false,
+                            showTotal: false,
+                          ),
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: TextButton.icon(
+                              key: ValueKey('summary_edit_${breakdown.id}'),
+                              onPressed: onEdit,
+                              style: TextButton.styleFrom(
+                                foregroundColor: p.accent,
+                                minimumSize: const Size(44, 44),
+                                padding: EdgeInsets.zero,
+                              ),
+                              icon: const Icon(Icons.edit_rounded, size: 16),
+                              label: Text('bf_summary_edit_share'.tr()),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(width: double.infinity),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Material(
+      color: p.surface,
+      shape: AppRadii.cardShape(p.hairline),
+      child: InkWell(
+        customBorder: AppRadii.cardShape(p.hairline),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: p.surfaceVariant,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 18, color: p.textPrimary),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTypography.titleSmall.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: p.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: AppTypography.bodySmall.copyWith(
+                        fontSize: 13,
+                        color: p.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: p.textSecondary,
+                textDirection: Directionality.of(context),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildEditChargeField(String label, TextEditingController controller) {
+/// Edit tax, service, tip, delivery and discount, in minor units.
+class _ChargesSheet extends StatefulWidget {
+  const _ChargesSheet({required this.draft});
+
+  final BillDraft draft;
+
+  @override
+  State<_ChargesSheet> createState() => _ChargesSheetState();
+}
+
+class _ChargesSheetState extends State<_ChargesSheet> {
+  late final Map<String, TextEditingController> _c;
+
+  @override
+  void initState() {
+    super.initState();
+    final d = widget.draft;
+    final decimals = currencyDecimals(d.currency);
+    String text(int minor) => minor == 0
+        ? ''
+        : fromMinorUnits(minor, d.currency).toStringAsFixed(decimals);
+    _c = {
+      'tax_vat': TextEditingController(text: text(d.taxMinor)),
+      'service_charge': TextEditingController(text: text(d.serviceMinor)),
+      'tip': TextEditingController(text: text(d.tipMinor)),
+      'delivery_fee': TextEditingController(text: text(d.deliveryMinor)),
+      'discount': TextEditingController(text: text(d.discountMinor)),
+    };
+  }
+
+  @override
+  void dispose() {
+    for (final c in _c.values) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  BillDraft _result() {
+    final cur = widget.draft.currency;
+    int v(String k) => minorFromAny(_c[k]!.text, cur).abs();
+    return widget.draft.copyWith(
+      taxMinor: v('tax_vat'),
+      serviceMinor: v('service_charge'),
+      tipMinor: v('tip'),
+      deliveryMinor: v('delivery_fee'),
+      discountMinor: v('discount'),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final decimals = currencyDecimals(widget.draft.currency);
+    final preview = _result();
+    final tooLarge = preview.grandTotalMinor < 0;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(color: context.palette.textMedium, fontSize: 16),
-          ),
-          SizedBox(
-            width: 100,
-            child: TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.right,
-              onChanged: (_) => setState(() => _calculateFinalShares()),
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                suffixText: " $_currencyCode",
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: p.borderStrong,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Text(
+                'bf_summary_charges_title'.tr(),
+                style: AppTypography.headlineSmall.copyWith(
+                  color: p.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              for (final e in _c.entries)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          e.key.tr(),
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: p.textPrimary,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 140,
+                        child: TextField(
+                          key: ValueKey('charge_${e.key}'),
+                          controller: e.value,
+                          onChanged: (_) => setState(() {}),
+                          textAlign: TextAlign.end,
+                          keyboardType: TextInputType.numberWithOptions(
+                            decimal: decimals > 0,
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[0-9.,]'),
+                            ),
+                          ],
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: formatMoneyMinor(
+                              0,
+                              widget.draft.currency,
+                              showSymbol: false,
+                            ),
+                            suffixText: ' ${widget.draft.currency}',
+                            border: const OutlineInputBorder(
+                              borderRadius: AppRadii.rowRadius,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (tooLarge)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    'bf_split_discount_too_large'.tr(),
+                    style: AppTypography.bodySmall.copyWith(color: p.oweInk),
+                  ),
+                ),
+              Row(
+                children: [
+                  Text(
+                    'total'.tr(),
+                    style: AppTypography.titleSmall.copyWith(
+                      color: p.textPrimary,
+                    ),
+                  ),
+                  const Spacer(),
+                  MoneyText(
+                    minor: preview.grandTotalMinor,
+                    currency: preview.currency,
+                    tone: MoneyTone.neutral,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              AssignPillButton(
+                key: const ValueKey('charges_save'),
+                label: 'bf_summary_charges_save'.tr(),
+                muted: tooLarge,
+                onPressed: tooLarge
+                    ? null
+                    : () => Navigator.of(context).pop(_result()),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

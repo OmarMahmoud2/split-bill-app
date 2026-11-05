@@ -1,32 +1,37 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lottie/lottie.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
-import 'services/group_service.dart';
-import 'services/friend_scanner_service.dart';
-import 'services/contact_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'bill_summary_confirm_screen.dart';
-import 'package:split_bill_app/widgets/multi_contact_picker.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
-import 'screens/split_bill/widgets/add_members_sheet.dart';
-import 'screens/split_bill/widgets/assignment_sheets.dart';
-import 'screens/split_bill/widgets/group_selection_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:provider/provider.dart';
+import 'package:split_bill_app/bill_flow/bill_calculator.dart';
+import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
-import 'package:split_bill_app/utils/currency_utils.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/screens/split_bill/split_method_screen.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/add_people_screen.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assignment_logic.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/group_selection_sheet.dart';
+import 'package:split_bill_app/services/public_profile_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/multi_contact_picker.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/widgets/voice_command_overlay.dart';
-import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
-import 'package:split_bill_app/services/public_profile_service.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
 
+import 'bill_summary_confirm_screen.dart';
+import 'services/contact_service.dart';
+import 'services/friend_scanner_service.dart';
+import 'services/group_service.dart';
+
+/// "Who had what" (People board 3): tap an item, tap the faces of the
+/// people who had it. Live per-person totals come from `computeBill`.
 class SplitBillScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
   final List<Contact>? preSelectedContacts;
-  final List<Map<String, dynamic>>? initialParticipants; // New parameter
+  final List<Map<String, dynamic>>? initialParticipants;
   final Map<String, List<String>>? initialAssignments;
   final String? resumedBillId;
   final String? cleanupImagePath;
@@ -46,123 +51,151 @@ class SplitBillScreen extends StatefulWidget {
 }
 
 class _SplitBillScreenState extends State<SplitBillScreen> {
-  // Bill Data
-  double _taxAmount = 0.0;
-  double _serviceChargeAmount = 0.0;
-  double _tipAmount = 0.0;
-  double _discountAmount = 0.0;
-  double _deliveryFeeAmount = 0.0;
-
-  // Participants List
   List<Map<String, dynamic>> participants = [];
 
   final GroupService _groupService = GroupService();
   final ContactService _contactService = ContactService();
+  final ScrollController _scroll = ScrollController();
+  final List<GlobalKey> _rowKeys = [];
 
-  // Simple Assignments: Map Item Index -> List of User IDs
+  /// Item index -> people sharing the whole line equally.
   Map<int, List<String>> itemAssignments = {};
 
-  // Complex Assignments: Map Item Index -> { User ID : Quantity }
+  /// Item index -> units per person (quantity > 1).
   Map<int, Map<String, int>> quantityAssignments = {};
 
-  @override
+  /// The row whose face picker is open.
+  int? _activeIndex;
+  bool _activeChosen = false;
+
   @override
   void initState() {
     super.initState();
-    // Initialize participants
-    if (widget.initialParticipants != null &&
-        widget.initialParticipants!.isNotEmpty) {
-      // Map incoming rich participants to local structure
-      for (var p in widget.initialParticipants!) {
-        final data = p['data'];
-        final type = p['type']; // 'host', 'app_user', 'guest'
-        participants.add({
-          'id': data['uid'] ?? UniqueKey().toString(),
-          'name': data['displayName'] ?? 'guest'.tr(),
-          'phoneNumber': data['phoneNumber'],
-          'photoUrl': data['photoUrl'],
-          'isGuest': type == 'guest',
-          'isHost': type == 'host',
-          'isPro': data['isPro'] == true, // Preserve Pro status
-          'color':
-              Colors.primaries[participants.length % Colors.primaries.length],
-        });
-      }
-    } else if (widget.preSelectedContacts != null &&
-        widget.preSelectedContacts!.isNotEmpty) {
-      // Fallback for legacy flows
-      _processPreSelectedContacts();
-    } else {}
-
-    _initializeHost(); // Always check to ensure host is there
-
-    // Initialize assignments if available (deferred to allow participants to load first)
-    if (widget.initialAssignments != null) {
-      // We need to wait for participants to be added, so we'll do this slightly later or chained
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _applyInitialAssignments();
-      });
-    }
-    // Initialize tax and service charge from receipt data
-    if (widget.receiptData.isNotEmpty) {
-      _taxAmount = (widget.receiptData['tax_amount'] is num)
-          ? (widget.receiptData['tax_amount'] as num).toDouble()
-          : 0.0;
-      _serviceChargeAmount = (widget.receiptData['service_charge'] is num)
-          ? (widget.receiptData['service_charge'] as num).toDouble()
-          : 0.0;
-      _tipAmount = (widget.receiptData['tip_amount'] is num)
-          ? (widget.receiptData['tip_amount'] as num).toDouble()
-          : 0.0;
-      _discountAmount = (widget.receiptData['discount_amount'] is num)
-          ? (widget.receiptData['discount_amount'] as num).toDouble()
-          : 0.0;
-      _deliveryFeeAmount = (widget.receiptData['delivery_fee'] is num)
-          ? (widget.receiptData['delivery_fee'] as num).toDouble()
-          : 0.0;
-    }
-  }
-
-  ImageProvider? _getAvatarImage(String? url) {
-    return ImageUtils.getAvatarImage(url);
-  }
-
-  void _initializeHost() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      // Check if host is already in the list (by ID)
-      if (participants.any((p) => p['id'] == user.uid)) return;
-
-      String? photoUrl;
-      bool isProHost = false;
-      try {
-        var doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        if (doc.exists) {
-          photoUrl = doc.data()?['photoUrl'];
-          isProHost = doc.data()?['isPro'] == true;
+    final initial = widget.initialParticipants;
+    if (initial != null && initial.isNotEmpty) {
+      for (final p in initial) {
+        final data = Map<String, dynamic>.from((p['data'] as Map?) ?? const {});
+        final type = p['type'];
+        final person = participantFromProfile(
+          data,
+          isGuest: type == 'guest',
+          fallbackName: 'guest'.tr(),
+        );
+        person['isHost'] = type == 'host';
+        if (!participants.any((x) => x['id'] == person['id'])) {
+          participants.add(person);
         }
-      } catch (e) {
-        debugPrint("Error fetching host image: $e");
       }
-
-      if (mounted) {
-        setState(() {
-          participants.add({
-            'name': user.displayName ?? 'Me',
-            'id': user.uid,
-            'color': Theme.of(context).colorScheme.primary,
-            'phoneNumber': user.phoneNumber,
-            'photoUrl': photoUrl,
-            'isGuest': false,
-            'isHost': true,
-            'isPro': isProHost,
-          });
-        });
-      }
+    } else if (widget.preSelectedContacts?.isNotEmpty == true) {
+      _processPreSelectedContacts();
     }
+
+    widget.initialAssignments?.forEach((itemIdStr, userIds) {
+      final index = int.tryParse(itemIdStr);
+      if (index != null && userIds.isNotEmpty) {
+        itemAssignments[index] = List.of(userIds);
+      }
+    });
+
+    final needsPeopleStep =
+        (initial == null || initial.isEmpty) &&
+        (widget.preSelectedContacts?.isEmpty ?? true) &&
+        widget.resumedBillId == null &&
+        widget.initialAssignments == null;
+    _initializeHost().then((_) {
+      if (needsPeopleStep && mounted) _openAddPeople();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  // ---------------------------------------------------------------- data
+
+  List<Map<String, dynamic>> get _rawItems => [
+    for (final x in (widget.receiptData['items'] as List?) ?? const [])
+      if (x is Map) Map<String, dynamic>.from(x),
+  ];
+
+  String _currency(BuildContext context) {
+    final fromReceipt =
+        widget.receiptData['currency_code'] ??
+        widget.receiptData['currencyCode'];
+    if (fromReceipt is String && fromReceipt.trim().isNotEmpty) {
+      return fromReceipt;
+    }
+    return context.watch<AppSettingsProvider>().currencyCode;
+  }
+
+  BillDraft _draft(String currency) => draftFromReceipt(
+    receiptData: widget.receiptData,
+    participantIds: [for (final p in participants) p['id'].toString()],
+    currency: currency,
+    itemAssignments: itemAssignments,
+    quantityAssignments: quantityAssignments,
+  );
+
+  double _charge(String key) {
+    final v = widget.receiptData[key];
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v.replaceAll(',', '.')) ?? 0;
+    return 0;
+  }
+
+  /// Participants with their palette tint under `color` (read by the
+  /// summary screen).
+  List<Map<String, dynamic>> _participantsForNext() {
+    final p = context.palette;
+    return [
+      for (final x in participants)
+        {...x, 'color': p.avatarTintFor(x['id'].toString())},
+    ];
+  }
+
+  Future<void> _initializeHost() async {
+    User? user;
+    try {
+      user = FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      return;
+    }
+    if (user == null) return;
+    if (participants.any((p) => p['id'] == user!.uid)) {
+      for (final p in participants) {
+        if (p['id'] == user.uid) p['isHost'] = true;
+      }
+      return;
+    }
+
+    String? photoUrl;
+    var isPro = false;
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (doc.exists) {
+        photoUrl = doc.data()?['photoUrl'];
+        isPro = doc.data()?['isPro'] == true;
+      }
+    } catch (e) {
+      debugPrint('Host profile read failed: $e');
+    }
+    if (!mounted) return;
+    setState(() {
+      participants.insert(0, {
+        'name': user!.displayName ?? 'bf_assign_me'.tr(),
+        'id': user.uid,
+        'phoneNumber': user.phoneNumber,
+        'photoUrl': photoUrl,
+        'isGuest': false,
+        'isHost': true,
+        'isPro': isPro,
+      });
+    });
   }
 
   Future<void> _processPreSelectedContacts() async {
@@ -170,423 +203,329 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       final results = await _contactService.identifyUsers(
         widget.preSelectedContacts!,
       );
-      if (mounted) {
-        setState(() {
-          for (var result in results) {
-            _addParticipant(result['data'], result['type']);
-          }
-        });
-      }
-    } catch (e) {
-      debugPrint("Error processing pre-selected contacts: $e");
-    }
-  }
-
-  void _applyInitialAssignments() {
-    if (widget.initialAssignments == null) return;
-
-    setState(() {
-      widget.initialAssignments!.forEach((itemIdStr, userIds) {
-        int? index = int.tryParse(itemIdStr);
-        if (index != null) {
-          itemAssignments[index] = List.from(userIds);
-        }
-      });
-    });
-  }
-
-  // --- ACTIONS ---
-  Future<void> _pickContact() async {
-    final List<dynamic>? contacts = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const MultiContactPicker()),
-    );
-
-    if (contacts != null && contacts.isNotEmpty) {
       if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) =>
-            LoadingStateWidget(message: 'checking_app_status'.tr()),
-      );
-
-      try {
-        final results = await _contactService.identifyUsers(contacts.cast());
-
-        if (!mounted) return;
-        Navigator.pop(context); // Close loading
-
-        int addedCount = 0;
-        for (var result in results) {
-          _addParticipant(result['data'], result['type']);
-          addedCount++;
-        }
-
-        if (addedCount > 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'added_people_count'.tr(
-                  namedArgs: {'count': addedCount.toString()},
-                ),
-              ),
-            ),
+      setState(() {
+        for (final r in results) {
+          final person = participantFromProfile(
+            Map<String, dynamic>.from(r['data'] as Map),
+            isGuest: r['type'] == 'guest',
+            fallbackName: 'guest'.tr(),
           );
+          if (!participants.any((x) => x['id'] == person['id'])) {
+            participants.add(person);
+          }
         }
-      } catch (e) {
-        if (!mounted) return;
-        Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'error_adding_contacts'.tr(namedArgs: {'error': e.toString()}),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _scanAndAddFriend() async {
-    final String? scannedUid = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ScanFriendScreen()),
-    );
-
-    if (scannedUid != null) {
-      try {
-        final userData = await PublicProfileService.fetch(scannedUid);
-        if (userData != null) {
-          _addParticipant(userData, 'app_user');
-        }
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'error_with_details'.tr(namedArgs: {'error': e.toString()}),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
-  void _addParticipant(Map<String, dynamic> data, String type) {
-    final String? candidateId = data['uid'] ?? data['id'];
-
-    if (candidateId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('error_missing_user_id').tr()));
-      return;
-    }
-
-    if (participants.any((p) => p['id'] == candidateId)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('user_already_in_bill').tr()));
-      return;
-    }
-
-    setState(() {
-      participants.add({
-        'name': data['displayName'] ?? data['name'] ?? "Unknown",
-        'id': candidateId,
-        'color':
-            Colors.primaries[participants.length % Colors.primaries.length],
-        'phoneNumber': data['phoneNumber'] ?? '',
-        'photoUrl': data['photoUrl'] ?? '',
-        'isGuest': type == 'guest',
-        'isHost': false,
       });
+    } catch (e) {
+      debugPrint('Pre-selected contacts failed: $e');
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_assign_contacts_error'.tr(),
+        type: AppToastType.error,
+      );
+    }
+  }
+
+  // -------------------------------------------------------- add people
+
+  Future<List<Map<String, dynamic>>> _scanSource(BuildContext ctx) async {
+    final String? uid = await Navigator.push<String>(
+      ctx,
+      MaterialPageRoute(builder: (_) => const ScanFriendScreen()),
+    );
+    if (uid == null) return const [];
+    Map<String, dynamic>? profile;
+    try {
+      profile = await PublicProfileService.fetch(uid);
+    } catch (e) {
+      debugPrint('Scanned profile read failed: $e');
+    }
+    if (profile == null) {
+      if (ctx.mounted) {
+        AppHaptics.error();
+        AppToast.show(
+          ctx,
+          message: 'bf_assign_scan_not_found'.tr(),
+          type: AppToastType.error,
+        );
+      }
+      return const [];
+    }
+    return [participantFromProfile(profile, fallbackName: 'guest'.tr())];
+  }
+
+  Future<List<Map<String, dynamic>>> _contactsSource(BuildContext ctx) async {
+    final List<dynamic>? contacts = await Navigator.push(
+      ctx,
+      MaterialPageRoute(builder: (_) => const MultiContactPicker()),
+    );
+    if (contacts == null) {
+      if (ctx.mounted) {
+        AppToast.show(
+          ctx,
+          message: 'bf_assign_contacts_denied'.tr(),
+          type: AppToastType.warning,
+        );
+      }
+      return const [];
+    }
+    if (contacts.isEmpty) return const [];
+    try {
+      final results = await _contactService.identifyUsers(
+        contacts.cast<Contact>(),
+      );
+      return [
+        for (final r in results)
+          participantFromProfile(
+            Map<String, dynamic>.from(r['data'] as Map),
+            isGuest: r['type'] == 'guest',
+            fallbackName: 'guest'.tr(),
+          ),
+      ];
+    } catch (e) {
+      debugPrint('Contacts lookup failed: $e');
+      if (ctx.mounted) {
+        AppHaptics.error();
+        AppToast.show(
+          ctx,
+          message: 'bf_assign_contacts_error'.tr(),
+          type: AppToastType.error,
+        );
+      }
+      return const [];
+    }
+  }
+
+  Future<void> _openAddPeople() async {
+    Stream<List<AddPeopleGroup>>? groups;
+    try {
+      groups = addPeopleGroupsFrom(_groupService);
+    } catch (_) {
+      groups = null;
+    }
+    final selected = await AddPeopleScreen.open(
+      context,
+      participants: participants,
+      groups: groups,
+      onScanQr: _scanSource,
+      onPickContacts: _contactsSource,
+    );
+    if (selected == null || !mounted) return;
+    final next = reconcileParticipants(participants, selected);
+    setState(() {
+      participants = next.participants;
+      for (final id in next.removed) {
+        _clearAssignmentsOf(id);
+      }
     });
   }
 
-  void _removeParticipant(String id) {
-    if (participants.any((p) => p['id'] == id && p['isHost'] == true)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('cannot_remove_yourself').tr()));
-      return;
-    }
-
-    setState(() {
-      participants.removeWhere((p) => p['id'] == id);
-      // Also clear assignments for this user
-      itemAssignments.forEach((key, value) => value.remove(id));
-      quantityAssignments.forEach((key, value) => value.remove(id));
-    });
+  void _clearAssignmentsOf(String id) {
+    final cleared = removeParticipantAssignments(
+      itemAssignments,
+      quantityAssignments,
+      id,
+    );
+    itemAssignments = cleared.items;
+    quantityAssignments = cleared.units;
   }
 
   void _showRemoveParticipantDialog(Map<String, dynamic> participant) {
     if (participant['isHost'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('cannot_remove_the_host_of_the_bill').tr()),
+      AppHaptics.warning();
+      AppToast.show(
+        context,
+        message: 'cannot_remove_the_host_of_the_bill'.tr(),
+        type: AppToastType.info,
       );
       return;
     }
-
-    showDialog(
+    final name = (participant['name'] ?? '').toString();
+    showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'remove_participant',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ).tr(),
-        content: Text(
-          "Are you sure you want to remove \"${participant['name']}\" from this bill?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'common_cancel',
-              style: TextStyle(color: context.palette.textTertiary),
-            ).tr(),
+      barrierColor: context.palette.scrim,
+      builder: (dialogContext) {
+        final p = dialogContext.palette;
+        return AlertDialog(
+          backgroundColor: p.surface,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: AppRadii.cardRadius,
+            side: BorderSide(color: p.border),
           ),
-          ElevatedButton(
-            onPressed: () {
-              _removeParticipant(participant['id']);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.palette.danger,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+          title: Text(
+            'remove_participant'.tr(),
+            style: AppTypography.headlineMedium.copyWith(color: p.textPrimary),
+          ),
+          content: Text(
+            'bf_assign_remove_confirm'.tr(namedArgs: {'name': name}),
+            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              style: TextButton.styleFrom(
+                foregroundColor: p.textPrimary,
+                minimumSize: const Size(44, 44),
               ),
+              child: Text('common_cancel'.tr()),
             ),
-            child: Text('common_remove').tr(),
-          ),
-        ],
-      ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                _removeParticipant(participant['id'].toString(), name);
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: p.error,
+                foregroundColor: p.onError,
+                minimumSize: const Size(44, 44),
+                shape: const StadiumBorder(),
+              ),
+              child: Text('common_remove'.tr()),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  void _splitEqually() {
-    if (participants.isEmpty) return;
-
+  void _removeParticipant(String id, String name) {
     setState(() {
-      itemAssignments.clear();
-      quantityAssignments.clear();
-
-      final items = widget.receiptData['items'] as List;
-      final participantIds = participants
-          .map((p) => p['id'] as String)
-          .toList();
-
-      for (int i = 0; i < items.length; i++) {
-        itemAssignments[i] = List.from(participantIds);
-      }
+      participants.removeWhere((p) => p['id'].toString() == id);
+      _clearAssignmentsOf(id);
     });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('bill_split_equally_among_all_members').tr()),
-    );
-  }
-
-  void _confirmSplitEqually() {
-    if (participants.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('add_participants_first').tr()));
-      return;
-    }
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('split_bill_equally').tr(),
-        content: Text(
-          'this_will_assign_all_current_members_to_every_item_on_the_receipt_existing_assignments_will_be_cleared',
-        ).tr(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('common_cancel').tr(),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _splitEqually();
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: context.palette.onPrimary,
-            ),
-            child: Text('split_equally').tr(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showQuickActionsSheet() {
-    PremiumBottomSheet.show(
-      context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'how_to_assign_items',
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ).tr(),
-          const SizedBox(height: 24),
-          // Split Equally option
-          _buildQuickActionTile(
-            icon: Icons.groups_rounded,
-            title: 'split_equally'.tr(),
-            subtitle: 'split_equally_subtitle'.tr(),
-            gradientColors: [const Color(0xFF00B4D8), const Color(0xFF0077B6)],
-            onTap: () {
-              Navigator.pop(context);
-              _confirmSplitEqually();
-            },
-          ),
-          const SizedBox(height: 12),
-          // Voice Command option
-          _buildQuickActionTile(
-            icon: Icons.mic_rounded,
-            title: 'voice_command'.tr(),
-            subtitle: 'voice_command_subtitle'.tr(),
-            gradientColors: context.palette.primaryGradient.colors,
-            badge: 'voice_command_cost'.tr(),
-            onTap: () {
-              Navigator.pop(context);
-              _showVoiceOverlay();
-            },
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActionTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required List<Color> gradientColors,
-    required VoidCallback onTap,
-    String? badge,
-  }) {
-    final palette = context.palette;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: palette.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: palette.textTertiary.withValues(alpha: 0.1),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: palette.shadow.withValues(alpha: 0.03),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: gradientColors
-                      .map((c) => c.withValues(alpha: 0.15))
-                      .toList(),
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(icon, color: gradientColors[0], size: 26),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                        ),
-                      ),
-                      if (badge != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [palette.premium, palette.premiumStrong],
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            badge,
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              color: palette.onPremium,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: palette.textSecondary,
-                      fontSize: 13,
-                      height: 1.3,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: palette.border),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showVoiceOverlay() async {
-    if (participants.length < 2) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('add_participants_first').tr()));
-      return;
-    }
-
-    // Warm up ad in case it's needed
-    RewardedAdHelper.warmUpIfEligible();
-
-    final result = await Navigator.push<Map<String, List<String>>>(
+    AppHaptics.warning();
+    AppToast.show(
       context,
-      PageRouteBuilder(
+      message: 'bf_assign_removed_person'.tr(namedArgs: {'name': name}),
+      type: AppToastType.info,
+    );
+  }
+
+  // -------------------------------------------------------- assigning
+
+  void _activate(int index) {
+    setState(() {
+      _activeChosen = true;
+      _activeIndex = _activeIndex == index ? null : index;
+    });
+    AppHaptics.selection();
+  }
+
+  void _onFaceTap(BillDraft draft, int index, String id) {
+    _activeChosen = true;
+    _activeIndex = index;
+    final quantity = draft.items[index].quantity;
+    final shared = itemAssignments[index] ?? const <String>[];
+    final units = quantityAssignments[index] ?? const <String, int>{};
+    final sharedMode = quantity <= 1 || (shared.isNotEmpty && units.isEmpty);
+    if (sharedMode) {
+      setState(() {
+        final next = toggleShared(shared, id);
+        if (next.isEmpty) {
+          itemAssignments.remove(index);
+        } else {
+          itemAssignments[index] = next;
+        }
+        quantityAssignments.remove(index);
+      });
+      AppHaptics.selection();
+      return;
+    }
+    final tap = tapUnitFace(units, id, quantity);
+    if (tap.result == UnitTapResult.full) {
+      AppHaptics.warning();
+      AppToast.show(
+        context,
+        message: 'bf_assign_units_full'.tr(namedArgs: {'qty': '$quantity'}),
+        type: AppToastType.info,
+      );
+      return;
+    }
+    setState(() {
+      if (tap.units.isEmpty) {
+        quantityAssignments.remove(index);
+      } else {
+        quantityAssignments[index] = tap.units;
+      }
+      itemAssignments.remove(index);
+    });
+    AppHaptics.selection();
+  }
+
+  void _assignEveryone(int index) {
+    setState(() {
+      itemAssignments[index] = [
+        for (final p in participants) p['id'].toString(),
+      ];
+      quantityAssignments.remove(index);
+    });
+    AppHaptics.selection();
+  }
+
+  void _showSimpleAssignSheet(int index, String itemName) {
+    PremiumBottomSheet.show<void>(
+      context: context,
+      child: SimpleAssignmentSheet(
+        participants: participants,
+        itemName: itemName,
+        currentSelection: List.of(itemAssignments[index] ?? const []),
+        onConfirm: (ids) {
+          setState(() {
+            if (ids.isEmpty) {
+              itemAssignments.remove(index);
+            } else {
+              itemAssignments[index] = ids;
+            }
+            quantityAssignments.remove(index);
+          });
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _showUnitsSheet(int index, String itemName, int quantity) {
+    PremiumBottomSheet.show<void>(
+      context: context,
+      child: ComplexAssignmentSheet(
+        participants: participants,
+        itemName: itemName,
+        initialMap: Map.of(quantityAssignments[index] ?? const {}),
+        maxQty: quantity,
+        onConfirm: (units) {
+          setState(() {
+            if (units.isEmpty) {
+              quantityAssignments.remove(index);
+            } else {
+              quantityAssignments[index] = units;
+              itemAssignments.remove(index);
+            }
+          });
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Future<void> _showVoiceOverlay(int itemCount) async {
+    if (participants.length < 2) {
+      AppToast.show(
+        context,
+        message: 'add_participants_first'.tr(),
+        type: AppToastType.info,
+        actionLabel: 'add_people'.tr(),
+        onAction: _openAddPeople,
+      );
+      return;
+    }
+    RewardedAdHelper.warmUpIfEligible();
+    AppHaptics.light();
+
+    final Object? result = await Navigator.push<Object?>(
+      context,
+      PageRouteBuilder<Object?>(
         opaque: false,
         pageBuilder: (context, _, _) => VoiceCommandOverlay(
           receiptData: widget.receiptData,
@@ -594,756 +533,368 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         ),
       ),
     );
-
-    if (result != null && mounted) {
-      setState(() {
-        itemAssignments.clear();
-        quantityAssignments.clear();
-        result.forEach((itemIdStr, userIds) {
-          int? index = int.tryParse(itemIdStr);
-          if (index != null) {
-            itemAssignments[index] = List.from(userIds);
-          }
-        });
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('voice_assignment_applied').tr(),
-          backgroundColor: context.palette.success,
-        ),
+    if (result == null || !mounted) return;
+    final voice = parseVoiceResult(
+      result,
+      knownIds: {for (final p in participants) p['id'].toString()},
+      itemCount: itemCount,
+    );
+    if (voice == null || voice.isEmpty) {
+      AppToast.show(
+        context,
+        message: 'bf_assign_voice_nothing'.tr(),
+        type: AppToastType.info,
       );
+      return;
     }
-  }
-
-  void _pickGroup() {
-    PremiumBottomSheet.show(
-      context: context,
-      child: GroupSelectionSheet(
-        groupService: _groupService,
-        onGroupSelected: (members) {
-          _showSelectGroupMembersDialog(members);
-        },
-      ),
+    setState(() {
+      voice.items.forEach((index, ids) {
+        itemAssignments[index] = ids;
+        quantityAssignments.remove(index);
+      });
+      voice.units.forEach((index, units) {
+        quantityAssignments[index] = units;
+        itemAssignments.remove(index);
+      });
+    });
+    AppHaptics.success();
+    AppToast.show(
+      context,
+      message: 'voice_assignment_applied'.tr(),
+      type: AppToastType.success,
     );
   }
 
-  void _showSelectGroupMembersDialog(List<dynamic> groupMembers) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return GroupMemberSelectionDialog(
-          groupMembers: groupMembers,
-          onMembersConfirmed: (finalSelection) {
-            _importMembers(finalSelection);
-          },
-        );
-      },
-    );
-  }
+  // ----------------------------------------------------------- next steps
 
-  void _importMembers(List<dynamic> groupMembers) {
-    int addedCount = 0;
-    for (var m in groupMembers) {
-      if (!participants.any((p) => p['id'] == m['id'])) {
-        setState(() {
-          participants.add({
-            'name': m['name'],
-            'id': m['id'],
-            'color':
-                Colors.primaries[participants.length % Colors.primaries.length],
-            'phoneNumber': m['phoneNumber'],
-            'photoUrl': m['photoUrl'],
-            'isGuest': m['isGuest'] ?? true,
-            'isHost': false,
-          });
-        });
-        addedCount++;
-      }
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'added_members_count'.tr(namedArgs: {'count': addedCount.toString()}),
+  void _pushSummary({BillDraft? methodDraft}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BillSummaryConfirmScreen(
+          receiptData: widget.receiptData,
+          participants: _participantsForNext(),
+          itemAssignments: itemAssignments,
+          quantityAssignments: quantityAssignments,
+          taxAmount: _charge('tax_amount'),
+          serviceChargeAmount: _charge('service_charge'),
+          tipAmount: _charge('tip_amount'),
+          discountAmount: _charge('discount_amount'),
+          deliveryFeeAmount: _charge('delivery_fee'),
+          oldBillIdToDelete: widget.resumedBillId,
+          oldImageToDelete: widget.cleanupImagePath,
+          methodDraft: methodDraft,
         ),
       ),
     );
   }
 
-  // --- ADD MEMBERS MODAL ---
-  void _showAddMembersModal() {
-    PremiumBottomSheet.show(
-      context: context,
-      child: AddMembersSheet(
-        onScanQR: () {
-          Navigator.pop(context);
-          _scanAndAddFriend();
-        },
-        onPickContacts: () {
-          Navigator.pop(context);
-          _pickContact();
-        },
-        onPickGroups: () {
-          Navigator.pop(context);
-          _pickGroup();
-        },
-      ),
-    );
-  }
-
-  // --- ITEM ASSIGNMENT DIALOG ---
-  void _showAssignDialog(int itemIndex) {
-    final item = widget.receiptData['items'][itemIndex];
-    int maxQty = (item['qty'] as num?)?.toInt() ?? 1;
-
-    if (maxQty > 1) {
-      _showComplexAssignDialog(itemIndex, maxQty);
-    } else {
-      _showSimpleAssignDialog(itemIndex);
+  void _continue(BillDraft draft) {
+    final issue = firstItemIssue(computeBill(draft).issues);
+    if (issue == null) {
+      AppHaptics.light();
+      _pushSummary();
+      return;
     }
-  }
-
-  void _showSimpleAssignDialog(int itemIndex) {
-    List<String> currentSelection = List.from(itemAssignments[itemIndex] ?? []);
-    PremiumBottomSheet.show(
-      context: context,
-      child: SimpleAssignmentSheet(
-        participants: participants,
-        currentSelection: currentSelection,
-        onConfirm: (selectedIds) {
-          setState(() {
-            itemAssignments[itemIndex] = selectedIds;
-            quantityAssignments.remove(itemIndex);
-          });
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
-
-  void _showComplexAssignDialog(int itemIndex, int maxQty) {
-    Map<String, int> currentMap = Map.from(
-      quantityAssignments[itemIndex] ?? {},
-    );
-
-    PremiumBottomSheet.show(
-      context: context,
-      child: ComplexAssignmentSheet(
-        participants: participants,
-        initialMap: currentMap,
-        maxQty: maxQty,
-        onConfirm: (confirmedMap) {
-          setState(() {
-            quantityAssignments[itemIndex] = confirmedMap;
-            itemAssignments.remove(itemIndex);
-          });
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
-
-  // --- FINALIZATION ---
-  Future<void> _finalizeBill() async {
-    // 1. VALIDATION: Check if all items are fully assigned
-    List items = widget.receiptData['items'];
-    for (int i = 0; i < items.length; i++) {
-      int totalQty = (items[i]['qty'] as num?)?.toInt() ?? 1;
-      int assignedQty = 0;
-
-      if (quantityAssignments.containsKey(i)) {
-        assignedQty = quantityAssignments[i]!.values.fold(
-          0,
-          (assignedTotal, v) => assignedTotal + v,
-        );
-      } else if (itemAssignments.containsKey(i)) {
-        // In simple mode, we assume the whole item is assigned if the list is not empty
-        if (itemAssignments[i]!.isNotEmpty) {
-          assignedQty = totalQty;
-        }
-      }
-
-      if (assignedQty < totalQty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'item_not_fully_assigned'.tr(
-                namedArgs: {
-                  'item': (items[i]['name'] ?? '').toString(),
-                  'assigned': assignedQty.toString(),
-                  'total': totalQty.toString(),
-                },
-              ),
-            ),
-            backgroundColor: context.palette.danger,
-          ),
-        );
-        return;
-      }
-    }
-
-    // 2. SHOW TAX DIALOG
-    await showDialog(
-      context: context,
-      builder: (context) {
-        double tempTax = _taxAmount;
-        double tempService = _serviceChargeAmount;
-        double tempTip = _tipAmount;
-        double tempDiscount = _discountAmount;
-        double tempDelivery = _deliveryFeeAmount;
-
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text('final_steps').tr(),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildMoneyInput(
-                  context,
-                  'tax_vat'.tr(),
-                  tempTax,
-                  (v) => tempTax = v,
-                ),
-                const SizedBox(height: 12),
-                _buildMoneyInput(
-                  context,
-                  'service_charge'.tr(),
-                  tempService,
-                  (v) => tempService = v,
-                ),
-                const SizedBox(height: 12),
-                _buildMoneyInput(
-                  context,
-                  'tip'.tr(),
-                  tempTip,
-                  (v) => tempTip = v,
-                ),
-                const SizedBox(height: 12),
-                _buildMoneyInput(
-                  context,
-                  'delivery_fee'.tr(),
-                  tempDelivery,
-                  (v) => tempDelivery = v,
-                ),
-                const SizedBox(height: 12),
-                _buildMoneyInput(
-                  context,
-                  'discount'.tr(),
-                  tempDiscount,
-                  (v) => tempDiscount = v,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'common_cancel',
-                style: TextStyle(color: context.palette.textTertiary),
-              ).tr(),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _taxAmount = tempTax;
-                  _serviceChargeAmount = tempService;
-                  _tipAmount = tempTip;
-                  _discountAmount = tempDiscount;
-                  _deliveryFeeAmount = tempDelivery;
-                });
-                Navigator.pop(context);
-
-                // 3. NAVIGATE TO SUMMARY
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BillSummaryConfirmScreen(
-                      receiptData: widget.receiptData,
-                      participants: participants,
-                      itemAssignments: itemAssignments,
-                      quantityAssignments: quantityAssignments,
-                      taxAmount: _taxAmount,
-                      serviceChargeAmount: _serviceChargeAmount,
-                      tipAmount: _tipAmount,
-                      discountAmount: _discountAmount,
-                      deliveryFeeAmount: _deliveryFeeAmount,
-                      oldBillIdToDelete: widget.resumedBillId,
-                      oldImageToDelete: widget.cleanupImagePath,
-                    ),
-                  ),
-                );
+    final name = draft.items[issue.index].name;
+    AppHaptics.error();
+    AppToast.show(
+      context,
+      message: issue.over
+          ? 'bf_assign_issue_over'.tr(
+              namedArgs: {
+                'item': name,
+                'assigned': '${issue.assigned}',
+                'total': '${issue.quantity}',
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: context.palette.onPrimary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text('common_continue').tr(),
-            ),
-          ],
-        );
-      },
+            )
+          : 'bf_assign_issue_unassigned'.tr(namedArgs: {'item': name}),
+      type: AppToastType.error,
     );
+    setState(() {
+      _activeChosen = true;
+      _activeIndex = issue.index;
+    });
+    _scrollTo(issue.index);
   }
 
-  Widget _buildMoneyInput(
-    BuildContext context,
-    String label,
-    double initial,
-    Function(double) onChanged,
-  ) {
-    final currencyCode = context.read<AppSettingsProvider>().currencyCode;
-    return TextFormField(
-      initialValue: initial == 0 ? "" : initial.toStringAsFixed(2),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: 'add_label'.tr(namedArgs: {'label': label}),
-        prefixIcon: Container(
-          width: 50,
-          alignment: Alignment.center,
-          child: Text(
-            currencyCode,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-              fontSize: 12,
-            ),
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true,
-        fillColor: context.palette.surfaceMuted,
-      ),
-      onChanged: (val) => onChanged(double.tryParse(val) ?? 0),
-    );
+  void _scrollTo(int index) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (index >= _rowKeys.length) return;
+      final ctx = _rowKeys[index].currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(
+        ctx,
+        alignment: 0.2,
+        duration: AppMotion.durationFor(context, AppMotion.slow),
+        curve: AppMotion.standard,
+      );
+    });
   }
+
+  Future<void> _splitAnotherWay(BillDraft draft) async {
+    AppHaptics.light();
+    final result = await SplitMethodScreen.open(
+      context,
+      draft: draft,
+      participants: _participantsForNext(),
+    );
+    if (!mounted || result == null) return;
+    if (result.method != SplitMethod.items) {
+      _pushSummary(methodDraft: result);
+    }
+  }
+
+  // ---------------------------------------------------------------- build
 
   @override
   Widget build(BuildContext context) {
-    final currencyCode = context.watch<AppSettingsProvider>().currencyCode;
-    List items = widget.receiptData['items'];
-    final palette = context.palette;
+    final p = context.palette;
+    final currency = _currency(context);
+    final draft = _draft(currency);
+    final computation = computeBill(draft);
+    final progress = assignmentProgress(draft);
+    final raw = _rawItems;
+    while (_rowKeys.length < draft.items.length) {
+      _rowKeys.add(GlobalKey());
+    }
+    if (!_activeChosen) {
+      final firstOpen = [
+        for (var i = 0; i < draft.items.length; i++)
+          if (!draft.assignmentOf(i).isComplete) i,
+      ];
+      _activeIndex = firstOpen.isEmpty ? null : firstOpen.first;
+    }
+    final active = _activeIndex;
+    final activeIds = active == null || active >= draft.items.length
+        ? const <String>{}
+        : draft.assignmentOf(active).people.toSet();
+    final left = progress.left;
 
     return Scaffold(
-      backgroundColor: palette.surfaceVariant,
+      backgroundColor: p.background,
       body: SafeArea(
+        bottom: false,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. CUSTOM HEADER
-            Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                color: palette.surface,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.1),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 12, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                    onPressed: () => Navigator.pop(context),
+                  _CircleIconButton(
+                    icon: Icons.adaptive.arrow_back_rounded,
+                    tooltip: 'back'.tr(),
+                    onPressed: () => Navigator.of(context).maybePop(),
                   ),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: Column(
-                      children: [
-                        Text(
-                          widget.receiptData['storeName'] ?? 'split_bill'.tr(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          'assign_items',
-                          style: TextStyle(
-                            color: palette.textDisabled,
-                            fontSize: 12,
-                          ),
-                        ).tr(),
-                      ],
+                    child: Text(
+                      'bf_assign_title'.tr(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.titleLarge.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: p.textPrimary,
+                      ),
+                    ),
+                  ),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      'bf_assign_progress'.tr(
+                        namedArgs: {
+                          'done': '${progress.assigned}',
+                          'total': '${progress.total}',
+                        },
+                      ),
+                      style: AppTypography.titleMedium.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: p.textSecondary,
+                      ),
                     ),
                   ),
                   IconButton(
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: palette.inverseSurface,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.person_add_rounded,
-                        color: palette.onInverseSurface,
-                        size: 20,
-                      ),
-                    ),
-                    onPressed: _showAddMembersModal,
+                    tooltip: 'bf_assign_split_another_way'.tr(),
+                    onPressed: () => _splitAnotherWay(draft),
+                    icon: Icon(Icons.tune_rounded, color: p.textPrimary),
                   ),
                 ],
               ),
             ),
-
-            // 2. MEMBER LIST
-            Container(
-              height: 140,
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: palette.surface,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.1),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                scrollDirection: Axis.horizontal,
-                itemCount: participants.length,
-                separatorBuilder: (c, i) => const SizedBox(width: 16),
-                itemBuilder: (context, index) {
-                  final p = participants[index];
-                  final isHost = p['isHost'] == true;
-                  return GestureDetector(
-                    onTap: () => _showRemoveParticipantDialog(p),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Stack(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: p['color'], width: 2),
-                                boxShadow: isHost
-                                    ? [
-                                        BoxShadow(
-                                          color: p['color'].withValues(
-                                            alpha: 0.6,
-                                          ),
-                                          blurRadius: 12,
-                                          spreadRadius: 2,
-                                        ),
-                                      ]
-                                    : [
-                                        BoxShadow(
-                                          color: p['color'].withValues(
-                                            alpha: 0.2,
-                                          ),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 26,
-                                backgroundColor: palette.surface,
-                                backgroundImage: _getAvatarImage(p['photoUrl']),
-                                child: _getAvatarImage(p['photoUrl']) == null
-                                    ? Text(
-                                        p['name'][0].toUpperCase(),
-                                        style: TextStyle(
-                                          color: p['color'],
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: 70,
-                          child: Text(
-                            p['name'].split(" ")[0],
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: PersonTotalsStrip(
+                participants: participants,
+                totals: computation.totals,
+                currency: currency,
+                highlightedIds: activeIds,
+                onPersonTap: (person) {
+                  if (active == null) {
+                    _showRemoveParticipantDialog(person);
+                  } else {
+                    _onFaceTap(draft, active, person['id'].toString());
+                  }
                 },
+                onPersonLongPress: _showRemoveParticipantDialog,
+                onAddPeople: _openAddPeople,
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // 3. ITEMS LIST
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  int qty = (item['qty'] as num?)?.toInt() ?? 1;
-                  double price = (item['price'] as num).toDouble();
-                  double total = price * qty;
-
-                  final simpleAssigned = itemAssignments[index] ?? [];
-                  final complexAssigned = quantityAssignments[index] ?? {};
-                  final isAssigned =
-                      simpleAssigned.isNotEmpty || complexAssigned.isNotEmpty;
-
-                  return GestureDetector(
-                    onTap: () => _showAssignDialog(index),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: palette.surface,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: palette.shadow.withValues(alpha: 0.04),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                        border: isAssigned
-                            ? Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
-                              )
-                            : Border.all(color: Colors.transparent, width: 2),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.amber.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Lottie.asset(
-                              'assets/animations/food.json',
-                              fit: BoxFit.contain,
-                              errorBuilder: (c, e, s) =>
-                                  Icon(Icons.fastfood, color: palette.warning),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item['name'],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: palette.textPrimary,
+              child: SingleChildScrollView(
+                controller: _scroll,
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (draft.items.isEmpty)
+                      EmptyState(
+                        icon: Icons.receipt_long_outlined,
+                        title: 'bf_assign_no_items'.tr(),
+                        compact: true,
+                      )
+                    else
+                      Material(
+                        color: p.surface,
+                        shape: AppRadii.cardShape(p.border),
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          children: [
+                            for (var i = 0; i < draft.items.length; i++)
+                              KeyedSubtree(
+                                key: _rowKeys[i],
+                                child: StaggeredEntrance(
+                                  index: i,
+                                  child: AssignItemRow(
+                                    item: draft.items[i],
+                                    state: draft.assignmentOf(i),
+                                    participants: participants,
+                                    currency: currency,
+                                    active: active == i,
+                                    showTopBorder: i > 0,
+                                    onTap: () => _activate(i),
+                                    onLongPress: () =>
+                                        draft.items[i].quantity > 1
+                                        ? _showUnitsSheet(
+                                            i,
+                                            draft.items[i].name,
+                                            draft.items[i].quantity,
+                                          )
+                                        : _showSimpleAssignSheet(
+                                            i,
+                                            draft.items[i].name,
+                                          ),
+                                    onFaceTap: (id) => _onFaceTap(draft, i, id),
+                                    onEveryone: participants.length > 1
+                                        ? () => _assignEveryone(i)
+                                        : null,
+                                    onAdjustUnits: draft.items[i].quantity > 1
+                                        ? () => _showUnitsSheet(
+                                            i,
+                                            draft.items[i].name,
+                                            draft.items[i].quantity,
+                                          )
+                                        : null,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: palette.surfaceVariant,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        "x$qty",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: palette.textMedium,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      CurrencyUtils.format(
-                                        price,
-                                        currencyCode: currencyCode,
-                                        decimalDigits: 1,
-                                      ),
-                                      style: TextStyle(
-                                        color: palette.textSecondary,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    Text(
-                                      'equals_sign',
-                                      style: TextStyle(
-                                        color: palette.textTertiary,
-                                      ),
-                                    ).tr(),
-                                    Text(
-                                      CurrencyUtils.format(
-                                        total,
-                                        currencyCode: currencyCode,
-                                        decimalDigits: 1,
-                                      ),
-                                      style: TextStyle(
-                                        color: palette.textStrong,
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: AppSpacing.md),
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: () => _splitAnotherWay(draft),
+                        icon: const Icon(Icons.call_split_rounded, size: 18),
+                        label: Text('bf_assign_split_another_way'.tr()),
+                        style: TextButton.styleFrom(
+                          foregroundColor: p.primaryStrong,
+                          minimumSize: const Size(44, 44),
+                          textStyle: AppTypography.labelLarge.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
-
-                          if (!isAssigned)
-                            Icon(
-                              Icons.add_circle_outline_rounded,
-                              color: palette.border,
-                              size: 28,
-                            ),
-
-                          if (isAssigned)
-                            _buildAssignmentIndicator(
-                              simpleAssigned,
-                              complexAssigned,
-                              qty > 1,
-                            ),
-                        ],
+                        ),
                       ),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            FloatingActionButton(
-              heroTag: "quick_actions_fab",
-              onPressed: _showQuickActionsSheet,
-              backgroundColor: palette.surface,
-              child: Icon(
-                Icons.auto_awesome_rounded,
-                color: Theme.of(context).colorScheme.primary,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          child: Row(
+            children: [
+              _CircleIconButton(
+                icon: Icons.mic_none_rounded,
+                tooltip: 'bf_assign_voice'.tr(),
+                size: 52,
+                onPressed: () => _showVoiceOverlay(raw.length),
               ),
-            ),
-            FloatingActionButton(
-              heroTag: "finalize_fab",
-              onPressed: _finalizeBill,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Icon(
-                Icons.arrow_forward_rounded,
-                color: palette.onPrimary,
-                size: 28,
+              const SizedBox(width: 10),
+              Expanded(
+                child: AssignPillButton(
+                  key: const ValueKey('bf_assign_continue'),
+                  label: left <= 0
+                      ? 'common_continue'.tr()
+                      : left == 1
+                      ? 'bf_assign_items_left_one'.tr()
+                      : 'bf_assign_items_left'.tr(
+                          namedArgs: {'count': '$left'},
+                        ),
+                  muted: left > 0,
+                  onPressed: () => _continue(draft),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildAssignmentIndicator(
-    List<String> simple,
-    Map<String, int> complex,
-    bool isComplex,
-  ) {
-    // If complex (qty > 1) but complex assignments are empty, fallback to simple
-    List<String> userIds = (isComplex && complex.isNotEmpty)
-        ? complex.keys.toList()
-        : simple;
-    return SizedBox(
-      height: 36,
-      width: 80,
-      child: Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          for (int i = 0; i < (userIds.length > 3 ? 3 : userIds.length); i++)
-            Positioned(
-              right: i * 20.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: context.palette.surface, width: 2),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black12, blurRadius: 2),
-                  ],
-                ),
-                child: CircleAvatar(
-                  radius: 14,
-                  backgroundColor:
-                      participants.firstWhere(
-                        (e) => e['id'].toString() == userIds[i].toString(),
-                        orElse: () => {'color': Colors.grey},
-                      )['color'] ??
-                      Colors.grey,
-                  backgroundImage: _getAvatarImage(
-                    participants.firstWhere(
-                      (e) => e['id'].toString() == userIds[i].toString(),
-                      orElse: () => {},
-                    )['photoUrl'],
-                  ),
-                  child:
-                      _getAvatarImage(
-                            participants.firstWhere(
-                              (e) =>
-                                  e['id'].toString() == userIds[i].toString(),
-                              orElse: () => {},
-                            )['photoUrl'],
-                          ) ==
-                          null
-                      ? Text(
-                          participants.firstWhere(
-                            (e) => e['id'].toString() == userIds[i].toString(),
-                            orElse: () => {'name': '?'},
-                          )['name'][0],
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : null,
-                ),
-              ),
+class _CircleIconButton extends StatelessWidget {
+  const _CircleIconButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.size = 44,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Tooltip(
+      message: tooltip,
+      child: Semantics(
+        button: true,
+        label: tooltip,
+        excludeSemantics: true,
+        child: Material(
+          color: p.surface,
+          shape: CircleBorder(side: BorderSide(color: p.border)),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onPressed,
+            child: SizedBox(
+              width: size,
+              height: size,
+              child: Icon(icon, size: 20, color: p.textPrimary),
             ),
-        ],
+          ),
+        ),
       ),
     );
   }

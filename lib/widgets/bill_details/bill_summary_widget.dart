@@ -1,210 +1,141 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
+import 'package:split_bill_app/widgets/money_text.dart';
 
+/// Host hero: "Sea Breeze Grill · 4 Nov · Dahab trip", the bill total, and
+/// "EGP 7.56 collected of 54.18 owed to you" over a teal progress bar.
 class BillSummaryWidget extends StatelessWidget {
-  final double total;
-  final double collected;
-  final String title;
-  final dynamic date;
-  final String? hostName;
-  final String currencyCode;
-
   const BillSummaryWidget({
     super.key,
-    required this.total,
-    required this.collected,
-    required this.title,
-    this.date,
-    this.hostName,
-    this.currencyCode = 'USD',
+    required this.metaLine,
+    required this.totalMinor,
+    required this.currency,
+    required this.summary,
   });
 
-  String _formatDate(dynamic date) {
-    if (date == null) return "Unknown date";
-    DateTime dateTime;
-    if (date is Timestamp) {
-      dateTime = date.toDate();
-    } else {
-      return "Processing...";
-    }
-    return DateFormat('MMM dd, yyyy • hh:mm a').format(dateTime);
-  }
+  final String metaLine;
+  final int totalMinor;
+  final String currency;
+  final CollectionSummary summary;
 
   @override
   Widget build(BuildContext context) {
-    final double left = total - collected;
-    final primaryColor = Theme.of(context).colorScheme.primary;
     final p = context.palette;
+    final collectedText = formatMoneyMinor(summary.collectedMinor, currency);
+    final owedText = formatMoneyMinor(
+      summary.owedMinor,
+      currency,
+      showSymbol: false,
+    );
+    final Widget status;
+    if (summary.owedMinor <= 0) {
+      status = Text(
+        'bf_bill_nothing_owed'.tr(),
+        style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+      );
+    } else if (summary.allSettled) {
+      status = Text(
+        'bf_bill_all_paid'.tr(),
+        style: AppTypography.bodyMedium.copyWith(
+          color: p.accent,
+          fontWeight: FontWeight.w700,
+        ),
+      );
+    } else {
+      status = Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: 'bf_bill_collected'.tr(
+                namedArgs: {'amount': collectedText},
+              ),
+              style: TextStyle(color: p.accent, fontWeight: FontWeight.w700),
+            ),
+            const TextSpan(text: ' '),
+            TextSpan(
+              text: 'bf_bill_of_owed'.tr(namedArgs: {'amount': owedText}),
+              style: TextStyle(color: p.textSecondary),
+            ),
+          ],
+        ),
+        style: AppTypography.bodyMedium,
+      );
+    }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: p.shadow.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.xl,
+        AppSpacing.lg,
+        AppSpacing.xl,
+        0,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Upper Info Card
-          Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        Icons.receipt_long_rounded,
-                        color: primaryColor,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          Text(
-                            _formatDate(date),
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: p.textTertiary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                if (hostName != null) ...[
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Divider(height: 1, thickness: 0.5),
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.person_pin_rounded,
-                        size: 18,
-                        color: p.textDisabled,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'created_by',
-                        style: TextStyle(fontSize: 14, color: p.textSecondary),
-                      ).tr(),
-                      const SizedBox(width: 5),
-                      Text(
-                        hostName!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ],
+          Text(
+            metaLine,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+          ),
+          const SizedBox(height: 2),
+          MoneyText(
+            minor: totalMinor,
+            currency: currency,
+            tone: MoneyTone.neutral,
+            size: MoneySize.hero,
+            style: const TextStyle(fontSize: 40),
+            animate: true,
+            semanticsLabel: 'bf_bill_total_semantics'.tr(
+              namedArgs: {'amount': formatMoneyMinor(totalMinor, currency)},
             ),
           ),
-
-          // Metrics Row
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: p.textTertiary.withValues(alpha: 0.1)),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Row(
-              children: [
-                _buildMetric(
-                  context,
-                  "Collected",
-                  CurrencyUtils.format(collected, currencyCode: currencyCode),
-                  p.success,
-                  Icons.check_circle_rounded,
-                ),
-                Container(
-                  width: 1,
-                  height: 30,
-                  color: p.textTertiary.withValues(alpha: 0.1),
-                ),
-                _buildMetric(
-                  context,
-                  "Left",
-                  CurrencyUtils.format(left, currencyCode: currencyCode),
-                  p.warningStrong,
-                  Icons.hourglass_bottom_rounded,
-                ),
-              ],
-            ),
-          ),
+          const SizedBox(height: 2),
+          Semantics(container: true, child: status),
+          if (summary.owedMinor > 0) ...[
+            const SizedBox(height: 14),
+            CollectedProgressBar(progress: summary.progress),
+          ],
         ],
       ),
     );
   }
+}
 
-  Widget _buildMetric(
-    BuildContext context,
-    String label,
-    String value,
-    Color color,
-    IconData icon,
-  ) {
+/// The 8 px teal bar under the collected line.
+class CollectedProgressBar extends StatelessWidget {
+  const CollectedProgressBar({super.key, required this.progress});
+
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
     final p = context.palette;
-    return Expanded(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 14, color: color.withValues(alpha: 0.7)),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: p.textTertiary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: color,
+    final value = progress.clamp(0.0, 1.0);
+    return Semantics(
+      label: 'bf_bill_progress_semantics'.tr(
+        namedArgs: {'percent': '${(value * 100).floor()}'},
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: Container(
+          height: 8,
+          color: p.hairline,
+          alignment: AlignmentDirectional.centerStart,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: value),
+            duration: AppMotion.durationFor(context, AppMotion.money),
+            curve: AppMotion.quiet,
+            builder: (context, v, _) => FractionallySizedBox(
+              widthFactor: v,
+              heightFactor: 1,
+              child: ColoredBox(color: p.accent),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

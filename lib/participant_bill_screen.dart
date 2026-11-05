@@ -1,20 +1,29 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lottie/lottie.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/currency_utils.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
-import 'package:split_bill_app/widgets/success_state_widget.dart';
-import 'services/notification_service.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/payments/payments.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_details_header.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_loading_skeleton.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
+import 'package:split_bill_app/widgets/bill_details/participant_bill_view.dart';
+import 'package:split_bill_app/widgets/bill_details/pay_methods_list.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
+import 'services/notification_service.dart';
+
+/// Bill, participant view: your exact share (from the bill's own numbers,
+/// via [BillReader.breakdownFor]), how to pay the host, and "I've paid".
 class ParticipantBillScreen extends StatefulWidget {
   final String billId;
   final String billName;
@@ -30,1362 +39,452 @@ class ParticipantBillScreen extends StatefulWidget {
 }
 
 class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
-  final user = FirebaseAuth.instance.currentUser;
-  bool _isLoading = false;
-  bool _showSuccess = false;
-  String? _selectedMethod;
-  String? _selectedMethodValue;
+  final User? _user = FirebaseAuth.instance.currentUser;
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> _stream;
 
-  String _currencyCode(Map<String, dynamic> billData) =>
-      (billData['currencyCode'] ?? billData['currency_code'] ?? 'USD')
-          .toString();
+  String? _profileHostId;
+  Future<Map<String, dynamic>?>? _hostProfile;
 
-  List<Map<String, dynamic>> _otherCharges(Map<String, dynamic> billData) {
-    final charges = billData['charges'] as Map<String, dynamic>? ?? {};
-    return List<Map<String, dynamic>>.from(charges['otherCharges'] ?? const []);
+  PayMethodEntry? _opening;
+  String? _usedMethodLabel;
+  bool _submitting = false;
+
+  bool _offline = false;
+  Timer? _offlineTimer;
+
+  DocumentReference<Map<String, dynamic>> get _billRef =>
+      FirebaseFirestore.instance.collection('bills').doc(widget.billId);
+
+  @override
+  void initState() {
+    super.initState();
+    _subscribe();
   }
 
-  // --- MATH LOGIC ---
-  Map<String, dynamic> _calculateMyShare(Map<String, dynamic> billData) {
-    if (user == null) return {};
+  void _subscribe() {
+    _stream = _billRef.snapshots(includeMetadataChanges: true);
+  }
 
-    double myItemsTotal = 0.0;
-    List<Map<String, dynamic>> myItems = [];
+  @override
+  void dispose() {
+    _offlineTimer?.cancel();
+    super.dispose();
+  }
 
-    List<dynamic> items = billData['items'] ?? [];
-    for (var item in items) {
-      List<dynamic> assigned = item['assignedTo'] ?? [];
-      if (assigned.contains(user!.uid)) {
-        double price = (item['price'] as num).toDouble();
-        int qty = (item['qty'] as num? ?? 1).toInt();
-        double totalItemPrice = price * qty;
-        double mySplit = totalItemPrice / assigned.length;
-        myItemsTotal += mySplit;
-
-        myItems.add({
-          'name': item['name'],
-          'qty': qty,
-          'originalPrice': price,
-          'mySplit': mySplit,
-          'sharedCount': assigned.length,
-          'isShared': assigned.length > 1,
+  void _trackOffline(bool fromCache) {
+    if (!fromCache) {
+      _offlineTimer?.cancel();
+      _offlineTimer = null;
+      if (_offline) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _offline = false);
         });
       }
+      return;
     }
-
-    double grandTotalItems = 0.0;
-    for (var item in items) {
-      grandTotalItems +=
-          (item['price'] as num).toDouble() * (item['qty'] as num? ?? 1);
-    }
-    if (grandTotalItems == 0) grandTotalItems = 1;
-
-    double myRatio = myItemsTotal / grandTotalItems;
-
-    double tax = ((billData['charges']['taxAmount'] ?? 0) as num).toDouble();
-    double service = ((billData['charges']['serviceCharge'] ?? 0) as num)
-        .toDouble();
-    double tip = ((billData['charges']['tipAmount'] ?? 0) as num).toDouble();
-    double discount = ((billData['charges']['discountAmount'] ?? 0) as num)
-        .toDouble();
-    double delivery = ((billData['charges']['deliveryFeeAmount'] ?? 0) as num)
-        .toDouble();
-    final participantCount = (billData['participants'] as List?)?.length ?? 1;
-    final otherChargeShares = _otherCharges(billData)
-        .map((charge) {
-          final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
-          final splitMethod = charge['splitMethod'] ?? charge['split_method'];
-          final share = splitMethod == 'equal'
-              ? amount / participantCount
-              : amount * myRatio;
-          return {
-            'label': (charge['label'] ?? 'receipt_other_charge_label'.tr())
-                .toString(),
-            'amount': share,
-          };
-        })
-        .where((charge) => (charge['amount'] as double) > 0)
-        .toList();
-    final otherChargesTotal = otherChargeShares.fold<double>(
-      0.0,
-      (runningTotal, charge) => runningTotal + (charge['amount'] as double),
-    );
-
-    double myTax = tax * myRatio;
-    double myService = service * myRatio;
-    double myTip = tip * myRatio;
-    double myDiscount = discount * myRatio;
-    double myDelivery = delivery / participantCount;
-    double myTotal =
-        myItemsTotal +
-        myTax +
-        myService +
-        myTip +
-        myDelivery +
-        otherChargesTotal -
-        myDiscount;
-
-    return {
-      'myItems': myItems,
-      'myItemsTotal': myItemsTotal,
-      'myTax': myTax,
-      'myService': myService,
-      'myTip': myTip,
-      'myDelivery': myDelivery,
-      'otherChargeShares': otherChargeShares,
-      'myDiscount': myDiscount,
-      'myTotal': myTotal,
-      'currencyCode': _currencyCode(billData),
-    };
+    if (_offline || _offlineTimer != null) return;
+    _offlineTimer = Timer(const Duration(seconds: 3), () {
+      _offlineTimer = null;
+      if (mounted) setState(() => _offline = true);
+    });
   }
 
-  // --- UPLOAD PROOF ---
-  Future<void> _uploadPaymentProof() async {
-    final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 25,
-      maxWidth: 800,
-    );
+  /// Cached per host so rebuilds do not refetch.
+  Future<Map<String, dynamic>?> _profileFor(String hostId) {
+    if (_profileHostId != hostId || _hostProfile == null) {
+      _profileHostId = hostId;
+      _hostProfile = PublicProfileService.fetch(hostId).catchError((Object e) {
+        debugPrint('host profile not loaded: $e');
+        return null;
+      });
+    }
+    return _hostProfile!;
+  }
 
-    if (image == null) return;
+  String _storeName(Map<String, dynamic> bill) {
+    final s = bill['storeName']?.toString().trim();
+    return (s == null || s.isEmpty) ? widget.billName : s;
+  }
 
-    setState(() => _isLoading = true);
+  String _hostName(Map<String, dynamic> bill) {
+    final s = bill['hostName']?.toString().trim();
+    return (s == null || s.isEmpty) ? 'bf_bill_host_fallback'.tr() : s;
+  }
 
+  // ------------------------------------------------------------- paying
+
+  Future<void> _openMethod(PayMethodEntry entry) async {
+    if (_opening != null) return;
+    setState(() => _opening = entry);
+    AppHaptics.light();
+    _usedMethodLabel = entry.name;
+    var outcome = PaymentLaunchOutcome.failed;
     try {
-      List<int> imageBytes = await image.readAsBytes();
-      String base64Image = "data:image/jpeg;base64,${base64Encode(imageBytes)}";
-      String? hostId;
-      String? storeName;
-
-      DocumentReference billRef = FirebaseFirestore.instance
-          .collection('bills')
-          .doc(widget.billId);
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(billRef);
-        if (!snapshot.exists) throw Exception('bill_not_found'.tr());
-        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-
-        hostId = data['hostId'];
-        storeName = data['storeName'] ?? widget.billName;
-        List<dynamic> participants = List.from(data['participants']);
-
-        int myIndex = participants.indexWhere((p) => p['id'] == user!.uid);
-        if (myIndex != -1) {
-          participants[myIndex]['paymentProof'] = base64Image;
-          participants[myIndex]['status'] = 'REVIEW';
-          participants[myIndex]['paymentTime'] = Timestamp.now();
-        }
-        transaction.update(billRef, {'participants': participants});
-      });
-
-      if (hostId != null) {
-        final currentBillData =
-            (await billRef.get()).data() as Map<String, dynamic>;
-        double myTotal = _calculateMyShare(currentBillData)['myTotal'];
-        final payerName = user?.displayName ?? 'a_friend'.tr();
-        final formattedAmount = CurrencyUtils.format(
-          myTotal,
-          currencyCode: _currencyCode(currentBillData),
-        );
-        final methodName = _selectedMethod != null
-            ? _getPrettyMethodName(_selectedMethod!)
-            : '';
-
-        await NotificationService().sendNotification(
-          targetUid: hostId!,
-          title: 'payment_received'.tr(),
-          body: 'payment_received_body'.tr(
-            namedArgs: {
-              'payer': payerName,
-              'amount': formattedAmount,
-              'store': storeName ?? '',
-              'method_suffix': methodName.isEmpty
-                  ? ''
-                  : 'notification_via_method'.tr(
-                      namedArgs: {'method': methodName},
-                    ),
-            },
-          ),
-          historyTitleKey: 'payment_received',
-          historyBodyKey: 'payment_received_body',
-          historyBodyArgs: {
-            'payer': payerName,
-            'amount': formattedAmount,
-            'store': storeName ?? '',
-            'method_suffix': methodName.isEmpty
-                ? ''
-                : 'notification_via_method'.tr(
-                    namedArgs: {'method': methodName},
-                  ),
-          },
-          data: {
-            'billId': widget.billId,
-            'type': 'payment_proof',
-            'amount': myTotal.toString(),
-            'method': _selectedMethod ?? 'unknown',
-            'paymentValue': _selectedMethodValue ?? 'not_available_short'.tr(),
-            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-          },
-        );
-      }
-
-      setState(() {
-        _isLoading = false;
-        _showSuccess = true;
-      });
+      outcome = await const PaymentLauncher().run(entry.launch);
     } catch (e) {
-      setState(() => _isLoading = false);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
+      debugPrint('payment launch failed: $e');
+    }
+    if (!mounted) return;
+    setState(() => _opening = null);
+    final launch = entry.launch;
+    switch (outcome) {
+      case PaymentLaunchOutcome.openedPrefilled:
+      case PaymentLaunchOutcome.openedAmountCopied:
+        AppToast.show(
+          context,
+          message: launch.instructionKey.tr(namedArgs: launch.instructionArgs),
+        );
+      case PaymentLaunchOutcome.copied:
+        final copy = launch is DeepLinkLaunch ? launch.fallback : launch;
+        AppToast.show(
+          context,
+          message: copy.instructionKey.tr(namedArgs: copy.instructionArgs),
+          type: AppToastType.success,
+        );
+      case PaymentLaunchOutcome.failed:
+        AppToast.show(
+          context,
+          message: 'bf_bill_pay_failed'.tr(
+            namedArgs: {'app': entry.name, 'handle': entry.handle},
           ),
-          backgroundColor: context.palette.danger,
+          type: AppToastType.error,
+          actionLabel: 'bf_bill_copy'.tr(),
+          onAction: () => _copyHandle(entry),
+        );
+    }
+  }
+
+  Future<void> _copyHandle(PayMethodEntry entry) async {
+    try {
+      await Clipboard.setData(ClipboardData(text: entry.handle));
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_bill_handle_copied'.tr(
+          namedArgs: {'handle': entry.handle, 'app': entry.name},
         ),
+        type: AppToastType.success,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_bill_copy_failed'.tr(namedArgs: {'handle': entry.handle}),
+        type: AppToastType.error,
       );
     }
   }
 
-  Future<void> _markAsPaidNoProof() async {
-    setState(() => _isLoading = true);
-
-    try {
-      String? hostId;
-
-      DocumentReference billRef = FirebaseFirestore.instance
-          .collection('bills')
-          .doc(widget.billId);
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(billRef);
-        if (!snapshot.exists) throw Exception('bill_not_found'.tr());
-        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-
-        hostId = data['hostId'];
-        List<dynamic> participants = List.from(data['participants']);
-
-        int myIndex = participants.indexWhere((p) => p['id'] == user!.uid);
-        if (myIndex != -1) {
-          participants[myIndex]['paymentProof'] = null; // No proof
-          participants[myIndex]['status'] = 'REVIEW';
-          participants[myIndex]['paymentTime'] = Timestamp.now();
-        }
-        transaction.update(billRef, {'participants': participants});
-      });
-
-      if (hostId != null) {
-        // Send Notification (Simplified)
-        final currentBillData =
-            (await billRef.get()).data() as Map<String, dynamic>;
-        double myTotal = _calculateMyShare(currentBillData)['myTotal'];
-        final payerName = user?.displayName ?? 'a_friend'.tr();
-        final formattedAmount = CurrencyUtils.format(
-          myTotal,
-          currencyCode: _currencyCode(currentBillData),
-        );
-
-        await NotificationService().sendNotification(
-          targetUid: hostId!,
-          title: 'payment_marked_as_sent'.tr(),
-          body: 'payment_marked_as_sent_body'.tr(
-            namedArgs: {'payer': payerName, 'amount': formattedAmount},
-          ),
-          historyTitleKey: 'payment_marked_as_sent',
-          historyBodyKey: 'payment_marked_as_sent_body',
-          historyBodyArgs: {'payer': payerName, 'amount': formattedAmount},
-          data: {
-            'billId': widget.billId,
-            'type': 'payment_proof', // Keep same type for handler
-          },
-        );
-      }
-
-      setState(() {
-        _isLoading = false;
-        _showSuccess = true;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
-          ),
-          backgroundColor: context.palette.danger,
-        ),
-      );
-    }
-  }
-
-  void _showPaymentActionSheet() {
+  void _showPaidSheet(Map<String, dynamic> bill) {
+    AppHaptics.selection();
+    final p = context.palette;
     PremiumBottomSheet.show(
       context: context,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'confirm_payment',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ).tr(),
-          const SizedBox(height: 8),
+            'bf_bill_paid_sheet_title'.tr(),
+            style: AppTypography.titleLarge.copyWith(color: p.textPrimary),
+          ),
+          const SizedBox(height: AppSpacing.xs),
           Text(
-            'help_the_host_verify_your_payment_faster',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
-              fontWeight: FontWeight.w500,
+            'bf_bill_paid_sheet_message'.tr(
+              namedArgs: {'host': _hostName(bill)},
             ),
-          ).tr(),
-          const SizedBox(height: 32),
-          _buildPaymentOption(
-            icon: Icons.image_rounded,
-            color: context.palette.info,
-            title: 'upload_screenshot'.tr(),
-            subtitle: 'recommended_for_digital_wallets'.tr(),
-            onTap: () {
-              Navigator.pop(context);
-              _uploadPaymentProof();
+            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          BillPillButton(
+            label: 'bf_bill_paid_add_proof'.tr(),
+            icon: Icons.image_outlined,
+            onPressed: () {
+              Navigator.of(context).pop();
+              _submitPaid(bill, withProof: true);
             },
           ),
-          const SizedBox(height: 12),
-          _buildPaymentOption(
-            icon: Icons.check_circle_outline_rounded,
-            color: context.palette.warning,
-            title: 'i_paid_skip_proof'.tr(),
-            subtitle: 'host_will_verify_manually'.tr(),
-            onTap: () {
-              Navigator.pop(context);
-              _markAsPaidNoProof();
+          const SizedBox(height: AppSpacing.sm),
+          BillPillButton(
+            label: 'bf_bill_paid_no_proof'.tr(),
+            ghost: true,
+            onPressed: () {
+              Navigator.of(context).pop();
+              _submitPaid(bill, withProof: false);
             },
           ),
-          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  Widget _buildPaymentOption({
-    required IconData icon,
-    required Color color,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  Future<void> _submitPaid(
+    Map<String, dynamic> bill, {
+    required bool withProof,
+  }) async {
+    final uid = _user?.uid;
+    if (uid == null || _submitting) return;
 
-    return Material(
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: colorScheme.outline.withValues(alpha: 0.1),
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: color),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: colorScheme.onSurface.withValues(alpha: 0.5),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 14,
-                color: colorScheme.onSurface.withValues(alpha: 0.2),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // --- UI COMPONENTS ---
-
-  Widget _buildHeader(String storeName) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: context.palette.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: context.palette.textTertiary.withValues(alpha: 0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  'bill_details',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: context.palette.infoStrong,
-                    letterSpacing: 1.5,
-                  ),
-                ).tr(),
-                Text(
-                  storeName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 48), // Placeholder for symmetry
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTotalCard(
-    double total,
-    String hostName,
-    String status,
-    String currencyCode,
-  ) {
-    Color statusColor = status == 'PAID'
-        ? context.palette.success
-        : (status == 'REVIEW'
-              ? context.palette.warning
-              : context.palette.infoStrong);
-    String statusLabel = status == 'PAID'
-        ? 'status_paid'.tr()
-        : (status == 'REVIEW' ? 'in_review'.tr() : 'you_owe'.tr());
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: context.palette.surface,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: statusColor.withValues(alpha: 0.1),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'you_owe_to',
-                style: TextStyle(
-                  color: context.palette.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ).tr(),
-              const Text(' '),
-              Text(
-                hostName,
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: context.palette.textStrong,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            CurrencyUtils.format(total, currencyCode: currencyCode),
-            style: const TextStyle(
-              fontSize: 42,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -1,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              statusLabel,
-              style: TextStyle(
-                color: statusColor,
-                fontWeight: FontWeight.w900,
-                fontSize: 12,
-                letterSpacing: 1,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReceiptSection(Map<String, dynamic> calc) {
-    List<Map<String, dynamic>> items = List<Map<String, dynamic>>.from(
-      calc['myItems'],
-    );
-    final currencyCode = (calc['currencyCode'] as String?) ?? 'USD';
-
-    return Stack(
-      children: [
-        Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          decoration: BoxDecoration(
-            color: context.palette.surface,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: context.palette.shadow.withValues(alpha: 0.05),
-                blurRadius: 15,
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    Lottie.asset(
-                      'assets/animations/food.json',
-                      height: 100,
-                      fit: BoxFit.contain,
-                      errorBuilder: (c, e, s) => Icon(
-                        Icons.receipt_long_rounded,
-                        size: 60,
-                        color: context.palette.info,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'receipt_breakdown',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2,
-                        color: context.palette.textTertiary,
-                      ),
-                    ).tr(),
-                    const SizedBox(height: 24),
-
-                    // Headers
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 40,
-                          child: Text(
-                            'receipt_qty',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ).tr(),
-                        ),
-                        Expanded(
-                          child: Text(
-                            'item_s',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ).tr(),
-                        ),
-                        Text(
-                          'receipt_price',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ).tr(),
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Divider(thickness: 1, height: 1),
-                    ),
-
-                    ...items.map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              child: Text(
-                                item['qty'].toString(),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item['name'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  if (item['isShared'])
-                                    Text(
-                                      'split_with_others'.tr(
-                                        namedArgs: {
-                                          'count':
-                                              (((item['sharedCount'] as num?)
-                                                              ?.toInt() ??
-                                                          1) -
-                                                      1)
-                                                  .clamp(1, 999)
-                                                  .toString(),
-                                        },
-                                      ),
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: context.palette.textTertiary,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              CurrencyUtils.format(
-                                item['mySplit'] as double,
-                                currencyCode: currencyCode,
-                                decimalDigits: 1,
-                              ),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const Padding(
-                      padding: EdgeInsets.only(top: 16, bottom: 8),
-                      child: Divider(thickness: 1, height: 1),
-                    ),
-
-                    _buildBillRow(
-                      'receipt_subtotal'.tr(),
-                      calc['myItemsTotal'],
-                      currencyCode,
-                    ),
-                    if (calc['myTax'] > 0)
-                      _buildBillRow(
-                        'tax_share'.tr(),
-                        calc['myTax'],
-                        currencyCode,
-                      ),
-                    if (calc['myService'] > 0)
-                      _buildBillRow(
-                        'service_share'.tr(),
-                        calc['myService'],
-                        currencyCode,
-                      ),
-                    if (calc['myTip'] > 0)
-                      _buildBillRow(
-                        'tip_share'.tr(),
-                        calc['myTip'],
-                        currencyCode,
-                      ),
-                    if (calc['myDelivery'] > 0)
-                      _buildBillRow(
-                        'delivery_share'.tr(),
-                        calc['myDelivery'],
-                        currencyCode,
-                      ),
-                    ...(calc['otherChargeShares'] as List<dynamic>).map(
-                      (charge) => _buildBillRow(
-                        (charge['label'] ?? 'receipt_other_charge_label'.tr())
-                            .toString(),
-                        charge['amount'] as double,
-                        currencyCode,
-                      ),
-                    ),
-                    if (calc['myDiscount'] > 0)
-                      _buildBillRow(
-                        'discount_share'.tr(),
-                        -calc['myDiscount'],
-                        currencyCode,
-                        isDiscount: true,
-                      ),
-
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: DottedLine(),
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'total',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 20,
-                          ),
-                        ).tr(),
-                        Text(
-                          CurrencyUtils.format(
-                            calc['myTotal'] as double,
-                            currencyCode: currencyCode,
-                          ),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 20,
-                            color: context.palette.info,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Top Cutouts
-        Positioned(
-          top: 16 - 7.5,
-          left: 16,
-          right: 16,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(
-              15,
-              (index) => Container(
-                width: 15,
-                height: 15,
-                decoration: BoxDecoration(
-                  color: context.palette.surfaceMuted,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
-        ),
-        // Bottom Cutouts
-        Positioned(
-          bottom: 16 - 7.5,
-          left: 16,
-          right: 16,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(
-              15,
-              (index) => Container(
-                width: 15,
-                height: 15,
-                decoration: BoxDecoration(
-                  color: context.palette.surfaceMuted,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBillRow(
-    String label,
-    double amount,
-    String currencyCode, {
-    bool isDiscount = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: context.palette.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Text(
-            "${isDiscount ? "-" : ""}${CurrencyUtils.format(amount.abs(), currencyCode: currencyCode, decimalDigits: 1)}",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: isDiscount
-                  ? context.palette.danger
-                  : context.palette.textPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentMethods(String hostId) {
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: PublicProfileService.fetch(hostId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return LoadingStateWidget(message: 'retrieving_payment_methods'.tr());
-        }
-
-        if (snapshot.hasError) {
-          return Text('error_loading_payment_methods').tr();
-        }
-
-        final userData = snapshot.data;
-        if (userData == null) {
-          return const SizedBox.shrink();
-        }
-
-        // 1. Try New Format (List)
-        List<dynamic> rawList = userData['customPaymentMethods'] ?? [];
-        if (rawList.isNotEmpty) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Text(
-                  'select_payment_method',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
-                    letterSpacing: 1,
-                    color: context.palette.textTertiary,
-                  ),
-                ).tr(),
-              ),
-              ...rawList.map((item) {
-                final map = item as Map<String, dynamic>;
-                return _buildPaymentCard(
-                  map['name'] ?? 'payment_method_other'.tr(),
-                  map['value'] ?? '',
-                );
-              }),
-              const SizedBox(height: 100), // Space for FAB
-            ],
-          );
-        }
-
-        // 2. Fallback to Old Format (Map)
-        var methods = userData['paymentMethods'] as Map<String, dynamic>? ?? {};
-        var validMethods = methods.entries
-            .where((e) => e.value != null && e.value.toString().isNotEmpty)
-            .toList();
-
-        if (validMethods.isEmpty) {
-          return Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: context.palette.warningSoft,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.palette.warning),
-            ),
-            child: Text(
-              'host_hasn_t_added_payment_methods_yet',
-              style: TextStyle(
-                color: context.palette.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ).tr(),
-          );
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Text(
-                'select_payment_method',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 13,
-                  letterSpacing: 1,
-                  color: context.palette.textTertiary,
-                ),
-              ).tr(),
-            ),
-            ...validMethods.map(
-              (entry) => _buildPaymentCard(entry.key, entry.value.toString()),
-            ),
-            const SizedBox(height: 100), // Space for FAB
-          ],
+    String? proof;
+    if (withProof) {
+      try {
+        final image = await ImagePicker().pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 25,
+          maxWidth: 800,
         );
-      },
-    );
-  }
-
-  Widget _buildPaymentCard(String method, String value) {
-    bool isSelected = _selectedMethod == method;
-    String displayTitle = _getPrettyMethodName(method);
-
-    // --- LOGO DETECTION LOGIC ---
-    String lowerMethod = method.toLowerCase();
-    String lowerValue = value.toLowerCase();
-    String assetPath = 'assets/payments/ewallet.jpg'; // Default
-
-    if (lowerMethod.contains('instapay') || lowerValue.contains('instapay')) {
-      assetPath = 'assets/payments/instapay.png';
-    } else if (lowerMethod.contains('paypal') ||
-        lowerValue.contains('paypal')) {
-      assetPath = 'assets/payments/paypal.jpg';
-    } else if (lowerMethod.contains('venmo') || lowerValue.contains('venmo')) {
-      assetPath = 'assets/payments/venmo.png';
+        if (image == null) return; // Cancelled: nothing to say.
+        proof =
+            'data:image/jpeg;base64,${base64Encode(await image.readAsBytes())}';
+      } catch (e) {
+        debugPrint('proof pick failed: $e');
+        if (!mounted) return;
+        AppToast.show(
+          context,
+          message: 'bf_bill_error_photo'.tr(),
+          type: AppToastType.error,
+          actionLabel: 'bf_bill_paid_no_proof_short'.tr(),
+          onAction: () => _submitPaid(bill, withProof: false),
+        );
+        return;
+      }
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        gradient: isSelected
-            ? LinearGradient(
-                colors: [
-                  Colors.blue[900]!,
-                  Colors.blue[700]!,
-                ], // Selected card: always blue with white text.
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : LinearGradient(
-                colors: [context.palette.surface, context.palette.surface],
-              ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: isSelected
-                ? context.palette.info.withValues(alpha: 0.3)
-                : context.palette.shadow.withValues(alpha: 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+    if (!mounted) return;
+    setState(() => _submitting = true);
+    final reader = BillReader(bill);
+    final shareMinor = reader.shareMinorFor(uid);
+    try {
+      String? hostId;
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        final snap = await tx.get(_billRef);
+        final data = snap.data();
+        if (data == null) {
+          throw FirebaseException(plugin: 'cloud_firestore', code: 'not-found');
+        }
+        hostId = data['hostId']?.toString();
+        tx.update(_billRef, {
+          'participants': updateParticipant(
+            (data['participants'] as List?) ?? const [],
+            uid,
+            (p) => {
+              ...p,
+              'paymentProof': proof,
+              'status': 'REVIEW',
+              'paymentTime': Timestamp.now(),
+              if (_usedMethodLabel != null) 'paymentMethod': _usedMethodLabel,
+            },
           ),
-        ],
-        border: isSelected
-            ? Border.all(color: Colors.transparent)
-            : Border.all(color: context.palette.borderSubtle, width: 1),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: () async {
-            final messenger = ScaffoldMessenger.of(context);
+        });
+      });
+      if (hostId != null) {
+        unawaited(
+          _notifyHost(
+            hostId!,
+            bill,
+            formatMoneyMinor(shareMinor, reader.currency),
+            withProof: proof != null,
+          ),
+        );
+      }
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      await SuccessScreen.show(
+        context,
+        title: 'bf_bill_paid_success_title'.tr(),
+        message: 'bf_bill_paid_success_message'.tr(
+          namedArgs: {'host': _hostName(bill)},
+        ),
+        rollFromMinor: shareMinor,
+        amountMinor: 0,
+        currency: reader.currency,
+        primaryLabel: 'bf_bill_done'.tr(),
+        onPrimary: () => Navigator.of(context).pop(),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      AppToast.show(
+        context,
+        message: billErrorKey(e).tr(),
+        type: AppToastType.error,
+        actionLabel: 'feedback_try_again'.tr(),
+        onAction: () => _submitPaid(bill, withProof: withProof),
+      );
+    }
+  }
 
-            setState(() {
-              _selectedMethod = method;
-              _selectedMethodValue = value;
-            });
+  Future<void> _notifyHost(
+    String hostId,
+    Map<String, dynamic> bill,
+    String amount, {
+    required bool withProof,
+  }) async {
+    final payer = _user?.displayName ?? 'a_friend'.tr();
+    final store = _storeName(bill);
+    try {
+      if (withProof) {
+        final method = _usedMethodLabel;
+        final suffix = method == null
+            ? ''
+            : 'notification_via_method'.tr(namedArgs: {'method': method});
+        final args = {
+          'payer': payer,
+          'amount': amount,
+          'store': store,
+          'method_suffix': suffix,
+        };
+        await NotificationService().sendNotification(
+          targetUid: hostId,
+          title: 'payment_received'.tr(),
+          body: 'payment_received_body'.tr(namedArgs: args),
+          historyTitleKey: 'payment_received',
+          historyBodyKey: 'payment_received_body',
+          historyBodyArgs: args,
+          data: {
+            'billId': widget.billId,
+            'type': 'payment_proof',
+            'amount': amount,
+            'method': method ?? 'unknown',
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          },
+        );
+      } else {
+        final args = {'payer': payer, 'amount': amount};
+        await NotificationService().sendNotification(
+          targetUid: hostId,
+          title: 'payment_marked_as_sent'.tr(),
+          body: 'payment_marked_as_sent_body'.tr(namedArgs: args),
+          historyTitleKey: 'payment_marked_as_sent',
+          historyBodyKey: 'payment_marked_as_sent_body',
+          historyBodyArgs: args,
+          data: {'billId': widget.billId, 'type': 'payment_proof'},
+        );
+      }
+    } catch (e) {
+      // Marked paid either way; the host also sees it on the bill.
+      debugPrint('host notification failed: $e');
+    }
+  }
 
-            HapticFeedback.lightImpact();
+  // ---------------------------------------------------------------- build
 
-            // Check if it's a link
-            if (value.startsWith('http')) {
-              final Uri url = Uri.parse(value);
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-                return;
-              }
-            }
-
-            Clipboard.setData(ClipboardData(text: value));
-            messenger.showSnackBar(
-              SnackBar(
-                content: Text(
-                  'selection_copied'.tr(namedArgs: {'label': displayTitle}),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 2),
-                backgroundColor: Colors
-                    .green[700], // Fixed: white text on green in both themes.
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Scaffold(
+      backgroundColor: p.canvas,
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: _stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            final error = snapshot.error!;
+            void retry() => setState(_subscribe);
+            return _withBack(
+              isOfflineError(error)
+                  ? ErrorState.offline(onRetry: retry)
+                  : ErrorState(
+                      title: 'bf_bill_load_error_title'.tr(),
+                      message: billErrorKey(error).tr(),
+                      onRetry: retry,
+                    ),
+            );
+          }
+          if (!snapshot.hasData) return const BillLoadingSkeleton();
+          final doc = snapshot.data!;
+          _trackOffline(doc.metadata.isFromCache);
+          final bill = doc.data();
+          if (!doc.exists || bill == null) {
+            return _withBack(
+              ErrorState(
+                icon: Icons.receipt_long_outlined,
+                title: 'bf_bill_not_found_title'.tr(),
+                message: 'bf_bill_not_found_message'.tr(),
+                retryLabel: 'bf_bill_go_back'.tr(),
+                onRetry: () => Navigator.of(context).maybePop(),
               ),
             );
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // LOGO / ICON
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color:
-                        Colors.white, // Fixed white backdrop for brand logos.
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.palette.shadow.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      assetPath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => Container(
-                        padding: const EdgeInsets.all(12),
-                        color: context.palette.surfaceVariant,
-                        child: Icon(
-                          Icons.payment_rounded,
-                          color: context.palette.infoStrong,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-
-                // TEXT DETAILS
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        displayTitle,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                          color: isSelected
-                              ? Colors.white
-                              : context.palette.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        value,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: isSelected
-                              ? Colors.white70
-                              : context.palette.textSecondary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // ACTION INDICATOR
-                if (value.startsWith('http'))
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.white24
-                          : context.palette.info.withValues(
-                              alpha: 0.1,
-                            ), // Fixed opacity usage
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'pay',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected
-                                ? Colors.white
-                                : context.palette.infoStrong,
-                          ),
-                        ).tr(),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.open_in_new_rounded,
-                          size: 14,
-                          color: isSelected
-                              ? Colors.white
-                              : context.palette.infoStrong,
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Icon(
-                    isSelected
-                        ? Icons.check_circle_rounded
-                        : Icons.copy_rounded,
-                    color: isSelected
-                        ? Colors.white
-                        : context.palette.textDisabled,
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _getPrettyMethodName(String method) {
-    if (method == 'instapay') return "InstaPay";
-    if (method == 'wallet') return "Vodafone Cash / Wallet";
-    if (method == 'iban') return "Bank IBAN";
-    return method.toUpperCase();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.palette.surfaceMuted,
-      body: Stack(
-        children: [
-          StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('bills')
-                .doc(widget.billId)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return LoadingStateWidget(message: 'checking_payments'.tr());
-              }
-              if (!snapshot.hasData || !snapshot.data!.exists) {
-                return Center(child: Text('bill_not_found').tr());
-              }
-
-              var data = snapshot.data!.data() as Map<String, dynamic>;
-              String hostId = data['hostId'];
-              String hostName = data['hostName'] ?? "Host";
-              final currencyCode = _currencyCode(data);
-
-              var me = (data['participants'] as List).firstWhere(
-                (p) => p['id'] == user?.uid,
-                orElse: () => {},
-              );
-              String status = me['status'] ?? 'PENDING';
-              var calc = _calculateMyShare(data);
-
-              return SafeArea(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildHeader(data['storeName'] ?? widget.billName),
-                      _buildTotalCard(
-                        calc['myTotal'],
-                        hostName,
-                        status,
-                        currencyCode,
-                      ),
-                      _buildReceiptSection(calc),
-                      if (status == 'PENDING') _buildPaymentMethods(hostId),
-                      if (status == 'REVIEW')
-                        _buildStatusInfo(
-                          "PAYMENT UNDER REVIEW",
-                          "The host has been notified and is checking your payment proof.",
-                          context.palette.warning,
-                          status,
-                        ),
-                      if (status == 'PAID')
-                        _buildStatusInfo(
-                          "FULLY SETTLED",
-                          "You've successfully paid your share. Thank you!",
-                          context.palette.success,
-                          status,
-                        ),
-                      const SizedBox(height: 120),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Action Button (Only if PENDING)
-          StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('bills')
-                .doc(widget.billId)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return const SizedBox.shrink();
-              var data = snapshot.data!.data() as Map<String, dynamic>;
-              var me = (data['participants'] as List).firstWhere(
-                (p) => p['id'] == user?.uid,
-                orElse: () => {},
-              );
-              if (me['status'] != 'PENDING') return const SizedBox.shrink();
-
-              return Positioned(
-                bottom: 30,
-                left: 16,
-                right: 16,
-                child: ElevatedButton.icon(
-                  onPressed: _showPaymentActionSheet,
-                  icon: const Icon(Icons.check_circle_rounded),
-                  label: Text(
-                    'i_ve_paid',
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-                  ).tr(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[900],
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 65),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 10,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // --- OVERLAYS ---
-          if (_isLoading)
-            Container(
-              color: context.palette.surface.withValues(alpha: 0.95),
-              child: LoadingStateWidget(message: 'uploading_proof'.tr()),
-            ),
-
-          if (_showSuccess)
-            Container(
-              color: context.palette.surface,
-              child: SuccessStateWidget(
-                message: 'payment_sent'.tr(),
-                actionLabel: 'got_it'.tr(),
-                onAction: () => setState(() => _showSuccess = false),
+          }
+          final uid = _user?.uid ?? '';
+          final reader = BillReader(bill);
+          final me = reader.participant(uid);
+          if (me == null) {
+            return _withBack(
+              ErrorState(
+                icon: Icons.person_search_outlined,
+                title: 'bf_bill_not_on_bill_title'.tr(),
+                message: 'bf_bill_not_on_bill_message'.tr(),
+                retryLabel: 'bf_bill_go_back'.tr(),
+                onRetry: () => Navigator.of(context).maybePop(),
               ),
+            );
+          }
+          final status = payStatusOf(me);
+          final shareMinor = reader.shareMinorOf(me);
+          final hostId = bill['hostId']?.toString() ?? '';
+          final store = _storeName(bill);
+
+          return SafeArea(
+            child: FutureBuilder<Map<String, dynamic>?>(
+              future: status == PayStatus.notYet && hostId.isNotEmpty
+                  ? _profileFor(hostId)
+                  : null,
+              builder: (context, profile) {
+                final loading =
+                    status == PayStatus.notYet &&
+                    hostId.isNotEmpty &&
+                    profile.connectionState != ConnectionState.done;
+                final entries = loading
+                    ? const <PayMethodEntry>[]
+                    : buildPayMethodEntries(
+                        methods: payMethodsFor(
+                          hostProfile: profile.data,
+                          bill: bill,
+                        ),
+                        shareMinor: shareMinor,
+                        currency: reader.currency,
+                        note: store,
+                        recipientName: _hostName(bill),
+                        message: 'bf_bill_apple_cash_message'.tr(
+                          namedArgs: {
+                            'amount': formatMoneyMinor(
+                              shareMinor,
+                              reader.currency,
+                            ),
+                            'store': store,
+                          },
+                        ),
+                        platform: currentPaymentPlatform(),
+                      );
+                return ParticipantBillView(
+                  hostName: _hostName(bill),
+                  storeName: store,
+                  currency: reader.currency,
+                  breakdown: reader.breakdownFor(uid),
+                  shareMinor: shareMinor,
+                  status: status,
+                  payEntries: entries,
+                  payLoading: loading,
+                  openingEntry: _opening,
+                  onOpenMethod: _openMethod,
+                  onPaid: () => _showPaidSheet(bill),
+                  submitting: _submitting,
+                  offline: _offline,
+                );
+              },
             ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildStatusInfo(
-    String title,
-    String subtitle,
-    Color color,
-    String currentStatus,
-  ) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            currentStatus == 'PAID'
-                ? Icons.check_circle_rounded
-                : Icons.access_time_filled_rounded,
-            color: color,
-            size: 48,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w900,
-              fontSize: 18,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: color.withValues(alpha: 0.8),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class DottedLine extends StatelessWidget {
-  const DottedLine({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(
-        40,
-        (index) => Expanded(
-          child: Container(
-            color: index % 2 == 0 ? Colors.transparent : context.palette.border,
-            height: 1.5,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget _withBack(Widget body) => SafeArea(
+    child: Column(
+      children: [
+        const BillDetailsHeader(),
+        Expanded(child: body),
+      ],
+    ),
+  );
 }

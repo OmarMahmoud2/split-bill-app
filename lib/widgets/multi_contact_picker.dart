@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/services/contact_service.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
 
@@ -114,7 +114,9 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
             ).tr(),
             if (_selectedIds.isNotEmpty)
               Text(
-                "${_selectedIds.length} selected",
+                'bf_assign_selected_count'.tr(
+                  namedArgs: {'count': '${_selectedIds.length}'},
+                ),
                 style: const TextStyle(fontSize: 12),
               ),
           ],
@@ -155,7 +157,17 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
           // Contact List
           Expanded(
             child: _isLoading
-                ? LoadingStateWidget(message: 'loading_contacts'.tr())
+                ? Semantics(
+                    label: 'loading_contacts'.tr(),
+                    child: SkeletonShimmer(
+                      child: ListView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          for (var i = 0; i < 8; i++) const SkeletonListTile(),
+                        ],
+                      ),
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: _filteredContacts.length,
                     itemBuilder: (context, index) {
@@ -169,10 +181,10 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundColor: isSelected
-                              ? Theme.of(context).primaryColor
+                              ? p.accent
                               : p.borderSubtle,
                           child: isSelected
-                              ? const Icon(Icons.check, color: Colors.white)
+                              ? Icon(Icons.check, color: p.onAccent)
                               : Text(
                                   displayName.isNotEmpty ? displayName[0] : "?",
                                   style: TextStyle(color: p.textSecondary),
@@ -189,7 +201,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                         subtitle: Text(
                           contact.phones.isNotEmpty
                               ? contact.phones.first.number
-                              : "No number",
+                              : 'bf_assign_no_number'.tr(),
                         ),
                         trailing: Checkbox(
                           value: isSelected,

@@ -1,23 +1,41 @@
-import 'dart:convert';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:lottie/lottie.dart';
-import 'package:split_bill_app/edit_bill_screen.dart';
-import 'package:split_bill_app/widgets/bill_details/bill_summary_widget.dart';
-import 'package:split_bill_app/widgets/bill_details/participant_tile.dart';
-import 'package:split_bill_app/widgets/bill_details/details_modals.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/currency_utils.dart';
-import 'package:split_bill_app/utils/share_link_utils.dart';
-import 'services/notification_service.dart';
-import 'package:split_bill_app/widgets/custom_app_header.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/bill_flow/share_links.dart';
+import 'package:split_bill_app/edit_bill_screen.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_breakdown_card.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_details_header.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_history_card.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_loading_skeleton.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_summary_widget.dart';
+import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
+import 'package:split_bill_app/widgets/bill_details/details_modals.dart';
+import 'package:split_bill_app/widgets/bill_details/participant_tile.dart';
+import 'package:split_bill_app/widgets/bill_details/proof_card.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
+import 'services/notification_service.dart';
+
+/// "d MMM" in the app locale, falling back to English.
+String formatBillDate(BuildContext context, DateTime date) {
+  try {
+    return DateFormat.MMMd(context.locale.toLanguageTag()).format(date);
+  } catch (_) {
+    return DateFormat.MMMd('en').format(date);
+  }
+}
+
+/// Bill, host view (v3 Bills board 1): who paid, what is collected, proofs
+/// to confirm, and the reminder.
 class BillDetailsScreen extends StatefulWidget {
   final String billId;
   final String billName;
@@ -33,179 +51,165 @@ class BillDetailsScreen extends StatefulWidget {
 }
 
 class _BillDetailsScreenState extends State<BillDetailsScreen> {
-  final user = FirebaseAuth.instance.currentUser;
+  final User? _user = FirebaseAuth.instance.currentUser;
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> _stream;
+  final Set<String> _busy = {};
+  bool _reminding = false;
 
-  // --- ACTIONS ---
+  /// Cache-only snapshots for a while mean we are offline.
+  bool _offline = false;
+  Timer? _offlineTimer;
 
-  // 1. Enhanced View Proof Dialog
-  void _viewProof(
-    Map<String, dynamic> participant,
-    List<dynamic> allParticipants,
-    int index,
-  ) {
-    String? proofBase64 = participant['paymentProof'];
+  DocumentReference<Map<String, dynamic>> get _billRef =>
+      FirebaseFirestore.instance.collection('bills').doc(widget.billId);
 
-    if (proofBase64 == null) {
-      // Show "No Proof" Dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text('no_proof_submitted').tr(),
-          content: Text(
-            'this_participant_marked_their_share_as_paid_but_didn_t_upload_a_screenshot_do_you_want_to_approve_it',
-          ).tr(),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('common_cancel').tr(),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _markAsPaid(allParticipants, index, forcePaid: true);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.palette.success,
-              ),
-              child: Text('approve_payment').tr(),
-            ),
-          ],
-        ),
-      );
+  @override
+  void initState() {
+    super.initState();
+    _subscribe();
+  }
+
+  void _subscribe() {
+    _stream = _billRef.snapshots(includeMetadataChanges: true);
+  }
+
+  @override
+  void dispose() {
+    _offlineTimer?.cancel();
+    super.dispose();
+  }
+
+  void _trackOffline(bool fromCache) {
+    if (!fromCache) {
+      _offlineTimer?.cancel();
+      _offlineTimer = null;
+      if (_offline) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _offline = false);
+        });
+      }
       return;
     }
+    if (_offline || _offlineTimer != null) return;
+    _offlineTimer = Timer(const Duration(seconds: 3), () {
+      _offlineTimer = null;
+      if (mounted) setState(() => _offline = true);
+    });
+  }
 
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.memory(
-                  base64Decode(proofBase64.split(',').last),
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'common_cancel',
-                        style: TextStyle(
-                          color: context.palette.textTertiary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ).tr(),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        _markAsPaid(allParticipants, index, forcePaid: true);
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.check_circle_outline_rounded,
-                        size: 18,
-                      ),
-                      label: Text('approve').tr(),
-                      style: ElevatedButton.styleFrom(
-                        // Filled button: *Strong is a light text shade in dark.
-                        backgroundColor: context.palette.isDark
-                            ? context.palette.success
-                            : context.palette.successStrong,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+  String get _billName => widget.billName;
+
+  // ------------------------------------------------------------- actions
+
+  void _showError(Object error, {VoidCallback? retry}) {
+    if (!mounted) return;
+    AppToast.show(
+      context,
+      message: billErrorKey(error).tr(),
+      type: AppToastType.error,
+      actionLabel: retry == null ? null : 'feedback_try_again'.tr(),
+      onAction: retry,
     );
   }
 
-  // 2. Mark as Paid (Toggle or Force)
-  Future<void> _markAsPaid(
-    List<dynamic> participants,
-    int index, {
-    bool forcePaid = false,
+  /// Marks [participantId] paid (or not), in a transaction on fresh data,
+  /// and logs it in `history`.
+  Future<void> _setPaid(
+    Map<String, dynamic> participant, {
+    required bool paid,
+    required Map<String, dynamic> bill,
   }) async {
-    String currentStatus = participants[index]['status'] ?? 'PENDING';
-    String newStatus = forcePaid
-        ? 'PAID'
-        : (currentStatus == 'PAID' ? 'PENDING' : 'PAID');
-
-    participants[index]['status'] = newStatus;
-    participants[index]['isPaid'] = newStatus == 'PAID';
-
-    await FirebaseFirestore.instance
-        .collection('bills')
-        .doc(widget.billId)
-        .update({'participants': participants});
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'marked_as_status'.tr(namedArgs: {'status': newStatus}),
-          ),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-      );
-
-      // Send Notification to Participant if marked as PAID
-      if (newStatus == 'PAID') {
-        final participant = participants[index];
-        final String? participantUid = participant['id'];
-        if (participantUid != null && !participantUid.startsWith('guest_')) {
-          _sendPaymentAcceptedNotification(
-            participantUid,
-            participant['name'] ?? 'Friend',
-          );
+    final id = participant['id']?.toString() ?? '';
+    final name = participant['name']?.toString() ?? '';
+    if (id.isEmpty || _busy.contains(id)) return;
+    setState(() => _busy.add(id));
+    AppHaptics.selection();
+    try {
+      Map<String, dynamic>? after;
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        final snap = await tx.get(_billRef);
+        final data = snap.data();
+        if (data == null) {
+          throw FirebaseException(plugin: 'cloud_firestore', code: 'not-found');
         }
+        final participants = updateParticipant(
+          (data['participants'] as List?) ?? const [],
+          id,
+          (p) => {
+            ...p,
+            'status': paid ? 'PAID' : 'PENDING',
+            'isPaid': paid,
+            if (paid) 'paidConfirmedAt': Timestamp.now(),
+          },
+        );
+        final update = <String, dynamic>{
+          'participants': participants,
+          if (paid)
+            'history': appendHistory(data['history'] as List?, [
+              BillHistoryEntry(
+                by: _user?.uid ?? '',
+                byName: _user?.displayName,
+                at: DateTime.now(),
+                change: 'marked_paid',
+                args: {'name': name},
+              ),
+            ]),
+        };
+        tx.update(_billRef, update);
+        after = {...data, ...update};
+      });
+      if (!mounted) return;
+      final summary = collectionSummary(
+        BillReader(after ?? bill),
+        hostId: bill['hostId']?.toString(),
+      );
+      if (paid && summary.allSettled) {
+        unawaited(
+          SuccessScreen.show(
+            context,
+            title: 'bf_bill_settled_title'.tr(),
+            message: 'bf_bill_settled_message'.tr(
+              namedArgs: {'store': _storeName(bill)},
+            ),
+            rollFromMinor: summary.owedMinor,
+            amountMinor: 0,
+            currency: BillReader(bill).currency,
+            celebrate: true,
+            primaryLabel: 'bf_bill_done'.tr(),
+            onPrimary: () => Navigator.of(context).pop(),
+          ),
+        );
+      } else {
+        AppToast.show(
+          context,
+          message: (paid ? 'bf_bill_marked_paid' : 'bf_bill_marked_unpaid').tr(
+            namedArgs: {'name': name},
+          ),
+          type: paid ? AppToastType.success : AppToastType.info,
+        );
       }
+      if (paid && !isGuestParticipant(participant)) {
+        unawaited(_notifyAccepted(id));
+      }
+    } catch (e) {
+      _showError(
+        e,
+        retry: () => _setPaid(participant, paid: paid, bill: bill),
+      );
+    } finally {
+      if (mounted) setState(() => _busy.remove(id));
     }
   }
 
-  Future<void> _sendPaymentAcceptedNotification(
-    String participantUid,
-    String name,
-  ) async {
+  Future<void> _notifyAccepted(String uid) async {
     try {
       await NotificationService().sendNotification(
-        targetUid: participantUid,
+        targetUid: uid,
         title: 'payment_accepted'.tr(),
-        body: 'payment_accepted_body'.tr(
-          namedArgs: {'bill_name': widget.billName},
-        ),
+        body: 'payment_accepted_body'.tr(namedArgs: {'bill_name': _billName}),
         historyTitleKey: 'payment_accepted',
         historyBodyKey: 'payment_accepted_body',
-        historyBodyArgs: {'bill_name': widget.billName},
+        historyBodyArgs: {'bill_name': _billName},
         data: {
           'billId': widget.billId,
           'type': 'payment_accepted',
@@ -213,618 +217,657 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         },
       );
     } catch (e) {
-      debugPrint("Error sending approval notification: $e");
+      // The payment is confirmed either way; the push is best effort.
+      debugPrint('payment_accepted notification failed: $e');
     }
   }
 
-  // 3. Confirm Reminder Dialog
-  void _confirmReminder(
-    String targetUid,
-    String name,
-    double amount,
-    String currencyCode,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: Row(
-          children: [
-            Icon(
-              Icons.notifications_active_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(width: 12),
-            Text('reminder').tr(),
-          ],
-        ),
-        content: Text(
-          'send_reminder_confirmation'.tr(
-            namedArgs: {
-              'name': name,
-              'amount': CurrencyUtils.format(
-                amount,
-                currencyCode: currencyCode,
-              ),
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'common_cancel',
-              style: TextStyle(color: context.palette.textTertiary),
-            ).tr(),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _sendReminder(targetUid, name, amount, currencyCode);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: context.palette.onPrimary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text('send_now').tr(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 4. Send Reminder (Smart Notification)
-  Future<void> _sendReminder(
-    String targetUid,
-    String name,
-    double amount,
-    String currencyCode,
+  /// Push reminder for app users; personal link for guests.
+  Future<void> _remind(
+    Map<String, dynamic> participant,
+    Map<String, dynamic> bill,
   ) async {
+    if (isGuestParticipant(participant)) {
+      return _sharePerson(participant, bill);
+    }
+    if (_reminding) return;
+    final reader = BillReader(bill);
+    final id = participant['id'].toString();
+    final name = participant['name']?.toString() ?? '';
+    final amount = formatMoneyMinor(
+      reader.shareMinorOf(participant),
+      reader.currency,
+    );
+    setState(() => _reminding = true);
+    AppHaptics.light();
     try {
       final sent = await NotificationService().sendNotification(
-        targetUid: targetUid,
-        title: 'reminder_title'.tr(namedArgs: {'bill_name': widget.billName}),
-        body: 'reminder_body'.tr(
-          namedArgs: {
-            'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
-          },
-        ),
+        targetUid: id,
+        title: 'reminder_title'.tr(namedArgs: {'bill_name': _billName}),
+        body: 'reminder_body'.tr(namedArgs: {'amount': amount}),
         historyTitleKey: 'reminder_title',
         historyBodyKey: 'reminder_body',
-        historyTitleArgs: {'bill_name': widget.billName},
-        historyBodyArgs: {
-          'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
-        },
+        historyTitleArgs: {'bill_name': _billName},
+        historyBodyArgs: {'amount': amount},
         data: {'billId': widget.billId},
       );
-      if (sent && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('reminder_sent_to'.tr(namedArgs: {'name': name})),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor:
-                Colors.blue[800], // White text on a fixed blue in both themes.
-          ),
+      if (!mounted) return;
+      if (!sent) {
+        AppToast.show(
+          context,
+          message: 'bf_bill_remind_failed'.tr(namedArgs: {'name': name}),
+          type: AppToastType.error,
+          actionLabel: 'bf_bill_share_link'.tr(),
+          onAction: () => _sharePerson(participant, bill),
         );
+        return;
+      }
+      AppToast.show(
+        context,
+        message: 'bf_bill_reminder_sent'.tr(namedArgs: {'name': name}),
+        type: AppToastType.success,
+      );
+      // Remember the nudge for "last nudge 3 days ago". Best effort.
+      try {
+        await FirebaseFirestore.instance.runTransaction((tx) async {
+          final snap = await tx.get(_billRef);
+          final data = snap.data();
+          if (data == null) return;
+          tx.update(_billRef, {
+            'participants': updateParticipant(
+              (data['participants'] as List?) ?? const [],
+              id,
+              (p) => {...p, 'lastRemindedAt': Timestamp.now()},
+            ),
+          });
+        });
+      } catch (e) {
+        debugPrint('lastRemindedAt not saved: $e');
       }
     } catch (e) {
-      debugPrint("Error sending reminder: $e");
+      _showError(e, retry: () => _remind(participant, bill));
+    } finally {
+      if (mounted) setState(() => _reminding = false);
     }
   }
 
-  // 5. Delete Bill Confirmation
-  Future<void> _confirmDelete() async {
-    final confirm = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: Text(
-          'delete_bill',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: context.palette.danger,
+  Rect? _shareOrigin() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  Future<void> _share(String text, String subject, String url) async {
+    try {
+      await SharePlus.instance.share(
+        ShareParams(
+          text: text,
+          subject: subject,
+          sharePositionOrigin: _shareOrigin(),
+        ),
+      );
+    } catch (_) {
+      await Clipboard.setData(ClipboardData(text: url));
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_bill_share_failed_copied'.tr(),
+        type: AppToastType.info,
+      );
+    }
+  }
+
+  Future<void> _shareTable(Map<String, dynamic> bill) async {
+    AppHaptics.light();
+    final url = personalBillUrl(widget.billId);
+    final store = _storeName(bill);
+    await _share(
+      'bf_bill_share_table_message'.tr(namedArgs: {'store': store, 'url': url}),
+      store,
+      url,
+    );
+  }
+
+  Future<void> _sharePerson(
+    Map<String, dynamic> participant,
+    Map<String, dynamic> bill,
+  ) async {
+    AppHaptics.light();
+    final reader = BillReader(bill);
+    final id = participant['id']?.toString() ?? '';
+    final url = personalBillUrl(widget.billId, participantId: id);
+    final store = _storeName(bill);
+    await _share(
+      'bf_bill_share_person_message'.tr(
+        namedArgs: {
+          'name': participant['name']?.toString() ?? '',
+          'store': store,
+          'amount': formatMoneyMinor(
+            reader.shareMinorOf(participant),
+            reader.currency,
           ),
-        ).tr(),
-        content: Text(
-          'this_action_is_irreversible_all_participants_will_lose_access_to_this_bill_data',
-        ).tr(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('common_cancel').tr(),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.palette.danger,
-              foregroundColor: Colors.white,
-            ),
-            child: Text('delete_permanently').tr(),
-          ),
-        ],
+          'url': url,
+        },
+      ),
+      store,
+      url,
+    );
+  }
+
+  Future<void> _delete() async {
+    final confirmed = await BillDetailsModals.confirmDelete(context);
+    if (!confirmed || !mounted) return;
+    AppHaptics.warning();
+    try {
+      await _billRef.delete();
+      if (!mounted) return;
+      final navigator = Navigator.of(context);
+      AppToast.show(
+        context,
+        message: 'bf_bill_deleted'.tr(),
+        type: AppToastType.success,
+      );
+      navigator.pop();
+    } catch (e) {
+      _showError(e, retry: _delete);
+    }
+  }
+
+  void _edit(Map<String, dynamic> bill) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EditBillScreen(billId: widget.billId, billData: bill),
       ),
     );
-
-    if (confirm == true) {
-      await FirebaseFirestore.instance
-          .collection('bills')
-          .doc(widget.billId)
-          .delete();
-      if (mounted) {
-        Navigator.pop(context); // Go back to Home
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('bill_deleted').tr(),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
   }
 
-  // 6. Action Sheet for Participant
-  void _showParticipantActions(
-    Map<String, dynamic> participant,
-    List<dynamic> allParticipants,
-    int index,
-    Map<String, dynamic> billData,
-  ) {
-    final bool isAppUser =
-        participant['id'] != null && !participant['id'].startsWith('guest_');
-    final double share = (participant['share'] as num? ?? 0.0).toDouble();
-    final String status = participant['status'] ?? 'PENDING';
-
+  void _showMore(Map<String, dynamic> bill) {
+    AppHaptics.selection();
     PremiumBottomSheet.show(
       context: context,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            participant['name'] ?? "Participant",
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildActionItem(
-            icon: status == 'PAID'
-                ? Icons.undo_rounded
-                : Icons.check_circle_rounded,
-            color: status == 'PAID'
-                ? context.palette.warning
-                : context.palette.success,
-            label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
+          _SheetAction(
+            icon: Icons.edit_outlined,
+            label: 'bf_bill_action_edit'.tr(),
             onTap: () {
-              Navigator.pop(context);
-              _markAsPaid(allParticipants, index);
+              Navigator.of(context).pop();
+              _edit(bill);
             },
           ),
-          if (isAppUser)
-            _buildActionItem(
-              icon: Icons.notifications_active_rounded,
-              color: context.palette.info,
-              label: "Send Reminder",
+          _SheetAction(
+            icon: Icons.receipt_long_outlined,
+            label: 'bf_bill_action_full_bill'.tr(),
+            onTap: () {
+              Navigator.of(context).pop();
+              BillDetailsModals.showFullBillDetails(context, bill);
+            },
+          ),
+          _SheetAction(
+            icon: Icons.ios_share_rounded,
+            label: 'bf_bill_action_share_table'.tr(),
+            onTap: () {
+              Navigator.of(context).pop();
+              _shareTable(bill);
+            },
+          ),
+          _SheetAction(
+            icon: Icons.delete_outline_rounded,
+            label: 'bf_bill_action_delete'.tr(),
+            destructive: true,
+            onTap: () {
+              Navigator.of(context).pop();
+              _delete();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showParticipantActions(
+    Map<String, dynamic> participant,
+    Map<String, dynamic> bill,
+  ) {
+    AppHaptics.selection();
+    final reader = BillReader(bill);
+    final status = payStatusOf(participant);
+    final name = participant['name']?.toString() ?? '';
+    final proof = decodeProofImage(participant['paymentProof']);
+    final p = context.palette;
+    PremiumBottomSheet.show(
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              BillAvatar(
+                name: name,
+                photoUrl: participant['photoUrl']?.toString(),
+                tintKey: participant['id']?.toString(),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  name,
+                  style: AppTypography.titleLarge.copyWith(
+                    color: p.textPrimary,
+                  ),
+                ),
+              ),
+              PayStatusPill(status: status),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Flexible(
+            child: SingleChildScrollView(
+              child: BillBreakdownCard(
+                breakdown: reader.breakdownFor(
+                  participant['id']?.toString() ?? '',
+                ),
+                currency: reader.currency,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          if (status != PayStatus.paid)
+            _SheetAction(
+              icon: Icons.check_circle_outline_rounded,
+              label: 'bf_bill_action_mark_paid'.tr(),
               onTap: () {
-                Navigator.pop(context);
-                _confirmReminder(
-                  participant['id'],
-                  participant['name'],
-                  share,
-                  (billData['currencyCode'] ??
-                          billData['currency_code'] ??
-                          'USD')
-                      .toString(),
-                );
+                Navigator.of(context).pop();
+                _setPaid(participant, paid: true, bill: bill);
               },
             )
           else
-            _buildActionItem(
-              icon: Icons.share_rounded,
-              color: context.palette.info,
-              label: "Share via Link",
+            _SheetAction(
+              icon: Icons.undo_rounded,
+              label: 'bf_bill_action_mark_unpaid'.tr(),
               onTap: () {
-                Navigator.pop(context);
-                _shareUserLink(
-                  context,
-                  participant['name'],
-                  share,
-                  participant['id'],
-                  (billData['currencyCode'] ??
-                          billData['currency_code'] ??
-                          'USD')
-                      .toString(),
-                );
+                Navigator.of(context).pop();
+                _setPaid(participant, paid: false, bill: bill);
               },
             ),
-          _buildActionItem(
-            icon: Icons.receipt_long_rounded,
-            color: Colors.deepPurple,
-            label: "Show Personal Breakdown",
+          if (proof != null)
+            _SheetAction(
+              icon: Icons.image_outlined,
+              label: 'bf_bill_action_view_proof'.tr(),
+              onTap: () {
+                Navigator.of(context).pop();
+                _viewProof(participant, proof, bill);
+              },
+            ),
+          if (status != PayStatus.paid && !isGuestParticipant(participant))
+            _SheetAction(
+              icon: Icons.notifications_none_rounded,
+              label: 'bf_bill_action_remind'.tr(),
+              onTap: () {
+                Navigator.of(context).pop();
+                _remind(participant, bill);
+              },
+            ),
+          _SheetAction(
+            icon: Icons.link_rounded,
+            label: 'bf_bill_action_share_person'.tr(),
             onTap: () {
-              Navigator.pop(context);
-              BillDetailsModals.showUserShareDetails(
-                context,
-                participant,
-                billData,
-              );
+              Navigator.of(context).pop();
+              _sharePerson(participant, bill);
             },
           ),
-          if (participant['paymentProof'] != null)
-            _buildActionItem(
-              icon: Icons.image_rounded,
-              color: context.palette.warningStrong,
-              label: "Review Proof",
-              onTap: () {
-                Navigator.pop(context);
-                _viewProof(participant, allParticipants, index);
-              },
-            ),
-          const SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  Widget _buildActionItem({
-    required IconData icon,
-    required Color color,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: color, size: 22),
-      ),
-      title: Text(
-        label,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-      onTap: onTap,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+  void _viewProof(
+    Map<String, dynamic> participant,
+    Uint8List image,
+    Map<String, dynamic> bill,
+  ) {
+    BillDetailsModals.showProof(
+      context,
+      name: participant['name']?.toString() ?? '',
+      image: image,
+      onConfirm: () => _setPaid(participant, paid: true, bill: bill),
     );
   }
 
-  // 7. FAB Actions Sheet
-  void _showManagementSheet(Map<String, dynamic> data) {
-    PremiumBottomSheet.show(
-      context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'management_actions',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ).tr(),
-          const SizedBox(height: 24),
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: context.palette.info.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.edit_rounded,
-                color: context.palette.info,
-                size: 22,
-              ),
-            ),
-            title: Text(
-              'edit_bill_info',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ).tr(),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      EditBillScreen(billId: widget.billId, billData: data),
-                ),
-              );
-            },
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: context.palette.danger.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.delete_forever_rounded,
-                color: context.palette.danger,
-                size: 22,
-              ),
-            ),
-            title: Text(
-              'delete_entire_bill',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: context.palette.danger,
-              ),
-            ).tr(),
-            onTap: () {
-              Navigator.pop(context);
-              _confirmDelete();
-            },
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          const SizedBox(height: 10),
-        ],
-      ),
-    );
+  String _storeName(Map<String, dynamic> bill) {
+    final s = bill['storeName']?.toString().trim();
+    return (s == null || s.isEmpty) ? _billName : s;
   }
 
-  // 1. Add 'context' as a parameter
-  Future<void> _shareBillWithLogo(BuildContext context) async {
-    // 2. Calculate the anchor point for the iPad popover
-    final box = context.findRenderObject() as RenderBox?;
-    final Rect? sharePosition = box != null
-        ? (box.localToGlobal(Offset.zero) & box.size)
-        : null;
-
-    final String url = ShareLinkUtils.buildBillShareUrl(widget.billId);
-    final String message =
-        "💸 Hey! Here is the split bill for \"${widget.billName}\".\n\n"
-        "Tap the link to see your share and settle up:\n$url\n\n"
-        "Powered by SplitBill App 🚀";
-
-    await SharePlus.instance.share(
-      ShareParams(
-        text: message,
-        subject: "Split Bill: ${widget.billName}",
-        sharePositionOrigin: sharePosition,
-      ),
-    );
-  }
-
-  Future<void> _shareUserLink(
-    BuildContext context,
-    String name,
-    double amount,
-    String? participantId,
-    String currencyCode,
-  ) async {
-    // 2. Calculate the anchor point
-    final box = context.findRenderObject() as RenderBox?;
-    final Rect? sharePosition = box != null
-        ? (box.localToGlobal(Offset.zero) & box.size)
-        : null;
-
-    // Use the passed participant ID
-    String pid = participantId ?? '';
-
-    final String url = ShareLinkUtils.buildBillShareUrl(
-      widget.billId,
-      participantId: pid,
-    );
-    final String message =
-        "💸 Hey $name! Your share for \"${widget.billName}\" is ${CurrencyUtils.format(amount, currencyCode: currencyCode)}.\n\n"
-        "Check your items and pay here:\n$url\n\n"
-        "Powered by SplitBill App 🚀";
-
-    await SharePlus.instance.share(
-      ShareParams(
-        text: message,
-        subject: "Your share for ${widget.billName}",
-        sharePositionOrigin: sharePosition,
-      ),
-    );
-  }
+  // ---------------------------------------------------------------- build
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('bills')
-          .doc(widget.billId)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            body: LoadingStateWidget(message: 'loading_bill_details'.tr()),
-          );
-        }
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return Scaffold(body: Center(child: Text('bill_not_found').tr()));
-        }
-
-        var data = snapshot.data!.data() as Map<String, dynamic>;
-        List<dynamic> participantsData = data['participants'];
-        double total = (data['total'] as num).toDouble();
-        bool amIHost = data['hostId'] == user?.uid;
-        final currencyCode =
-            (data['currencyCode'] ?? data['currency_code'] ?? 'USD').toString();
-
-        // PRECISION PERCENTAGE FIX:
-        // Calculate percentages based on sum of shares if total is mismatching
-        double sumOfShares = participantsData.fold(
-          0.0,
-          (runningTotal, p) =>
-              runningTotal + (p['share'] as num? ?? 0).toDouble(),
-        );
-        final double calculationBase = sumOfShares > 0 ? sumOfShares : total;
-
-        double collected = 0.0;
-        for (var p in participantsData) {
-          if (p['status'] == 'PAID') {
-            collected += (p['share'] as num? ?? 0.0).toDouble();
+    final p = context.palette;
+    return Scaffold(
+      backgroundColor: p.canvas,
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: _stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            final error = snapshot.error!;
+            void retry() => setState(_subscribe);
+            return SafeArea(
+              child: Column(
+                children: [
+                  const BillDetailsHeader(),
+                  Expanded(
+                    child: isOfflineError(error)
+                        ? ErrorState.offline(onRetry: retry)
+                        : ErrorState(
+                            title: 'bf_bill_load_error_title'.tr(),
+                            message: billErrorKey(error).tr(),
+                            onRetry: retry,
+                          ),
+                  ),
+                ],
+              ),
+            );
           }
-        }
-
-        return Scaffold(
-          backgroundColor: context.palette.surfaceMuted,
-          appBar: CustomAppHeader(
-            title: widget.billName,
-            trailing: IconButton(
-              onPressed: () => _shareBillWithLogo(context),
-              icon: Icon(
-                Icons.ios_share_rounded,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-          body: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.only(bottom: 120, top: 8),
-                  children: [
-                    BillSummaryWidget(
-                      total: total,
-                      collected: collected,
-                      title: widget.billName,
-                      date: data['date'],
-                      hostName: data['hostName'],
-                      currencyCode: currencyCode,
-                    ),
-
-                    // Refined Bill Details Tile
-                    _buildDetailsActionTile(data),
-
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 32, 20, 12),
-                      child: Text(
-                        'participants',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: context.palette.textTertiary,
-                          letterSpacing: 1.5,
-                        ),
-                      ).tr(),
-                    ),
-
-                    ...participantsData.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      var p = entry.value;
-                      bool isHostParticipant = p['id'] == data['hostId'];
-
-                      return ParticipantTile(
-                        participant: p,
-                        totalBill:
-                            calculationBase, // Use sumOfShares for 100% sum
-                        isHost: isHostParticipant,
-                        currencyCode: currencyCode,
-                        onTap: () => _showParticipantActions(
-                          p,
-                          participantsData,
-                          index,
-                          data,
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          floatingActionButton: amIHost
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 12, bottom: 12),
-                  child: FloatingActionButton(
-                    onPressed: () => _showManagementSheet(data),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    elevation: 10,
-                    child: Icon(
-                      CupertinoIcons.settings,
-                      color: context.palette.onPrimary,
-                      size: 32,
+          if (!snapshot.hasData) return const BillLoadingSkeleton();
+          final doc = snapshot.data!;
+          _trackOffline(doc.metadata.isFromCache);
+          final data = doc.data();
+          if (!doc.exists || data == null) {
+            return SafeArea(
+              child: Column(
+                children: [
+                  const BillDetailsHeader(),
+                  Expanded(
+                    child: ErrorState(
+                      icon: Icons.receipt_long_outlined,
+                      title: 'bf_bill_not_found_title'.tr(),
+                      message: 'bf_bill_not_found_message'.tr(),
+                      retryLabel: 'bf_bill_go_back'.tr(),
+                      onRetry: () => Navigator.of(context).maybePop(),
                     ),
                   ),
-                )
-              : null,
-        );
-      },
+                ],
+              ),
+            );
+          }
+          return _buildBill(context, data);
+        },
+      ),
     );
   }
 
-  Widget _buildDetailsActionTile(Map<String, dynamic> data) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: context.palette.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: context.palette.shadow.withValues(alpha: 0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
+  Widget _buildBill(BuildContext context, Map<String, dynamic> bill) {
+    final p = context.palette;
+    final reader = BillReader(bill);
+    final currency = reader.currency;
+    final hostId = bill['hostId']?.toString();
+    final amIHost = hostId != null && hostId == _user?.uid;
+    final summary = collectionSummary(reader, hostId: hostId);
+    final now = DateTime.now();
+
+    final meta = <String>[
+      _storeName(bill),
+      if (dateFromAny(bill['date']) case final date?)
+        formatBillDate(context, date),
+      if (bill['groupName']?.toString().trim().isNotEmpty == true)
+        bill['groupName'].toString().trim(),
+    ].join(' · ');
+
+    final others = [
+      for (final pt in reader.participants)
+        if (pt['id']?.toString() != hostId) pt,
+    ];
+    final reviews = [
+      for (final pt in others)
+        if (payStatusOf(pt) == PayStatus.review) pt,
+    ];
+    final toRemind = amIHost ? nextToRemind(reader, hostId: hostId) : null;
+    final history = reader.history;
+
+    var index = 0;
+    Widget entrance(Widget child) =>
+        StaggeredEntrance(index: index++, child: child);
+
+    final children = <Widget>[
+      entrance(
+        BillSummaryWidget(
+          metaLine: meta,
+          totalMinor: reader.totalMinor,
+          currency: currency,
+          summary: summary,
+        ),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => BillDetailsModals.showFullBillDetails(context, data),
-          borderRadius: BorderRadius.circular(24),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
+      if (others.isNotEmpty)
+        entrance(
+          _Card(
+            margin: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
+            child: Column(
               children: [
-                SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: Lottie.asset(
-                    'assets/animations/food.json',
-                    repeat: true,
+                for (var i = 0; i < others.length; i++)
+                  ParticipantTile(
+                    name: others[i]['name']?.toString() ?? '',
+                    photoUrl: others[i]['photoUrl']?.toString(),
+                    tintKey: others[i]['id']?.toString(),
+                    shareMinor: reader.shareMinorOf(others[i]),
+                    currency: currency,
+                    status: payStatusOf(others[i]),
+                    showDivider: i > 0,
+                    onTap: amIHost
+                        ? () => _showParticipantActions(others[i], bill)
+                        : () => BillDetailsModals.showUserShareDetails(
+                            context,
+                            others[i],
+                            bill,
+                          ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'full_bill_details',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                          color: context.palette.textPrimary,
-                        ),
-                      ).tr(),
-                      Text(
-                        'items_and_charges_breakdown',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: context.palette.textTertiary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ).tr(),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16,
-                  color: context.palette.textTertiary,
-                ),
               ],
             ),
           ),
+        ),
+      if (amIHost)
+        for (final pt in reviews)
+          entrance(
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
+              child: Builder(
+                builder: (context) {
+                  final proof = decodeProofImage(pt['paymentProof']);
+                  final detail = [
+                    if (pt['paymentMethod']?.toString().trim().isNotEmpty ==
+                        true)
+                      pt['paymentMethod'].toString().trim(),
+                    if (dateFromAny(pt['paymentTime']) case final t?)
+                      resolveCopy(relativeTimeCopy(t, now)),
+                  ].join(' · ');
+                  return ProofCard(
+                    name: pt['name']?.toString() ?? '',
+                    image: proof,
+                    detail: detail,
+                    busy: _busy.contains(pt['id']?.toString()),
+                    onViewProof: proof == null
+                        ? null
+                        : () => _viewProof(pt, proof, bill),
+                    onConfirm: () => _setPaid(pt, paid: true, bill: bill),
+                  );
+                },
+              ),
+            ),
+          ),
+      entrance(
+        _Card(
+          margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
+          child: InkWell(
+            onTap: () => BillDetailsModals.showFullBillDetails(context, bill),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 56),
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.md,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.receipt_long_outlined, color: p.textSecondary),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Text(
+                      'bf_bill_full_bill_row'.tr(),
+                      style: AppTypography.titleSmall.copyWith(
+                        color: p.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.chevron_right_rounded, color: p.textTertiary),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      if (history.isNotEmpty) ...[
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 8),
+          child: Text(
+            'bf_bill_history_title'.tr().toUpperCase(),
+            style: AppTypography.labelMedium.copyWith(
+              color: p.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        entrance(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: BillHistoryCard(
+              entries: history,
+              currency: currency,
+              currentUid: _user?.uid,
+              now: now,
+            ),
+          ),
+        ),
+      ],
+      const SizedBox(height: AppSpacing.xxl),
+    ];
+
+    String? remindLabel;
+    if (toRemind != null) {
+      final name = toRemind['name']?.toString() ?? '';
+      final last = dateFromAny(toRemind['lastRemindedAt']);
+      final base = isGuestParticipant(toRemind)
+          ? 'bf_bill_send_link_to'.tr(namedArgs: {'name': name})
+          : 'bf_bill_remind_name'.tr(namedArgs: {'name': name});
+      remindLabel = last == null
+          ? base
+          : 'bf_bill_remind_with_last'.tr(
+              namedArgs: {
+                'action': base,
+                'when': resolveCopy(relativeTimeCopy(last, now)),
+              },
+            );
+    }
+
+    return SafeArea(
+      child: Column(
+        children: [
+          BillDetailsHeader(
+            actions: [
+              BillCircleButton(
+                icon: Icons.ios_share_rounded,
+                semanticLabel: 'bf_bill_share_semantics'.tr(),
+                onTap: () => _shareTable(bill),
+              ),
+              if (amIHost)
+                BillCircleButton(
+                  icon: Icons.more_horiz_rounded,
+                  semanticLabel: 'bf_bill_more_semantics'.tr(),
+                  onTap: () => _showMore(bill),
+                ),
+            ],
+          ),
+          OfflineBanner(
+            visible: _offline,
+            margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
+          ),
+          Expanded(child: ListView(children: children)),
+          if (remindLabel != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
+              child: BillPillButton(
+                label: remindLabel,
+                ghost: true,
+                busy: _reminding,
+                onPressed: () => _remind(toRemind!, bill),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Card extends StatelessWidget {
+  const _Card({required this.child, required this.margin});
+
+  final Widget child;
+  final EdgeInsetsGeometry margin;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Container(
+      margin: margin,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: AppRadii.cardRadius,
+        border: Border.all(color: p.hairline),
+      ),
+      child: Material(type: MaterialType.transparency, child: child),
+    );
+  }
+}
+
+class _SheetAction extends StatelessWidget {
+  const _SheetAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.destructive = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool destructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final color = destructive ? p.error : p.textPrimary;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: AppRadii.rowRadius,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 52),
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: AppSpacing.lg),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.titleSmall.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

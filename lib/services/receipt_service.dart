@@ -1,11 +1,118 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:split_bill_app/config/backend_config.dart';
+import 'package:uuid/uuid.dart';
+
+/// Why a receipt scan failed, so the UI can say what to do next.
+enum ReceiptScanFailure {
+  /// 422: the photo is not a receipt (menu, random photo). Credit refunded.
+  notAReceipt,
+
+  /// 413: the image is too large.
+  tooLarge,
+
+  /// 415: unsupported image format.
+  unsupportedFormat,
+
+  /// 402 / 403: not enough points or not allowed.
+  noCredits,
+
+  /// 429: too many scans.
+  rateLimited,
+
+  /// 502/503/504 or a timeout.
+  timeout,
+
+  /// No connection.
+  offline,
+
+  /// Anything else.
+  unknown,
+}
+
+class ReceiptScanException implements Exception {
+  const ReceiptScanException(
+    this.failure, {
+    this.statusCode,
+    this.errorCode,
+    this.refunded = false,
+    this.serverMessage,
+  });
+
+  final ReceiptScanFailure failure;
+  final int? statusCode;
+  final String? errorCode;
+
+  /// The server refunded the scan credit.
+  final bool refunded;
+
+  /// Raw server text; for logs only, never shown to the user.
+  final String? serverMessage;
+
+  @override
+  String toString() =>
+      'ReceiptScanException($failure, status: $statusCode, code: $errorCode)';
+}
+
+/// Classifies a non-2xx scan response.
+ReceiptScanException classifyScanError(
+  int statusCode,
+  Map<String, dynamic> payload,
+) {
+  final code = payload['errorCode']?.toString() ?? payload['error_code']?.toString();
+  final refundedRaw = payload['refunded'] ?? payload['credit_refunded'];
+  final message = payload['error']?.toString();
+  ReceiptScanFailure failure;
+  switch (statusCode) {
+    case 422:
+      failure = ReceiptScanFailure.notAReceipt;
+    case 413:
+      failure = ReceiptScanFailure.tooLarge;
+    case 415:
+      failure = ReceiptScanFailure.unsupportedFormat;
+    case 402:
+    case 403:
+      failure = ReceiptScanFailure.noCredits;
+    case 429:
+      failure = ReceiptScanFailure.rateLimited;
+    case 408:
+    case 502:
+    case 503:
+    case 504:
+      failure = ReceiptScanFailure.timeout;
+    default:
+      failure = ReceiptScanFailure.unknown;
+  }
+  return ReceiptScanException(
+    failure,
+    statusCode: statusCode,
+    errorCode: code,
+    // A rejected non-receipt is always refunded by the backend.
+    refunded: refundedRaw == true || failure == ReceiptScanFailure.notAReceipt,
+    serverMessage: message,
+  );
+}
 
 class ReceiptService {
+  ReceiptService({
+    http.Client? client,
+    Future<String?> Function()? tokenProvider,
+    String Function()? requestIdFactory,
+  }) : _client = client,
+       _tokenProvider = tokenProvider,
+       _requestIdFactory = requestIdFactory ?? (() => const Uuid().v4());
+
+  final http.Client? _client;
+  final Future<String?> Function()? _tokenProvider;
+  final String Function() _requestIdFactory;
+
+  /// Request id of the latest attempt (idempotency key).
+  String? lastRequestId;
+
   double _toDouble(dynamic value) {
     if (value is num) return value.toDouble();
     if (value is String) return double.tryParse(value.trim()) ?? 0.0;
@@ -121,25 +228,24 @@ class ReceiptService {
     return normalized;
   }
 
-  String _friendlyNonJsonError(http.Response response) {
-    final statusCode = response.statusCode;
-    if (statusCode == 502 || statusCode == 503 || statusCode == 504) {
-      return 'The scanner took too long to respond. Please try again in a moment.';
-    }
-    return 'The scan service returned an unexpected response. Please try again.';
-  }
-
   Future<Map<String, dynamic>> scanReceiptImage(
     File imageFile, {
     String? localeCode,
     String? currencyCode,
+    String? requestId,
   }) async {
-    final authToken = await FirebaseAuth.instance.currentUser?.getIdToken();
+    final authToken = _tokenProvider != null
+        ? await _tokenProvider()
+        : await FirebaseAuth.instance.currentUser?.getIdToken();
 
+    final id = requestId ?? _requestIdFactory();
+    lastRequestId = id;
     final request = http.MultipartRequest(
       'POST',
       BackendConfig.receiptScanUri,
     )..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+    request.fields['requestId'] = id;
+    request.headers['X-Request-Id'] = id;
 
     if (authToken != null && authToken.isNotEmpty) {
       request.headers['Authorization'] = 'Bearer $authToken';
@@ -152,39 +258,66 @@ class ReceiptService {
       request.fields['currency'] = currencyCode;
     }
 
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
+    http.Response response;
+    try {
+      final streamedResponse = await (_client?.send(request) ?? request.send())
+          .timeout(const Duration(seconds: 90));
+      response = await http.Response.fromStream(streamedResponse);
+    } on SocketException {
+      throw const ReceiptScanException(ReceiptScanFailure.offline);
+    } on http.ClientException {
+      throw const ReceiptScanException(ReceiptScanFailure.offline);
+    } on TimeoutException {
+      throw const ReceiptScanException(ReceiptScanFailure.timeout);
+    }
+    return parseScanResponse(response);
+  }
+
+  /// Parses a scan response (public for tests).
+  Map<String, dynamic> parseScanResponse(http.Response response) {
     final contentType = response.headers['content-type'] ?? '';
     final isJsonResponse = contentType.toLowerCase().contains('application/json');
     Map<String, dynamic> payload = <String, dynamic>{};
 
     if (response.body.isNotEmpty && isJsonResponse) {
       try {
-        payload = jsonDecode(response.body) as Map<String, dynamic>;
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map<String, dynamic>) payload = decoded;
       } on FormatException {
-        throw Exception('The scan service returned unreadable data. Please try again.');
+        payload = <String, dynamic>{};
       }
     }
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      if (!isJsonResponse) {
-        throw Exception(_friendlyNonJsonError(response));
-      }
-      final errorMessage =
-          payload['error'] as String? ??
-          'Receipt scan failed with status ${response.statusCode}.';
-      throw Exception(errorMessage);
+      throw classifyScanError(response.statusCode, payload);
     }
 
-    if (!isJsonResponse) {
-      throw Exception(_friendlyNonJsonError(response));
+    final receipt = payload['receipt'];
+    if (receipt is! Map) {
+      throw ReceiptScanException(
+        ReceiptScanFailure.unknown,
+        statusCode: response.statusCode,
+      );
     }
 
-    final receipt = payload['receipt'] as Map<String, dynamic>?;
-    if (receipt == null) {
-      throw Exception('Receipt scan returned no receipt data.');
+    final normalized = _normalizeReceipt(Map<String, dynamic>.from(receipt));
+    // 2.0 review fields may sit on the receipt or next to it.
+    final reasons =
+        receipt['needs_review_reasons'] ?? payload['needs_review_reasons'];
+    if (reasons is List) {
+      normalized['needs_review_reasons'] = [
+        for (final r in reasons) r.toString(),
+      ];
+      if (reasons.isNotEmpty) normalized['needs_review'] = true;
     }
-
-    return _normalizeReceipt(receipt);
+    final reconciliation =
+        receipt['reconciliation'] ?? payload['reconciliation'];
+    if (reconciliation is Map) {
+      normalized['reconciliation'] = Map<String, dynamic>.from(reconciliation);
+    }
+    if (payload['requestId'] != null) {
+      normalized['requestId'] = payload['requestId'].toString();
+    }
+    return normalized;
   }
 }

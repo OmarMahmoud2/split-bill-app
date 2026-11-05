@@ -41,15 +41,8 @@ class NoPointsDialog extends StatelessWidget {
         // Icon
         Container(
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: p.warning.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.stars_rounded,
-            size: 64,
-            color: Colors.orange.shade400,
-          ),
+          decoration: BoxDecoration(color: p.oweSoft, shape: BoxShape.circle),
+          child: Icon(Icons.stars_rounded, size: 56, color: p.oweInk),
         ),
 
         const SizedBox(height: 24),
@@ -104,26 +97,19 @@ class NoPointsDialog extends StatelessWidget {
             decoration: BoxDecoration(
               color: p.surface,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: p.borderSubtle),
-              boxShadow: [
-                BoxShadow(
-                  color: p.shadow.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              border: Border.all(color: p.border),
             ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    gradient: p.primaryGradient,
+                    color: p.accentSoft,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.play_arrow_rounded,
-                    color: p.onPrimary,
+                    color: p.onAccentSoft,
                     size: 24,
                   ),
                 ),
@@ -144,7 +130,7 @@ class NoPointsDialog extends StatelessWidget {
                       Text(
                         'plus_1_point_instantly',
                         style: TextStyle(
-                          color: p.primaryStrong,
+                          color: p.accent,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
@@ -173,31 +159,20 @@ class NoPointsDialog extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue.shade600, Colors.blue.shade800],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: p.inverseSurface,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: p.info.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
             ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: p.onInverseSurface.withValues(alpha: 0.16),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.diamond_rounded,
-                    color: Colors.white,
+                    color: p.onInverseSurface,
                     size: 24,
                   ),
                 ),
@@ -211,13 +186,16 @@ class NoPointsDialog extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Colors.white,
+                          color: p.onInverseSurface,
                         ),
                       ).tr(),
                       SizedBox(height: 4),
                       Text(
                         'unlimited_scans_and_no_ads',
-                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                        style: TextStyle(
+                          color: p.onInverseSurface.withValues(alpha: 0.72),
+                          fontSize: 13,
+                        ),
                       ).tr(),
                     ],
                   ),

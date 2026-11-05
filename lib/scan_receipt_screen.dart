@@ -1,29 +1,41 @@
 import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:provider/provider.dart';
-import 'services/receipt_service.dart';
-import 'split_bill_screen.dart';
-import 'package:lottie/lottie.dart';
-import 'widgets/receipt_result_view.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'config/feature_costs.dart';
-import 'helpers/rewarded_ad_helper.dart';
-import 'providers/app_settings_provider.dart';
-import 'widgets/custom_app_header.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
+
+import 'bill_flow/bill_calculator.dart' show minorFromAny;
+import 'config/feature_costs.dart';
+import 'domain/money.dart' show fromMinorUnits, normalizeCurrency;
+import 'helpers/rewarded_ad_helper.dart';
+import 'manual_entry_screen.dart';
+import 'providers/app_settings_provider.dart';
+import 'screens/scan_receipt/amount_input.dart';
+import 'screens/scan_receipt/review_banner_content.dart'
+    show kReviewConfidenceThreshold;
+import 'screens/scan_receipt/review_totals.dart';
+import 'screens/scan_receipt/scan_error_content.dart';
 import 'screens/scan_receipt/widgets/no_points_dialog.dart';
-import 'screens/scan_receipt/widgets/image_source_sheet.dart';
-import 'screens/scan_receipt/widgets/participants_reference_list.dart';
 import 'screens/scan_receipt/widgets/scan_empty_state.dart';
+import 'screens/scan_receipt/widgets/scan_error_card.dart';
+import 'screens/scan_receipt/widgets/scan_reading_view.dart';
+import 'screens/scan_receipt/widgets/scan_top_bar.dart';
+import 'services/receipt_service.dart';
 import 'services/revenue_cat_service.dart';
-import 'theme/app_palette.dart';
+import 'split_bill_screen.dart';
+import 'theme/theme.dart';
+import 'widgets/feedback/feedback.dart';
+import 'widgets/receipt_result_view.dart';
+
+enum _ScanPhase { idle, reading, saving, review }
 
 class ScanReceiptScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? participants;
@@ -41,22 +53,24 @@ class ScanReceiptScreen extends StatefulWidget {
   State<ScanReceiptScreen> createState() => _ScanReceiptScreenState();
 }
 
-class _ScanReceiptScreenState extends State<ScanReceiptScreen>
-    with TickerProviderStateMixin {
+class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
   final ReceiptService _receiptService = ReceiptService();
   final ImagePicker _picker = ImagePicker();
 
   File? _image;
-  bool _isLoading = false;
+  _ScanPhase _phase = _ScanPhase.idle;
   Map<String, dynamic>? _receiptData;
-  String _loadingMessageKey = 'analyzing_receipt';
-  late AnimationController _loadingTextController;
 
-  // Editing State
-  String? _editingSection;
+  /// The last failure, shown as a card on the start screen.
+  ScanErrorContent? _error;
+
+  /// Bumped on every attempt and on Cancel, so a late answer from a
+  /// cancelled read is ignored.
+  int _attempt = 0;
+
+  // Editing state
   DateTime _selectedDate = DateTime.now();
   final TextEditingController _restaurantController = TextEditingController();
-  final TextEditingController _totalController = TextEditingController();
   final TextEditingController _taxController = TextEditingController();
   final TextEditingController _serviceController = TextEditingController();
   final TextEditingController _discountController = TextEditingController();
@@ -65,16 +79,18 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
   List<Map<String, TextEditingController>> _itemControllers = [];
 
+  bool get _busy => _phase == _ScanPhase.reading || _phase == _ScanPhase.saving;
+
+  String get _currency {
+    final code = _receiptData?['currency_code']?.toString();
+    if (code != null && code.trim().isNotEmpty) return normalizeCurrency(code);
+    return normalizeCurrency(context.read<AppSettingsProvider>().currencyCode);
+  }
+
   @override
   void initState() {
     super.initState();
-    _loadingTextController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
     RewardedAdHelper.warmUpIfEligible();
-
-    // Resume if data provided
     if (widget.initialLocalImagePath != null) {
       _loadSavedImage();
     }
@@ -83,34 +99,25 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   Future<void> _loadSavedImage() async {
     final file = File(widget.initialLocalImagePath!);
     if (await file.exists()) {
-      setState(() {
-        _image = file;
-      });
-      // Optionally auto-analyze or just show ready state
-      // _analyzeImage(); // Let user tap to analyze
+      if (!mounted) return;
+      setState(() => _image = file);
     }
   }
 
   @override
   void dispose() {
-    _loadingTextController.dispose();
     _restaurantController.dispose();
-    _totalController.dispose();
     _taxController.dispose();
     _serviceController.dispose();
     _discountController.dispose();
     _tipController.dispose();
     _deliveryController.dispose();
-    for (var controllers in _itemControllers) {
-      controllers['name']?.dispose();
-      controllers['qty']?.dispose();
-      controllers['price']?.dispose();
-    }
+    _disposeItemControllers();
     super.dispose();
   }
 
   void _disposeItemControllers() {
-    for (var controllers in _itemControllers) {
+    for (final controllers in _itemControllers) {
       controllers['name']?.dispose();
       controllers['qty']?.dispose();
       controllers['price']?.dispose();
@@ -118,12 +125,11 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     _itemControllers = [];
   }
 
-  // ... (controllers init and update logic keep same)
+  // ------------------------------------------------------ snap and save
 
-  // --- SNAP & SAVE HANDLER ---
   Future<void> _handleSnapAndSave() async {
     if (_image == null) {
-      if (_isLoading) return;
+      if (_busy) return;
       try {
         final XFile? photo = await _picker.pickImage(
           source: kDebugMode ? ImageSource.gallery : ImageSource.camera,
@@ -136,33 +142,31 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
           await _saveForLater();
         }
       } catch (e) {
-        debugPrint("Error picking image: $e");
+        debugPrint('Error picking image: $e');
+        _showPickError(e);
       }
     } else {
       await _saveForLater();
     }
   }
 
-  // --- SAVE FOR LATER LOGIC ---
   Future<void> _saveForLater() async {
     if (_image == null) return;
-
-    setState(() => _isLoading = true);
-    _loadingMessageKey = 'saving_for_later';
+    setState(() => _phase = _ScanPhase.saving);
 
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
 
-      // 1. Save Image Locally
+      // 1. Save image locally.
       final directory = await getApplicationDocumentsDirectory();
       final fileName = 'receipt_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final savedImage = await _image!.copy('${directory.path}/$fileName');
 
-      // Prepare participants_uids for querying
-      List<String> participantUids = [user.uid]; // Host is always a participant
+      // Participants' uids, for querying.
+      final participantUids = <String>[user.uid]; // Host always included.
       if (widget.participants != null) {
-        for (var p in widget.participants!) {
+        for (final p in widget.participants!) {
           if (p.containsKey('uid') && p['uid'] != null) {
             participantUids.add(p['uid']);
           } else if (p.containsKey('id') && p['id'] != null) {
@@ -171,62 +175,56 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         }
       }
 
-      // 2. Create Bill Document
+      // 2. Create or update the bill document.
       final billData = {
         'hostId': user.uid,
         'hostName': user.displayName ?? 'host'.tr(),
         'participants': widget.participants ?? [],
-        'participants_uids': participantUids, // Saved for querying
+        'participants_uids': participantUids,
         'date': Timestamp.fromDate(_selectedDate),
         'status': 'UNATTEMPTED',
         'localImagePath': savedImage.path,
-        'storeName': 'unattempted_receipt'.tr(), // Placeholder
+        'storeName': 'unattempted_receipt'.tr(),
         'items': [],
         'charges': {},
       };
 
       if (widget.billId != null) {
-        // Update existing
         await FirebaseFirestore.instance
             .collection('bills')
             .doc(widget.billId)
             .update(billData);
       } else {
-        // Create new
         await FirebaseFirestore.instance.collection('bills').add(billData);
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('saved_for_later').tr(),
-            backgroundColor: context.palette.success,
-          ),
+        AppToast.show(
+          context,
+          message: 'saved_for_later'.tr(),
+          type: AppToastType.success,
         );
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
     } catch (e) {
-      debugPrint("Error saving for later: $e");
+      debugPrint('Error saving for later: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'error_saving'.tr(namedArgs: {'error': e.toString()}),
-            ),
-            backgroundColor: context.palette.danger,
-          ),
+        AppToast.show(
+          context,
+          message: 'bf_scan_err_save'.tr(),
+          type: AppToastType.error,
         );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _phase = _ScanPhase.idle);
     }
   }
 
   Future<void> _deleteSavedDraft() async {
     final billId = widget.billId;
     if (billId == null) return;
-
-    setState(() => _isLoading = true);
+    final previous = _phase;
+    setState(() => _phase = _ScanPhase.saving);
 
     try {
       final localImagePath =
@@ -243,137 +241,124 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       await FirebaseFirestore.instance.collection('bills').doc(billId).delete();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('bill_deleted').tr(),
-          backgroundColor: context.palette.success,
-        ),
+      AppToast.show(
+        context,
+        message: 'bill_deleted'.tr(),
+        type: AppToastType.success,
       );
       Navigator.of(context).pop();
     } catch (e) {
+      debugPrint('Error deleting draft: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('error_saving'.tr(namedArgs: {'error': e.toString()})),
-          backgroundColor: context.palette.danger,
-        ),
+      setState(() => _phase = previous);
+      AppToast.show(
+        context,
+        message: 'bf_scan_err_delete'.tr(),
+        type: AppToastType.error,
       );
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
     }
   }
 
   Future<void> _confirmDeleteSavedDraft() async {
     final shouldDelete = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('delete_saved_draft').tr(),
-        content: Text('delete_saved_draft_message').tr(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('common_cancel').tr(),
+      builder: (dialogContext) {
+        final p = dialogContext.palette;
+        return AlertDialog(
+          backgroundColor: p.surface,
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppRadii.cardRadius,
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: dialogContext.palette.danger,
-              foregroundColor: Colors.white,
+          title: Text('delete_saved_draft'.tr()),
+          content: Text('delete_saved_draft_message'.tr()),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text('common_cancel'.tr()),
             ),
-            child: Text('common_delete').tr(),
-          ),
-        ],
-      ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: FilledButton.styleFrom(
+                backgroundColor: p.error,
+                foregroundColor: p.onError,
+              ),
+              child: Text('common_delete'.tr()),
+            ),
+          ],
+        );
+      },
     );
 
     if (shouldDelete == true) {
+      AppHaptics.warning();
       await _deleteSavedDraft();
     }
   }
 
-  // ... (Keep existing methods: _initializeControllers, _updateTotal, _saveChanges, _pickImage, etc.)
-  // I will use multi_replace for specific insertions to avoid overwriting too much,
-  // but since I'm rewriting the top part, I'll stick to replacing the needed chunks.
+  // ------------------------------------------------------ review editing
 
   void _initializeControllers() {
-    if (_receiptData == null) return;
+    final data = _receiptData;
+    if (data == null) return;
     _disposeItemControllers();
+    final currency = _currency;
 
-    _restaurantController.text = _receiptData!['restaurant_name'] ?? "";
-    _totalController.text = (_receiptData!['total_amount'] ?? 0)
-        .toStringAsFixed(2);
-    _taxController.text = (_receiptData!['tax_amount'] ?? 0).toString();
-    _serviceController.text = (_receiptData!['service_charge'] ?? 0).toString();
-    _discountController.text = (_receiptData!['discount_amount'] ?? 0)
-        .toString();
-    _tipController.text = (_receiptData!['tip_amount'] ?? 0).toString();
-    _deliveryController.text = (_receiptData!['delivery_fee'] ?? 0).toString();
-
-    void onUpdate() => _updateTotal();
-
-    _taxController.addListener(onUpdate);
-    _serviceController.addListener(onUpdate);
-    _discountController.addListener(onUpdate);
-    _tipController.addListener(onUpdate);
-    _deliveryController.addListener(onUpdate);
-
-    _itemControllers = (_receiptData!['items'] as List).map((item) {
-      final nameCtrl = TextEditingController(text: item['name'] ?? "");
-      final qtyCtrl = TextEditingController(
-        text: (item['qty'] ?? 1).toString(),
-      );
-      final priceCtrl = TextEditingController(
-        text: (item['price'] as num).toDouble().toString(),
-      );
-
-      nameCtrl.addListener(onUpdate);
-      qtyCtrl.addListener(onUpdate);
-      priceCtrl.addListener(onUpdate);
-
-      return {'name': nameCtrl, 'qty': qtyCtrl, 'price': priceCtrl};
-    }).toList();
-
-    _updateTotal(); // Initial calculation
-  }
-
-  void _updateTotal() {
-    double subtotal = 0;
-    for (var controllers in _itemControllers) {
-      double qty = double.tryParse(controllers['qty']!.text) ?? 0;
-      double price = double.tryParse(controllers['price']!.text) ?? 0;
-      subtotal += qty * price;
+    String amountText(Object? raw) {
+      final minor = minorFromAny(raw, currency);
+      return minor == 0 ? '' : minorToInputText(minor, currency);
     }
 
-    double tax = double.tryParse(_taxController.text) ?? 0;
-    double service = double.tryParse(_serviceController.text) ?? 0;
-    double discount = double.tryParse(_discountController.text) ?? 0;
-    double tip = double.tryParse(_tipController.text) ?? 0;
-    double delivery = double.tryParse(_deliveryController.text) ?? 0;
-    double otherChargesTotal =
-        (_receiptData?['other_charges_total'] as num?)?.toDouble() ?? 0.0;
+    _restaurantController.text = data['restaurant_name']?.toString() ?? '';
+    _taxController.text = amountText(data['tax_amount']);
+    _serviceController.text = amountText(data['service_charge']);
+    _discountController.text = amountText(data['discount_amount']);
+    _tipController.text = amountText(data['tip_amount']);
+    _deliveryController.text = amountText(data['delivery_fee']);
 
-    double finalTotal =
-        subtotal +
-        tax +
-        service +
-        tip +
-        delivery +
-        otherChargesTotal -
-        discount;
+    _itemControllers = [
+      for (final raw in (data['items'] as List? ?? const []))
+        if (raw is Map)
+          {
+            'name': TextEditingController(text: raw['name']?.toString() ?? ''),
+            'qty': TextEditingController(
+              text:
+                  '${parseQuantityInput('${raw['qty'] ?? raw['quantity'] ?? 1}') ?? 1}',
+            ),
+            'price': TextEditingController(
+              text: minorToInputText(
+                raw['priceMinor'] is num
+                    ? (raw['priceMinor'] as num).round()
+                    : minorFromAny(raw['price'] ?? raw['unit_price'], currency),
+                currency,
+              ),
+            ),
+          },
+    ];
+    _recomputeTotals();
+  }
 
-    setState(() {
-      _totalController.text = finalTotal.toStringAsFixed(2);
-      _receiptData!['total_amount'] = finalTotal;
-      _receiptData!['subtotal'] = subtotal;
-      _receiptData!['tax_amount'] = tax;
-      _receiptData!['service_charge'] = service;
-      _receiptData!['discount_amount'] = discount;
-      _receiptData!['tip_amount'] = tip;
-      _receiptData!['delivery_fee'] = delivery;
-    });
+  ReviewChargeTexts get _chargeTexts => (
+    tax: _taxController.text,
+    service: _serviceController.text,
+    tip: _tipController.text,
+    delivery: _deliveryController.text,
+    discount: _discountController.text,
+  );
+
+  /// Totals in minor units from the fields, written back as legacy doubles.
+  void _recomputeTotals() {
+    final data = _receiptData;
+    if (data == null) return;
+    final draft = buildReviewDraft(
+      receiptData: data,
+      currency: _currency,
+      lines: [
+        for (final c in _itemControllers)
+          (name: c['name']!.text, qty: c['qty']!.text, price: c['price']!.text),
+      ],
+      charges: _chargeTexts,
+    );
+    writeReviewTotals(data, draft);
   }
 
   double _confidenceValue(dynamic rawValue, {double fallback = 0.92}) {
@@ -392,46 +377,56 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   bool _didItemChange(
     Map<String, dynamic> originalItem, {
     required String name,
-    required double qty,
-    required double price,
+    required int qty,
+    required int priceMinor,
+    required String currency,
   }) {
     final originalName = (originalItem['name'] ?? '').toString().trim();
-    final originalQty = (originalItem['qty'] as num?)?.toDouble() ?? 1.0;
-    final originalPrice =
-        ((originalItem['price'] ?? originalItem['unit_price']) as num?)
-            ?.toDouble() ??
-        0.0;
-
+    final originalQty = parseQuantityInput('${originalItem['qty'] ?? 1}') ?? 1;
+    final originalPrice = originalItem['priceMinor'] is num
+        ? (originalItem['priceMinor'] as num).round()
+        : minorFromAny(
+            originalItem['price'] ?? originalItem['unit_price'],
+            currency,
+          );
     return originalName != name ||
-        (originalQty - qty).abs() > 0.001 ||
-        (originalPrice - price).abs() > 0.001;
+        originalQty != qty ||
+        originalPrice != priceMinor;
   }
 
-  void _saveChanges({bool closeEditingSection = true}) {
-    _updateTotal(); // Ensure everything is up to date
+  void _saveChanges() {
+    final data = _receiptData;
+    if (data == null) return;
+    final currency = _currency;
     setState(() {
-      _receiptData!['restaurant_name'] = _restaurantController.text;
-      _receiptData!['date'] = _selectedDate.toString();
-      final originalItems = List<Map<String, dynamic>>.from(
-        (_receiptData!['items'] as List? ?? const []).map(
-          (item) => Map<String, dynamic>.from(item as Map),
-        ),
-      );
+      data['restaurant_name'] = _restaurantController.text.trim();
+      data['date'] = _selectedDate.toString();
+      final originalItems = [
+        for (final item in (data['items'] as List? ?? const []))
+          if (item is Map) Map<String, dynamic>.from(item),
+      ];
 
-      final List<Map<String, dynamic>> updatedItems = [];
+      final updatedItems = <Map<String, dynamic>>[];
       final updatedItemScores = <double>[];
       for (int index = 0; index < _itemControllers.length; index++) {
         final controllers = _itemControllers[index];
         final name = controllers['name']!.text.trim();
         if (name.isEmpty) continue;
-        final qty = double.tryParse(controllers['qty']!.text) ?? 1.0;
-        final price = double.tryParse(controllers['price']!.text) ?? 0.0;
+        final qty = parseQuantityInput(controllers['qty']!.text) ?? 1;
+        final priceMinor =
+            parseMinorInput(controllers['price']!.text, currency) ?? 0;
         final originalItem = index < originalItems.length
             ? originalItems[index]
             : <String, dynamic>{};
         final wasEdited =
             originalItem.isEmpty ||
-            _didItemChange(originalItem, name: name, qty: qty, price: price);
+            _didItemChange(
+              originalItem,
+              name: name,
+              qty: qty,
+              priceMinor: priceMinor,
+              currency: currency,
+            );
         final confidenceScore = wasEdited
             ? 1.0
             : _confidenceValue(originalItem['confidence_score']);
@@ -443,23 +438,28 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
             : (originalItem['review_status']?.toString().trim().isNotEmpty ==
                       true
                   ? originalItem['review_status'].toString().trim()
-                  : (confidenceScore < 0.78 ? 'review' : 'confident'));
+                  : (confidenceScore < kReviewConfidenceThreshold
+                        ? 'review'
+                        : 'confident'));
 
         updatedItems.add({
           ...originalItem,
           'name': name,
           'qty': qty,
-          'price': price,
-          'line_total': qty * price,
+          'price': fromMinorUnits(priceMinor, currency),
+          'priceMinor': priceMinor,
+          'line_total': fromMinorUnits(priceMinor * qty, currency),
           'confidence_score': confidenceScore,
           'confidence_note': confidenceNote,
           'review_status': reviewStatus,
+          if (wasEdited) 'needs_review': false,
         });
         updatedItemScores.add(confidenceScore);
       }
-      _receiptData!['items'] = updatedItems;
+      data['items'] = updatedItems;
+
       final updatedConfidence = Map<String, dynamic>.from(
-        _receiptData!['confidence_scores'] ?? const {},
+        data['confidence_scores'] ?? const {},
       );
       final subtotalScore = _averageScores(updatedItemScores, fallback: 1.0);
       final chargeScores = <double>[
@@ -469,11 +469,10 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         _confidenceValue(updatedConfidence['tip_amount'], fallback: 1.0),
         _confidenceValue(updatedConfidence['delivery_fee'], fallback: 1.0),
       ];
-      final otherChargeScores = List<Map<String, dynamic>>.from(
-        (_receiptData!['other_charges'] as List? ?? const []).map(
-          (charge) => Map<String, dynamic>.from(charge as Map),
-        ),
-      ).map((charge) => _confidenceValue(charge['confidence_score'])).toList();
+      final otherChargeScores = [
+        for (final charge in (data['other_charges'] as List? ?? const []))
+          if (charge is Map) _confidenceValue(charge['confidence_score']),
+      ];
 
       final totalScore = _averageScores([
         subtotalScore,
@@ -496,34 +495,29 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         'delivery_fee': chargeScores[4],
         'total_amount': totalScore,
       });
-      _receiptData!['confidence_scores'] = updatedConfidence;
-      _receiptData!['needs_review'] =
-          updatedItemScores.any((score) => score < 0.78) ||
-          otherChargeScores.any((score) => score < 0.78) ||
-          chargeScores.any((score) => score < 0.78) ||
-          totalScore < 0.78;
-      _receiptData!['warnings'] = _receiptData!['needs_review'] == true
-          ? List<String>.from(_receiptData!['warnings'] ?? const [])
+      data['confidence_scores'] = updatedConfidence;
+      final threshold = kReviewConfidenceThreshold;
+      data['needs_review'] =
+          updatedItemScores.any((score) => score < threshold) ||
+          otherChargeScores.any((score) => score < threshold) ||
+          chargeScores.any((score) => score < threshold) ||
+          totalScore < threshold;
+      data['warnings'] = data['needs_review'] == true
+          ? List<String>.from(data['warnings'] ?? const [])
           : <String>[];
-      if (closeEditingSection) {
-        _editingSection = null;
-      }
+      _recomputeTotals();
     });
-    HapticFeedback.mediumImpact();
   }
 
   void _addItemFromDialog(String name, String qtyText, String priceText) {
     final nameValue = name.trim();
     if (nameValue.isEmpty) return;
-
-    setState(() {
-      _itemControllers.add({
-        'name': TextEditingController(text: nameValue),
-        'qty': TextEditingController(text: qtyText),
-        'price': TextEditingController(text: priceText),
-      });
+    _itemControllers.add({
+      'name': TextEditingController(text: nameValue),
+      'qty': TextEditingController(text: qtyText),
+      'price': TextEditingController(text: priceText),
     });
-    _saveChanges(closeEditingSection: false);
+    _saveChanges();
   }
 
   void _updateItemFromDialog(
@@ -535,22 +529,49 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     if (index < 0 || index >= _itemControllers.length) return;
     final nameValue = name.trim();
     if (nameValue.isEmpty) return;
-
     final controllers = _itemControllers[index];
     controllers['name']!.text = nameValue;
     controllers['qty']!.text = qtyText;
     controllers['price']!.text = priceText;
-    _saveChanges(closeEditingSection: false);
+    _saveChanges();
   }
 
   void _deleteItemFromDialog(int index) {
     if (index < 0 || index >= _itemControllers.length) return;
-
     final removed = _itemControllers.removeAt(index);
+    // Keep receipt items aligned with the rows before re-saving.
+    final items = _receiptData?['items'];
+    if (items is List && index < items.length) items.removeAt(index);
     removed['name']?.dispose();
     removed['qty']?.dispose();
     removed['price']?.dispose();
-    _saveChanges(closeEditingSection: false);
+    _saveChanges();
+  }
+
+  // ------------------------------------------------------ picking
+
+  bool get _canOpenSettings =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
+  void _showPickError(Object error) {
+    if (!mounted) return;
+    final access = scanAccessProblemOf(error);
+    AppHaptics.error();
+    if (access != null) {
+      setState(() {
+        _error = scanAccessContentFor(
+          access,
+          canOpenSettings: _canOpenSettings,
+        );
+      });
+      return;
+    }
+    AppToast.show(
+      context,
+      message: 'bf_scan_err_unknown_msg'.tr(),
+      type: AppToastType.error,
+      haptic: false,
+    );
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -566,30 +587,25 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       final userData = userDoc.data();
       final isPremium = RevenueCatService.isUserActivePremium(userData);
 
-      if (isPremium) {
-        await _proceedWithImagePick(source);
-        return;
+      if (!isPremium) {
+        final points = (userData?['points'] as num?)?.toInt() ?? 0;
+        if (points < FeatureCosts.receiptScanPoints) {
+          await _showNoPointsDialog(FeatureCosts.receiptScanPoints);
+          return;
+        }
       }
-
-      final points = (userData?['points'] as num?)?.toInt() ?? 0;
-      if (points < FeatureCosts.receiptScanPoints) {
-        await _showNoPointsDialog(FeatureCosts.receiptScanPoints);
-        return;
-      }
-
-      await _proceedWithImagePick(source);
     } catch (e) {
-      debugPrint("Error checking points: $e");
+      debugPrint('Error checking points: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
-          ),
-          backgroundColor: context.palette.danger,
-        ),
+      AppToast.show(
+        context,
+        message: 'bf_scan_err_points_check'.tr(),
+        type: AppToastType.error,
       );
+      return;
     }
+
+    await _proceedWithImagePick(source);
   }
 
   Future<void> _proceedWithImagePick(ImageSource source) async {
@@ -599,10 +615,11 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
         imageQuality: 85,
       );
       if (pickedFile != null) {
-        _cropImage(pickedFile.path);
+        await _cropImage(pickedFile.path);
       }
     } catch (e) {
-      debugPrint("Error picking image: $e");
+      debugPrint('Error picking image: $e');
+      _showPickError(e);
     }
   }
 
@@ -616,17 +633,15 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
 
   Future<void> _watchAdForPoint() async {
     if (!RewardedAdHelper.isReady) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('fetching_an_ad_please_try_again_in_a_moment').tr(),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: context.palette.infoAccent,
-        ),
+      AppToast.show(
+        context,
+        message: 'fetching_an_ad_please_try_again_in_a_moment'.tr(),
+        type: AppToastType.info,
       );
       try {
         await RewardedAdHelper.loadAd();
       } catch (e) {
-        debugPrint("Ad failed to initialize: $e");
+        debugPrint('Ad failed to initialize: $e');
       }
       return;
     }
@@ -634,33 +649,20 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
     await RewardedAdHelper.showAdAndReward(
       onRewardEarned: () {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'you_earned_1_point_you_can_now_use_the_scanner',
-              ).tr(),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: context.palette.success,
-            ),
+          AppToast.show(
+            context,
+            message: 'you_earned_1_point_you_can_now_use_the_scanner'.tr(),
+            type: AppToastType.success,
           );
         }
       },
       onAdFailed: () {
         if (mounted) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('notice').tr(),
-              content: Text(
-                'ads_are_currently_unavailable_please_try_again_later',
-              ).tr(),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('got_it_2').tr(),
-                ),
-              ],
-            ),
+          AppToast.show(
+            context,
+            message: 'ads_are_currently_unavailable_please_try_again_later'
+                .tr(),
+            type: AppToastType.warning,
           );
         }
       },
@@ -668,13 +670,15 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   }
 
   Future<void> _cropImage(String sourcePath) async {
+    final p = context.palette;
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: sourcePath,
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Adjust Receipt',
-          toolbarColor: Colors.black,
-          toolbarWidgetColor: Colors.white,
+          toolbarTitle: 'adjust_receipt'.tr(),
+          toolbarColor: p.inverseSurface,
+          toolbarWidgetColor: p.onInverseSurface,
+          activeControlsWidgetColor: p.accent,
           initAspectRatio: CropAspectRatioPreset.original,
           lockAspectRatio: false,
         ),
@@ -685,125 +689,201 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
       ],
     );
 
-    if (croppedFile != null) {
+    if (croppedFile != null && mounted) {
       setState(() {
         _image = File(croppedFile.path);
         _receiptData = null;
       });
-      _analyzeImage();
+      await _analyzeImage();
     }
   }
 
+  // ------------------------------------------------------ reading
+
+  /// One user attempt: one request id. Retrying starts a new attempt.
   Future<void> _analyzeImage() async {
-    if (_image == null) return;
+    final image = _image;
+    if (image == null || _phase == _ScanPhase.reading) return;
+    final attempt = ++_attempt;
+    final requestId = const Uuid().v4();
 
     setState(() {
-      _isLoading = true;
-      _loadingMessageKey = 'scanning_receipt_with_ai';
+      _phase = _ScanPhase.reading;
+      _error = null;
     });
-    HapticFeedback.mediumImpact();
+    AppHaptics.light();
 
+    final appSettings = context.read<AppSettingsProvider>();
     try {
-      final appSettings = context.read<AppSettingsProvider>();
       final data = await _receiptService.scanReceiptImage(
-        _image!,
+        image,
         localeCode: appSettings.locale.languageCode,
         currencyCode: appSettings.currencyCode,
+        requestId: requestId,
       );
+      if (!mounted || attempt != _attempt) return;
 
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _receiptData = data;
-          _receiptData!['currency_code'] ??= appSettings.currencyCode;
-          _initializeControllers();
-        });
-
-        HapticFeedback.mediumImpact();
-      }
+      setState(() {
+        _receiptData = data;
+        _receiptData!['currency_code'] ??= appSettings.currencyCode;
+        final rawDate = DateTime.tryParse(data['date']?.toString() ?? '');
+        if (rawDate != null && !rawDate.isAfter(DateTime.now())) {
+          _selectedDate = rawDate;
+        }
+        _initializeControllers();
+        _phase = _ScanPhase.review;
+      });
+      AppHaptics.success();
     } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        HapticFeedback.heavyImpact();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'scan_failed'.tr(
-                namedArgs: {
-                  'error': e.toString().replaceFirst('Exception: ', ''),
-                },
-              ),
-            ),
-            backgroundColor: context.palette.dangerAccent,
-          ),
-        );
+      debugPrint('Receipt scan failed: $e');
+      if (!mounted || attempt != _attempt) return;
+      final content = scanErrorContentForError(e);
+      setState(() {
+        _phase = _ScanPhase.idle;
+        _error = content;
+      });
+      AppHaptics.error();
+      if (e is ReceiptScanException &&
+          e.failure == ReceiptScanFailure.noCredits) {
+        await _showNoPointsDialog(FeatureCosts.receiptScanPoints);
       }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.palette.surfaceMuted,
-      appBar: CustomAppHeader(
-        title: _receiptData == null
-            ? 'scan_receipt'.tr()
-            : 'scan_completed'.tr(),
-        trailing: _buildHeaderTrailing(),
+  void _cancelReading() {
+    AppHaptics.light();
+    setState(() {
+      _attempt++;
+      _phase = _ScanPhase.idle;
+    });
+  }
+
+  Future<void> _onErrorAction(ScanErrorAction action) async {
+    switch (action) {
+      case ScanErrorAction.retakePhoto:
+        await _pickImage(ImageSource.camera);
+      case ScanErrorAction.choosePhoto:
+        await _pickImage(ImageSource.gallery);
+      case ScanErrorAction.typeItIn:
+        _openManualEntry();
+      case ScanErrorAction.tryAgain:
+        if (_image == null) {
+          await _pickImage(ImageSource.camera);
+        } else {
+          await _analyzeImage();
+        }
+      case ScanErrorAction.openSettings:
+        try {
+          final opened = await launchUrl(Uri.parse('app-settings:'));
+          if (!opened) throw StateError('settings');
+        } catch (_) {
+          if (mounted) {
+            AppToast.show(
+              context,
+              message: 'bf_scan_err_camera_msg'.tr(),
+              type: AppToastType.info,
+            );
+          }
+        }
+      case ScanErrorAction.getCredits:
+        await _showNoPointsDialog(FeatureCosts.receiptScanPoints);
+    }
+  }
+
+  void _openManualEntry() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ManualEntryScreen(participants: widget.participants),
       ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 500),
-        child: _isLoading
-            ? _buildLoadingState()
-            : (_receiptData == null ? _buildEmptyState() : _buildResultState()),
-      ),
-      floatingActionButton: null,
     );
   }
 
-  Widget _buildHeaderTrailing() {
-    final canDeleteDraft = widget.billId != null;
+  // ------------------------------------------------------ build
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final Widget body;
+    PreferredSizeWidget? appBar;
+    switch (_phase) {
+      case _ScanPhase.reading:
+        body = ScanReadingView(
+          key: const ValueKey('reading'),
+          image: _image,
+          onCancel: _cancelReading,
+        );
+      case _ScanPhase.saving:
+        body = const ScanReadingView(
+          key: ValueKey('saving'),
+          titleKey: 'saving_for_later',
+          subtitleKey: 'bf_scan_saving_hint',
+          showPrivacyNote: false,
+          onCancel: null,
+        );
+      case _ScanPhase.review:
+        body = SafeArea(top: false, child: _buildResultState());
+      case _ScanPhase.idle:
+        appBar = ScanTopBar(
+          title: 'scan_receipt'.tr(),
+          trailing: [_buildHeaderTrailing(showDelete: true)],
+        );
+        body = ScanEmptyState(
+          key: const ValueKey('idle'),
+          image: _image,
+          onSnapAndSave: _handleSnapAndSave,
+          onAnalyze: _analyzeImage,
+          onTakePhoto: () => _pickImage(ImageSource.camera),
+          onChoosePhoto: () => _pickImage(ImageSource.gallery),
+          onTypeItIn: _openManualEntry,
+          errorCard: _error == null
+              ? null
+              : ScanErrorCard(content: _error!, onAction: _onErrorAction),
+        );
+    }
+
+    return Scaffold(
+      backgroundColor: p.canvas,
+      appBar: appBar,
+      body: AnimatedSwitcher(
+        duration: AppMotion.durationFor(context, AppMotion.slow),
+        child: body,
+      ),
+    );
+  }
+
+  Widget _buildHeaderTrailing({required bool showDelete}) {
+    final canDeleteDraft = showDelete && widget.billId != null;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final delete = canDeleteDraft
+        ? ScanRoundButton(
+            icon: Icons.delete_outline_rounded,
+            label: 'delete_saved_draft'.tr(),
+            color: context.palette.error,
+            onPressed: _busy ? null : _confirmDeleteSavedDraft,
+          )
+        : null;
+    if (uid == null) return delete ?? const SizedBox.shrink();
 
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .doc(uid)
           .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const SizedBox(width: 48);
-
-        final userData = snapshot.data!.data() as Map<String, dynamic>?;
-        final isPremium = RevenueCatService.isUserActivePremium(userData);
-        final badge = isPremium
+        final userData = snapshot.data?.data() as Map<String, dynamic>?;
+        final Widget? badge = !snapshot.hasData
+            ? null
+            : RevenueCatService.isUserActivePremium(userData)
             ? _buildProBadge()
-            : _buildPointsBadge(userData?['points'] ?? 0);
-
-        if (!canDeleteDraft) {
-          return badge;
-        }
-
-        return FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                onPressed: _isLoading ? null : _confirmDeleteSavedDraft,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints.tightFor(
-                  width: 40,
-                  height: 40,
-                ),
-                icon: Icon(
-                  Icons.delete_outline_rounded,
-                  color: context.palette.dangerAccent,
-                  size: 20,
-                ),
-                tooltip: 'common_delete'.tr(),
-              ),
-              badge,
-            ],
-          ),
+            : _buildPointsBadge((userData?['points'] as num?)?.toInt() ?? 0);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (delete != null) delete,
+            if (delete != null && badge != null) const SizedBox(width: 8),
+            ?badge,
+          ],
         );
       },
     );
@@ -812,192 +892,118 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen>
   Widget _buildProBadge() {
     final p = context.palette;
     return Container(
-      margin: const EdgeInsets.only(right: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [p.premium, p.premiumStrong]),
-        borderRadius: BorderRadius.circular(12),
+        color: p.premium,
+        borderRadius: AppRadii.chipRadius,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.workspace_premium, color: Colors.white, size: 16),
-          SizedBox(width: 4),
+          Icon(Icons.workspace_premium, color: p.onPremium, size: 14),
+          const SizedBox(width: 4),
           Text(
-            'pro',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+            'pro'.tr(),
+            style: AppTypography.labelSmall.copyWith(
+              color: p.onPremium,
+              fontWeight: FontWeight.w700,
             ),
-          ).tr(),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildPointsBadge(int points) {
-    return Container(
-      margin: const EdgeInsets.only(right: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.amber.shade400, Colors.orange.shade600],
+    final p = context.palette;
+    return Semantics(
+      label: '$points',
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: p.oweSoft,
+          borderRadius: AppRadii.chipRadius,
         ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.stars_rounded, color: Colors.white, size: 14),
-          const SizedBox(width: 3),
-          Text(
-            '$points',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return ScanEmptyState(
-      image: _image,
-      onSnapAndSave: _handleSnapAndSave,
-      onAnalyze: _analyzeImage,
-      onPickImage: () => _showImageSourceActionSheet(context),
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Container(
-      width: double.infinity,
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 250,
-            child: Lottie.asset('assets/animations/scan.json'),
-          ),
-          const SizedBox(height: 40),
-          FadeTransition(
-            opacity: _loadingTextController,
-            child: Text(
-              _loadingMessageKey.tr(),
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: context.palette.textPrimary,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.stars_rounded, color: p.oweInk, size: 14),
+            const SizedBox(width: 4),
+            Text(
+              '$points',
+              style: AppTypography.amountSmall.copyWith(
+                fontSize: 13,
+                color: p.oweInk,
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'pulling_the_details_from_your_receipt',
-            style: TextStyle(color: context.palette.textTertiary, fontSize: 14),
-          ).tr(),
-          const SizedBox(height: 50),
-          Lottie.asset('assets/animations/loading.json', height: 60),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildResultState() {
-    return Column(
-      children: [
-        ParticipantsReferenceList(participants: widget.participants),
-        Expanded(
-          child: ReceiptResultView(
-            receiptData: _receiptData!,
-            editingSection: _editingSection,
-            itemControllers: _itemControllers,
-            currencyCode: _receiptData!['currency_code'] ?? 'USD',
-            restaurantController: _restaurantController,
-            totalController: _totalController,
-            taxController: _taxController,
-            serviceController: _serviceController,
-            discountController: _discountController,
-            tipController: _tipController,
-            deliveryController: _deliveryController,
-            onEditingSectionChanged: (section) {
-              if (_editingSection != null &&
-                  _editingSection != section &&
-                  section != 'items') {
-                _saveChanges(closeEditingSection: false);
-              }
-              setState(() => _editingSection = section);
-            },
-            onSave: _saveChanges,
-            onAddItem: _addItemFromDialog,
-            onUpdateItem: _updateItemFromDialog,
-            onDeleteItem: _deleteItemFromDialog,
-            selectedDate: _selectedDate,
-            onDateChanged: (date) {
-              setState(() => _selectedDate = date);
-              _saveChanges(closeEditingSection: false);
-            },
+    final canDeleteDraft = widget.billId != null;
+    return ReceiptResultView(
+      receiptData: _receiptData!,
+      itemControllers: _itemControllers,
+      currencyCode: _currency,
+      restaurantController: _restaurantController,
+      taxController: _taxController,
+      serviceController: _serviceController,
+      discountController: _discountController,
+      tipController: _tipController,
+      deliveryController: _deliveryController,
+      onSave: _saveChanges,
+      onAddItem: _addItemFromDialog,
+      onUpdateItem: _updateItemFromDialog,
+      onDeleteItem: _deleteItemFromDialog,
+      selectedDate: _selectedDate,
+      onDateChanged: (date) => setState(() => _selectedDate = date),
+      image: _image,
+      participants: widget.participants,
+      headerTrailing: [
+        if (canDeleteDraft)
+          ScanRoundButton(
+            icon: Icons.delete_outline_rounded,
+            label: 'delete_saved_draft'.tr(),
+            color: context.palette.error,
+            onPressed: _busy ? null : _confirmDeleteSavedDraft,
           ),
-        ),
-        _buildBottomAction(),
       ],
-    );
-  }
-
-  void _showImageSourceActionSheet(BuildContext context) {
-    PremiumBottomSheet.show(
-      context: context,
-      child: ImageSourceSheet(onPickImage: _pickImage),
+      bottom: _buildBottomAction(),
     );
   }
 
   Widget _buildBottomAction() {
-    final p = context.palette;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      decoration: BoxDecoration(
-        color: p.surface,
-        boxShadow: [
-          BoxShadow(
-            color: p.shadow.withValues(alpha: 0.05),
-            blurRadius: 30,
-            offset: const Offset(0, -10),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              _saveChanges();
-              _showAssignmentMethodSheet();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00B365),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              'scan_next_step'.tr(),
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
+      child: SizedBox(
+        width: double.infinity,
+        child: FilledButton(
+          key: const ValueKey('scan-review-cta'),
+          onPressed: () {
+            _saveChanges();
+            final items = _receiptData?['items'];
+            if (items is! List || items.isEmpty) {
+              AppToast.show(
+                context,
+                message: 'add_at_least_one_item'.tr(),
+                type: AppToastType.error,
+              );
+              return;
+            }
+            AppHaptics.selection();
+            _showAssignmentMethodSheet();
+          },
+          child: Text('bf_scan_review_cta'.tr()),
         ),
       ),
     );
   }
 
   void _showAssignmentMethodSheet() {
+    // Assignment (by hand or by voice) is chosen on the split screen.
     _goToManualAssignment();
   }
 

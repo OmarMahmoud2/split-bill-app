@@ -42,7 +42,7 @@ class ImageSourceSheet extends StatelessWidget {
               context,
               icon: Icons.photo_library_rounded,
               label: 'gallery'.tr(),
-              color: const Color(0xFF007AFF),
+              color: context.palette.accent,
               onTap: () {
                 Navigator.pop(context);
                 onPickImage(ImageSource.gallery);
@@ -53,7 +53,7 @@ class ImageSourceSheet extends StatelessWidget {
               context,
               icon: Icons.camera_alt_rounded,
               label: 'camera'.tr(),
-              color: context.palette.primaryStrong,
+              color: context.palette.textPrimary,
               onTap: () {
                 Navigator.pop(context);
                 onPickImage(ImageSource.camera);

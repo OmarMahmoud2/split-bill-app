@@ -21,18 +21,12 @@ class ParticipantsReferenceList extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+      margin: const EdgeInsetsDirectional.fromSTEB(0, 12, 0, 0),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       decoration: BoxDecoration(
         color: palette.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: palette.shadow.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: palette.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +84,7 @@ class ParticipantsReferenceList extends StatelessWidget {
                         backgroundImage: _getAvatarImage(photoUrl),
                         child: (photoUrl == null || photoUrl.isEmpty)
                             ? Text(
-                                name[0].toUpperCase(),
+                                name.isEmpty ? '?' : name[0].toUpperCase(),
                                 style: TextStyle(
                                   color: palette.textPrimary,
                                   fontWeight: FontWeight.bold,

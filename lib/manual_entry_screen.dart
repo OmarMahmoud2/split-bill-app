@@ -1,16 +1,72 @@
-import 'package:flutter/material.dart';
-import 'widgets/custom_app_header.dart';
-import 'package:flutter/services.dart';
-import 'package:split_bill_app/split_bill_screen.dart';
-import 'package:lottie/lottie.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:split_bill_app/screens/scan_receipt/amount_input.dart';
+import 'package:split_bill_app/screens/scan_receipt/widgets/scan_top_bar.dart';
+import 'package:split_bill_app/split_bill_screen.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/money_text.dart';
 
-// import 'package:flutter_contacts/flutter_contacts.dart';
+/// A manual line, in minor units.
+class ManualItem {
+  const ManualItem({
+    required this.name,
+    required this.unitPriceMinor,
+    this.qty = 1,
+  });
 
+  final String name;
+  final int unitPriceMinor;
+  final int qty;
+
+  int get lineTotalMinor => unitPriceMinor * qty;
+}
+
+/// The `receiptData` map SplitBillScreen expects from manual entry.
+///
+/// With no [items], the typed [amountMinor] becomes one item named after
+/// [whatFor]. Amounts are stored as major-unit doubles (legacy shape), but
+/// derived from minor units so they never drift.
+Map<String, dynamic> buildManualReceiptData({
+  required String whatFor,
+  required List<ManualItem> items,
+  required int? amountMinor,
+  required DateTime date,
+  required String currencyCode,
+}) {
+  final code = normalizeCurrency(currencyCode);
+  final lines = items.isNotEmpty
+      ? items
+      : [
+          if (amountMinor != null && amountMinor > 0)
+            ManualItem(name: whatFor, unitPriceMinor: amountMinor),
+        ];
+  final totalMinor = lines.fold<int>(0, (s, i) => s + i.lineTotalMinor);
+  return {
+    'storeName': whatFor,
+    'total': fromMinorUnits(totalMinor, code),
+    'items': [
+      for (final i in lines)
+        {
+          'name': i.name,
+          'price': fromMinorUnits(i.unitPriceMinor, code),
+          'qty': i.qty,
+        },
+    ],
+    'date': date.toString(),
+    'taxAmount': 0.0,
+    'serviceChargeAmount': 0.0,
+    'discountAmount': 0.0,
+    'currencyCode': currencyCode,
+  };
+}
+
+/// "New expense": an amount (or a list of items), what it was for and the
+/// date, then on to SplitBillScreen to pick people and the split.
 class ManualEntryScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? participants;
   const ManualEntryScreen({super.key, this.participants});
@@ -20,23 +76,28 @@ class ManualEntryScreen extends StatefulWidget {
 }
 
 class _ManualEntryScreenState extends State<ManualEntryScreen> {
+  final _amountController = TextEditingController();
   final _storeController = TextEditingController();
   final _itemController = TextEditingController();
-  final _qtyController = TextEditingController(text: "1");
+  final _qtyController = TextEditingController(text: '1');
   final _priceController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   DateTime _selectedDate = DateTime.now();
 
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  final List<Map<String, dynamic>> _items = [];
+  final List<ManualItem> _items = [];
 
-  // Focus Nodes
   final _itemFocusNode = FocusNode();
   final _qtyFocusNode = FocusNode();
   final _priceFocusNode = FocusNode();
 
+  String? _amountError;
+  String? _itemError;
+  String? _qtyError;
+  String? _priceError;
+
   @override
   void dispose() {
+    _amountController.dispose();
     _storeController.dispose();
     _itemController.dispose();
     _qtyController.dispose();
@@ -47,100 +108,83 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     super.dispose();
   }
 
+  String get _currency => context.read<AppSettingsProvider>().currencyCode;
+
+  int get _itemsTotalMinor =>
+      _items.fold<int>(0, (s, i) => s + i.lineTotalMinor);
+
   void _addItem() {
-    String name = _itemController.text.trim();
-    String priceText = _priceController.text.trim();
-    String qtyText = _qtyController.text.trim();
-
-    if (name.isEmpty) {
-      HapticFeedback.vibrate();
-      return;
-    }
-
-    double? price = double.tryParse(priceText);
-    int qty = int.tryParse(qtyText) ?? 1;
-
-    if (price == null || qty <= 0) {
-      HapticFeedback.vibrate();
-      return;
-    }
-
-    HapticFeedback.lightImpact();
-
-    final newItem = {'name': name, 'price': price, 'qty': qty};
+    final currency = _currency;
+    final name = _itemController.text.trim();
+    final qty = parseQuantityInput(_qtyController.text);
+    final price = parseMinorInput(_priceController.text, currency);
 
     setState(() {
-      _items.insert(0, newItem);
+      _itemError = name.isEmpty ? 'bf_scan_item_name_required'.tr() : null;
+      _qtyError = qty == null ? 'bf_scan_qty_invalid'.tr() : null;
+      _priceError = price == null ? 'bf_scan_amount_invalid'.tr() : null;
     });
+    if (name.isEmpty || qty == null || price == null) {
+      AppHaptics.error();
+      return;
+    }
 
-    _listKey.currentState?.insertItem(
-      0,
-      duration: const Duration(milliseconds: 400),
-    );
-
+    AppHaptics.light();
+    setState(() {
+      _items.add(ManualItem(name: name, unitPriceMinor: price, qty: qty));
+      _amountError = null;
+    });
     _itemController.clear();
     _priceController.clear();
-    _qtyController.text = "1"; // Reset to 1
+    _qtyController.text = '1';
     _itemFocusNode.requestFocus();
   }
 
   void _removeItem(int index) {
-    HapticFeedback.mediumImpact();
+    AppHaptics.light();
+    setState(() => _items.removeAt(index));
+  }
 
-    final removedItem = _items[index];
-
-    setState(() {
-      _items.removeAt(index);
-    });
-
-    // We pass a key to the builder to ensure it doesn't get confused
-    _listKey.currentState?.removeItem(
-      index,
-      (context, animation) =>
-          _buildItemTile(removedItem, animation, index, isRemoving: true),
-      duration: const Duration(milliseconds: 300),
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
     );
+    if (picked != null) {
+      AppHaptics.selection();
+      setState(() => _selectedDate = picked);
+    }
   }
 
   void _finish() {
     if (_formKey.currentState?.validate() != true) {
-      HapticFeedback.heavyImpact();
+      AppHaptics.error();
       return;
     }
-
-    if (_items.isEmpty) {
-      HapticFeedback.heavyImpact();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('add_at_least_one_item').tr(),
-          backgroundColor: context.palette.danger,
-        ),
+    final currencyCode = _currency;
+    final amountMinor = _items.isEmpty
+        ? parseMinorInput(_amountController.text, currencyCode)
+        : null;
+    if (_items.isEmpty && (amountMinor == null || amountMinor <= 0)) {
+      setState(() => _amountError = 'bf_scan_manual_need_amount'.tr());
+      AppToast.show(
+        context,
+        message: 'bf_scan_manual_need_amount'.tr(),
+        type: AppToastType.error,
       );
       return;
     }
 
-    HapticFeedback.selectionClick();
-
-    // Calculate total logic
-    double total = _items.fold(
-      0,
-      (sum, item) => sum + ((item['price'] as double) * (item['qty'] as int)),
+    AppHaptics.selection();
+    final manualReceiptData = buildManualReceiptData(
+      whatFor: _storeController.text.trim(),
+      items: _items,
+      amountMinor: amountMinor,
+      date: _selectedDate,
+      currencyCode: currencyCode,
     );
-
-    final currencyCode = Provider.of<AppSettingsProvider>(
-      context,
-      listen: false,
-    ).currencyCode;
-    final manualReceiptData = {
-      'storeName': _storeController.text.trim(),
-      'total': total,
-      'items': List.from(_items),
-      'date': _selectedDate.toString(),
-      'taxAmount': 0.0,
-      'serviceChargeAmount': 0.0,
-      'discountAmount': 0.0,
-      'currencyCode': currencyCode,
-    };
 
     Navigator.push(
       context,
@@ -153,586 +197,343 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     );
   }
 
-  double get _currentTotal => _items.fold(
-    0,
-    (sum, item) => sum + ((item['price'] as double) * (item['qty'] as int)),
-  );
+  String _dateText() {
+    try {
+      return DateFormat.yMMMd().format(_selectedDate);
+    } catch (_) {
+      return _selectedDate.toIso8601String().substring(0, 10);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final fieldFill = colorScheme.surfaceContainerHighest.withValues(
-      alpha: 0.7,
-    );
+    final p = context.palette;
     final currencyCode = context.watch<AppSettingsProvider>().currencyCode;
-    final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: CustomAppHeader(
-        title: 'enter_manually'.tr(),
-        infoMessage: 'manual_entry_quick_tips'.tr(),
-      ),
+      backgroundColor: p.canvas,
+      appBar: ScanTopBar(title: 'bf_scan_manual_title'.tr(), close: true),
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: SafeArea(
-          child: Column(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 24),
             children: [
-              // 1. INPUT FORM CARD
-              Container(
-                margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(
-                    color: colorScheme.outline.withValues(alpha: 0.12),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: palette.shadow.withValues(
-                        alpha: theme.brightness == Brightness.dark
-                            ? 0.18
-                            : 0.08,
-                      ),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+              _buildAmountHero(p, currencyCode),
+              const SizedBox(height: AppSpacing.xxl),
+              _label(p, 'bf_scan_manual_what_for'.tr()),
+              TextFormField(
+                controller: _storeController,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  hintText: 'bf_scan_manual_what_for_hint'.tr(),
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
                 ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: _storeController,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'receipt_store_name'.tr(),
-                          prefixIcon: Icon(
-                            Icons.storefront_rounded,
-                            color: colorScheme.primary,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: fieldFill,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                        ),
-                        validator: (val) => (val == null || val.trim().isEmpty)
-                            ? 'store_name_required'.tr()
-                            : null,
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'bf_scan_manual_what_for_required'.tr()
+                    : null,
+              ),
+              const SizedBox(height: 14),
+              _label(p, 'bf_scan_manual_date'.tr()),
+              Semantics(
+                button: true,
+                label: '${'bf_scan_manual_date'.tr()}: ${_dateText()}',
+                excludeSemantics: true,
+                child: Material(
+                  color: p.surface,
+                  shape: AppRadii.rowShape(p.border),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: _pickDate,
+                    child: Container(
+                      height: 48,
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: 14,
                       ),
-                      const SizedBox(height: 16),
-                      // DATE PICKER
-                      InkWell(
-                        onTap: () async {
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: _selectedDate,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime.now(),
-                            builder: (context, child) {
-                              return Theme(
-                                data: Theme.of(context).copyWith(
-                                  colorScheme: Theme.of(context).colorScheme
-                                      .copyWith(
-                                        primary: Theme.of(context)
-                                            .colorScheme
-                                            .primary, // header background color
-                                        onPrimary: palette
-                                            .onPrimary, // header text color
-                                        onSurface: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface, // body text color
-                                      ),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          );
-                          if (picked != null) {
-                            setState(() {
-                              _selectedDate = picked;
-                            });
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: fieldFill,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                color: colorScheme.primary,
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Text(
-                                  DateFormat.yMMMd().format(_selectedDate),
-                                  style: theme.textTheme.titleMedium,
-                                ),
-                              ),
-                              Icon(
-                                Icons.edit_calendar_rounded,
-                                color: theme.hintColor,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          // ITEM NAME
                           Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              controller: _itemController,
-                              focusNode: _itemFocusNode,
-                              textCapitalization: TextCapitalization.sentences,
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
+                            child: Text(
+                              _dateText(),
+                              style: AppTypography.bodyLarge.copyWith(
+                                color: p.textPrimary,
                               ),
-                              decoration: InputDecoration(
-                                labelText: 'receipt_item'.tr(),
-                                hintText: 'burger'.tr(),
-                                prefixIcon: const Icon(
-                                  Icons.fastfood_rounded,
-                                  size: 18,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor: fieldFill,
-                              ),
-                              onFieldSubmitted: (_) => FocusScope.of(
-                                context,
-                              ).requestFocus(_qtyFocusNode),
                             ),
                           ),
-                          const SizedBox(width: 10),
-
-                          // QTY
-                          Expanded(
-                            flex: 1, // Small width
-                            child: TextFormField(
-                              controller: _qtyController,
-                              focusNode: _qtyFocusNode,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'receipt_qty'.tr(),
-                                hintText: '1'.tr(),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor: fieldFill,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 16,
-                                ),
-                              ),
-                              onFieldSubmitted: (_) => FocusScope.of(
-                                context,
-                              ).requestFocus(_priceFocusNode),
-                            ),
-                          ),
-
-                          const SizedBox(width: 10),
-
-                          // PRICE
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              controller: _priceController,
-                              focusNode: _priceFocusNode,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                  ),
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'receipt_price'.tr(),
-                                prefixIcon: Container(
-                                  width: 45,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    currencyCode,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: colorScheme.primary,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor: fieldFill,
-                              ),
-                              onFieldSubmitted: (_) => _addItem(),
-                            ),
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            size: 18,
+                            color: p.textSecondary,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _addItem,
-                          icon: const Icon(Icons.add_circle_outline_rounded),
-                          label: Text(
-                            'add_to_list',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ).tr(),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-
-              // 2. LIST SECTION
-              Expanded(
-                child: Stack(
-                  children: [
-                    if (_items.isEmpty)
-                      Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Lottie.asset(
-                              'assets/animations/empty.json',
-                              height: 150,
-                              errorBuilder: (c, e, s) => Icon(
-                                Icons.receipt_long_rounded,
-                                size: 80,
-                                color: colorScheme.outline.withValues(
-                                  alpha: 0.4,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'your_list_is_empty',
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: colorScheme.onSurface.withValues(
-                                  alpha: 0.54,
-                                ),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ).tr(),
-                          ],
-                        ),
-                      ),
-
-                    AnimatedList(
-                      key: _listKey,
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                      initialItemCount: _items.length,
-                      itemBuilder: (context, index, animation) {
-                        // Safety check for index
-                        if (index >= _items.length) {
-                          // This can happen during removal animation if not careful,
-                          // but since we passed removedItem to the builder manually in _removeItem,
-                          // we should be fine. However, initially _items has the data.
-                          return const SizedBox();
-                        }
-                        return _buildItemTile(_items[index], animation, index);
-                      },
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: AppSpacing.xxl),
+              _buildItemsSection(p, currencyCode),
             ],
           ),
         ),
       ),
-
-      // BOTTOM SUMMARY BAR
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          boxShadow: [
-            BoxShadow(
-              color: palette.shadow.withValues(
-                alpha: theme.brightness == Brightness.dark ? 0.18 : 0.05,
-              ),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-          border: Border.all(
-            color: colorScheme.outline.withValues(alpha: 0.12),
-          ),
-        ),
-        child: SafeArea(
-          child: Row(
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'total_estimate',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onSurface.withValues(alpha: 0.54),
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                    ),
-                  ).tr(),
-                  const SizedBox(height: 4),
-                  Text(
-                    CurrencyUtils.format(
-                      _currentTotal,
-                      currencyCode: currencyCode,
-                    ),
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: colorScheme.primary,
-                      height: 1.0,
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: _finish,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: palette.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 18,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 8,
-                  shadowColor: colorScheme.primary.withValues(alpha: 0.4),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      'common_continue',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ).tr(),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_rounded, size: 20),
-                  ],
-                ),
-              ),
-            ],
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
+          child: FilledButton(
+            key: const ValueKey('manual-continue'),
+            onPressed: _finish,
+            child: Text('common_continue'.tr()),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildItemTile(
-    Map<String, dynamic> item,
-    Animation<double> animation,
-    int index, {
-    bool isRemoving = false,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final fieldFill = colorScheme.surfaceContainerHighest.withValues(
-      alpha: 0.7,
-    );
-    double lineTotal = (item['price'] as double) * (item['qty'] as int);
-    final currencyCode = context.read<AppSettingsProvider>().currencyCode;
-    final palette = context.palette;
+  Widget _label(AppPalette p, String text) => Padding(
+    padding: const EdgeInsetsDirectional.only(bottom: 6),
+    child: Text(
+      text,
+      style: AppTypography.labelMedium.copyWith(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: p.textPrimary,
+      ),
+    ),
+  );
 
-    return SizeTransition(
-      sizeFactor: animation,
-      child: FadeTransition(
-        opacity: animation,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: Dismissible(
-            key: UniqueKey(), // Ensure unique key for each item
-            direction: DismissDirection.endToStart,
-            onDismissed: (_) {
-              if (!isRemoving) {
-                _removeItem(index);
-              }
-            },
-            background: Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 24),
-              decoration: BoxDecoration(
-                color: palette.dangerAccent.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                Icons.delete_forever_rounded,
-                color: palette.dangerAccent,
-                size: 28,
-              ),
+  Widget _buildAmountHero(AppPalette p, String currencyCode) {
+    final hasItems = _items.isNotEmpty;
+    final decimals = currencyDecimals(currencyCode);
+    return Column(
+      children: [
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          'bf_scan_manual_amount'.tr(),
+          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+        ),
+        const SizedBox(height: 6),
+        if (hasItems)
+          MoneyText(
+            key: const ValueKey('manual-amount-total'),
+            minor: _itemsTotalMinor,
+            currency: currencyCode,
+            tone: MoneyTone.neutral,
+            size: MoneySize.hero,
+            animate: true,
+            animateFromZero: false,
+          )
+        else
+          TextField(
+            key: const ValueKey('manual-amount-field'),
+            controller: _amountController,
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.numberWithOptions(
+              decimal: decimals > 0,
             ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: colorScheme.outline.withValues(alpha: 0.1),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: palette.shadow.withValues(
-                      alpha: theme.brightness == Brightness.dark ? 0.14 : 0.05,
-                    ),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+            style: AppTypography.amountHero.copyWith(color: p.textPrimary),
+            onChanged: (_) {
+              if (_amountError != null) setState(() => _amountError = null);
+            },
+            decoration: InputDecoration(
+              filled: false,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+              hintText: formatMoneyMinor(0, currencyCode),
+              hintStyle: AppTypography.amountHero.copyWith(
+                color: p.textDisabled,
               ),
-              child: Row(
-                children: [
-                  // Animated Icon
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: palette.warning.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: Lottie.asset(
-                        'assets/animations/food.json',
-                        fit: BoxFit.cover,
-                        errorBuilder: (c, e, s) =>
-                            Icon(Icons.fastfood, color: palette.warning),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-
-                  // Details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item['name'],
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: fieldFill,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'quantity_times'.tr(
-                                  namedArgs: {'qty': item['qty'].toString()},
-                                ),
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onSurface.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'unit_price_at'.tr(
-                                namedArgs: {
-                                  'price': CurrencyUtils.format(
-                                    (item['price'] as num).toDouble(),
-                                    currencyCode: currencyCode,
-                                  ),
-                                },
-                              ),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurface.withValues(
-                                  alpha: 0.58,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Price
-                  Text(
-                    CurrencyUtils.format(lineTotal, currencyCode: currencyCode),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Delete Button (only if not already removing)
-                  if (!isRemoving)
-                    IconButton(
-                      icon: Icon(
-                        Icons.remove_circle_outline_rounded,
-                        size: 20,
-                        color: colorScheme.onSurface.withValues(alpha: 0.32),
-                      ),
-                      onPressed: () => _removeItem(index),
-                      splashRadius: 20,
-                    ),
-                ],
-              ),
+              errorText: _amountError,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+        const SizedBox(height: 6),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: p.surfaceVariant,
+            borderRadius: AppRadii.chipRadius,
+          ),
+          child: Text(
+            hasItems
+                ? '$currencyCode · ${'bf_scan_manual_amount_from_items'.tr()}'
+                : currencyCode,
+            style: AppTypography.labelMedium.copyWith(
+              fontSize: 13,
+              color: p.textPrimary,
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildItemsSection(AppPalette p, String currencyCode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _label(p, 'bf_scan_manual_items'.tr()),
+        Text(
+          'bf_scan_manual_items_hint'.tr(),
+          style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: p.surface,
+            borderRadius: AppRadii.cardRadius,
+            border: Border.all(color: p.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < _items.length; i++)
+                StaggeredEntrance(
+                  key: ObjectKey(_items[i]),
+                  child: _buildItemRow(p, i, currencyCode),
+                ),
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(
+                  16,
+                  _items.isEmpty ? 16 : 12,
+                  16,
+                  16,
+                ),
+                child: _buildAddRow(p, currencyCode),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItemRow(AppPalette p, int index, String currencyCode) {
+    final item = _items[index];
+    return Container(
+      decoration: BoxDecoration(
+        border: index == 0
+            ? null
+            : Border(top: BorderSide(color: p.borderSubtle)),
       ),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 4, 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 30,
+            child: Text(
+              '${item.qty}×',
+              style: AppTypography.amountSmall.copyWith(
+                fontSize: 13,
+                color: p.textSecondary,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              item.name,
+              style: AppTypography.bodyLarge.copyWith(
+                fontSize: 15,
+                color: p.textPrimary,
+              ),
+            ),
+          ),
+          MoneyText(
+            minor: item.lineTotalMinor,
+            currency: currencyCode,
+            tone: MoneyTone.neutral,
+            showSymbol: false,
+            style: const TextStyle(fontSize: 15),
+          ),
+          IconButton(
+            onPressed: () => _removeItem(index),
+            tooltip: 'bf_scan_manual_remove_item'.tr(
+              namedArgs: {'name': item.name},
+            ),
+            constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+            icon: Icon(
+              Icons.remove_circle_outline_rounded,
+              size: 20,
+              color: p.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddRow(AppPalette p, String currencyCode) {
+    final decimals = currencyDecimals(currencyCode);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _itemController,
+                focusNode: _itemFocusNode,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: 'receipt_item'.tr(),
+                  errorText: _itemError,
+                ),
+                onSubmitted: (_) => _qtyFocusNode.requestFocus(),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            SizedBox(
+              width: 64,
+              child: TextField(
+                controller: _qtyController,
+                focusNode: _qtyFocusNode,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: 'receipt_qty'.tr(),
+                  errorText: _qtyError,
+                ),
+                onSubmitted: (_) => _priceFocusNode.requestFocus(),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              flex: 2,
+              child: TextField(
+                controller: _priceController,
+                focusNode: _priceFocusNode,
+                keyboardType: TextInputType.numberWithOptions(
+                  decimal: decimals > 0,
+                ),
+                textAlign: TextAlign.end,
+                textInputAction: TextInputAction.done,
+                decoration: InputDecoration(
+                  labelText: 'receipt_price'.tr(),
+                  hintText: minorToInputText(0, currencyCode),
+                  errorText: _priceError,
+                ),
+                onSubmitted: (_) => _addItem(),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.md),
+        OutlinedButton.icon(
+          onPressed: _addItem,
+          icon: Icon(Icons.add_rounded, size: 18, color: p.accent),
+          label: Text('add_to_list'.tr()),
+        ),
+      ],
     );
   }
 }

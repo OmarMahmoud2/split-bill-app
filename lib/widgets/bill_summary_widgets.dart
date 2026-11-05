@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/domain/money.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
 
+/// Major-unit double from older screens -> exact minor units.
+int _minor(double amount, String currency) =>
+    toMinorUnits(amount, normalizeCurrency(currency));
+
+/// A label / amount row of the summary. Amounts use the currency's real
+/// decimals (never one decimal) in tabular Inter Tight.
 class BillSummaryRow extends StatelessWidget {
   final String label;
   final double amount;
@@ -24,29 +31,26 @@ class BillSummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final weight = isBold ? FontWeight.w600 : FontWeight.w400;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: isPrimary ? p.textStrong : p.textMedium,
+        Expanded(
+          child: Text(
+            label,
+            style: AppTypography.bodyMedium.copyWith(
+              fontSize: fontSize,
+              fontWeight: weight,
+              color: isPrimary ? p.textPrimary : p.textSecondary,
+            ),
           ),
         ),
+        const SizedBox(width: AppSpacing.md),
         Text(
-          CurrencyUtils.format(
-            amount,
-            currencyCode: currency,
-            decimalDigits: 1,
-          ),
-          style: TextStyle(
+          formatMoneyMinor(_minor(amount, currency), currency),
+          style: AppTypography.amountSmall.copyWith(
             fontSize: fontSize,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: isPrimary
-                ? Theme.of(context).colorScheme.primary
-                : p.textStrong,
+            fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
+            color: isPrimary ? p.accent : p.textPrimary,
           ),
         ),
       ],
@@ -54,6 +58,7 @@ class BillSummaryRow extends StatelessWidget {
   }
 }
 
+/// A participant's share on the summary screen: avatar, name, amount.
 class ParticipantShareCard extends StatelessWidget {
   final Map<String, dynamic> participant;
   final double share;
@@ -77,38 +82,45 @@ class ParticipantShareCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final name = participant['name']?.toString() ?? '';
+    final id = participant['id']?.toString() ?? name;
+    final image = getAvatarImage(participant['photoUrl']?.toString());
+    final initial = name.isEmpty
+        ? '?'
+        : String.fromCharCodes(name.runes.take(1)).toUpperCase();
     return Material(
       color: p.surface,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: AppRadii.cardRadius,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadii.cardRadius,
         child: Container(
-          padding: const EdgeInsets.all(16),
+          constraints: const BoxConstraints(minHeight: 64),
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: p.textTertiary.withValues(alpha: 0.1)),
+            borderRadius: AppRadii.cardRadius,
+            border: Border.all(color: p.hairline),
           ),
           child: Row(
             children: [
               CircleAvatar(
-                radius: 26,
-                backgroundColor: participant['color'] ?? Colors.blue,
-                backgroundImage: getAvatarImage(participant['photoUrl']),
-                child:
-                    (getAvatarImage(participant['photoUrl']) == null &&
-                        (participant['name'] as String).isNotEmpty)
+                radius: 18,
+                backgroundColor: p.avatarTintFor(id),
+                backgroundImage: image,
+                child: image == null
                     ? Text(
-                        participant['name'][0],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                        initial,
+                        style: AppTypography.labelMedium.copyWith(
+                          color: p.textPrimary,
+                          fontWeight: FontWeight.w600,
                         ),
                       )
                     : null,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,41 +129,42 @@ class ParticipantShareCard extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            participant['name'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                            name,
+                            style: AppTypography.titleSmall.copyWith(
+                              color: p.textPrimary,
+                              fontWeight: FontWeight.w600,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (isWinner) ...[
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.sm),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: p.dangerAccent,
-                              borderRadius: BorderRadius.circular(4),
+                              color: p.oweSoft,
+                              borderRadius: AppRadii.chipRadius,
                             ),
                             child: Text(
-                              'big_loser',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                              'big_loser'.tr(),
+                              style: AppTypography.labelSmall.copyWith(
+                                color: p.oweInk,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ).tr(),
+                            ),
                           ),
                         ],
                       ],
                     ),
                     Text(
-                      'view_details',
-                      style: TextStyle(fontSize: 12, color: p.textTertiary),
-                    ).tr(),
+                      'view_details'.tr(),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: p.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -159,46 +172,37 @@ class ParticipantShareCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    CurrencyUtils.format(
-                      share,
-                      currencyCode: currency,
-                      decimalDigits: 1,
-                    ),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    formatMoneyMinor(_minor(share, currency), currency),
+                    style: AppTypography.amount.copyWith(color: p.textPrimary),
                   ),
                   if (onEdit != null)
-                    GestureDetector(
+                    InkWell(
                       onTap: onEdit,
-                      behavior: HitTestBehavior.opaque,
+                      borderRadius: AppRadii.chipRadius,
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.xs,
+                          horizontal: AppSpacing.xs,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.edit_rounded,
-                              size: 13,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(width: 4),
+                            Icon(Icons.edit_rounded, size: 13, color: p.accent),
+                            const SizedBox(width: AppSpacing.xs),
                             Text(
-                              'common_edit',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.primary,
+                              'common_edit'.tr(),
+                              style: AppTypography.labelSmall.copyWith(
+                                color: p.accent,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ).tr(),
+                            ),
                           ],
                         ),
                       ),
                     ),
                 ],
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,

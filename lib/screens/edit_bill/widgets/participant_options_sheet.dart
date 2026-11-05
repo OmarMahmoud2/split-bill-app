@@ -1,170 +1,160 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/screens/edit_bill/widgets/participant_list.dart';
+import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
+/// Actions for one person on the bill: mark paid / not paid, remove.
+/// The host (who paid the bill) cannot be removed.
 class ParticipantOptionsSheet extends StatelessWidget {
-  final Map<String, dynamic> participant;
-  final VoidCallback onTogglePaid;
-  final VoidCallback onRemove;
-
   const ParticipantOptionsSheet({
     super.key,
     required this.participant,
+    required this.isPaid,
+    required this.canRemove,
     required this.onTogglePaid,
     required this.onRemove,
   });
 
-  static void show(
+  final BillParticipantInfo participant;
+  final bool isPaid;
+  final bool canRemove;
+  final VoidCallback onTogglePaid;
+  final VoidCallback onRemove;
+
+  static Future<void> show(
     BuildContext context, {
-    required Map<String, dynamic> participant,
+    required BillParticipantInfo participant,
+    required bool isPaid,
+    required bool canRemove,
     required VoidCallback onTogglePaid,
     required VoidCallback onRemove,
-  }) {
-    PremiumBottomSheet.show(
+  }) => PremiumBottomSheet.show<void>(
+    context: context,
+    child: ParticipantOptionsSheet(
+      participant: participant,
+      isPaid: isPaid,
+      canRemove: canRemove,
+      onTogglePaid: onTogglePaid,
+      onRemove: onRemove,
+    ),
+  );
+
+  Future<void> _confirmRemove(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final ok = await showDialog<bool>(
       context: context,
-      child: ParticipantOptionsSheet(
-        participant: participant,
-        onTogglePaid: onTogglePaid,
-        onRemove: onRemove,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          'bf_edit_remove_person_title'.tr(
+            namedArgs: {'name': participant.name},
+          ),
+        ),
+        content: Text('bf_edit_remove_person_body'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('common_cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text('common_remove'.tr()),
+          ),
+        ],
       ),
     );
+    if (ok == true) {
+      AppHaptics.warning();
+      navigator.pop();
+      onRemove();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final bool isHost = participant['isHost'] == true;
-    final String status = participant['status'] ?? 'PENDING';
-    final palette = context.palette;
-
+    final p = context.palette;
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          participant['name'] ?? "Participant",
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.6,
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        _buildActionItem(
-          context,
-          icon: status == 'PAID'
-              ? Icons.undo_rounded
-              : Icons.check_circle_rounded,
-          color: status == 'PAID' ? palette.warning : palette.success,
-          label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
-          onTap: () {
-            Navigator.pop(context);
-            onTogglePaid();
-          },
-        ),
-
-        if (!isHost) ...[
-          const SizedBox(height: 12),
-          _buildActionItem(
-            context,
-            icon: Icons.person_remove_rounded,
-            color: palette.dangerAccent,
-            label: "Remove from Bill",
-            onTap: () {
-              Navigator.pop(context);
-              _confirmRemove(context, participant, onRemove);
-            },
-          ),
-        ],
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildActionItem(
-    BuildContext context, {
-    required IconData icon,
-    required Color color,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: color.withValues(alpha: 0.15)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon, color: color, size: 22),
+        Row(
+          children: [
+            EditAvatar(
+              id: participant.id,
+              name: participant.name,
+              photoUrl: participant.photoUrl,
+              size: 44,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    participant.name,
+                    style: AppTypography.headlineSmall.copyWith(
+                      color: p.textPrimary,
+                    ),
+                  ),
+                  if ((participant.phoneNumber ?? '').isNotEmpty)
+                    Text(
+                      participant.phoneNumber!,
+                      textDirection: TextDirection.ltr,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: p.textSecondary,
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  label,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
+            ),
+            EditStatusChip(paid: isPaid),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        EditCard(
+          children: [
+            ListTile(
+              minTileHeight: 56,
+              leading: Icon(
+                isPaid ? Icons.undo_rounded : Icons.check_circle_outline,
+                color: p.textPrimary,
+              ),
+              title: Text(
+                (isPaid ? 'bf_edit_mark_not_paid' : 'bf_edit_mark_paid').tr(),
+                style: AppTypography.titleMedium.copyWith(color: p.textPrimary),
+              ),
+              onTap: () {
+                AppHaptics.selection();
+                Navigator.of(context).pop();
+                onTogglePaid();
+              },
+            ),
+            if (canRemove)
+              ListTile(
+                minTileHeight: 56,
+                leading: Icon(
+                  Icons.person_remove_outlined,
+                  color: p.textPrimary,
+                ),
+                title: Text(
+                  'bf_edit_remove_person'.tr(),
+                  style: AppTypography.titleMedium.copyWith(
+                    color: p.textPrimary,
                   ),
                 ),
+                onTap: () => _confirmRemove(context),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: color.withValues(alpha: 0.4),
-              ),
-            ],
-          ),
+          ],
         ),
-      ),
-    );
-  }
-
-  void _confirmRemove(
-    BuildContext context,
-    Map<String, dynamic> p,
-    VoidCallback onRemove,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('remove_participant').tr(),
-        content: Text(
-          "Are you sure you want to remove \"${p['name']}\"? Assignments will be adjusted.",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('common_cancel').tr(),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              onRemove();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.palette.danger,
-              foregroundColor: Colors.white,
-            ),
-            child: Text('common_remove').tr(),
+        if (!canRemove) ...[
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'bf_edit_host_cannot_remove'.tr(),
+            style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
           ),
         ],
-      ),
+      ],
     );
   }
 }

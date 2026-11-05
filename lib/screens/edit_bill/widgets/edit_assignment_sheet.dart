@@ -1,254 +1,347 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/screens/edit_bill/widgets/participant_list.dart';
+import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
-class EditAssignmentSheet extends StatefulWidget {
-  final List<Map<String, dynamic>> participants;
-  final List<String> currentSelection;
-  final Function(List<String>) onConfirm;
+/// Signature of a confirmed assignment: [units] is non-empty for a per-unit
+/// assignment (quantity > 1), otherwise [people] share the line equally.
+typedef AssignmentConfirm =
+    void Function(List<String> people, Map<String, int> units);
 
+/// Who had this item. For a quantity above 1 the host can also give units
+/// to people ("Ali 2, Sara 1 of 3"); the + button stops at the quantity so
+/// an item can never be over-assigned.
+class EditAssignmentSheet extends StatefulWidget {
   const EditAssignmentSheet({
     super.key,
+    required this.itemName,
+    required this.quantity,
     required this.participants,
-    required this.currentSelection,
+    required this.currentPeople,
+    required this.currentUnits,
     required this.onConfirm,
   });
 
-  @override
-  State<EditAssignmentSheet> createState() => _EditAssignmentSheetState();
+  final String itemName;
+  final int quantity;
+  final List<BillParticipantInfo> participants;
+  final List<String> currentPeople;
+  final Map<String, int> currentUnits;
+  final AssignmentConfirm onConfirm;
 
-  static void show(
+  static Future<void> show(
     BuildContext context, {
-    required List<Map<String, dynamic>> participants,
-    required List<String> currentSelection,
-    required Function(List<String>) onConfirm,
+    required String itemName,
+    required int quantity,
+    required List<BillParticipantInfo> participants,
+    required List<String> currentPeople,
+    Map<String, int> currentUnits = const {},
+    required AssignmentConfirm onConfirm,
   }) {
-    PremiumBottomSheet.show(
+    return PremiumBottomSheet.show<void>(
       context: context,
       isScrollable: true,
       child: EditAssignmentSheet(
+        itemName: itemName,
+        quantity: quantity,
         participants: participants,
-        currentSelection: currentSelection,
+        currentPeople: currentPeople,
+        currentUnits: currentUnits,
         onConfirm: onConfirm,
       ),
     );
   }
+
+  @override
+  State<EditAssignmentSheet> createState() => _EditAssignmentSheetState();
 }
 
 class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
-  late List<String> _tempSelection;
+  late bool _byUnit;
+  late Set<String> _selected;
+  late Map<String, int> _units;
+
+  bool get _canSplitUnits => widget.quantity > 1;
+
+  int get _assignedUnits => _units.values.fold(0, (a, b) => a + b);
 
   @override
   void initState() {
     super.initState();
-    _tempSelection = List.from(widget.currentSelection);
+    final known = {for (final p in widget.participants) p.id};
+    _units = {
+      for (final e in widget.currentUnits.entries)
+        if (known.contains(e.key) && e.value > 0) e.key: e.value,
+    };
+    // Never start over-assigned: trim from the end.
+    var over = _assignedUnits - widget.quantity;
+    for (final id in _units.keys.toList().reversed) {
+      if (over <= 0) break;
+      final take = over < _units[id]! ? over : _units[id]!;
+      _units[id] = _units[id]! - take;
+      over -= take;
+      if (_units[id] == 0) _units.remove(id);
+    }
+    _byUnit = _canSplitUnits && _units.isNotEmpty;
+    _selected = {
+      for (final id in widget.currentPeople)
+        if (known.contains(id)) id,
+    };
   }
 
-  ImageProvider? _getAvatarImage(String? url) {
-    return ImageUtils.getAvatarImage(url);
+  bool get _valid =>
+      _byUnit ? _assignedUnits == widget.quantity : _selected.isNotEmpty;
+
+  void _toggle(String id) {
+    AppHaptics.selection();
+    setState(() {
+      if (!_selected.remove(id)) _selected.add(id);
+    });
+  }
+
+  void _step(String id, int delta) {
+    final current = _units[id] ?? 0;
+    final next = current + delta;
+    if (next < 0) return;
+    if (delta > 0 && _assignedUnits >= widget.quantity) return;
+    AppHaptics.selection();
+    setState(() {
+      if (next == 0) {
+        _units.remove(id);
+      } else {
+        _units[id] = next;
+      }
+    });
+  }
+
+  void _confirm() {
+    if (!_valid) return;
+    AppHaptics.success();
+    if (_byUnit) {
+      widget.onConfirm(_units.keys.toList(), Map.of(_units));
+    } else {
+      final ordered = [
+        for (final p in widget.participants)
+          if (_selected.contains(p.id)) p.id,
+      ];
+      widget.onConfirm(ordered, const {});
+    }
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final allParticipantIds = widget.participants
-        .map<String>((participant) => participant['id'] as String)
-        .toList();
-
+    final p = context.palette;
+    final everyone = _selected.length == widget.participants.length;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'who_split_this_item',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.6,
-          ),
-        ).tr(),
-        const SizedBox(height: 8),
+          'bf_edit_assign_title'.tr(namedArgs: {'item': widget.itemName}),
+          style: AppTypography.headlineSmall.copyWith(color: p.textPrimary),
+        ),
+        const SizedBox(height: AppSpacing.xs),
         Text(
-          'select_people_who_shared_this_item_to_calculate_the_split',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurface.withValues(alpha: 0.6),
+          _byUnit
+              ? 'bf_edit_assign_units_hint'.tr(
+                  namedArgs: {'qty': '${widget.quantity}'},
+                )
+              : 'bf_edit_assign_share_hint'.tr(),
+          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+        ),
+        if (_canSplitUnits) ...[
+          const SizedBox(height: AppSpacing.lg),
+          SegmentedButton<bool>(
+            segments: [
+              ButtonSegment(
+                value: false,
+                label: Text('bf_edit_assign_mode_share'.tr()),
+              ),
+              ButtonSegment(
+                value: true,
+                label: Text('bf_edit_assign_mode_units'.tr()),
+              ),
+            ],
+            selected: {_byUnit},
+            showSelectedIcon: false,
+            onSelectionChanged: (v) {
+              AppHaptics.selection();
+              setState(() => _byUnit = v.first);
+            },
           ),
-        ).tr(),
-        const SizedBox(height: 20),
+        ],
+        const SizedBox(height: AppSpacing.lg),
+        if (!_byUnit)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton(
+              onPressed: () {
+                AppHaptics.selection();
+                setState(() {
+                  _selected = everyone
+                      ? <String>{}
+                      : {for (final x in widget.participants) x.id};
+                });
+              },
+              child: Text(
+                (everyone ? 'bf_edit_assign_clear' : 'bf_edit_assign_everyone')
+                    .tr(),
+              ),
+            ),
+          ),
+        EditCard(
+          children: [
+            for (final person in widget.participants)
+              _byUnit ? _unitRow(person) : _shareRow(person),
+          ],
+        ),
+        if (_byUnit) ...[
+          const SizedBox(height: AppSpacing.md),
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              _assignedUnits == widget.quantity
+                  ? 'bf_edit_assign_all_units'.tr(
+                      namedArgs: {'qty': '${widget.quantity}'},
+                    )
+                  : 'bf_edit_units_assigned'.tr(
+                      namedArgs: {
+                        'assigned': '$_assignedUnits',
+                        'qty': '${widget.quantity}',
+                      },
+                    ),
+              textAlign: TextAlign.center,
+              style: AppTypography.labelMedium.copyWith(
+                color: _assignedUnits == widget.quantity
+                    ? p.owedInk
+                    : p.textSecondary,
+              ),
+            ),
+          ),
+        ],
+        const SizedBox(height: AppSpacing.xl),
+        FilledButton(
+          onPressed: _valid ? _confirm : null,
+          child: Text('bf_edit_assign_confirm'.tr()),
+        ),
+      ],
+    );
+  }
 
-        ...widget.participants.map((p) {
-          final isSelected = _tempSelection.contains(p['id']);
-          final avatarColor = p['color'] as Color? ?? colorScheme.primary;
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      _tempSelection.remove(p['id']);
-                    } else {
-                      _tempSelection.add(p['id']);
-                    }
-                  });
-                  HapticFeedback.selectionClick();
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
+  Widget _shareRow(BillParticipantInfo person) {
+    final p = context.palette;
+    final on = _selected.contains(person.id);
+    return Semantics(
+      checked: on,
+      button: true,
+      label: person.name,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => _toggle(person.id),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                EditAvatar(
+                  id: person.id,
+                  name: person.name,
+                  photoUrl: person.photoUrl,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Text(
+                    person.name,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: p.textPrimary,
+                    ),
                   ),
+                ),
+                AnimatedContainer(
+                  duration: AppMotion.durationFor(context, AppMotion.fast),
+                  width: 24,
+                  height: 24,
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? avatarColor.withValues(alpha: 0.08)
-                        : colorScheme.surfaceContainerHighest.withValues(
-                            alpha: 0.3,
-                          ),
-                    borderRadius: BorderRadius.circular(20),
+                    shape: BoxShape.circle,
+                    color: on ? p.accent : p.surface,
                     border: Border.all(
-                      color: isSelected
-                          ? avatarColor.withValues(alpha: 0.4)
-                          : colorScheme.outline.withValues(alpha: 0.1),
+                      color: on ? p.accent : p.borderStrong,
                       width: 1.5,
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isSelected
-                                ? avatarColor
-                                : Colors.transparent,
-                            width: 2,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          radius: 22,
-                          backgroundImage: _getAvatarImage(p['photoUrl']),
-                          backgroundColor: avatarColor.withValues(alpha: 0.2),
-                          child: _getAvatarImage(p['photoUrl']) == null
-                              ? Text(
-                                  p['name'][0].toUpperCase(),
-                                  style: TextStyle(
-                                    color: avatarColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          p['name'],
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: isSelected
-                                ? FontWeight.w800
-                                : FontWeight.w600,
-                            color: isSelected
-                                ? avatarColor
-                                : colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: isSelected
-                            ? Icon(
-                                Icons.check_circle_rounded,
-                                color: avatarColor,
-                                key: const ValueKey('selected'),
-                              )
-                            : Icon(
-                                Icons.circle_outlined,
-                                color: colorScheme.outline.withValues(
-                                  alpha: 0.3,
-                                ),
-                                key: const ValueKey('unselected'),
-                              ),
-                      ),
-                    ],
-                  ),
+                  child: on
+                      ? Icon(Icons.check_rounded, size: 16, color: p.onAccent)
+                      : null,
                 ),
-              ),
+              ],
             ),
-          );
-        }),
+          ),
+        ),
+      ),
+    );
+  }
 
-        const SizedBox(height: 24),
-
-        Row(
+  Widget _unitRow(BillParticipantInfo person) {
+    final p = context.palette;
+    final count = _units[person.id] ?? 0;
+    final full = _assignedUnits >= widget.quantity;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 56),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          AppSpacing.lg,
+          AppSpacing.xs,
+          AppSpacing.sm,
+          AppSpacing.xs,
+        ),
+        child: Row(
           children: [
+            EditAvatar(
+              id: person.id,
+              name: person.name,
+              photoUrl: person.photoUrl,
+            ),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  widget.onConfirm(allParticipantIds);
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.groups_rounded),
-                label: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    'for_all',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: colorScheme.primary,
-                    ),
-                  ).tr(),
-                ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colorScheme.primary,
-                  minimumSize: const Size(double.infinity, 58),
-                  side: BorderSide(
-                    color: colorScheme.primary.withValues(alpha: 0.55),
-                    width: 1.5,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
+              child: Text(
+                person.name,
+                style: AppTypography.titleMedium.copyWith(color: p.textPrimary),
+              ),
+            ),
+            IconButton(
+              onPressed: count > 0 ? () => _step(person.id, -1) : null,
+              tooltip: 'bf_edit_assign_less'.tr(
+                namedArgs: {'name': person.name},
+              ),
+              icon: const Icon(Icons.remove_rounded),
+            ),
+            SizedBox(
+              width: 28,
+              child: Text(
+                '$count',
+                textAlign: TextAlign.center,
+                style: AppTypography.amount.copyWith(
+                  color: count > 0 ? p.textPrimary : p.textTertiary,
                 ),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.onConfirm(_tempSelection);
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: colorScheme.onPrimary,
-                  minimumSize: const Size(double.infinity, 58),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    'confirm_selection',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: colorScheme.onPrimary,
-                    ),
-                  ).tr(),
-                ),
+            IconButton(
+              onPressed: full ? null : () => _step(person.id, 1),
+              tooltip: 'bf_edit_assign_more'.tr(
+                namedArgs: {'name': person.name},
               ),
+              icon: const Icon(Icons.add_rounded),
             ),
           ],
         ),
-        const SizedBox(height: 16),
-      ],
+      ),
     );
   }
 }
