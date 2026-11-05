@@ -23,7 +23,7 @@ IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata")
 IOS_FILTERED_METADATA_PATH = File.join(PROJECT_ROOT, "build", "fastlane", "ios_metadata")
 IOS_APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.example.splitBillApp")
 PRIVACY_POLICY_URL = "https://omarmali.net/split-bill/privacy/"
-TERMS_OF_USE_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+TERMS_OF_USE_URL = "https://omarmali.net/split-bill/terms/"
 IOS_APP_STORE_LOCALES = %w[
   ar-SA de-DE en-AU en-CA en-GB en-US es-ES es-MX fr-CA fr-FR hr
   hi id it ja ko pl pt-BR pt-PT ru zh-Hans zh-Hant
@@ -86,8 +86,8 @@ def build_ios_ipa
     output_directory: File.dirname(IOS_IPA),
     output_name: File.basename(IOS_IPA),
     export_method: "app-store",
-    export_options: { method: "app-store-connect", signingStyle: "automatic" },
-    xcargs: "-jobs #{jobs} -allowProvisioningUpdates BUILD_DIR=#{File.join(PROJECT_ROOT, 'build', 'ios').shellescape} COMPILER_INDEX_STORE_ENABLE=NO",
+    export_options: { method: "app-store-connect", signingStyle: "automatic", manageAppVersionAndBuildNumber: false },
+    xcargs: "-jobs #{jobs} -allowProvisioningUpdates COMPILER_INDEX_STORE_ENABLE=NO",
     export_xcargs: "-allowProvisioningUpdates",
     xcodebuild_formatter: "",
     buildlog_path: File.join(PROJECT_ROOT, "build", "diagnostics", "fastlane")
