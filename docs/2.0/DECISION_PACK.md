@@ -166,6 +166,8 @@ Gaps in this check:
 
 ### 2.2 Recommended Pro pricing (USD base)
 
+> **Superseded:** the owner decided $2.99/month, $24.99/year and $59.99 lifetime on 2026-11-05. The analysis below is kept for reference.
+
 | Plan | Price | Rationale |
 |---|---|---|
 | Monthly | **$3.99** | Matches Settle Up and is $1 under Splitwise. Monthly is the decoy plan that makes yearly look good, and it suits one-off trip users. |
