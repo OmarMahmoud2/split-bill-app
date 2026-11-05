@@ -12,9 +12,8 @@ import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 
 typedef BillEntry = void Function(BuildContext context, {List<GroupMember>? members, String? groupId});
 
-/// How ledger screens start a bill. The bill flow can replace these (for
-/// example to carry [groupId] through to the summary screen, or to add a
-/// standalone voice entry); until [voice] is set, "Say it" is hidden.
+/// How ledger screens start a bill. [groupId] (with [members]) is carried
+/// scan/manual -> assign -> summary -> the bill's `groupId`.
 class BillEntryPoints {
   BillEntryPoints._();
 
@@ -22,15 +21,17 @@ class BillEntryPoints {
       members?.map((m) => m.toMap()).toList();
 
   static BillEntry scan = (context, {members, groupId}) => Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => ScanReceiptScreen(participants: _participants(members))),
+    MaterialPageRoute(builder: (_) => ScanReceiptScreen(participants: _participants(members), groupId: groupId)),
   );
 
   static BillEntry manual = (context, {members, groupId}) => Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => ManualEntryScreen(participants: _participants(members))),
+    MaterialPageRoute(builder: (_) => ManualEntryScreen(participants: _participants(members), groupId: groupId)),
   );
 
-  /// Standalone "Say it" entry; null hides the option.
-  static BillEntry? voice;
+  /// "Say it": the bill flow has no standalone voice expense (voice assign
+  /// needs items), so this opens Scan; the assign screen has the mic button.
+  /// Set to null to hide the option.
+  static BillEntry? voice = (context, {members, groupId}) => scan(context, members: members, groupId: groupId);
 }
 
 class NewSheetOption {

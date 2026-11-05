@@ -160,6 +160,7 @@ class BillTile extends StatelessWidget {
               builder: (_) => ScanReceiptScreen(
                 billId: billId,
                 initialLocalImagePath: data['localImagePath'],
+                groupId: data['groupId'] is String ? data['groupId'] as String : null,
                 participants: (data['participants'] as List<dynamic>?)
                     ?.map((e) => e as Map<String, dynamic>)
                     .toList(),

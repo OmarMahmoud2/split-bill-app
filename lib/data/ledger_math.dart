@@ -10,16 +10,22 @@ import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/domain/settlement.dart';
 
 /// Expenses and settlement payments for a set of bills and payments.
+///
+/// [paymentsAreTruth] (group ledgers): bill shares count in full and only
+/// recorded payments reduce them, so a share later marked PAID after a
+/// settle-up payment is not subtracted twice. Outside groups (default) a
+/// PAID share is simply excluded.
 (List<Expense>, List<SettlementPayment>) ledgerEntries(
   Iterable<BillRecord> bills,
-  Iterable<PaymentRecord> payments,
-) {
+  Iterable<PaymentRecord> payments, {
+  bool paymentsAreTruth = false,
+}) {
   final expenses = <Expense>[];
   final settlements = <SettlementPayment>[];
   final seen = <String>{};
   for (final b in bills) {
     if (!seen.add('bill:${b.id}')) continue;
-    final e = b.toExpense();
+    final e = b.toExpense(ignorePaidStatus: paymentsAreTruth);
     if (e != null) expenses.add(e);
   }
   for (final p in payments) {
@@ -104,8 +110,13 @@ class LedgerView {
     required Iterable<BillRecord> bills,
     Iterable<PaymentRecord> payments = const [],
     bool simplify = true,
+    bool paymentsAreTruth = false,
   }) {
-    final (expenses, settlements) = ledgerEntries(bills, payments);
+    final (expenses, settlements) = ledgerEntries(
+      bills,
+      payments,
+      paymentsAreTruth: paymentsAreTruth,
+    );
     final balances = computeBalances(expenses, payments: settlements);
     final pairwise = pairwiseTransfers(expenses, payments: settlements);
     final transfers = simplify
@@ -224,6 +235,7 @@ class GroupLedgerInput {
     bills: bills,
     payments: payments,
     simplify: group.simplifyDebts,
+    paymentsAreTruth: true,
   );
 }
 

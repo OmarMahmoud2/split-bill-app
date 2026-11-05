@@ -309,9 +309,19 @@ class BillRecord {
   /// What [personId] owes on this bill (0 for the host or when paid).
   int owedBy(String personId) => unpaidShares[personId] ?? 0;
 
+  /// What every non-host participant owes, whatever their status.
+  Map<String, int> get allShares => {
+    for (final p in participants)
+      if (p.id != hostId && p.shareMinor > 0) p.id: p.shareMinor,
+  };
+
   /// The ledger expense for what is still unpaid, or null when settled.
-  Expense? toExpense() {
-    final shares = unpaidShares;
+  ///
+  /// With [ignorePaidStatus] every share counts in full: group ledgers use
+  /// this because settle-up payments (not the bill's PAID flag) record what
+  /// was paid, and subtracting both would count the same money twice.
+  Expense? toExpense({bool ignorePaidStatus = false}) {
+    final shares = ignorePaidStatus ? allShares : unpaidShares;
     if (isDraft || shares.isEmpty || hostId.isEmpty) return null;
     return Expense.singlePayer(
       id: 'bill:$id',

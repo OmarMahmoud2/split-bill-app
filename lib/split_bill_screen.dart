@@ -36,6 +36,9 @@ class SplitBillScreen extends StatefulWidget {
   final String? resumedBillId;
   final String? cleanupImagePath;
 
+  /// Group the bill is filed into; carried to the summary screen.
+  final String? groupId;
+
   const SplitBillScreen({
     super.key,
     required this.receiptData,
@@ -44,6 +47,7 @@ class SplitBillScreen extends StatefulWidget {
     this.initialAssignments,
     this.resumedBillId,
     this.cleanupImagePath,
+    this.groupId,
   });
 
   @override
@@ -584,6 +588,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
           oldBillIdToDelete: widget.resumedBillId,
           oldImageToDelete: widget.cleanupImagePath,
           methodDraft: methodDraft,
+          groupId: widget.groupId,
         ),
       ),
     );

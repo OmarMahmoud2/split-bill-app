@@ -40,11 +40,15 @@ enum _ScanPhase { idle, reading, saving, review }
 class ScanReceiptScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? participants;
   final String? billId; // For resuming
+
+  /// Group the finished bill is filed into (data contract `groupId`).
+  final String? groupId;
   final String? initialLocalImagePath; // For resuming
 
   const ScanReceiptScreen({
     super.key,
     this.participants,
+    this.groupId,
     this.billId,
     this.initialLocalImagePath,
   });
@@ -187,6 +191,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
         'storeName': 'unattempted_receipt'.tr(),
         'items': [],
         'charges': {},
+        'groupId': ?widget.groupId,
       };
 
       if (widget.billId != null) {
@@ -794,7 +799,10 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ManualEntryScreen(participants: widget.participants),
+        builder: (_) => ManualEntryScreen(
+          participants: widget.participants,
+          groupId: widget.groupId,
+        ),
       ),
     );
   }
@@ -1015,6 +1023,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
           receiptData: _receiptData!,
           preSelectedContacts: null,
           initialParticipants: widget.participants,
+          groupId: widget.groupId,
           resumedBillId: widget.billId,
           cleanupImagePath: widget.initialLocalImagePath,
         ),

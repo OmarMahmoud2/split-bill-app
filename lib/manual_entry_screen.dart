@@ -69,7 +69,8 @@ Map<String, dynamic> buildManualReceiptData({
 /// date, then on to SplitBillScreen to pick people and the split.
 class ManualEntryScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? participants;
-  const ManualEntryScreen({super.key, this.participants});
+  final String? groupId;
+  const ManualEntryScreen({super.key, this.participants, this.groupId});
 
   @override
   State<ManualEntryScreen> createState() => _ManualEntryScreenState();
@@ -192,6 +193,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         builder: (context) => SplitBillScreen(
           receiptData: manualReceiptData,
           initialParticipants: widget.participants,
+          groupId: widget.groupId,
         ),
       ),
     );
