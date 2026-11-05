@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 
@@ -22,13 +23,14 @@ class ParticipantList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
       height: 155,
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -67,16 +69,18 @@ class ParticipantList extends StatelessWidget {
                         boxShadow: isHost
                             ? [
                                 BoxShadow(
-                                  color: (p['color'] ?? Colors.blue)
-                                      .withValues(alpha: 0.6),
+                                  color: (p['color'] ?? Colors.blue).withValues(
+                                    alpha: 0.6,
+                                  ),
                                   blurRadius: 12,
                                   spreadRadius: 2,
                                 ),
                               ]
                             : [
                                 BoxShadow(
-                                  color: (p['color'] ?? Colors.blue)
-                                      .withValues(alpha: 0.2),
+                                  color: (p['color'] ?? Colors.blue).withValues(
+                                    alpha: 0.2,
+                                  ),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -84,7 +88,7 @@ class ParticipantList extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         radius: 26,
-                        backgroundColor: Colors.white,
+                        backgroundColor: palette.surface,
                         backgroundImage: _getAvatarImage(p['photoUrl']),
                         child: _getAvatarImage(p['photoUrl']) == null
                             ? Text(
@@ -104,8 +108,8 @@ class ParticipantList extends StatelessWidget {
                         bottom: 0,
                         child: Container(
                           padding: const EdgeInsets.all(2),
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
+                          decoration: BoxDecoration(
+                            color: palette.success,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -133,7 +137,7 @@ class ParticipantList extends StatelessWidget {
                   ),
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.blue[800],
+                    color: palette.infoStrong,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

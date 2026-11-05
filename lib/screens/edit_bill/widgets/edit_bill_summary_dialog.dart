@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class EditBillSummaryDialog extends StatefulWidget {
   final double initialTax;
@@ -75,11 +76,11 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
         prefixIcon: const Icon(Icons.edit_note_rounded, size: 18),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: context.palette.surfaceMuted,
       ),
-      style: const TextStyle(
+      style: TextStyle(
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: context.palette.textPrimary,
       ),
       onChanged: (val) => onChanged(double.tryParse(val) ?? 0),
     );
@@ -89,7 +90,8 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-      title: Text('update_summary',
+      title: Text(
+        'update_summary',
         style: TextStyle(fontWeight: FontWeight.bold),
       ).tr(),
       content: SingleChildScrollView(
@@ -111,7 +113,10 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
+          child: Text(
+            'common_cancel',
+            style: TextStyle(color: context.palette.textTertiary),
+          ).tr(),
         ),
         ElevatedButton(
           onPressed: () {
@@ -120,7 +125,7 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Colors.white,
+            foregroundColor: context.palette.onPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

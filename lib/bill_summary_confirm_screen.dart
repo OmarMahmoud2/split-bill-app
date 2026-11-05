@@ -20,6 +20,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class BillSummaryConfirmScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -76,9 +77,10 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       widget.receiptData['currencyCode'] ??
       Provider.of<AppSettingsProvider>(context, listen: false).currencyCode;
 
-  List<Map<String, dynamic>> get _otherCharges => List<Map<String, dynamic>>.from(
-    widget.receiptData['other_charges'] ?? const [],
-  );
+  List<Map<String, dynamic>> get _otherCharges =>
+      List<Map<String, dynamic>>.from(
+        widget.receiptData['other_charges'] ?? const [],
+      );
 
   double get _otherChargesTotal => _otherCharges.fold(
     0.0,
@@ -86,9 +88,8 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
         runningTotal + ((charge['amount'] as num?)?.toDouble() ?? 0.0),
   );
 
-  int get _participantCount => widget.participants.isEmpty
-      ? 1
-      : widget.participants.length;
+  int get _participantCount =>
+      widget.participants.isEmpty ? 1 : widget.participants.length;
 
   double get _grandTotalFromCharges =>
       _calculateTotalItemCost() +
@@ -99,8 +100,10 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       _otherChargesTotal -
       (double.tryParse(_discountController.text) ?? 0.0);
 
-  double get _grandTotalFromShares =>
-      _finalShares.values.fold(0.0, (runningTotal, value) => runningTotal + value);
+  double get _grandTotalFromShares => _finalShares.values.fold(
+    0.0,
+    (runningTotal, value) => runningTotal + value,
+  );
 
   double _shareForCharge(Map<String, dynamic> charge, double proportion) {
     final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
@@ -256,9 +259,8 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
         (runningTotal, value) => runningTotal + value,
       );
       calculatedShares.updateAll(
-        (participantId, _) => participantId == _rouletteWinnerId
-            ? rouletteTotal
-            : 0.0,
+        (participantId, _) =>
+            participantId == _rouletteWinnerId ? rouletteTotal : 0.0,
       );
     }
 
@@ -288,8 +290,11 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       'storeName':
           widget.receiptData['restaurant_name'] ??
           widget.receiptData['storeName'],
-      'date': widget.receiptData['date'] != null 
-          ? Timestamp.fromDate(DateTime.tryParse(widget.receiptData['date'].toString()) ?? DateTime.now()) 
+      'date': widget.receiptData['date'] != null
+          ? Timestamp.fromDate(
+              DateTime.tryParse(widget.receiptData['date'].toString()) ??
+                  DateTime.now(),
+            )
           : FieldValue.serverTimestamp(),
       'total': _grandTotalFromShares > 0
           ? _grandTotalFromShares
@@ -458,9 +463,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'error_saving'.tr(namedArgs: {'error': e.toString()}),
-          ),
+          content: Text('error_saving'.tr(namedArgs: {'error': e.toString()})),
         ),
       );
       setState(() => _isCreating = false);
@@ -511,9 +514,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       );
       await _notificationService.sendNotification(
         targetUid: uid,
-        title: 'split_bill_notification_title'.tr(
-          namedArgs: {'store': store},
-        ),
+        title: 'split_bill_notification_title'.tr(namedArgs: {'store': store}),
         body: 'split_bill_notification_body'.tr(
           namedArgs: {'amount': formattedAmount},
         ),
@@ -570,9 +571,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
             'name': item['name'],
             'detail': assigned.length > 1
                 ? 'split_with_others'.tr(
-                    namedArgs: {
-                      'count': (assigned.length - 1).toString(),
-                    },
+                    namedArgs: {'count': (assigned.length - 1).toString()},
                   )
                 : 'full_item'.tr(),
             'cost': splitPrice,
@@ -654,7 +653,9 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -703,7 +704,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                             Text(
                               uItem['detail'],
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: context.palette.textSecondary,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -733,14 +734,12 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
           _buildAmountRow('service_charge'.tr(), service * proportion),
           _buildAmountRow('tip'.tr(), tip * proportion),
           _buildAmountRow('delivery_fee'.tr(), deliveryShare),
-          ..._otherCharges
-              .map(
-                (charge) => _buildAmountRow(
-                  (charge['label'] ?? 'receipt_other_charge_label'.tr())
-                      .toString(),
-                  _shareForCharge(charge, proportion),
-                ),
-              ),
+          ..._otherCharges.map(
+            (charge) => _buildAmountRow(
+              (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+              _shareForCharge(charge, proportion),
+            ),
+          ),
           _buildAmountRow(
             'discount'.tr(),
             discount * proportion,
@@ -760,18 +759,22 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     if (amount == 0) {
       return const SizedBox.shrink();
     }
+    final palette = context.palette;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+          Text(
+            title,
+            style: TextStyle(fontSize: 16, color: palette.textMedium),
+          ),
           Text(
             "${isNegative ? '-' : ''}${CurrencyUtils.format(amount.abs(), currencyCode: _currencyCode, decimalDigits: 1)}",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isNegative ? Colors.red : Colors.black,
+              color: isNegative ? palette.danger : palette.textStrong,
             ),
           ),
         ],
@@ -794,7 +797,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('need_at_least_two_people_for_bill_roulette').tr(),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: context.palette.dangerAccent,
         ),
       );
       return;
@@ -827,13 +830,18 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
             children: [
               Text(
                 'bill_roulette_2',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                ),
               ).tr(),
               const SizedBox(height: 8),
               Text(
                 'one_lucky_person_pays_the_whole_bill',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w500,
                 ),
               ).tr(),
@@ -885,7 +893,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: context.palette.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -925,12 +933,13 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               height: 150,
               repeat: true,
             ),
-            Text('we_have_a_winner',
+            Text(
+              'we_have_a_winner',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
-                color: Colors.redAccent,
+                color: context.palette.dangerAccent,
               ),
             ).tr(),
             const SizedBox(height: 24),
@@ -960,15 +969,15 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
             Text(
               "The universe has spoken. ${winner['name']} gets the honor of paying the whole bill! 😂",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: context.palette.textSecondary),
             ),
             const SizedBox(height: 8),
             Text(
               "Total: ${CurrencyUtils.format(totalBill, currencyCode: _currencyCode, decimalDigits: 1)}",
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 18,
-                color: Colors.black,
+                color: context.palette.textStrong,
               ),
             ),
             const SizedBox(height: 32),
@@ -980,13 +989,15 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('mercy_shown_bill_splitting_remains_as_is',
+                          content: Text(
+                            'mercy_shown_bill_splitting_remains_as_is',
                           ).tr(),
                         ),
                       );
                     },
-                    child: Text('pardon_them',
-                      style: TextStyle(color: Colors.grey),
+                    child: Text(
+                      'pardon_them',
+                      style: TextStyle(color: context.palette.textTertiary),
                     ).tr(),
                   ),
                 ),
@@ -998,8 +1009,8 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                       _applyRouletteResult(winner['id']);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
+                      backgroundColor: context.palette.inverseSurface,
+                      foregroundColor: context.palette.onInverseSurface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -1055,14 +1066,14 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                 namedArgs: {'name': participant['name'].toString()},
               ),
               style: TextStyle(
-                color: Colors.grey[700],
+                color: context.palette.textMedium,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               'enter_final_amount'.tr(),
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: context.palette.textSecondary),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -1074,14 +1085,14 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               decoration: InputDecoration(
                 prefixText: '$_currencyCode ',
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: context.palette.surfaceMuted,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide(color: context.palette.borderSubtle),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide(color: context.palette.borderSubtle),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -1115,7 +1126,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Colors.white,
+              foregroundColor: context.palette.onPrimary,
             ),
             child: Text('update_total').tr(),
           ),
@@ -1134,10 +1145,17 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     double delivery = double.tryParse(_deliveryFeeController.text) ?? 0.0;
     double grandTotal = _grandTotalFromShares > 0
         ? _grandTotalFromShares
-        : subTotal + tax + service + tip + delivery + _otherChargesTotal - discount;
+        : subTotal +
+              tax +
+              service +
+              tip +
+              delivery +
+              _otherChargesTotal -
+              discount;
+    final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: palette.surfaceMuted,
       appBar: CustomAppHeader(
         title: 'split_summary'.tr(),
         trailing: IconButton(
@@ -1165,11 +1183,11 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: palette.surface,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: palette.shadow.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -1234,16 +1252,20 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                       amount: delivery,
                       currency: _currencyCode,
                     ),
-                    ..._otherCharges.expand((charge) => [
-                      const SizedBox(height: 12),
-                      BillSummaryRow(
-                        label:
-                            (charge['label'] ?? 'receipt_other_charge_label'.tr())
-                                .toString(),
-                        amount: ((charge['amount'] as num?)?.toDouble() ?? 0.0),
-                        currency: _currencyCode,
-                      ),
-                    ]),
+                    ..._otherCharges.expand(
+                      (charge) => [
+                        const SizedBox(height: 12),
+                        BillSummaryRow(
+                          label:
+                              (charge['label'] ??
+                                      'receipt_other_charge_label'.tr())
+                                  .toString(),
+                          amount:
+                              ((charge['amount'] as num?)?.toDouble() ?? 0.0),
+                          currency: _currencyCode,
+                        ),
+                      ],
+                    ),
                   ],
                 ],
               ),
@@ -1254,16 +1276,17 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _showRouletteModal,
-                  icon: const Icon(Icons.casino_rounded, color: Colors.redAccent),
-                  label: Text('bill_roulette',
+                  icon: Icon(Icons.casino_rounded, color: palette.dangerAccent),
+                  label: Text(
+                    'bill_roulette',
                     style: TextStyle(
-                      color: Colors.redAccent,
+                      color: palette.dangerAccent,
                       fontWeight: FontWeight.bold,
                     ),
                   ).tr(),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                    side: BorderSide(color: palette.dangerAccent, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -1298,10 +1321,10 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: palette.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: palette.shadow.withValues(alpha: 0.05),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),
@@ -1322,7 +1345,8 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
             ),
             child: _isCreating
                 ? const CircularProgressIndicator(color: Colors.white)
-                : Text('create_bill',
+                : Text(
+                    'create_bill',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ).tr(),
           ),
@@ -1337,7 +1361,10 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey[700], fontSize: 16)),
+          Text(
+            label,
+            style: TextStyle(color: context.palette.textMedium, fontSize: 16),
+          ),
           SizedBox(
             width: 100,
             child: TextField(

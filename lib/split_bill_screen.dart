@@ -21,6 +21,7 @@ import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/widgets/voice_command_overlay.dart';
 import 'package:split_bill_app/helpers/rewarded_ad_helper.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class SplitBillScreen extends StatefulWidget {
   final Map<String, dynamic> receiptData;
@@ -343,7 +344,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'common_cancel',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: context.palette.textTertiary),
             ).tr(),
           ),
           ElevatedButton(
@@ -352,7 +353,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: context.palette.danger,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -413,7 +414,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Colors.white,
+              foregroundColor: context.palette.onPrimary,
             ),
             child: Text('split_equally').tr(),
           ),
@@ -455,7 +456,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
             icon: Icons.mic_rounded,
             title: 'voice_command'.tr(),
             subtitle: 'voice_command_subtitle'.tr(),
-            gradientColors: [const Color(0xFF7209B7), const Color(0xFF560BAD)],
+            gradientColors: context.palette.primaryGradient.colors,
             badge: 'voice_command_cost'.tr(),
             onTap: () {
               Navigator.pop(context);
@@ -476,18 +477,21 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
     required VoidCallback onTap,
     String? badge,
   }) {
+    final palette = context.palette;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: palette.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+          border: Border.all(
+            color: palette.textTertiary.withValues(alpha: 0.1),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: palette.shadow.withValues(alpha: 0.03),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -532,17 +536,17 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                            gradient: LinearGradient(
+                              colors: [palette.premium, palette.premiumStrong],
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
                             badge,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w900,
-                              color: Colors.black,
+                              color: palette.onPremium,
                             ),
                           ),
                         ),
@@ -553,7 +557,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: palette.textSecondary,
                       fontSize: 13,
                       height: 1.3,
                     ),
@@ -562,7 +566,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: Colors.grey.shade300),
+            Icon(Icons.chevron_right_rounded, color: palette.border),
           ],
         ),
       ),
@@ -605,7 +609,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('voice_assignment_applied').tr(),
-          backgroundColor: Colors.green,
+          backgroundColor: context.palette.success,
         ),
       );
     }
@@ -770,7 +774,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                 },
               ),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.palette.danger,
           ),
         );
         return;
@@ -838,7 +842,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'common_cancel',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: context.palette.textTertiary),
               ).tr(),
             ),
             ElevatedButton(
@@ -874,7 +878,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: context.palette.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 12,
@@ -917,7 +921,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: context.palette.surfaceMuted,
       ),
       onChanged: (val) => onChanged(double.tryParse(val) ?? 0),
     );
@@ -927,9 +931,10 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
   Widget build(BuildContext context) {
     final currencyCode = context.watch<AppSettingsProvider>().currencyCode;
     List items = widget.receiptData['items'];
+    final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: palette.surfaceVariant,
       body: SafeArea(
         child: Column(
           children: [
@@ -938,7 +943,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: palette.surface,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
@@ -969,7 +974,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                         Text(
                           'assign_items',
                           style: TextStyle(
-                            color: Colors.grey[400],
+                            color: palette.textDisabled,
                             fontSize: 12,
                           ),
                         ).tr(),
@@ -979,13 +984,13 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                   IconButton(
                     icon: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
+                      decoration: BoxDecoration(
+                        color: palette.inverseSurface,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.person_add_rounded,
-                        color: Colors.white,
+                        color: palette.onInverseSurface,
                         size: 20,
                       ),
                     ),
@@ -1002,7 +1007,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: palette.surface,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
@@ -1054,7 +1059,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                               ),
                               child: CircleAvatar(
                                 radius: 26,
-                                backgroundColor: Colors.white,
+                                backgroundColor: palette.surface,
                                 backgroundImage: _getAvatarImage(p['photoUrl']),
                                 child: _getAvatarImage(p['photoUrl']) == null
                                     ? Text(
@@ -1116,11 +1121,11 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                       margin: const EdgeInsets.only(bottom: 16),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: palette.surface,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
+                            color: palette.shadow.withValues(alpha: 0.04),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -1145,7 +1150,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                               'assets/animations/food.json',
                               fit: BoxFit.contain,
                               errorBuilder: (c, e, s) =>
-                                  Icon(Icons.fastfood, color: Colors.orange),
+                                  Icon(Icons.fastfood, color: palette.warning),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -1156,10 +1161,10 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                               children: [
                                 Text(
                                   item['name'],
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.black87,
+                                    color: palette.textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -1171,7 +1176,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[100],
+                                        color: palette.surfaceVariant,
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
@@ -1179,7 +1184,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                                         style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.grey[700],
+                                          color: palette.textMedium,
                                         ),
                                       ),
                                     ),
@@ -1190,15 +1195,17 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                                         currencyCode: currencyCode,
                                         decimalDigits: 1,
                                       ),
-                                      style: const TextStyle(
-                                        color: Colors.black54,
+                                      style: TextStyle(
+                                        color: palette.textSecondary,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 14,
                                       ),
                                     ),
                                     Text(
                                       'equals_sign',
-                                      style: TextStyle(color: Colors.grey),
+                                      style: TextStyle(
+                                        color: palette.textTertiary,
+                                      ),
                                     ).tr(),
                                     Text(
                                       CurrencyUtils.format(
@@ -1206,8 +1213,8 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                                         currencyCode: currencyCode,
                                         decimalDigits: 1,
                                       ),
-                                      style: const TextStyle(
-                                        color: Colors.black,
+                                      style: TextStyle(
+                                        color: palette.textStrong,
                                         fontWeight: FontWeight.w800,
                                         fontSize: 14,
                                       ),
@@ -1221,7 +1228,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                           if (!isAssigned)
                             Icon(
                               Icons.add_circle_outline_rounded,
-                              color: Colors.grey[300],
+                              color: palette.border,
                               size: 28,
                             ),
 
@@ -1250,7 +1257,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
             FloatingActionButton(
               heroTag: "quick_actions_fab",
               onPressed: _showQuickActionsSheet,
-              backgroundColor: Colors.white,
+              backgroundColor: palette.surface,
               child: Icon(
                 Icons.auto_awesome_rounded,
                 color: Theme.of(context).colorScheme.primary,
@@ -1260,9 +1267,9 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               heroTag: "finalize_fab",
               onPressed: _finalizeBill,
               backgroundColor: Theme.of(context).colorScheme.primary,
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_forward_rounded,
-                color: Colors.white,
+                color: palette.onPrimary,
                 size: 28,
               ),
             ),
@@ -1293,7 +1300,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(color: context.palette.surface, width: 2),
                   boxShadow: const [
                     BoxShadow(color: Colors.black12, blurRadius: 2),
                   ],

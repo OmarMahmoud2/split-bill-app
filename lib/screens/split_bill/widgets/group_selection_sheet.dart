@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:split_bill_app/services/group_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -87,9 +88,9 @@ class GroupSelectionSheet extends StatelessWidget {
 
                   return Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: context.palette.surfaceMuted,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade100),
+                      border: Border.all(color: context.palette.surfaceVariant),
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(

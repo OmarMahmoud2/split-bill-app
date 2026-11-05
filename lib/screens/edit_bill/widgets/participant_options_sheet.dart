@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 class ParticipantOptionsSheet extends StatelessWidget {
@@ -35,6 +36,7 @@ class ParticipantOptionsSheet extends StatelessWidget {
     final theme = Theme.of(context);
     final bool isHost = participant['isHost'] == true;
     final String status = participant['status'] ?? 'PENDING';
+    final palette = context.palette;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -48,26 +50,26 @@ class ParticipantOptionsSheet extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        
+
         _buildActionItem(
           context,
           icon: status == 'PAID'
               ? Icons.undo_rounded
               : Icons.check_circle_rounded,
-          color: status == 'PAID' ? Colors.orange : Colors.green,
+          color: status == 'PAID' ? palette.warning : palette.success,
           label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
           onTap: () {
             Navigator.pop(context);
             onTogglePaid();
           },
         ),
-        
+
         if (!isHost) ...[
           const SizedBox(height: 12),
           _buildActionItem(
             context,
             icon: Icons.person_remove_rounded,
-            color: Colors.redAccent,
+            color: palette.dangerAccent,
             label: "Remove from Bill",
             onTap: () {
               Navigator.pop(context);
@@ -99,9 +101,7 @@ class ParticipantOptionsSheet extends StatelessWidget {
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: color.withValues(alpha: 0.15),
-            ),
+            border: Border.all(color: color.withValues(alpha: 0.15)),
           ),
           child: Row(
             children: [
@@ -158,7 +158,7 @@ class ParticipantOptionsSheet extends StatelessWidget {
               onRemove();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: context.palette.danger,
               foregroundColor: Colors.white,
             ),
             child: Text('common_remove').tr(),

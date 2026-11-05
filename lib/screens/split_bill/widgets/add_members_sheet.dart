@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class AddMembersSheet extends StatelessWidget {
   final VoidCallback onScanQR;
@@ -48,7 +49,7 @@ class AddMembersSheet extends StatelessWidget {
         ),
 
         const SizedBox(height: 32),
-        
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -63,7 +64,7 @@ class AddMembersSheet extends StatelessWidget {
               context,
               Icons.contacts_rounded,
               'contacts'.tr(),
-              const Color(0xFF5856D6),
+              context.palette.primary,
               onPickContacts,
             ),
             if (onPickGroups != null)
@@ -106,7 +107,10 @@ class AddMembersSheet extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: color.withValues(alpha: 0.2), width: 1.5),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.2),
+                    width: 1.5,
+                  ),
                 ),
                 child: Icon(icon, color: color, size: 28),
               ),

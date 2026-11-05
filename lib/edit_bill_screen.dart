@@ -18,6 +18,7 @@ import 'screens/split_bill/widgets/add_members_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class EditBillScreen extends StatefulWidget {
   final String billId;
@@ -154,9 +155,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
         }
 
         if (addedCount > 0) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
                 'added_people_count'.tr(
@@ -169,14 +168,10 @@ class _EditBillScreenState extends State<EditBillScreen> {
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'error_adding_contacts'.tr(
-                namedArgs: {'error': e.toString()},
-              ),
+              'error_adding_contacts'.tr(namedArgs: {'error': e.toString()}),
             ),
           ),
         );
@@ -198,9 +193,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             'error_scanning_qr'.tr(namedArgs: {'error': e.toString()}),
@@ -307,7 +300,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
             content: Text(
               "Item '${items[i]['name']}' needs at least one person!",
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: context.palette.danger,
           ),
         );
         return;
@@ -430,7 +423,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
           content: Text(
             'error_with_details'.tr(namedArgs: {'error': e.toString()}),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: context.palette.danger,
         ),
       );
     }
@@ -470,15 +463,20 @@ class _EditBillScreenState extends State<EditBillScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('split_bill_equally',
+        title: Text(
+          'split_bill_equally',
           style: TextStyle(fontWeight: FontWeight.bold),
         ).tr(),
-        content: Text('this_will_assign_all_items_to_all_participants_this_action_will_overwrite_your_current_assignments',
+        content: Text(
+          'this_will_assign_all_items_to_all_participants_this_action_will_overwrite_your_current_assignments',
         ).tr(),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('common_cancel', style: TextStyle(color: Colors.grey)).tr(),
+            child: Text(
+              'common_cancel',
+              style: TextStyle(color: context.palette.textTertiary),
+            ).tr(),
           ),
           ElevatedButton(
             onPressed: () {
@@ -487,7 +485,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Colors.white,
+              foregroundColor: context.palette.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -502,9 +500,10 @@ class _EditBillScreenState extends State<EditBillScreen> {
   @override
   Widget build(BuildContext context) {
     Map<String, double> currentShares = _calculateShares();
+    final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: palette.surfaceVariant,
       body: SafeArea(
         child: Column(
           children: [
@@ -554,7 +553,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
             FloatingActionButton(
               heroTag: "edit_split_equally",
               onPressed: _confirmSplitEqually,
-              backgroundColor: Colors.white,
+              backgroundColor: palette.surface,
               child: Icon(
                 CupertinoIcons.divide,
                 color: Theme.of(context).colorScheme.primary,
@@ -565,9 +564,9 @@ class _EditBillScreenState extends State<EditBillScreen> {
               heroTag: "edit_finalize",
               onPressed: _finalizeChanges,
               backgroundColor: Theme.of(context).colorScheme.primary,
-              child: const Icon(
+              child: Icon(
                 CupertinoIcons.check_mark,
-                color: Colors.white,
+                color: palette.onPrimary,
                 size: 28,
               ),
             ),

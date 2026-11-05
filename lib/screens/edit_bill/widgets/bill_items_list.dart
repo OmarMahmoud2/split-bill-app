@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 
@@ -25,6 +26,7 @@ class BillItemsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
       itemCount: items.length,
@@ -42,11 +44,11 @@ class BillItemsList extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: palette.surface,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: palette.shadow.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -73,7 +75,7 @@ class BillItemsList extends StatelessWidget {
                     'assets/animations/food.json',
                     fit: BoxFit.contain,
                     errorBuilder: (c, e, s) =>
-                        const Icon(Icons.fastfood, color: Colors.orange),
+                        Icon(Icons.fastfood, color: palette.warning),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -96,7 +98,7 @@ class BillItemsList extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w900,
-                              color: Colors.blue[900],
+                              color: palette.infoStrong,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -106,8 +108,8 @@ class BillItemsList extends StatelessWidget {
                               currencyCode: currencyCode,
                               decimalDigits: 1,
                             ),
-                            style: const TextStyle(
-                              color: Colors.black87,
+                            style: TextStyle(
+                              color: palette.textPrimary,
                               fontWeight: FontWeight.w700,
                               fontSize: 13,
                             ),
@@ -117,7 +119,7 @@ class BillItemsList extends StatelessWidget {
                     ],
                   ),
                 ),
-                _buildAssignmentIndicator(assignedIds),
+                _buildAssignmentIndicator(assignedIds, palette),
               ],
             ),
           ),
@@ -126,11 +128,11 @@ class BillItemsList extends StatelessWidget {
     );
   }
 
-  Widget _buildAssignmentIndicator(List<String> userIds) {
+  Widget _buildAssignmentIndicator(List<String> userIds, AppPalette palette) {
     if (userIds.isEmpty) {
       return Icon(
         Icons.add_circle_outline_rounded,
-        color: Colors.grey[300],
+        color: palette.border,
         size: 28,
       );
     }
@@ -147,7 +149,7 @@ class BillItemsList extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(color: palette.surface, width: 2),
                   boxShadow: const [
                     BoxShadow(color: Colors.black12, blurRadius: 2),
                   ],
