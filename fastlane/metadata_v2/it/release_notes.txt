@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 è un'app completamente nuova.
+
+- Scansiona uno scontrino e di' chi ha preso cosa. L'assegnazione vocale è nuova.
+- Gruppi con saldo corrente per viaggi, coinquilini e cene.
+- Salda con il minimo di pagamenti e registra i pagamenti con prova.
+- Gli amici pagano da un link, senza app, con i metodi di pagamento del loro paese.
+- Ogni centesimo giustificato: dettaglio completo di ogni quota, con cronologia.
+- Dividi per voce, in parti uguali, esatto, in percentuale o quote. Debiti veloci.
+- Tutte le valute, 22 lingue, da destra a sinistra, modalità scura.
+- Pro: più valute con cambi del giorno, spese ricorrenti, esportazione CSV e PDF.
+- Nessun limite giornaliero nel piano gratuito.

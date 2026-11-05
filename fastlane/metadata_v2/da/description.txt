@@ -1,0 +1,32 @@
+Del enhver regning med alle, på enhver telefon, i ethvert land.
+
+{{APP_NAME}} scanner kvitteringen, forstår hvem der fik hvad og holder en løbende saldo for rejser, bofællesskaber og middage. Venner betaler via et link i de apps, de allerede bruger. Ingen download, ingen konto.
+
+SCAN
+Tag et billede af kvitteringen, og AI'en læser hver linje plus moms, service og drikkepenge. Subtotaler og totaler genkendes og ender ikke blandt dine varer.
+
+SIG HVEM DER FIK HVAD
+"Ali fik burgeren, Mona og jeg delte pomfritterne." Stemmetildeling lægger hver vare på den rigtige person. Vil du hellere trykke? Del pr. vare, ligeligt, med præcise beløb, i procent eller i andele. Hurtige gældsposter kræver slet ingen regning.
+
+HVER ØRE GJORT OP
+Hver andel viser præcis hvilke varer, moms og drikkepenge den indeholder, og hver ændring står i historikken. Totalerne passer altid, med valutaens rigtige decimaler.
+
+VENNER BETALER VIA ET LINK
+Send et personligt link eller et delekort via WhatsApp eller iMessage. Gæster åbner det i browseren, ser deres andel, betaler med MobilePay, PayPal eller Revolut og vedhæfter en kvittering for betalingen. Betalingsmetoderne passer til vennens land, med beløbet udfyldt hvor appen tillader det.
+
+AFREGN MED FÆRRE BETALINGER
+Grupper holder en løbende saldo på tværs af regninger. Afregn med færrest mulige overførsler, registrér betalinger og få en venlig påmindelse om åbne saldi, højst én gang om ugen.
+
+ALLE VALUTAER, 22 SPROG
+Alle verdens valutaer med de rigtige decimaler, arabisk og urdu fra højre mod venstre, mørk tilstand og lokale betalingsmetoder for over 60 lande.
+
+GRATIS, UDEN DAGLIGT LOFT
+Ubegrænsede regninger, grupper, saldi og gæstelinks. Intet dagligt loft, ingen helsidesreklamer. En gratis månedlig pulje af AI-scanninger og stemmekommandoer, flere efter en kort reklame.
+
+PRO
+Ubegrænsede AI-scanninger og stemme, grupper i flere valutaer med daglige kurser, tilbagevendende regninger som husleje og el, samt eksport til CSV og PDF. Månedligt, årligt med gratis prøveperiode eller et engangskøb for altid.
+
+Abonnementer trækkes på din Apple-ID-konto ved bekræftelse af købet og fornyes automatisk, medmindre automatisk fornyelse slås fra mindst 24 timer før periodens udløb. Administrér eller opsig i App Store-kontoens indstillinger.
+
+Privatlivspolitik: https://omarmali.net/split-bill/privacy/
+Vilkår for brug: https://omarmali.net/split-bill/terms/

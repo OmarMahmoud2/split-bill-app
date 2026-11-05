@@ -1,0 +1,32 @@
+Split any bill with anyone, on any phone, in any country.
+
+{{APP_NAME}} scans the receipt, lets you say who had what, and keeps a running balance for trips, apartments and dinners. Friends pay from a link in the apps they already use. No download, no account.
+
+SCAN IT
+Snap a receipt and AI reads every line, plus tax, service and tip. Subtotal and total rows are detected and kept out of your items.
+
+SAY WHO HAD WHAT
+"Ali had the burger, Mona and I shared the fries." Voice assignment puts each item on the right person. Prefer tapping? Split by item, equally, by exact amounts, by percentage or by shares. Quick IOUs need no bill at all.
+
+EVERY CENT ACCOUNTED FOR
+Each share shows exactly which items, tax and tip it includes, and every edit is in the history. Totals always add up, in the currency's real decimals.
+
+FRIENDS PAY FROM A LINK
+Send a personal link or a share card on WhatsApp or iMessage. Guests open it on the web, see their share, pay with Venmo, Cash App, PayPal, Zelle or Apple Cash, and attach proof of payment. Payment methods match each friend's country, with the amount filled in where the app allows it.
+
+SETTLE IN FEWER PAYMENTS
+Groups keep a running balance across bills. Settle up with the fewest transfers, record payments, and get a gentle reminder for open balances, never more than one a week.
+
+ANY CURRENCY, 22 LANGUAGES
+Every world currency with the right decimals, right-to-left Arabic and Urdu, dark mode, and local payment methods for more than 60 countries.
+
+FREE, WITH NO DAILY LIMITS
+Unlimited bills, groups, balances and guest links. No daily cap, no interstitial ads. A free monthly allowance of AI scans and voice commands, with more available by watching a short ad.
+
+PRO
+Unlimited AI scans and voice, multi-currency groups with daily exchange rates, recurring bills such as rent and utilities, and CSV and PDF export. Choose monthly, yearly with a free trial, or a one-time lifetime purchase.
+
+Subscriptions are charged to your Apple ID account when you confirm the purchase and renew automatically unless auto-renew is turned off at least 24 hours before the end of the current period. Manage or cancel them in your App Store account settings.
+
+Privacy Policy: https://omarmali.net/split-bill/privacy/
+Terms of Use: https://omarmali.net/split-bill/terms/

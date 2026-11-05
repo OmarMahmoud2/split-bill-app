@@ -1,0 +1,7 @@
+2.0 è un'app completamente nuova.
+- Scansiona uno scontrino e di' chi ha preso cosa (assegnazione vocale).
+- Gruppi con saldo corrente; salda con il minimo di pagamenti, registra i pagamenti con prova.
+- Gli amici pagano da un link, senza app, con i metodi di pagamento del loro paese.
+- Ogni centesimo giustificato: dettaglio di ogni quota, cronologia.
+- Tutte le valute, 22 lingue, RTL, modalità scura.
+- Pro: più valute, spese ricorrenti, CSV/PDF. Nessun limite giornaliero.

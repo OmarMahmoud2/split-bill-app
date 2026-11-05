@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 is a new app from the ground up.
+
+- Scan a receipt, then say who had what. Voice assignment is new.
+- Groups with a running balance for trips, flats and dinners.
+- Settle up in the fewest payments and record payments with proof.
+- Friends pay from a link, no app needed, with payment methods for their country.
+- Every cent accounted for: a full breakdown on every share, with edit history.
+- Split by item, equally, by exact amounts, percentages or shares. Quick IOUs.
+- Every world currency, 22 languages, right-to-left support and dark mode.
+- Pro: multi-currency with daily rates, recurring bills, CSV and PDF export.
+- No daily limits on the free plan.

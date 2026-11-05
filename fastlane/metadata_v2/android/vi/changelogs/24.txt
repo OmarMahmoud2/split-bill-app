@@ -1,0 +1,8 @@
+2.0 là ứng dụng hoàn toàn mới.
+- Quét hóa đơn rồi nói ai ăn gì (gán bằng giọng nói).
+- Nhóm có số dư liên tục; thanh toán với ít lần chuyển nhất, ghi khoản đã trả kèm bằng chứng.
+- Bạn bè trả qua link, không cần app, bằng phương thức của nước họ.
+- Từng đồng rõ ràng: chi tiết mỗi phần, lịch sử.
+- Chia theo món, đều, chính xác, phần trăm hoặc phần.
+- Mọi loại tiền, 22 ngôn ngữ, RTL, chế độ tối.
+- Pro: đa tiền tệ, hóa đơn định kỳ, CSV/PDF. Không giới hạn mỗi ngày.

@@ -1,0 +1,32 @@
+Divide cualquier cuenta con quien sea, en cualquier teléfono y en cualquier país.
+
+{{APP_NAME}} escanea el ticket, entiende quién pidió qué y lleva un saldo acumulado para viajes, pisos compartidos y cenas. Tus amigos pagan desde un enlace con las apps que ya usan. Sin descargas, sin cuenta.
+
+ESCANÉALO
+Haz una foto al ticket y la IA lee cada línea, más impuestos, servicio y propina. Los subtotales y totales se detectan y no acaban entre tus artículos.
+
+DI QUIÉN PIDIÓ QUÉ
+«Ali pidió la hamburguesa, Mona y yo compartimos las patatas». La asignación por voz pone cada artículo en la persona correcta. ¿Prefieres tocar? Divide por artículo, a partes iguales, por importes exactos, por porcentajes o por partes. Una deuda rápida no necesita ninguna cuenta.
+
+CADA CÉNTIMO JUSTIFICADO
+Cada parte muestra exactamente qué artículos, impuestos y propina incluye, y cada cambio queda en el historial. Los totales siempre cuadran, con los decimales reales de la moneda.
+
+TUS AMIGOS PAGAN DESDE UN ENLACE
+Envía un enlace personal o una tarjeta para compartir por WhatsApp o iMessage. Los invitados lo abren en la web, ven su parte, pagan con Bizum, un QR SEPA o PayPal y adjuntan el comprobante. Los métodos de pago se ajustan al país de cada amigo, con el importe ya rellenado cuando la app lo permite.
+
+SALDA CON MENOS PAGOS
+Los grupos llevan un saldo acumulado entre cuentas. Salda con el mínimo de transferencias, registra los pagos y recibe un recordatorio amable de los saldos pendientes, nunca más de uno a la semana.
+
+CUALQUIER MONEDA, 22 IDIOMAS
+Todas las monedas del mundo con sus decimales correctos, árabe y urdu de derecha a izquierda, modo oscuro y métodos de pago locales para más de 60 países.
+
+GRATIS, SIN LÍMITE DIARIO
+Cuentas, grupos, saldos y enlaces de invitado ilimitados. Sin tope diario y sin anuncios a pantalla completa. Una cuota mensual gratuita de escaneos con IA y comandos de voz, y más viendo un anuncio corto.
+
+PRO
+Escaneos con IA y voz ilimitados, grupos en varias monedas con tipos de cambio diarios, gastos recurrentes como el alquiler y los suministros, y exportación a CSV y PDF. Mensual, anual con prueba gratuita o un pago único para siempre.
+
+Las suscripciones se cargan en tu cuenta de Apple ID al confirmar la compra y se renuevan automáticamente salvo que desactives la renovación automática al menos 24 horas antes del final del periodo en curso. Gestiónalas o cancélalas en los ajustes de tu cuenta del App Store.
+
+Política de privacidad: https://omarmali.net/split-bill/privacy/
+Condiciones de uso: https://omarmali.net/split-bill/terms/

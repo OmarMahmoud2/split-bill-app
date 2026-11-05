@@ -1,0 +1,7 @@
+2.0 er en helt ny app.
+- Scan en kvittering og sig hvem der fik hvad (stemmetildeling).
+- Grupper med løbende saldo; afregn med færrest mulige betalinger, registrér betalinger med kvittering.
+- Venner betaler via et link, uden app, med betalingsmetoder for deres land.
+- Hver øre gjort op: opdeling pr. andel, historik.
+- Alle valutaer, 22 sprog, RTL, mørk tilstand.
+- Pro: flere valutaer, tilbagevendende regninger, CSV/PDF. Intet dagligt loft.

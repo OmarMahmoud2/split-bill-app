@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 adalah aplikasi baru dari nol.
+
+- Pindai struk, lalu sebutkan siapa makan apa. Penetapan suara itu baru.
+- Grup dengan saldo berjalan untuk liburan, anak kos, dan makan bareng.
+- Lunasi dengan transfer sesedikit mungkin, catat pembayaran dengan bukti.
+- Teman bayar lewat tautan, tanpa aplikasi, dengan metode pembayaran negaranya.
+- Tiap rupiah jelas: rincian lengkap tiap bagian, dengan riwayat.
+- Bagi per item, rata, pasti, persentase, atau porsi. Utang kilat.
+- Semua mata uang, 22 bahasa, kanan ke kiri, mode gelap.
+- Pro: multi mata uang dengan kurs harian, tagihan rutin, ekspor CSV dan PDF.
+- Tanpa batas harian di paket gratis.

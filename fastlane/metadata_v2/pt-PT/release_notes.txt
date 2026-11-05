@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 é uma app nova de raiz.
+
+- Digitaliza um talão e diz quem pediu o quê. A atribuição por voz é nova.
+- Grupos com saldo corrente para viagens, casas partilhadas e jantares.
+- Acerta com o mínimo de pagamentos e regista pagamentos com comprovativo.
+- Os teus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
+- Cada cêntimo justificado: detalhe completo de cada parte, com histórico.
+- Divide por item, igualmente, exato, por percentagem ou quotas. Dívidas rápidas.
+- Todas as moedas, 22 idiomas, direita para esquerda, modo escuro.
+- Pro: várias moedas com câmbio do dia, contas recorrentes, exportação CSV e PDF.
+- Sem limite diário no plano grátis.

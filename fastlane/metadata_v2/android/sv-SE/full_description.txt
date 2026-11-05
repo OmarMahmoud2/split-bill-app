@@ -1,0 +1,27 @@
+Dela vilken nota som helst med vem som helst, på vilken telefon som helst, i vilket land som helst.
+
+{{APP_NAME}} skannar kvittot, förstår vem som tog vad och håller ett löpande saldo för resor, kollektiv och middagar. Vänner betalar via en länk i de appar de redan använder. Ingen nedladdning, inget konto.
+
+SKANNA
+Fota kvittot så läser AI:n varje rad, plus moms, serviceavgift och dricks. Delsummor och totaler känns igen och hamnar inte bland dina varor.
+
+SÄG VEM SOM TOG VAD
+"Ali tog burgaren, Mona och jag delade på pommesen." Rösttilldelning lägger varje vara på rätt person. Hellre trycka? Dela per vara, lika, med exakta belopp, i procent eller i andelar. Snabba skulder behöver inget kvitto alls.
+
+VARJE ÖRE REDOVISAT
+Varje andel visar exakt vilka varor, moms och dricks som ingår, och varje ändring finns i historiken. Summorna stämmer alltid, med valutans riktiga decimaler.
+
+VÄNNER BETALAR VIA EN LÄNK
+Skicka en personlig länk eller ett delningskort via WhatsApp eller iMessage. Gäster öppnar det i webbläsaren, ser sin andel, betalar med Swish, PayPal eller Revolut och bifogar ett kvitto på betalningen. Betalsätten matchar vännens land, med beloppet ifyllt där appen tillåter det.
+
+GÖR UPP MED FÄRRE BETALNINGAR
+Grupper håller ett löpande saldo över alla notor. Gör upp med så få överföringar som möjligt, registrera betalningar och få en vänlig påminnelse om öppna saldon, högst en gång i veckan.
+
+ALLA VALUTOR, 22 SPRÅK
+Alla världens valutor med rätt decimaler, arabiska och urdu från höger till vänster, mörkt läge och lokala betalsätt för över 60 länder.
+
+GRATIS, UTAN DAGSGRÄNS
+Obegränsat med notor, grupper, saldon och gästlänkar. Ingen dagsgräns, inga helskärmsannonser. En gratis månadspott med AI-skanningar och röstkommandon, fler efter en kort annons.
+
+PRO
+Obegränsade AI-skanningar och röst, grupper i flera valutor med dagliga växelkurser, återkommande räkningar som hyra och el, samt export till CSV och PDF. Månadsvis, årsvis med gratis provperiod eller ett engångsköp för alltid.

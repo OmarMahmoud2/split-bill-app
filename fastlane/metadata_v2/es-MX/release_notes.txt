@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 es una app nueva desde cero.
+
+- Escanea un recibo y di quién pidió qué. La asignación por voz es nueva.
+- Grupos con saldo acumulado para viajes, roomies y cenas.
+- Salda con el mínimo de pagos y registra los pagos con comprobante.
+- Tus amigos pagan desde un enlace, sin app, con los métodos de pago de su país.
+- Cada centavo justificado: desglose completo de cada parte, con historial.
+- Divide por artículo, a partes iguales, exacto, por porcentajes o partes. Deudas rápidas.
+- Todas las monedas, 22 idiomas, derecha a izquierda, modo oscuro.
+- Pro: varias monedas con tipos del día, gastos recurrentes, exportación CSV y PDF.
+- Sin límite diario en el plan gratuito.

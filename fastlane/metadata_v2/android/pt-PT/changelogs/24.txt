@@ -1,0 +1,7 @@
+2.0 é uma app nova de raiz.
+- Digitaliza um talão e diz quem pediu o quê (atribuição por voz).
+- Grupos com saldo corrente; acerta com o mínimo de pagamentos, regista pagamentos com comprovativo.
+- Os teus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
+- Cada cêntimo justificado: detalhe de cada parte, histórico.
+- Todas as moedas, 22 idiomas, RTL, modo escuro.
+- Pro: várias moedas, contas recorrentes, CSV/PDF. Sem limite diário.

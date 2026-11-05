@@ -1,0 +1,27 @@
+Divida qualquer conta com qualquer pessoa, em qualquer telemóvel, em qualquer país.
+
+{{APP_NAME}} lê o talão, entende quem pediu o quê e mantém um saldo corrente para viagens, casas partilhadas e jantares. Os teus amigos pagam por um link com os apps que já usam. Sem download, sem conta.
+
+DIGITALIZE
+Tire uma foto ao talão e a IA lê cada linha, mais impostos, serviço e gorjeta. Subtotais e totais são reconhecidos e não viram itens.
+
+DIGA QUEM PEDIU O QUÊ
+"O Ali pediu o hambúrguer, eu e a Mona dividimos as batatas." A atribuição por voz coloca cada item na pessoa certa. Preferes tocar? Divide por item, igualmente, por valores exatos, por porcentagem ou por cotas. Uma dívida rápida não precisa de conta nenhuma.
+
+CADA CÊNTIMO JUSTIFICADO
+Cada parte mostra exatamente quais itens, impostos e gorjeta inclui, e toda alteração fica no histórico. Os totais sempre fecham, com as casas decimais reais da moeda.
+
+OS TEUS AMIGOS PAGAM POR UM LINK
+Envia um link pessoal ou um cartão de partilha pelo WhatsApp ou iMessage. Os convidados abrem na web, veem a sua parte, pagam com MB WAY, um QR SEPA ou PayPal e anexam o comprovante. Os meios de pagamento seguem o país de cada amigo, com o valor já preenchido quando o app permite.
+
+ACERTE COM MENOS PAGAMENTOS
+Os grupos mantêm um saldo corrente entre as contas. Acerta com o mínimo de transferências, regista pagamentos e recebe um lembrete gentil dos saldos em aberto, nunca mais de um por semana.
+
+QUALQUER MOEDA, 22 IDIOMAS
+Todas as moedas do mundo com as casas decimais certas, árabe e urdu da direita para a esquerda, modo escuro e meios de pagamento locais para mais de 60 países.
+
+GRÁTIS, SEM LIMITE DIÁRIO
+Contas, grupos, saldos e links de convidado ilimitados. Sem teto diário, sem anúncios em tela cheia. Uma cota mensal grátis de digitalizações com IA e comandos de voz, e mais ao ver um anúncio curto.
+
+PRO
+Digitalizações com IA e voz ilimitados, grupos em várias moedas com câmbio diário, contas recorrentes como renda e luz, e exportação em CSV e PDF. Mensal, anual com período experimental grátis ou um pagamento único vitalício.

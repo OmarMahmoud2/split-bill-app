@@ -1,0 +1,27 @@
+Teile jede Rechnung mit allen, auf jedem Handy, in jedem Land.
+
+{{APP_NAME}} scannt den Kassenbon, versteht, wer was hatte, und führt einen laufenden Saldo für Reisen, WGs und Abende mit Freunden. Freunde zahlen über einen Link mit den Apps, die sie schon nutzen. Kein Download, kein Konto.
+
+SCANNEN
+Bon fotografieren, fertig. Die KI liest jede Position sowie Steuer, Service und Trinkgeld. Zwischensummen und Gesamtbeträge werden erkannt und landen nicht bei den Artikeln.
+
+SAGEN, WER WAS HATTE
+„Ali hatte den Burger, Mona und ich haben die Pommes geteilt.“ Die Sprachzuordnung legt jede Position auf die richtige Person. Lieber tippen? Nach Artikel, gleichmäßig, nach genauen Beträgen, Prozenten oder Anteilen aufteilen. Schnelle Schuldscheine brauchen gar keine Rechnung.
+
+JEDER CENT NACHVOLLZIEHBAR
+Jeder Anteil zeigt genau, welche Artikel, Steuern und Trinkgeld enthalten sind, und jede Änderung steht im Verlauf. Die Summen gehen immer auf, mit den echten Nachkommastellen der Währung.
+
+FREUNDE ZAHLEN PER LINK
+Persönlichen Link oder Teilen-Karte über WhatsApp oder iMessage senden. Gäste öffnen ihn im Browser, sehen ihren Anteil, zahlen mit PayPal, GiroCode (SEPA-QR) oder Wero und hängen einen Zahlungsnachweis an. Die Zahlungsarten passen zum Land des Freundes, der Betrag ist vorausgefüllt, wo die App es erlaubt.
+
+MIT WENIGER ZAHLUNGEN AUSGLEICHEN
+Gruppen führen einen laufenden Saldo über alle Rechnungen. Mit den wenigsten Überweisungen ausgleichen, Zahlungen erfassen und eine freundliche Erinnerung für offene Beträge erhalten, höchstens einmal pro Woche.
+
+JEDE WÄHRUNG, 22 SPRACHEN
+Alle Weltwährungen mit den richtigen Dezimalstellen, Arabisch und Urdu von rechts nach links, Dark Mode und lokale Zahlungsarten für mehr als 60 Länder.
+
+KOSTENLOS, OHNE TAGESLIMIT
+Unbegrenzt Rechnungen, Gruppen, Salden und Gast-Links. Keine Tagesgrenze, keine Interstitial-Werbung. Ein kostenloses monatliches Kontingent an KI-Scans und Sprachbefehlen, mehr gibt es für ein kurzes Werbevideo.
+
+PRO
+Unbegrenzte KI-Scans und Sprachbefehle, Gruppen in mehreren Währungen mit täglichen Wechselkursen, wiederkehrende Rechnungen wie Miete und Nebenkosten sowie CSV- und PDF-Export. Monatlich, jährlich mit kostenloser Testphase oder einmalig für immer.

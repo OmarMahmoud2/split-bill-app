@@ -1,0 +1,32 @@
+Partagez n'importe quelle addition avec n'importe qui, sur n'importe quel téléphone, dans n'importe quel pays.
+
+{{APP_NAME}} scanne le ticket, comprend qui a pris quoi et tient un solde courant pour les voyages, la coloc et les restos. Vos amis paient depuis un lien, avec les applis qu'ils utilisent déjà. Aucun téléchargement, aucun compte.
+
+SCANNEZ
+Prenez le ticket en photo : l'IA lit chaque ligne, plus la taxe, le service et le pourboire. Les sous-totaux et totaux sont détectés et restent hors de vos articles.
+
+DITES QUI A PRIS QUOI
+« Ali a pris le burger, Mona et moi avons partagé les frites. » L'attribution vocale met chaque article sur la bonne personne. Vous préférez taper ? Partagez par article, à parts égales, par montants exacts, en pourcentages ou en parts. Une petite dette se note sans aucune addition.
+
+CHAQUE CENTIME JUSTIFIÉ
+Chaque part montre exactement les articles, taxes et pourboire qu'elle contient, et chaque modification figure dans l'historique. Les totaux tombent toujours juste, avec les vraies décimales de la devise.
+
+VOS AMIS PAIENT DEPUIS UN LIEN
+Envoyez un lien personnel ou une carte de partage sur WhatsApp ou iMessage. Les invités l'ouvrent sur le web, voient leur part, paient avec Wero, Lydia, un QR SEPA ou PayPal et joignent une preuve de paiement. Les moyens de paiement correspondent au pays de chaque ami, montant prérempli quand l'appli le permet.
+
+RÉGLEZ EN MOINS DE PAIEMENTS
+Les groupes gardent un solde courant d'une addition à l'autre. Réglez avec le minimum de virements, enregistrez les paiements et recevez un rappel discret pour les soldes ouverts, jamais plus d'un par semaine.
+
+TOUTES LES DEVISES, 22 LANGUES
+Toutes les devises du monde avec les bonnes décimales, l'arabe et l'ourdou de droite à gauche, le mode sombre et des moyens de paiement locaux pour plus de 60 pays.
+
+GRATUIT, SANS LIMITE QUOTIDIENNE
+Additions, groupes, soldes et liens invités illimités. Aucun plafond journalier, aucune publicité interstitielle. Un quota mensuel gratuit de scans IA et de commandes vocales, et davantage après une courte vidéo.
+
+PRO
+Scans IA et voix illimités, groupes multidevises avec taux de change quotidiens, dépenses récurrentes comme le loyer et les charges, export CSV et PDF. Mensuel, annuel avec essai gratuit, ou achat unique à vie.
+
+Les abonnements sont facturés sur votre compte Apple ID à la confirmation de l'achat et se renouvellent automatiquement, sauf si le renouvellement automatique est désactivé au moins 24 heures avant la fin de la période en cours. Gérez-les ou résiliez-les dans les réglages de votre compte App Store.
+
+Politique de confidentialité : https://omarmali.net/split-bill/privacy/
+Conditions d'utilisation : https://omarmali.net/split-bill/terms/

@@ -1,0 +1,32 @@
+Bagi tagihan apa pun dengan siapa pun, di ponsel apa pun, di negara mana pun.
+
+{{APP_NAME}} memindai struk, memahami siapa makan apa, dan menyimpan saldo berjalan untuk liburan, anak kos, dan makan bareng. Teman membayar lewat tautan dengan aplikasi yang sudah mereka pakai. Tanpa unduhan, tanpa akun.
+
+PINDAI
+Foto struknya, dan AI membaca tiap baris beserta pajak, servis, dan tip. Baris subtotal dan total dikenali dan tidak masuk ke daftar item.
+
+SEBUTKAN SIAPA MAKAN APA
+"Burgernya Ali, kentangnya aku dan Mona bagi dua." Penetapan suara menaruh tiap item ke orang yang tepat. Lebih suka ketuk? Bagi per item, rata, nominal pasti, persentase, atau porsi. Utang kecil tidak butuh struk sama sekali.
+
+TIAP RUPIAH JELAS
+Setiap bagian menunjukkan persis item, pajak, dan tip yang termasuk, dan setiap perubahan tersimpan di riwayat. Totalnya selalu pas, dengan desimal asli mata uangnya.
+
+TEMAN BAYAR LEWAT TAUTAN
+Kirim tautan pribadi atau kartu bagikan lewat WhatsApp atau iMessage. Tamu membukanya di web, melihat bagiannya, membayar dengan transfer bank (BI-FAST), GoPay, DANA, OVO, atau PayPal, lalu melampirkan bukti bayar. Metode pembayaran mengikuti negara tiap teman, dengan nominal terisi otomatis jika aplikasinya mendukung.
+
+LUNASI DENGAN LEBIH SEDIKIT TRANSFER
+Grup menyimpan saldo berjalan lintas tagihan. Lunasi dengan transfer sesedikit mungkin, catat pembayaran, dan dapatkan pengingat ramah untuk saldo yang belum lunas, maksimal sekali seminggu.
+
+MATA UANG APA PUN, 22 BAHASA
+Semua mata uang dunia dengan desimal yang benar, Arab dan Urdu dari kanan ke kiri, mode gelap, dan metode pembayaran lokal untuk lebih dari 60 negara.
+
+GRATIS, TANPA BATAS HARIAN
+Tagihan, grup, saldo, dan tautan tamu tanpa batas. Tanpa batas harian, tanpa iklan layar penuh. Jatah bulanan gratis untuk pindai AI dan perintah suara, dan tambahan dengan menonton iklan singkat.
+
+PRO
+Pindai AI dan suara tanpa batas, grup multi mata uang dengan kurs harian, tagihan rutin seperti sewa dan listrik, serta ekspor CSV dan PDF. Bulanan, tahunan dengan uji coba gratis, atau sekali bayar seumur hidup.
+
+Langganan ditagihkan ke akun Apple ID saat pembelian dikonfirmasi dan diperpanjang otomatis kecuali perpanjangan otomatis dimatikan minimal 24 jam sebelum periode berjalan berakhir. Kelola atau batalkan di pengaturan akun App Store.
+
+Kebijakan Privasi: https://omarmali.net/split-bill/privacy/
+Ketentuan Penggunaan: https://omarmali.net/split-bill/terms/

@@ -1,0 +1,1 @@
+kosten,ausgaben,gruppe,reise,wg,urlaub,freunde,essen,trinkgeld,schulden,splitten,reisekasse,beleg,ki

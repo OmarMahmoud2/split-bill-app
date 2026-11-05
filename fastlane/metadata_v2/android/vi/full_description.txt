@@ -1,0 +1,27 @@
+Chia bất kỳ hóa đơn nào với bất kỳ ai, trên mọi điện thoại, ở mọi quốc gia.
+
+{{APP_NAME}} quét hóa đơn, hiểu ai ăn gì và giữ số dư liên tục cho chuyến đi, bạn cùng phòng và các bữa ăn. Bạn bè trả qua link bằng những ứng dụng họ đang dùng. Không tải, không tài khoản.
+
+QUÉT
+Chụp hóa đơn và AI đọc từng dòng, cả thuế, phí dịch vụ và tiền tip. Dòng tạm tính và tổng cộng được nhận diện và không lẫn vào món.
+
+NÓI AI ĂN GÌ
+"Ali ăn burger, mình với Mona chia khoai tây." Gán bằng giọng nói đưa từng món đúng người. Thích chạm hơn? Chia theo món, chia đều, theo số tiền chính xác, theo phần trăm hoặc theo phần. Khoản nợ nhỏ không cần hóa đơn nào cả.
+
+TỪNG ĐỒNG RÕ RÀNG
+Mỗi phần cho thấy chính xác gồm những món, thuế và tip nào, và mọi chỉnh sửa đều nằm trong lịch sử. Tổng luôn khớp, đúng số lẻ thật của tiền tệ.
+
+BẠN BÈ TRẢ QUA LINK
+Gửi link cá nhân hoặc thẻ chia sẻ qua WhatsApp hoặc iMessage. Khách mở trên web, thấy phần của mình, trả bằng VietQR, MoMo hoặc PayPal và đính kèm bằng chứng chuyển khoản. Phương thức thanh toán theo quốc gia của từng người bạn, số tiền được điền sẵn khi ứng dụng cho phép.
+
+THANH TOÁN VỚI ÍT LẦN CHUYỂN HƠN
+Nhóm giữ số dư liên tục qua nhiều hóa đơn. Thanh toán với số lần chuyển ít nhất, ghi lại các khoản đã trả và nhận lời nhắc nhẹ nhàng cho số dư còn lại, không quá một lần mỗi tuần.
+
+MỌI LOẠI TIỀN, 22 NGÔN NGỮ
+Mọi loại tiền trên thế giới với số lẻ đúng, tiếng Ả Rập và Urdu từ phải sang trái, chế độ tối và phương thức thanh toán địa phương cho hơn 60 quốc gia.
+
+MIỄN PHÍ, KHÔNG GIỚI HẠN MỖI NGÀY
+Hóa đơn, nhóm, số dư và link khách không giới hạn. Không giới hạn mỗi ngày, không quảng cáo toàn màn hình. Hạn mức miễn phí hằng tháng cho quét AI và lệnh giọng nói, thêm nữa khi xem một quảng cáo ngắn.
+
+PRO
+Quét AI và giọng nói không giới hạn, nhóm đa tiền tệ với tỷ giá hằng ngày, hóa đơn định kỳ như tiền nhà và điện nước, xuất CSV và PDF. Theo tháng, theo năm có dùng thử miễn phí, hoặc mua một lần dùng trọn đời.

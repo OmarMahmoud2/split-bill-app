@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 sıfırdan yeni bir uygulama.
+
+- Fişi tara, sonra kim ne aldı söyle. Sesle atama yeni.
+- Seyahatler, ev arkadaşları ve yemekler için güncel bakiyeli gruplar.
+- En az ödemeyle hesaplaş, ödemeleri dekontla kaydet.
+- Arkadaşların bağlantıdan öder, uygulama gerekmez, kendi ülkelerinin ödeme yöntemleriyle.
+- Her kuruşun hesabı belli: her pay için tam döküm, geçmişle birlikte.
+- Kaleme göre, eşit, tam, yüzde veya pay ile böl. Hızlı borçlar.
+- Tüm para birimleri, 22 dil, sağdan sola, karanlık mod.
+- Pro: günlük kurlarla çoklu para birimi, tekrarlayan hesaplar, CSV ve PDF dışa aktarma.
+- Ücretsiz planda günlük sınır yok.

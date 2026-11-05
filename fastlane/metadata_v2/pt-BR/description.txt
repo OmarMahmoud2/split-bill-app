@@ -1,0 +1,32 @@
+Divida qualquer conta com qualquer pessoa, em qualquer celular, em qualquer país.
+
+{{APP_NAME}} escaneia a nota, entende quem pediu o quê e mantém um saldo corrente para viagens, repúblicas e jantares. Seus amigos pagam por um link com os apps que já usam. Sem download, sem conta.
+
+ESCANEIE
+Tire uma foto da nota e a IA lê cada linha, mais impostos, serviço e gorjeta. Subtotais e totais são reconhecidos e não viram itens.
+
+DIGA QUEM PEDIU O QUÊ
+"O Ali pediu o hambúrguer, eu e a Mona dividimos a batata." A atribuição por voz coloca cada item na pessoa certa. Prefere tocar? Divida por item, igualmente, por valores exatos, por porcentagem ou por cotas. Uma dívida rápida não precisa de conta nenhuma.
+
+CADA CENTAVO JUSTIFICADO
+Cada parte mostra exatamente quais itens, impostos e gorjeta inclui, e toda alteração fica no histórico. Os totais sempre fecham, com as casas decimais reais da moeda.
+
+SEUS AMIGOS PAGAM POR UM LINK
+Envie um link pessoal ou um card de compartilhamento pelo WhatsApp ou iMessage. Os convidados abrem na web, veem a parte deles, pagam com Pix (QR ou copia e cola) ou PayPal e anexam o comprovante. Os meios de pagamento seguem o país de cada amigo, com o valor já preenchido quando o app permite.
+
+ACERTE COM MENOS PAGAMENTOS
+Os grupos mantêm um saldo corrente entre as contas. Acerte com o mínimo de transferências, registre pagamentos e receba um lembrete gentil dos saldos em aberto, nunca mais de um por semana.
+
+QUALQUER MOEDA, 22 IDIOMAS
+Todas as moedas do mundo com as casas decimais certas, árabe e urdu da direita para a esquerda, modo escuro e meios de pagamento locais para mais de 60 países.
+
+GRÁTIS, SEM LIMITE DIÁRIO
+Contas, grupos, saldos e links de convidado ilimitados. Sem teto diário, sem anúncios em tela cheia. Uma cota mensal grátis de escaneamentos com IA e comandos de voz, e mais assistindo a um anúncio curto.
+
+PRO
+Escaneamentos com IA e voz ilimitados, grupos em várias moedas com câmbio diário, contas recorrentes como aluguel e luz, e exportação em CSV e PDF. Mensal, anual com teste grátis ou um pagamento único vitalício.
+
+As assinaturas são cobradas na sua conta do Apple ID ao confirmar a compra e renovam automaticamente, a menos que a renovação automática seja desativada pelo menos 24 horas antes do fim do período atual. Gerencie ou cancele nos ajustes da sua conta da App Store.
+
+Política de privacidade: https://omarmali.net/split-bill/privacy/
+Termos de uso: https://omarmali.net/split-bill/terms/

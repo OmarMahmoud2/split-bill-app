@@ -1,0 +1,27 @@
+Her hesabı herkesle, her telefonda, her ülkede bölüş.
+
+{{APP_NAME}} fişi tarar, kimin ne aldığını anlar ve seyahatler, ev arkadaşları ve yemekler için güncel bakiye tutar. Arkadaşların zaten kullandıkları uygulamalarla bağlantıdan öder. İndirme yok, hesap açma yok.
+
+TARA
+Fişin fotoğrafını çek; yapay zeka her satırı, vergiyi, servisi ve bahşişi okur. Ara toplam ve toplam satırları tanınır, kalemlerin arasına karışmaz.
+
+KİM NE ALDI SÖYLE
+"Burgeri Ali aldı, patatesi Mona ile paylaştık." Sesle atama her kalemi doğru kişiye yazar. Dokunmayı mı tercih edersin? Kaleme göre, eşit, tam tutarla, yüzdeyle veya payla böl. Hızlı bir borç için fişe bile gerek yok.
+
+HER KURUŞUN HESABI BELLİ
+Her pay hangi kalemleri, vergiyi ve bahşişi içerdiğini tam olarak gösterir; her değişiklik geçmişte kalır. Toplamlar para biriminin gerçek ondalıklarıyla her zaman tutar.
+
+ARKADAŞLARIN BAĞLANTIDAN ÖDER
+WhatsApp veya iMessage'dan kişisel bağlantı ya da paylaşım kartı gönder. Misafirler tarayıcıda açar, payını görür, FAST, IBAN ile havale veya Revolut ile öder ve dekontu ekler. Ödeme yöntemleri arkadaşının ülkesine göre gelir; uygulama izin verdiğinde tutar hazır yazılı olur.
+
+DAHA AZ ÖDEMEYLE HESAPLAŞ
+Gruplar hesaplar arasında güncel bakiye tutar. En az transferle hesaplaş, ödemeleri kaydet ve açık bakiyeler için nazik bir hatırlatma al, haftada en fazla bir kez.
+
+HER PARA BİRİMİ, 22 DİL
+Dünyadaki tüm para birimleri doğru ondalıklarla, sağdan sola Arapça ve Urduca, karanlık mod ve 60'tan fazla ülke için yerel ödeme yöntemleri.
+
+ÜCRETSİZ, GÜNLÜK SINIR YOK
+Sınırsız hesap, grup, bakiye ve misafir bağlantısı. Günlük tavan yok, tam ekran reklam yok. Aylık ücretsiz yapay zeka tarama ve sesli komut hakkı, kısa bir reklamla daha fazlası.
+
+PRO
+Sınırsız yapay zeka taraması ve ses, günlük kurlarla çok para birimli gruplar, kira ve faturalar gibi tekrarlayan hesaplar, CSV ve PDF dışa aktarma. Aylık, ücretsiz denemeli yıllık veya tek seferlik ömür boyu.

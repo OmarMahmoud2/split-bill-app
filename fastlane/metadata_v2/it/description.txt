@@ -1,0 +1,32 @@
+Dividi qualsiasi conto con chiunque, su qualsiasi telefono, in qualsiasi paese.
+
+{{APP_NAME}} scansiona lo scontrino, capisce chi ha preso cosa e tiene un saldo corrente per viaggi, coinquilini e cene. Gli amici pagano da un link con le app che usano già. Nessun download, nessun account.
+
+SCANSIONA
+Fotografa lo scontrino e l'IA legge ogni riga, più tasse, servizio e mancia. Subtotali e totali vengono riconosciuti e non finiscono tra le tue voci.
+
+DI' CHI HA PRESO COSA
+"Ali ha preso l'hamburger, Mona e io abbiamo diviso le patatine." L'assegnazione vocale mette ogni voce sulla persona giusta. Preferisci toccare? Dividi per voce, in parti uguali, per importi esatti, in percentuale o in quote. Un debito veloce non ha bisogno di nessun conto.
+
+OGNI CENTESIMO GIUSTIFICATO
+Ogni quota mostra esattamente quali voci, tasse e mancia include, e ogni modifica resta nella cronologia. I totali tornano sempre, con i decimali reali della valuta.
+
+GLI AMICI PAGANO DA UN LINK
+Invia un link personale o una card da condividere su WhatsApp o iMessage. Gli ospiti lo aprono sul web, vedono la loro quota, pagano con Satispay, PayPal o un QR SEPA e allegano la prova del pagamento. I metodi di pagamento seguono il paese di ogni amico, con l'importo già inserito dove l'app lo consente.
+
+SALDA CON MENO PAGAMENTI
+I gruppi tengono un saldo corrente tra un conto e l'altro. Salda con il minimo di bonifici, registra i pagamenti e ricevi un promemoria gentile per i saldi aperti, mai più di uno a settimana.
+
+QUALSIASI VALUTA, 22 LINGUE
+Tutte le valute del mondo con i decimali giusti, arabo e urdu da destra a sinistra, modalità scura e metodi di pagamento locali per oltre 60 paesi.
+
+GRATIS, SENZA LIMITE GIORNALIERO
+Conti, gruppi, saldi e link ospite illimitati. Nessun tetto giornaliero, nessuna pubblicità a schermo intero. Una quota mensile gratuita di scansioni IA e comandi vocali, e altre guardando un breve annuncio.
+
+PRO
+Scansioni IA e voce illimitate, gruppi in più valute con cambi giornalieri, spese ricorrenti come affitto e bollette, esportazione in CSV e PDF. Mensile, annuale con prova gratuita o un acquisto unico per sempre.
+
+Gli abbonamenti vengono addebitati sull'account Apple ID alla conferma dell'acquisto e si rinnovano automaticamente, salvo disattivazione del rinnovo automatico almeno 24 ore prima della fine del periodo in corso. Gestiscili o annullali nelle impostazioni dell'account App Store.
+
+Informativa sulla privacy: https://omarmali.net/split-bill/privacy/
+Termini di utilizzo: https://omarmali.net/split-bill/terms/

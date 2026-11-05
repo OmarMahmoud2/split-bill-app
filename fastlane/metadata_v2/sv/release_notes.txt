@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 är en helt ny app.
+
+- Skanna ett kvitto och säg vem som tog vad. Rösttilldelning är nytt.
+- Grupper med löpande saldo för resor, kollektiv och middagar.
+- Gör upp med så få betalningar som möjligt, registrera betalningar med kvitto.
+- Vänner betalar via en länk, utan app, med betalsätt för sitt land.
+- Varje öre redovisat: full uppdelning per andel, med historik.
+- Dela per vara, lika, exakt, i procent eller andelar. Snabba skulder.
+- Alla valutor, 22 språk, höger-till-vänster, mörkt läge.
+- Pro: flera valutor med dagskurser, återkommande räkningar, CSV- och PDF-export.
+- Ingen dagsgräns i gratisplanen.

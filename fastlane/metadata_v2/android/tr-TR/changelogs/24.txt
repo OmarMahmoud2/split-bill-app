@@ -1,0 +1,8 @@
+2.0 sıfırdan yeni bir uygulama.
+- Fişi tara, sonra kim ne aldı söyle (sesle atama).
+- Güncel bakiyeli gruplar; en az ödemeyle hesaplaş, ödemeleri dekontla kaydet.
+- Arkadaşların bağlantıdan öder, uygulama gerekmez, kendi ülkelerinin ödeme yöntemleriyle.
+- Her kuruşun hesabı belli: her pay için döküm, geçmiş.
+- Kaleme göre, eşit, tam, yüzde veya pay ile böl.
+- Tüm para birimleri, 22 dil, RTL, karanlık mod.
+- Pro: çoklu para birimi, tekrarlayan hesaplar, CSV/PDF. Günlük sınır yok.

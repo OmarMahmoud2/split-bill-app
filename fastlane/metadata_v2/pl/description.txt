@@ -1,0 +1,32 @@
+Podziel każdy rachunek z kimkolwiek, na każdym telefonie, w każdym kraju.
+
+{{APP_NAME}} skanuje paragon, rozumie, kto co zamówił, i prowadzi bieżące saldo dla wyjazdów, mieszkań i kolacji. Znajomi płacą z linku w aplikacjach, których już używają. Bez pobierania, bez konta.
+
+ZESKANUJ
+Zrób zdjęcie paragonu, a AI odczyta każdą pozycję oraz podatek, serwis i napiwek. Sumy częściowe i całkowite są rozpoznawane i nie trafiają między pozycje.
+
+POWIEDZ, KTO CO ZAMÓWIŁ
+„Ali wziął burgera, Mona i ja podzieliliśmy frytki”. Przypisywanie głosem przydziela każdą pozycję właściwej osobie. Wolisz stukać? Podziel po pozycjach, po równo, dokładnymi kwotami, procentowo lub udziałami. Szybki dług nie potrzebuje żadnego rachunku.
+
+KAŻDY GROSZ ROZLICZONY
+Każdy udział pokazuje dokładnie, które pozycje, podatek i napiwek obejmuje, a każda zmiana jest w historii. Sumy zawsze się zgadzają, z prawdziwymi miejscami dziesiętnymi waluty.
+
+ZNAJOMI PŁACĄ Z LINKU
+Wyślij osobisty link lub kartę udostępniania przez WhatsApp lub iMessage. Goście otwierają go w przeglądarce, widzą swój udział, płacą przez BLIK, PayPal lub Revolut i dołączają potwierdzenie. Metody płatności pasują do kraju znajomego, z kwotą wpisaną tam, gdzie aplikacja na to pozwala.
+
+ROZLICZ MNIEJSZĄ LICZBĄ PRZELEWÓW
+Grupy prowadzą bieżące saldo między rachunkami. Rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty i otrzymuj delikatne przypomnienie o otwartych saldach, nie częściej niż raz w tygodniu.
+
+KAŻDA WALUTA, 22 JĘZYKI
+Wszystkie waluty świata z właściwymi miejscami dziesiętnymi, arabski i urdu od prawej do lewej, tryb ciemny i lokalne metody płatności dla ponad 60 krajów.
+
+ZA DARMO, BEZ DZIENNEGO LIMITU
+Nielimitowane rachunki, grupy, salda i linki dla gości. Bez dziennego limitu, bez reklam pełnoekranowych. Darmowa miesięczna pula skanów AI i poleceń głosowych, więcej po obejrzeniu krótkiej reklamy.
+
+PRO
+Nielimitowane skany AI i głos, grupy w wielu walutach z dziennymi kursami, cykliczne rachunki jak czynsz i media, eksport do CSV i PDF. Miesięcznie, rocznie z darmowym okresem próbnym lub jednorazowo na zawsze.
+
+Subskrypcje są pobierane z konta Apple ID przy potwierdzeniu zakupu i odnawiają się automatycznie, chyba że automatyczne odnawianie zostanie wyłączone co najmniej 24 godziny przed końcem bieżącego okresu. Zarządzaj nimi lub anuluj w ustawieniach konta App Store.
+
+Polityka prywatności: https://omarmali.net/split-bill/privacy/
+Warunki korzystania: https://omarmali.net/split-bill/terms/

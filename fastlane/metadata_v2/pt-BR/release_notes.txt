@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 é um app novo do zero.
+
+- Escaneie uma nota e diga quem pediu o quê. A atribuição por voz é nova.
+- Grupos com saldo corrente para viagens, repúblicas e jantares.
+- Acerte com o mínimo de pagamentos e registre pagamentos com comprovante.
+- Seus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
+- Cada centavo justificado: detalhamento completo de cada parte, com histórico.
+- Divida por item, igualmente, exato, por porcentagem ou cotas. Dívidas rápidas.
+- Todas as moedas, 22 idiomas, direita para esquerda, modo escuro.
+- Pro: várias moedas com câmbio do dia, contas recorrentes, exportação CSV e PDF.
+- Sem limite diário no plano grátis.

@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 to zupełnie nowa aplikacja.
+
+- Zeskanuj paragon i powiedz, kto co zamówił. Przypisywanie głosem jest nowe.
+- Grupy z bieżącym saldem dla wyjazdów, mieszkań i kolacji.
+- Rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty z potwierdzeniem.
+- Znajomi płacą z linku, bez aplikacji, metodami płatności ich kraju.
+- Każdy grosz rozliczony: pełne zestawienie każdego udziału, z historią.
+- Podział po pozycjach, po równo, dokładnie, procentowo lub udziałami. Szybkie długi.
+- Wszystkie waluty, 22 języki, od prawej do lewej, tryb ciemny.
+- Pro: wiele walut z dziennymi kursami, cykliczne rachunki, eksport CSV i PDF.
+- Bez dziennego limitu w darmowym planie.

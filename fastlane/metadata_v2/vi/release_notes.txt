@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 là ứng dụng hoàn toàn mới.
+
+- Quét hóa đơn rồi nói ai ăn gì. Gán bằng giọng nói là tính năng mới.
+- Nhóm có số dư liên tục cho chuyến đi, bạn cùng phòng và bữa ăn.
+- Thanh toán với ít lần chuyển nhất, ghi khoản đã trả kèm bằng chứng.
+- Bạn bè trả qua link, không cần app, bằng phương thức của nước họ.
+- Từng đồng rõ ràng: chi tiết đầy đủ mỗi phần, có lịch sử.
+- Chia theo món, đều, chính xác, phần trăm hoặc phần. Nợ nhanh.
+- Mọi loại tiền, 22 ngôn ngữ, phải sang trái, chế độ tối.
+- Pro: đa tiền tệ với tỷ giá ngày, hóa đơn định kỳ, xuất CSV và PDF.
+- Gói miễn phí không giới hạn mỗi ngày.

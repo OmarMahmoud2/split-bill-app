@@ -1,0 +1,7 @@
+2.0 é um app novo do zero.
+- Escaneie uma nota e diga quem pediu o quê (atribuição por voz).
+- Grupos com saldo corrente; acerte com o mínimo de pagamentos, registre pagamentos com comprovante.
+- Seus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
+- Cada centavo justificado: detalhamento de cada parte, histórico.
+- Todas as moedas, 22 idiomas, RTL, modo escuro.
+- Pro: várias moedas, contas recorrentes, CSV/PDF. Sem limite diário.

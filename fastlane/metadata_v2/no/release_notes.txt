@@ -1,0 +1,11 @@
+{{APP_NAME}} 2.0 er en helt ny app.
+
+- Skann en kvittering og si hvem som fikk hva. Stemmetildeling er nytt.
+- Grupper med løpende saldo for reiser, kollektiv og middager.
+- Gjør opp med færrest mulige betalinger, registrer betalinger med bevis.
+- Venner betaler via en lenke, uten app, med betalingsmåter for sitt land.
+- Hvert øre gjort rede for: full oppdeling per andel, med historikk.
+- Del per vare, likt, nøyaktig, i prosent eller andeler. Rask gjeld.
+- Alle valutaer, 22 språk, høyre-mot-venstre, mørk modus.
+- Pro: flere valutaer med dagskurser, gjentakende regninger, CSV- og PDF-eksport.
+- Ingen dagsgrense i gratisplanen.

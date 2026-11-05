@@ -1,0 +1,7 @@
+2.0 is een volledig nieuwe app.
+- Scan een bon en zeg wie wat had (spraaktoewijzing).
+- Groepen met lopend saldo; verreken met zo min mogelijk betalingen, registreer betalingen met bewijs.
+- Vrienden betalen via een link, zonder app, met betaalmethoden voor hun land.
+- Elke cent verantwoord: uitsplitsing per aandeel, geschiedenis.
+- Alle valuta's, 22 talen, RTL, donkere modus.
+- Pro: meerdere valuta's, terugkerende rekeningen, CSV/PDF. Geen daglimiet.

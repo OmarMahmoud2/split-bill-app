@@ -1,0 +1,8 @@
+2.0 är en helt ny app.
+- Skanna ett kvitto och säg vem som tog vad (rösttilldelning).
+- Grupper med löpande saldo; gör upp med så få betalningar som möjligt, registrera betalningar med kvitto.
+- Vänner betalar via en länk, utan app, med betalsätt för sitt land.
+- Varje öre redovisat: uppdelning per andel, historik.
+- Dela per vara, lika, exakt, procent eller andelar.
+- Alla valutor, 22 språk, RTL, mörkt läge.
+- Pro: flera valutor, återkommande räkningar, CSV/PDF. Ingen dagsgräns.
