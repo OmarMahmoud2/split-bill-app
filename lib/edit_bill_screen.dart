@@ -1,578 +1,745 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'services/contact_service.dart';
-import 'services/friend_scanner_service.dart';
-import 'home_screen.dart';
-import 'package:split_bill_app/widgets/multi_contact_picker.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
-import 'screens/edit_bill/widgets/edit_bill_header.dart';
-import 'screens/edit_bill/widgets/participant_list.dart';
-import 'screens/edit_bill/widgets/bill_items_list.dart';
-import 'screens/edit_bill/widgets/edit_assignment_sheet.dart';
-import 'screens/edit_bill/widgets/participant_options_sheet.dart';
-import 'screens/edit_bill/widgets/edit_bill_summary_dialog.dart';
-import 'screens/split_bill/widgets/add_members_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
+import 'package:split_bill_app/screens/edit_bill/edit_split_screen.dart';
+import 'package:split_bill_app/screens/edit_bill/history_format.dart';
+import 'package:split_bill_app/screens/edit_bill/widgets/edit_bill_header.dart';
+import 'package:split_bill_app/screens/edit_bill/widgets/edit_bill_summary_dialog.dart';
+import 'package:split_bill_app/screens/edit_bill/widgets/history_card.dart';
+import 'package:split_bill_app/screens/edit_bill/widgets/participant_list.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/add_members_sheet.dart';
+import 'package:split_bill_app/services/contact_service.dart';
+import 'package:split_bill_app/services/friend_scanner_service.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/multi_contact_picker.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
+/// Where the edit screen writes. Firestore by default; tests pass a fake.
+abstract class EditBillStore {
+  Future<void> update(String billId, Map<String, dynamic> fields);
+  Future<void> delete(String billId);
+}
+
+class FirestoreEditBillStore implements EditBillStore {
+  const FirestoreEditBillStore();
+
+  DocumentReference<Map<String, dynamic>> _doc(String id) =>
+      FirebaseFirestore.instance.collection('bills').doc(id);
+
+  @override
+  Future<void> update(String billId, Map<String, dynamic> fields) =>
+      _doc(billId).update(fields);
+
+  @override
+  Future<void> delete(String billId) => _doc(billId).delete();
+}
+
+/// Edit a saved bill (board "Edit bill, changes are tracked").
+///
+/// Name, date and currency on top; "Items, people and split" and "Tax,
+/// service, tip" open their editors; "Paid by" shows the host. Saving
+/// recomputes the bill in minor units, refuses with a clear message when
+/// something does not add up, writes the 2.0 fields and records what
+/// changed in `history`. Pops with `true` after a save.
 class EditBillScreen extends StatefulWidget {
-  final String billId;
-  final Map<String, dynamic> billData;
-
   const EditBillScreen({
     super.key,
     required this.billId,
     required this.billData,
+    this.store,
+    this.currentUid,
+    this.currentUserName,
   });
+
+  final String billId;
+  final Map<String, dynamic> billData;
+
+  /// Defaults to [FirestoreEditBillStore].
+  final EditBillStore? store;
+
+  /// Defaults to the signed-in Firebase user.
+  final String? currentUid;
+  final String? currentUserName;
 
   @override
   State<EditBillScreen> createState() => _EditBillScreenState();
 }
 
 class _EditBillScreenState extends State<EditBillScreen> {
-  // Bill Data
-  double _taxAmount = 0.0;
-  double _serviceChargeAmount = 0.0;
-  double _tipAmount = 0.0;
-  double _deliveryFeeAmount = 0.0;
-  double _discountAmount = 0.0;
-
-  List<Map<String, dynamic>> participants = [];
-  Map<int, List<String>> itemAssignments = {};
-  List<dynamic> items = [];
-
+  late final String? _uid =
+      widget.currentUid ?? FirebaseAuth.instance.currentUser?.uid;
+  late final EditBillController _c = EditBillController(
+    billData: widget.billData,
+    currentUid: _uid,
+  );
+  late final TextEditingController _name = TextEditingController(text: _c.name);
+  late final EditBillStore _store =
+      widget.store ?? const FirestoreEditBillStore();
   final ContactService _contactService = ContactService();
-  final user = FirebaseAuth.instance.currentUser;
+  bool _saving = false;
+  bool _deleting = false;
 
   @override
   void initState() {
     super.initState();
-    _loadExistingData();
+    _c.addListener(_onChanged);
   }
 
-  // --- RESTORE DATA ---
-  void _loadExistingData() {
-    final data = widget.billData;
-
-    // 1. Restore Charges
-    if (data['charges'] != null) {
-      _taxAmount = (data['charges']['taxAmount'] as num).toDouble();
-      _tipAmount = (data['charges']['tipAmount'] as num).toDouble();
-      _serviceChargeAmount = (data['charges']['serviceCharge'] as num)
-          .toDouble();
-      _tipAmount = (data['charges']['tipAmount'] as num? ?? 0.0).toDouble();
-      _deliveryFeeAmount = (data['charges']['deliveryFeeAmount'] as num? ?? 0.0)
-          .toDouble();
-      _discountAmount = (data['charges']['discountAmount'] as num? ?? 0.0)
-          .toDouble();
-    }
-
-    // 2. Restore Items & Assignments
-    items = List.from(data['items']);
-    for (int i = 0; i < items.length; i++) {
-      List<dynamic> assigned = items[i]['assignedTo'] ?? [];
-      itemAssignments[i] = assigned.map((e) => e.toString()).toList();
-    }
-
-    // 3. Restore Participants
-    participants = List<Map<String, dynamic>>.from(data['participants']);
-    _refreshHostPhoto();
+  @override
+  void dispose() {
+    _c.removeListener(_onChanged);
+    _c.dispose();
+    _name.dispose();
+    super.dispose();
   }
 
-  void _refreshHostPhoto() async {
-    if (user == null) return;
-    int hostIndex = participants.indexWhere((p) => p['id'] == user!.uid);
-    if (hostIndex != -1) {
-      var doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user!.uid)
-          .get();
-      if (doc.exists && doc.data()!.containsKey('photoUrl')) {
-        setState(() {
-          participants[hostIndex]['photoUrl'] = doc.data()!['photoUrl'];
-        });
-      }
-    }
-  }
-
-  // --- LOGIC: Calculate Shares ---
-  Map<String, double> _calculateShares() {
-    Map<String, double> shares = {};
-    for (var p in participants) {
-      shares[p['id']] = 0.0;
-    }
-
-    for (int i = 0; i < items.length; i++) {
-      List<String>? assignedIds = itemAssignments[i];
-      double price = (items[i]['price'] as num).toDouble();
-      int qty = (items[i]['qty'] as num? ?? 1).toInt();
-      double totalItemPrice = price * qty;
-
-      if (assignedIds != null && assignedIds.isNotEmpty) {
-        double splitPrice = totalItemPrice / assignedIds.length;
-        for (String uid in assignedIds) {
-          if (shares.containsKey(uid)) {
-            shares[uid] = (shares[uid]!) + splitPrice;
-          }
-        }
-      }
-    }
-    return shares;
-  }
-
-  // --- ACTIONS ---
-  Future<void> _pickContact() async {
-    final List<dynamic>? contacts = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const MultiContactPicker()),
-    );
-
-    if (contacts != null && contacts.isNotEmpty) {
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) =>
-            LoadingStateWidget(message: 'checking_app_status'.tr()),
+  void _onChanged() {
+    if (_c.takeOverridesResetNotice() && mounted) {
+      AppToast.show(
+        context,
+        message: 'bf_edit_overrides_reset'.tr(),
+        type: AppToastType.info,
       );
+    }
+  }
 
-      try {
-        final results = await _contactService.identifyUsers(
-          contacts.cast<Contact>(),
-        );
-        if (!mounted) return;
-        Navigator.pop(context); // Close loading
+  String? get _displayName {
+    final explicit = widget.currentUserName?.trim();
+    if (explicit != null && explicit.isNotEmpty) return explicit;
+    String? fromAuth;
+    if (widget.currentUid == null) {
+      fromAuth = FirebaseAuth.instance.currentUser?.displayName?.trim();
+    }
+    if (fromAuth != null && fromAuth.isNotEmpty) return fromAuth;
+    final uid = _uid;
+    if (uid == null) return null;
+    final name = _c.nameOf(uid);
+    return name == uid ? null : name;
+  }
 
-        int addedCount = 0;
-        for (var result in results) {
-          _addParticipant(result['data'], result['type']);
-          addedCount++;
-        }
+  // ------------------------------------------------------------------ actions
 
-        if (addedCount > 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'added_people_count'.tr(
-                  namedArgs: {'count': addedCount.toString()},
-                ),
-              ),
-            ),
-          );
-        }
-      } catch (e) {
-        if (!mounted) return;
-        Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'error_adding_contacts'.tr(namedArgs: {'error': e.toString()}),
-            ),
+  Future<bool> _confirmDiscard() async {
+    if (!_c.isDirty) return true;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('bf_edit_discard_title'.tr()),
+        content: Text('bf_edit_discard_body'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('bf_edit_keep_editing'.tr()),
           ),
-        );
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text('bf_edit_discard'.tr()),
+          ),
+        ],
+      ),
+    );
+    return ok == true;
+  }
+
+  Future<void> _cancel() async {
+    if (await _confirmDiscard() && mounted) Navigator.of(context).pop(false);
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+    FocusScope.of(context).unfocus();
+    if (_c.name.trim().isEmpty) {
+      AppToast.show(
+        context,
+        message: 'bf_edit_name_needed'.tr(),
+        type: AppToastType.error,
+      );
+      return;
+    }
+    final issues = _c.issueMessages;
+    if (issues.isNotEmpty) {
+      AppToast.show(
+        context,
+        message: issues.first.text,
+        type: AppToastType.error,
+        actionLabel: 'bf_edit_fix'.tr(),
+        onAction: _openSplit,
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      final update = _c.buildUpdate(now: DateTime.now(), byName: _displayName);
+      await _store.update(widget.billId, update);
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_edit_saved'.tr(),
+        type: AppToastType.success,
+      );
+      Navigator.of(context).pop(true);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      AppToast.show(
+        context,
+        message: 'bf_edit_save_failed'.tr(),
+        type: AppToastType.error,
+        actionLabel: 'feedback_try_again'.tr(),
+        onAction: _save,
+      );
+    }
+  }
+
+  Future<void> _delete() async {
+    final p = context.palette;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('bf_edit_delete_title'.tr()),
+        content: Text('bf_edit_delete_body'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('common_cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: TextButton.styleFrom(foregroundColor: p.error),
+            child: Text('bf_edit_delete_confirm'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _deleting = true);
+    try {
+      await _store.delete(widget.billId);
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_edit_deleted'.tr(),
+        type: AppToastType.success,
+      );
+      // The bill screen underneath shows a deleted doc; go back home.
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _deleting = false);
+      AppToast.show(
+        context,
+        message: 'bf_edit_delete_failed'.tr(),
+        type: AppToastType.error,
+        actionLabel: 'feedback_try_again'.tr(),
+        onAction: _delete,
+      );
+    }
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _c.date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 366)),
+    );
+    if (picked == null) return;
+    final d = _c.date;
+    AppHaptics.selection();
+    _c.setDate(
+      DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        d.hour,
+        d.minute,
+        d.second,
+      ),
+    );
+  }
+
+  void _pickCurrency() {
+    CurrencySelectionSheet.show(
+      context: context,
+      selectedCode: _c.currency,
+      onSelected: (code) {
+        AppHaptics.selection();
+        _c.setCurrency(code);
+      },
+    );
+  }
+
+  void _openCharges() {
+    final d = _c.draft;
+    EditBillSummaryDialog.show(
+      context,
+      currency: d.currency,
+      subtotalMinor: d.itemsSubtotalMinor,
+      taxMinor: d.taxMinor,
+      serviceMinor: d.serviceMinor,
+      tipMinor: d.tipMinor,
+      deliveryMinor: d.deliveryMinor,
+      discountMinor: d.discountMinor,
+      onConfirm:
+          ({
+            required taxMinor,
+            required serviceMinor,
+            required tipMinor,
+            required deliveryMinor,
+            required discountMinor,
+          }) => _c.setCharges(
+            taxMinor: taxMinor,
+            serviceMinor: serviceMinor,
+            tipMinor: tipMinor,
+            deliveryMinor: deliveryMinor,
+            discountMinor: discountMinor,
+          ),
+    );
+  }
+
+  void _openSplit() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            EditSplitScreen(controller: _c, onAddPeople: _showAddPeople),
+      ),
+    );
+  }
+
+  // ------------------------------------------------------------- add people
+
+  Future<void> _showAddPeople() async {
+    String? choice;
+    await PremiumBottomSheet.show<void>(
+      context: context,
+      child: Builder(
+        builder: (sheetContext) => AddMembersSheet(
+          onScanQR: () {
+            choice = 'qr';
+            Navigator.of(sheetContext).pop();
+          },
+          onPickContacts: () {
+            choice = 'contacts';
+            Navigator.of(sheetContext).pop();
+          },
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (choice == 'qr') await _scanQr();
+    if (choice == 'contacts') await _pickContacts();
+  }
+
+  void _reportAdd(int added, int duplicates) {
+    if (!mounted) return;
+    if (added > 0) {
+      AppToast.show(
+        context,
+        message: 'bf_edit_people_added'.tr(namedArgs: {'count': '$added'}),
+        type: AppToastType.success,
+      );
+    } else if (duplicates > 0) {
+      AppToast.show(
+        context,
+        message: 'bf_edit_person_already'.tr(),
+        type: AppToastType.info,
+      );
+    }
+  }
+
+  AddParticipantResult _add(
+    Map<String, dynamic> data,
+    String type,
+  ) => _c.addParticipant(
+    id: (data['uid'] ?? data['id'])?.toString(),
+    name: (data['displayName'] ?? data['name'] ?? '').toString().trim().isEmpty
+        ? 'bf_edit_guest'.tr()
+        : (data['displayName'] ?? data['name']).toString().trim(),
+    photoUrl: data['photoUrl']?.toString(),
+    phoneNumber: data['phoneNumber']?.toString(),
+    isGuest: type == 'guest',
+  );
+
+  Future<void> _pickContacts() async {
+    final contacts = await Navigator.of(context).push<List<dynamic>>(
+      MaterialPageRoute(builder: (_) => const MultiContactPicker()),
+    );
+    if (contacts == null || contacts.isEmpty || !mounted) return;
+    try {
+      final results = await _contactService.identifyUsers(
+        contacts.cast<Contact>(),
+      );
+      var added = 0;
+      var duplicates = 0;
+      for (final r in results) {
+        final data = Map<String, dynamic>.from(r['data'] as Map);
+        switch (_add(data, r['type'].toString())) {
+          case AddParticipantResult.added:
+            added++;
+          case AddParticipantResult.duplicate:
+            duplicates++;
+          case AddParticipantResult.missingId:
+            break;
+        }
       }
+      _reportAdd(added, duplicates);
+    } catch (_) {
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_edit_add_people_failed'.tr(),
+        type: AppToastType.error,
+      );
     }
   }
 
   Future<void> _scanQr() async {
     try {
-      final String? scannedUid = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ScanFriendScreen()),
+      final uid = await Navigator.of(context).push<String>(
+        MaterialPageRoute(builder: (_) => const ScanFriendScreen()),
       );
-      if (scannedUid != null) {
-        final userData = await PublicProfileService.fetch(scannedUid);
-        if (userData != null) {
-          _addParticipant(userData, 'app_user');
-        }
-      }
-    } catch (e) {
+      if (uid == null) return;
+      final profile = await PublicProfileService.fetch(uid);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'error_scanning_qr'.tr(namedArgs: {'error': e.toString()}),
-          ),
-        ),
-      );
-    }
-  }
-
-  void _addParticipant(Map<String, dynamic> data, String type) {
-    // The scanned or selected user's ID might be in 'uid' or 'id'
-    final String? candidateId = data['uid'] ?? data['id'];
-
-    if (candidateId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('error_user_id_missing_from_data').tr()),
-      );
-      return;
-    }
-
-    // Check for duplicates
-    if (participants.any((p) => p['id'] == candidateId)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('user_already_in_bill').tr()));
-      return;
-    }
-
-    setState(() {
-      participants.add({
-        'name': data['displayName'] ?? data['name'] ?? "Unknown",
-        'id': candidateId,
-        'color':
-            Colors.primaries[participants.length % Colors.primaries.length],
-        'phoneNumber': data['phoneNumber'] ?? '',
-        'photoUrl': data['photoUrl'] ?? '',
-        'isGuest': type == 'guest',
-        'status': 'PENDING',
-        'isHost': candidateId == user?.uid,
-      });
-    });
-  }
-
-  void _removeParticipant(String id) {
-    if (participants.any((p) => p['id'] == id && p['isHost'] == true)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('cannot_remove_yourself').tr()));
-      return;
-    }
-
-    setState(() {
-      participants.removeWhere((p) => p['id'] == id);
-      // Also clear assignments for this user
-      itemAssignments.forEach((key, value) => value.remove(id));
-      // In EditBillScreen we don't have quantityAssignments implemented like SplitBillScreen yet,
-      // but if we were to add it, we should clear it here too.
-    });
-  }
-
-  void _togglePaidStatus(String id) {
-    int index = participants.indexWhere((p) => p['id'] == id);
-    if (index != -1) {
-      setState(() {
-        String current = participants[index]['status'] ?? 'PENDING';
-        participants[index]['status'] = (current == 'PAID')
-            ? 'PENDING'
-            : 'PAID';
-        participants[index]['isPaid'] = participants[index]['status'] == 'PAID';
-      });
-    }
-  }
-
-  void _showParticipantOptions(Map<String, dynamic> p) {
-    ParticipantOptionsSheet.show(
-      context,
-      participant: p,
-      onTogglePaid: () => _togglePaidStatus(p['id']),
-      onRemove: () => _removeParticipant(p['id']),
-    );
-  }
-
-  // --- DIALOGS: Assign Items ---
-  void _showAssignDialog(int itemIndex) {
-    EditAssignmentSheet.show(
-      context,
-      participants: participants,
-      currentSelection: itemAssignments[itemIndex] ?? [],
-      onConfirm: (newSelection) {
-        setState(() {
-          itemAssignments[itemIndex] = newSelection;
-        });
-      },
-    );
-  }
-
-  // --- FINALIZATION ---
-  Future<void> _finalizeChanges() async {
-    // 1. Validation: Ensure all items have at least one person assigned
-    for (int i = 0; i < items.length; i++) {
-      if ((itemAssignments[i] ?? []).isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Item '${items[i]['name']}' needs at least one person!",
-            ),
-            backgroundColor: context.palette.danger,
-          ),
+      if (profile == null) {
+        AppToast.show(
+          context,
+          message: 'bf_edit_qr_not_found'.tr(),
+          type: AppToastType.error,
         );
         return;
       }
-    }
-
-    // 2. Show Tax/Charges Dialog
-    await EditBillSummaryDialog.show(
-      context,
-      initialTax: _taxAmount,
-      initialService: _serviceChargeAmount,
-      initialTip: _tipAmount,
-      initialDiscount: _discountAmount,
-      initialDelivery: _deliveryFeeAmount,
-      onConfirm: (newTax, newService, newTip, newDiscount, newDelivery) {
-        setState(() {
-          _taxAmount = newTax;
-          _serviceChargeAmount = newService;
-          _tipAmount = newTip;
-          _discountAmount = newDiscount;
-          _deliveryFeeAmount = newDelivery;
-        });
-        _saveUpdatesToFirebase();
-      },
-    );
-  }
-
-  Future<void> _saveUpdatesToFirebase() async {
-    if (user == null) return;
-
-    // Show Loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    Map<String, double> rawShares = _calculateShares();
-    Map<String, double> finalShares = {};
-
-    double totalItemsCost = 0.0;
-    for (var item in items) {
-      totalItemsCost += ((item['price'] as num) * (item['qty'] as num? ?? 1))
-          .toDouble();
-    }
-
-    if (totalItemsCost <= 0) totalItemsCost = 1.0;
-
-    double additionalCharges =
-        _taxAmount +
-        _serviceChargeAmount +
-        _tipAmount +
-        _deliveryFeeAmount -
-        _discountAmount;
-
-    rawShares.forEach((uid, amount) {
-      double ratio = amount / totalItemsCost;
-      finalShares[uid] = amount + (additionalCharges * ratio);
-    });
-
-    final updatedData = {
-      'charges': {
-        'taxAmount': _taxAmount,
-        'serviceCharge': _serviceChargeAmount,
-        'tipAmount': _tipAmount,
-        'deliveryFeeAmount': _deliveryFeeAmount,
-        'discountAmount': _discountAmount,
-      },
-      'items': items.asMap().entries.map((entry) {
-        int idx = entry.key;
-        var item = entry.value;
-        return {
-          'name': item['name'],
-          'price': item['price'],
-          'qty': item['qty'] ?? 1,
-          'assignedTo': itemAssignments[idx] ?? [],
-        };
-      }).toList(),
-      'participants': participants.map((p) {
-        String status = p['status'] ?? 'PENDING';
-        if (p['id'] == user!.uid) status = 'PAID';
-        return {
-          'id': p['id'],
-          'name': p['name'],
-          'photoUrl': p['photoUrl'],
-          'share': finalShares[p['id']] ?? 0.0,
-          'isPaid': status == 'PAID',
-          'phoneNumber': p['phoneNumber'],
-          'status': status,
-        };
-      }).toList(),
-      'participants_uids': participants.map((p) => p['id']).toList(),
-      'total': totalItemsCost + additionalCharges,
-    };
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('bills')
-          .doc(widget.billId)
-          .update(updatedData);
-      if (mounted) {
-        Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('bill_updated').tr(),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (route) => false,
-        );
-      }
-    } catch (e) {
+      final result = _add({
+        ...profile,
+        'uid': profile['uid'] ?? uid,
+      }, 'app_user');
+      _reportAdd(
+        result == AddParticipantResult.added ? 1 : 0,
+        result == AddParticipantResult.duplicate ? 1 : 0,
+      );
+    } catch (_) {
       if (!mounted) return;
-      Navigator.pop(context); // Close loading
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'error_with_details'.tr(namedArgs: {'error': e.toString()}),
-          ),
-          backgroundColor: context.palette.danger,
-        ),
+      AppToast.show(
+        context,
+        message: 'bf_edit_qr_failed'.tr(),
+        type: AppToastType.error,
       );
     }
   }
 
-  void _showAddMembersModal() {
-    PremiumBottomSheet.show(
-      context: context,
-      child: AddMembersSheet(
-        onScanQR: _scanQr,
-        onPickContacts: _pickContact,
-        onPickGroups: null, // EditBillScreen doesn't support groups yet
-      ),
-    );
-  }
-
-  void _splitEqually() {
-    if (participants.isEmpty) return;
-    setState(() {
-      final participantIds = participants
-          .map((p) => p['id'] as String)
-          .toList();
-      for (int i = 0; i < items.length; i++) {
-        itemAssignments[i] = List.from(participantIds);
-      }
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('split_equally_among_all').tr(),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _confirmSplitEqually() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'split_bill_equally',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ).tr(),
-        content: Text(
-          'this_will_assign_all_items_to_all_participants_this_action_will_overwrite_your_current_assignments',
-        ).tr(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'common_cancel',
-              style: TextStyle(color: context.palette.textTertiary),
-            ).tr(),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _splitEqually();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: context.palette.onPrimary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text('confirm_split').tr(),
-          ),
-        ],
-      ),
-    );
-  }
+  // -------------------------------------------------------------------- build
 
   @override
   Widget build(BuildContext context) {
-    Map<String, double> currentShares = _calculateShares();
-    final palette = context.palette;
+    final p = context.palette;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _cancel();
+      },
+      child: Scaffold(
+        backgroundColor: p.background,
+        body: SafeArea(
+          child: ListenableBuilder(
+            listenable: _c,
+            builder: (context, _) => Column(
+              children: [
+                EditBillHeader(
+                  title: 'bf_edit_title'.tr(),
+                  onLeading: _cancel,
+                  actionLabel: 'bf_edit_save'.tr(),
+                  onAction: _saving || _deleting ? null : _save,
+                  busy: _saving,
+                ),
+                Expanded(child: _body(context)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-    return Scaffold(
-      backgroundColor: palette.surfaceVariant,
-      body: SafeArea(
-        child: Column(
+  Widget _body(BuildContext context) {
+    final p = context.palette;
+    final draft = _c.draft;
+    final locale = Localizations.maybeLocaleOf(context)?.toLanguageTag();
+    final issues = _c.issueMessages;
+    final hostIsMe = _uid != null && _c.hostUid == _uid;
+    final paidBy = hostIsMe
+        ? 'bf_edit_history_you'.tr()
+        : _c.nameOf(_c.hostUid);
+    String pct(int v) => chargePercentLabel(
+      v,
+      draft.itemsSubtotalMinor,
+      draft.currency,
+      locale: locale,
+    );
+
+    return ListView(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.xl,
+        18,
+        AppSpacing.xl,
+        34,
+      ),
+      children: [
+        _FieldLabel('bf_edit_field_name'.tr()),
+        TextField(
+          controller: _name,
+          onChanged: _c.setName,
+          textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(
+            hintText: 'bf_edit_field_name_hint'.tr(),
+            errorText: _c.name.trim().isEmpty
+                ? 'bf_edit_name_needed'.tr()
+                : null,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. CUSTOM HEADER
-            EditBillHeader(
-              storeName: widget.billData['storeName'] ?? "Bill",
-              onAddMembers: _showAddMembersModal,
-            ),
-
-            // 2. MEMBER LIST
-            ParticipantList(
-              participants: participants,
-              currentShares: currentShares,
-              onParticipantTap: _showParticipantOptions,
-              currencyCode:
-                  (widget.billData['currencyCode'] ??
-                          widget.billData['currency_code'] ??
-                          'USD')
-                      .toString(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // 3. ITEMS LIST
             Expanded(
-              child: BillItemsList(
-                items: items,
-                itemAssignments: itemAssignments,
-                participants: participants,
-                onItemTap: _showAssignDialog,
-                currencyCode:
-                    (widget.billData['currencyCode'] ??
-                            widget.billData['currency_code'] ??
-                            'USD')
-                        .toString(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _FieldLabel('bf_edit_field_date'.tr()),
+                  _TapField(
+                    text: DateFormat.yMMMd(
+                      safeDateLocale(locale),
+                    ).format(_c.date),
+                    semanticsLabel: 'bf_edit_field_date'.tr(),
+                    onTap: _pickDate,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _FieldLabel('bf_edit_field_currency'.tr()),
+                  _TapField(
+                    text: draft.currency,
+                    semanticsLabel: 'bf_edit_field_currency'.tr(),
+                    onTap: _pickCurrency,
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        const SizedBox(height: AppSpacing.lg),
+        EditCard(
           children: [
-            FloatingActionButton(
-              heroTag: "edit_split_equally",
-              onPressed: _confirmSplitEqually,
-              backgroundColor: palette.surface,
-              child: Icon(
-                CupertinoIcons.divide,
-                color: Theme.of(context).colorScheme.primary,
-                size: 28,
+            _SummaryRow(
+              label: 'bf_edit_row_items'.tr(),
+              value: '${draft.items.length} · ${_c.participants.length}',
+              needsAttention: issues.isNotEmpty,
+              onTap: _openSplit,
+            ),
+            _SummaryRow(
+              label: 'bf_edit_row_charges'.tr(),
+              value:
+                  '${pct(draft.taxMinor)} · ${pct(draft.serviceMinor)} · '
+                  '${pct(draft.tipMinor)}',
+              onTap: _openCharges,
+            ),
+            _SummaryRow(label: 'bf_edit_row_paid_by'.tr(), value: paidBy),
+          ],
+        ),
+        if (issues.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.md),
+          EditIssuesBanner(messages: issues, max: 2),
+        ],
+        Padding(
+          padding: const EdgeInsetsDirectional.only(top: 18, bottom: 8),
+          child: Semantics(
+            header: true,
+            child: Text(
+              'bf_edit_history_title'.tr().toUpperCase(),
+              style: AppTypography.titleSmall.copyWith(color: p.textSecondary),
+            ),
+          ),
+        ),
+        BillHistoryCard(
+          entries: _c.reader.history,
+          currentUid: _uid,
+          currency: draft.currency,
+        ),
+        if (hostIsMe || _uid == null) ...[
+          const SizedBox(height: AppSpacing.xxxl),
+          OutlinedButton(
+            onPressed: _saving || _deleting ? null : _delete,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: p.error,
+              side: BorderSide(color: p.error.withValues(alpha: 0.25)),
+            ),
+            child: _deleting
+                ? SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: p.error,
+                    ),
+                  )
+                : Text('bf_edit_delete'.tr()),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _FieldLabel extends StatelessWidget {
+  const _FieldLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.only(bottom: 6),
+    child: Text(
+      text,
+      style: AppTypography.titleSmall.copyWith(
+        color: context.palette.textPrimary,
+      ),
+    ),
+  );
+}
+
+/// Looks like an input, opens a picker.
+class _TapField extends StatelessWidget {
+  const _TapField({
+    required this.text,
+    required this.onTap,
+    required this.semanticsLabel,
+  });
+
+  final String text;
+  final VoidCallback onTap;
+  final String semanticsLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Semantics(
+      button: true,
+      label: '$semanticsLabel, $text',
+      excludeSemantics: true,
+      child: Material(
+        color: p.surface,
+        shape: AppRadii.rowShape(p.borderStrong),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            height: 48,
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 14),
+            alignment: AlignmentDirectional.centerStart,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: p.textPrimary,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.expand_more_rounded,
+                  size: 20,
+                  color: p.textSecondary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({
+    required this.label,
+    required this.value,
+    this.onTap,
+    this.needsAttention = false,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback? onTap;
+  final bool needsAttention;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final row = ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.bodyLarge.copyWith(
+                  fontSize: 15,
+                  color: p.textPrimary,
+                ),
               ),
             ),
-            FloatingActionButton(
-              heroTag: "edit_finalize",
-              onPressed: _finalizeChanges,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Icon(
-                CupertinoIcons.check_mark,
-                color: palette.onPrimary,
-                size: 28,
+            if (needsAttention) ...[
+              Icon(Icons.error_outline_rounded, size: 16, color: p.owe),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              value,
+              style: AppTypography.bodyMedium.copyWith(
+                color: p.textSecondary,
+                fontFeatures: AppTypography.tabularFigures,
               ),
             ),
+            if (onTap != null) ...[
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: p.textTertiary,
+              ),
+            ] else
+              const SizedBox(width: 4),
           ],
         ),
       ),
+    );
+    if (onTap == null) {
+      return Semantics(
+        label: '$label, $value',
+        excludeSemantics: true,
+        child: row,
+      );
+    }
+    return Semantics(
+      button: true,
+      label: '$label, $value',
+      excludeSemantics: true,
+      child: InkWell(onTap: onTap, child: row),
     );
   }
 }

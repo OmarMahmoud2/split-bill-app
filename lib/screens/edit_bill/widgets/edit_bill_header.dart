@@ -1,78 +1,101 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/theme.dart';
 
+/// v3 top bar: round leading button, centered-ish title, text action on the
+/// end ("Cancel (x) / Edit bill / Save"). The action shows a small spinner
+/// while [busy].
 class EditBillHeader extends StatelessWidget {
-  final String storeName;
-  final VoidCallback onAddMembers;
-
   const EditBillHeader({
     super.key,
-    required this.storeName,
-    required this.onAddMembers,
+    required this.title,
+    required this.onLeading,
+    this.leadingIcon = Icons.close_rounded,
+    this.leadingTooltip,
+    this.actionLabel,
+    this.onAction,
+    this.busy = false,
   });
+
+  final String title;
+  final VoidCallback onLeading;
+  final IconData leadingIcon;
+  final String? leadingTooltip;
+  final String? actionLabel;
+
+  /// Null disables the action.
+  final VoidCallback? onAction;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.palette;
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: palette.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+    final p = context.palette;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.xl,
+        AppSpacing.md,
+        AppSpacing.md,
+        0,
       ),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () => Navigator.pop(context),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  'editing_bill',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: palette.infoStrong,
-                    letterSpacing: 1.5,
+          Tooltip(
+            message: leadingTooltip ?? 'common_cancel'.tr(),
+            child: Material(
+              color: p.surface,
+              shape: CircleBorder(side: BorderSide(color: p.border)),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: onLeading,
+                child: SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Icon(
+                    leadingIcon,
+                    size: 18,
+                    color: p.textPrimary,
+                    semanticLabel: leadingTooltip ?? 'common_cancel'.tr(),
                   ),
-                ).tr(),
-                Text(
-                  storeName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                  ),
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: palette.inverseSurface,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.person_add_rounded,
-                color: palette.onInverseSurface,
-                size: 20,
               ),
             ),
-            onPressed: onAddMembers,
           ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Semantics(
+              header: true,
+              child: Text(
+                title,
+                style: AppTypography.titleLarge.copyWith(color: p.textPrimary),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          if (actionLabel != null)
+            busy
+                ? SizedBox(
+                    width: 64,
+                    height: 44,
+                    child: Center(
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: p.accent,
+                        ),
+                      ),
+                    ),
+                  )
+                : TextButton(
+                    onPressed: onAction,
+                    style: TextButton.styleFrom(
+                      foregroundColor: p.primaryStrong,
+                      textStyle: AppTypography.titleMedium,
+                    ),
+                    child: Text(actionLabel!),
+                  ),
         ],
       ),
     );

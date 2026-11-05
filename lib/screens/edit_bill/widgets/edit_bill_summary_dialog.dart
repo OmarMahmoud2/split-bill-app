@@ -1,138 +1,204 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:flutter/material.dart';
+import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/money_format.dart';
+import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
+/// Confirmed charges, all in minor units of the bill currency.
+typedef ChargesConfirm =
+    void Function({
+      required int taxMinor,
+      required int serviceMinor,
+      required int tipMinor,
+      required int deliveryMinor,
+      required int discountMinor,
+    });
+
+/// Tax, service, tip, delivery and discount editor (a bottom sheet).
+///
+/// Amounts are typed in the bill currency; each field shows what it is as a
+/// share of the items subtotal. A discount larger than the bill is caught
+/// here with a clear message instead of producing negative shares.
 class EditBillSummaryDialog extends StatefulWidget {
-  final double initialTax;
-  final double initialService;
-  final double initialTip;
-  final double initialDiscount;
-  final double initialDelivery;
-  final Function(double, double, double, double, double) onConfirm;
-
   const EditBillSummaryDialog({
     super.key,
-    required this.initialTax,
-    required this.initialService,
-    required this.initialTip,
-    required this.initialDiscount,
-    required this.initialDelivery,
+    required this.currency,
+    required this.subtotalMinor,
+    required this.taxMinor,
+    required this.serviceMinor,
+    required this.tipMinor,
+    required this.deliveryMinor,
+    required this.discountMinor,
     required this.onConfirm,
   });
 
+  final String currency;
+  final int subtotalMinor;
+  final int taxMinor;
+  final int serviceMinor;
+  final int tipMinor;
+  final int deliveryMinor;
+  final int discountMinor;
+  final ChargesConfirm onConfirm;
+
   static Future<void> show(
     BuildContext context, {
-    required double initialTax,
-    required double initialService,
-    required double initialTip,
-    required double initialDiscount,
-    required double initialDelivery,
-    required Function(double, double, double, double, double) onConfirm,
-  }) {
-    return showDialog(
-      context: context,
-      builder: (context) => EditBillSummaryDialog(
-        initialTax: initialTax,
-        initialService: initialService,
-        initialTip: initialTip,
-        initialDiscount: initialDiscount,
-        initialDelivery: initialDelivery,
-        onConfirm: onConfirm,
-      ),
-    );
-  }
+    required String currency,
+    required int subtotalMinor,
+    required int taxMinor,
+    required int serviceMinor,
+    required int tipMinor,
+    required int deliveryMinor,
+    required int discountMinor,
+    required ChargesConfirm onConfirm,
+  }) => PremiumBottomSheet.show<void>(
+    context: context,
+    isScrollable: true,
+    child: EditBillSummaryDialog(
+      currency: currency,
+      subtotalMinor: subtotalMinor,
+      taxMinor: taxMinor,
+      serviceMinor: serviceMinor,
+      tipMinor: tipMinor,
+      deliveryMinor: deliveryMinor,
+      discountMinor: discountMinor,
+      onConfirm: onConfirm,
+    ),
+  );
 
   @override
   State<EditBillSummaryDialog> createState() => _EditBillSummaryDialogState();
 }
 
+enum _Charge { tax, service, tip, delivery, discount }
+
 class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
-  late double _tax;
-  late double _service;
-  late double _tip;
-  late double _discount;
-  late double _delivery;
+  late final Map<_Charge, TextEditingController> _controllers = {
+    _Charge.tax: _c(widget.taxMinor),
+    _Charge.service: _c(widget.serviceMinor),
+    _Charge.tip: _c(widget.tipMinor),
+    _Charge.delivery: _c(widget.deliveryMinor),
+    _Charge.discount: _c(widget.discountMinor),
+  };
+
+  TextEditingController _c(int minor) =>
+      TextEditingController(text: moneyInputText(minor, widget.currency));
 
   @override
-  void initState() {
-    super.initState();
-    _tax = widget.initialTax;
-    _service = widget.initialService;
-    _tip = widget.initialTip;
-    _discount = widget.initialDiscount;
-    _delivery = widget.initialDelivery;
+  void dispose() {
+    for (final c in _controllers.values) {
+      c.dispose();
+    }
+    super.dispose();
   }
 
-  Widget _buildMoneyInput(
-    String label,
-    double initial,
-    Function(double) onChanged,
-  ) {
-    return TextFormField(
-      initialValue: initial == 0 ? "" : initial.toStringAsFixed(2),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: const Icon(Icons.edit_note_rounded, size: 18),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-        filled: true,
-        fillColor: context.palette.surfaceMuted,
-      ),
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        color: context.palette.textPrimary,
-      ),
-      onChanged: (val) => onChanged(double.tryParse(val) ?? 0),
+  int? _value(_Charge c) =>
+      parseMoneyInput(_controllers[c]!.text, widget.currency);
+
+  String _label(_Charge c) => switch (c) {
+    _Charge.tax => 'bf_edit_charge_tax',
+    _Charge.service => 'bf_edit_charge_service',
+    _Charge.tip => 'bf_edit_charge_tip',
+    _Charge.delivery => 'bf_edit_charge_delivery',
+    _Charge.discount => 'bf_edit_charge_discount',
+  }.tr();
+
+  int get _beforeDiscount =>
+      widget.subtotalMinor +
+      (_value(_Charge.tax) ?? 0) +
+      (_value(_Charge.service) ?? 0) +
+      (_value(_Charge.tip) ?? 0) +
+      (_value(_Charge.delivery) ?? 0);
+
+  bool get _discountTooLarge =>
+      (_value(_Charge.discount) ?? 0) > _beforeDiscount;
+
+  bool get _valid =>
+      _Charge.values.every((c) => _value(c) != null) && !_discountTooLarge;
+
+  void _save() {
+    if (!_valid) {
+      AppHaptics.error();
+      setState(() {});
+      return;
+    }
+    AppHaptics.success();
+    widget.onConfirm(
+      taxMinor: _value(_Charge.tax)!,
+      serviceMinor: _value(_Charge.service)!,
+      tipMinor: _value(_Charge.tip)!,
+      deliveryMinor: _value(_Charge.delivery)!,
+      discountMinor: _value(_Charge.discount)!,
     );
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-      title: Text(
-        'update_summary',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ).tr(),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildMoneyInput("Tax", _tax, (v) => _tax = v),
-            const SizedBox(height: 12),
-            _buildMoneyInput("Service", _service, (v) => _service = v),
-            const SizedBox(height: 12),
-            _buildMoneyInput("Tip", _tip, (v) => _tip = v),
-            const SizedBox(height: 12),
-            _buildMoneyInput("Delivery", _delivery, (v) => _delivery = v),
-            const SizedBox(height: 12),
-            _buildMoneyInput("Discount", _discount, (v) => _discount = v),
-          ],
+    final p = context.palette;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'bf_edit_charges_title'.tr(),
+          style: AppTypography.headlineSmall.copyWith(color: p.textPrimary),
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            'common_cancel',
-            style: TextStyle(color: context.palette.textTertiary),
-          ).tr(),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            widget.onConfirm(_tax, _service, _tip, _discount, _delivery);
-            Navigator.pop(context);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: context.palette.onPrimary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          'bf_edit_charges_hint'.tr(
+            namedArgs: {
+              'amount': formatMoneyMinor(widget.subtotalMinor, widget.currency),
+            },
           ),
-          child: Text('save_and_exit').tr(),
+          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        for (final c in _Charge.values) ...[
+          _field(c),
+          const SizedBox(height: AppSpacing.md),
+        ],
+        const SizedBox(height: AppSpacing.sm),
+        FilledButton(
+          onPressed: _save,
+          child: Text('bf_edit_charges_apply'.tr()),
         ),
       ],
+    );
+  }
+
+  Widget _field(_Charge c) {
+    final p = context.palette;
+    final value = _value(c);
+    String? error;
+    if (value == null) {
+      error = 'bf_edit_amount_invalid'.tr();
+    } else if (c == _Charge.discount && _discountTooLarge) {
+      error = 'bf_edit_issue_discount'.tr(
+        namedArgs: {
+          'amount': formatMoneyMinor(_beforeDiscount, widget.currency),
+        },
+      );
+    }
+    final pct = value == null || value == 0
+        ? null
+        : chargePercentLabel(value, widget.subtotalMinor, widget.currency);
+    return TextField(
+      controller: _controllers[c],
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      onChanged: (_) => setState(() {}),
+      style: AppTypography.amount.copyWith(color: p.textPrimary),
+      decoration: InputDecoration(
+        labelText: _label(c),
+        hintText: formatMoneyMinor(0, widget.currency, showSymbol: false),
+        suffixText: widget.currency,
+        helperText: pct == null
+            ? null
+            : 'bf_edit_charge_of_subtotal'.tr(namedArgs: {'percent': pct}),
+        errorText: error,
+        errorMaxLines: 3,
+      ),
     );
   }
 }
