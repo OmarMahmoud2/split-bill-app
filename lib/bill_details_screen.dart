@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
+import 'package:split_bill_app/bill_flow/group_settlement.dart';
 import 'package:split_bill_app/bill_flow/share_links.dart';
+import 'package:split_bill_app/data/ledger_repository.dart';
+import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/edit_bill_screen.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
@@ -124,7 +127,43 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     if (id.isEmpty || _busy.contains(id)) return;
     setState(() => _busy.add(id));
     AppHaptics.selection();
+    // Group ledgers count settle-up payments, so marking a member paid also
+    // records (or, when unmarking, removes) the matching payment.
+    final ledger = LedgerRepository.instance;
+    final settlement = paid
+        ? groupSettlementForPaidShare(
+            billId: widget.billId,
+            bill: bill,
+            participant: participant,
+            createdBy: _user?.uid ?? '',
+          )
+        : null;
+    String? settlementId;
     try {
+      if (settlement != null) {
+        settlementId = await ledger.recordPayment(settlement);
+      }
+      final previousSettlementId =
+          participant[settlementPaymentIdField]?.toString() ?? '';
+      if (!paid && previousSettlementId.isNotEmpty) {
+        final groupId = bill['groupId']?.toString();
+        try {
+          await ledger.deletePayment(
+            PaymentRecord(
+              id: previousSettlementId,
+              from: id,
+              to: bill['hostId']?.toString() ?? '',
+              amountMinor: 0,
+              currency: BillReader(bill).currency,
+              createdBy: _user?.uid ?? '',
+              groupId: groupId,
+            ),
+          );
+        } catch (_) {
+          // Older than the 24 h delete window: the payment stays in the
+          // group ledger, which still reflects money that changed hands.
+        }
+      }
       Map<String, dynamic>? after;
       await FirebaseFirestore.instance.runTransaction((tx) async {
         final snap = await tx.get(_billRef);
@@ -140,6 +179,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             'status': paid ? 'PAID' : 'PENDING',
             'isPaid': paid,
             if (paid) 'paidConfirmedAt': Timestamp.now(),
+            if (settlementId != null) settlementPaymentIdField: settlementId,
+            if (!paid) settlementPaymentIdField: null,
           },
         );
         final update = <String, dynamic>{
@@ -192,6 +233,24 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         unawaited(_notifyAccepted(id));
       }
     } catch (e) {
+      if (settlement != null && settlementId != null) {
+        // The bill update failed: undo the payment so nothing counts twice.
+        unawaited(
+          ledger
+              .deletePayment(
+                PaymentRecord(
+                  id: settlementId,
+                  from: settlement.from,
+                  to: settlement.to,
+                  amountMinor: settlement.amountMinor,
+                  currency: settlement.currency,
+                  createdBy: settlement.createdBy,
+                  groupId: settlement.groupId,
+                ),
+              )
+              .catchError((_) {}),
+        );
+      }
       _showError(
         e,
         retry: () => _setPaid(participant, paid: paid, bill: bill),

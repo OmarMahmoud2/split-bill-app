@@ -299,6 +299,13 @@ describe('group payments', () => {
       payment({ from: 'guest-member', to: HOST, participants_uids: ['guest-member', HOST], createdBy: HOST, method: 'cash' })));
   });
 
+  it('the host records a marked-paid share as a payment from the member', async () => {
+    await assertSucceeds(setDoc(doc(google(HOST), 'groups', 'g1', 'payments', 'mp1'),
+      payment({ createdBy: HOST, method: 'marked_paid', billId: 'gb1', fromName: 'Friend' })));
+    await assertFails(setDoc(doc(google(STRANGER), 'groups', 'g1', 'payments', 'mp2'),
+      payment({ createdBy: STRANGER, method: 'marked_paid', billId: 'gb1' })));
+  });
+
   it('validates amount, sides and shape', async () => {
     const col = (db, id) => doc(db, 'groups', 'g1', 'payments', id);
     await assertFails(setDoc(col(google(FRIEND), 'y1'), payment({ amountMinor: 0 })));
