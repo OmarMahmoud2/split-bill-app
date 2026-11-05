@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter/services.dart';
 import 'package:app_links/app_links.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -78,14 +79,10 @@ Future<void> main() async {
     debugPrint("⏳ App Launch: Initializing RevenueCat...");
     unawaited(RevenueCatService.initialize());
 
+    // Initial style until the first frame; afterwards the AnnotatedRegion in
+    // MyApp (and AppBarTheme.systemOverlayStyle) follow the active theme.
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
+      AppTheme.overlayStyleFor(PlatformDispatcher.instance.platformBrightness),
     );
   }
 
@@ -123,6 +120,8 @@ class FirebaseStartupErrorApp extends StatelessWidget {
       title: 'Split Bill',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       home: Scaffold(
         body: SafeArea(
           child: Center(
@@ -356,6 +355,14 @@ class _MyAppState extends State<MyApp> {
           supportedLocales: context.supportedLocales,
           localizationsDelegates: context.localizationDelegates,
           theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: appSettings.themeMode,
+          // Status bar icons follow the active theme on screens without an
+          // AppBar (AppBarTheme.systemOverlayStyle covers the rest).
+          builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+            value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
+            child: child ?? const SizedBox.shrink(),
+          ),
 
           home: CustomUpgrader(
             child: billIdFromUrl != null

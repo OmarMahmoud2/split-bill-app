@@ -10,6 +10,15 @@ import 'package:split_bill_app/services/notification_payload.dart';
 import 'package:split_bill_app/services/user_preferences_service.dart';
 import 'package:split_bill_app/services/guest_session.dart';
 
+/// shared_preferences key for the device-local appearance setting.
+const String themeModePreferenceKey = 'themeMode';
+
+/// Parses a persisted [ThemeMode] name; unknown or missing -> system.
+ThemeMode themeModeFromName(String? name) => ThemeMode.values.firstWhere(
+  (mode) => mode.name == name,
+  orElse: () => ThemeMode.system,
+);
+
 class AppSettingsProvider extends ChangeNotifier {
   AppSettingsProvider({UserPreferencesService? preferencesService})
     : _preferencesService = preferencesService ?? UserPreferencesService();
@@ -18,6 +27,7 @@ class AppSettingsProvider extends ChangeNotifier {
 
   Locale _locale = resolveSupportedLocale(PlatformDispatcher.instance.locales);
   String _currencyCode = UserPreferencesService.defaultCurrencyCode;
+  ThemeMode _themeMode = ThemeMode.system;
 
   StreamSubscription<User?>? _authSubscription;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
@@ -27,6 +37,7 @@ class AppSettingsProvider extends ChangeNotifier {
 
   Locale get locale => _locale;
   String get currencyCode => _currencyCode;
+  ThemeMode get themeMode => _themeMode;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -48,6 +59,7 @@ class AppSettingsProvider extends ChangeNotifier {
     _currencyCode =
         sanitizeCurrencyCode(prefs.getString('currencyCode')) ??
         UserPreferencesService.defaultCurrencyCode;
+    _themeMode = themeModeFromName(prefs.getString(themeModePreferenceKey));
     notifyListeners();
   }
 
@@ -108,6 +120,16 @@ class AppSettingsProvider extends ChangeNotifier {
     notifyListeners();
     await _saveLocalPreferences();
     await _preferencesService.updatePreference('currencyCode', _currencyCode);
+  }
+
+  /// Appearance is a device preference: stored locally only, not synced to
+  /// the user profile.
+  Future<void> updateThemeMode(ThemeMode mode) async {
+    if (_themeMode == mode) return;
+    _themeMode = mode;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(themeModePreferenceKey, mode.name);
   }
 
   @override
