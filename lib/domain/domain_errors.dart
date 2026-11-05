@@ -132,6 +132,16 @@ class UnbalancedExpenseError extends DomainError {
       'Expense $expenseId: paid $paidTotal but owed $owedTotal';
 }
 
+/// Net balances in one currency do not sum to zero.
+class UnbalancedBalancesError extends DomainError {
+  final String currency;
+  final int sum;
+  const UnbalancedBalancesError(this.currency, this.sum);
+
+  @override
+  String get message => 'Balances in $currency sum to $sum instead of 0';
+}
+
 /// A payment from a person to themselves.
 class SelfPaymentError extends DomainError {
   final String participantId;
