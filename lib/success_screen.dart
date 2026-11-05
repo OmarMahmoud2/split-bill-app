@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/share_link_utils.dart';
 import 'home_screen.dart';
@@ -55,8 +56,9 @@ class SuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: p.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -72,26 +74,29 @@ class SuccessScreen extends StatelessWidget {
                       repeat: false,
                     ),
                     const SizedBox(height: 24),
-                    Text('success',
+                    Text(
+                      'success',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
                     ).tr(),
-                    Text('your_bill_has_been_created_and_sent',
+                    Text(
+                      'your_bill_has_been_created_and_sent',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(fontSize: 16, color: p.textTertiary),
                     ).tr(),
                     const SizedBox(height: 40),
 
                     if (notifiedUsers.isNotEmpty) ...[
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('notified_via_app',
+                        child: Text(
+                          'notified_via_app',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                            color: p.info,
                             letterSpacing: 1.2,
                           ),
                         ).tr(),
@@ -100,7 +105,7 @@ class SuccessScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.blue[50],
+                          color: p.infoSoft,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(
@@ -112,17 +117,17 @@ class SuccessScreen extends StatelessWidget {
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.check_circle,
-                                        color: Colors.blue,
+                                        color: p.info,
                                         size: 20,
                                       ),
                                       const SizedBox(width: 12),
                                       Text(
                                         n,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.blue,
+                                          color: p.info,
                                         ),
                                       ),
                                     ],
@@ -138,11 +143,12 @@ class SuccessScreen extends StatelessWidget {
                     if (guestUsers.isNotEmpty) ...[
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('manual_share_needed',
+                        child: Text(
+                          'manual_share_needed',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange,
+                            color: p.warning,
                             letterSpacing: 1.2,
                           ),
                         ).tr(),
@@ -161,18 +167,19 @@ class SuccessScreen extends StatelessWidget {
                           return Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.orange[50],
+                              color: p.warningSoft,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
                               children: [
                                 CircleAvatar(
-                                  backgroundColor: Colors.orange[200],
+                                  backgroundColor: p.tint(
+                                    Colors.orange[200]!,
+                                    Colors.orange,
+                                  ),
                                   child: Text(
                                     name[0],
-                                    style: const TextStyle(
-                                      color: Colors.orange,
-                                    ),
+                                    style: TextStyle(color: p.warning),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -183,9 +190,9 @@ class SuccessScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         name,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.orange,
+                                          color: p.warning,
                                         ),
                                       ),
                                       Text(
@@ -195,7 +202,7 @@ class SuccessScreen extends StatelessWidget {
                                         ),
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: Colors.orange[800],
+                                          color: p.warningStrong,
                                         ),
                                       ),
                                     ],
@@ -213,7 +220,7 @@ class SuccessScreen extends StatelessWidget {
                                       icon: const Icon(Icons.share, size: 16),
                                       label: Text('share').tr(),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.orange,
+                                        backgroundColor: p.warning,
                                         foregroundColor: Colors.white,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
@@ -250,13 +257,14 @@ class SuccessScreen extends StatelessWidget {
                   ),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 20),
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: p.inverseSurface,
+                    foregroundColor: p.onInverseSurface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: Text('done',
+                  child: Text(
+                    'done',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ).tr(),
                 ),

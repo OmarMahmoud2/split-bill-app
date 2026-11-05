@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
@@ -9,7 +10,9 @@ class BillDetailsModals {
       (billData['currencyCode'] ?? billData['currency_code'] ?? 'USD')
           .toString();
 
-  static List<Map<String, dynamic>> _otherCharges(Map<String, dynamic> billData) {
+  static List<Map<String, dynamic>> _otherCharges(
+    Map<String, dynamic> billData,
+  ) {
     final charges = billData['charges'] as Map<String, dynamic>? ?? {};
     return List<Map<String, dynamic>>.from(charges['otherCharges'] ?? const []);
   }
@@ -22,6 +25,7 @@ class BillDetailsModals {
     final Map<String, dynamic> charges = data['charges'] ?? {};
     final String storeName = data['storeName'] ?? 'bill_details'.tr();
     final String currencyCode = _currencyCode(data);
+    final p = context.palette;
 
     PremiumBottomSheet.show(
       context: context,
@@ -38,11 +42,12 @@ class BillDetailsModals {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('bill_breakdown',
+                        Text(
+                          'bill_breakdown',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w900,
-                            color: Colors.blue[800],
+                            color: p.infoStrong,
                             letterSpacing: 2.0,
                           ),
                         ).tr(),
@@ -92,9 +97,9 @@ class BillDetailsModals {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: p.surfaceMuted,
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: Colors.grey[100]!),
+                      border: Border.all(color: p.surfaceVariant),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,11 +109,11 @@ class BillDetailsModals {
                           height: 40,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: p.surface,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.03),
+                                color: p.shadow.withValues(alpha: 0.03),
                                 blurRadius: 5,
                               ),
                             ],
@@ -119,7 +124,7 @@ class BillDetailsModals {
                             ),
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
-                              color: Colors.blue[900],
+                              color: p.infoStrong,
                               fontSize: 13,
                             ),
                           ),
@@ -143,7 +148,7 @@ class BillDetailsModals {
                                   ),
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.grey[500],
+                                    color: p.textTertiary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -195,6 +200,7 @@ class BillDetailsModals {
     final Map<String, dynamic> charges = billData['charges'] ?? {};
     final String uid = participant['id'];
     final String currencyCode = _currencyCode(billData);
+    final p = context.palette;
 
     final userItems = allItems.where((item) {
       final assigned = item['assignedTo'] as List?;
@@ -209,7 +215,7 @@ class BillDetailsModals {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(35),
           child: Container(
-            color: Colors.white,
+            color: p.surface,
             padding: const EdgeInsets.all(28),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -217,12 +223,12 @@ class BillDetailsModals {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.blue[800]!.withValues(alpha: 0.1),
+                    color: p.infoStrong.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.receipt_long_rounded,
-                    color: Colors.blue[800],
+                    color: p.infoStrong,
                     size: 36,
                   ),
                 ),
@@ -239,10 +245,11 @@ class BillDetailsModals {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
-                Text('detailed_items_and_proportions',
+                Text(
+                  'detailed_items_and_proportions',
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey[500],
+                    color: p.textTertiary,
                     fontWeight: FontWeight.w500,
                   ),
                 ).tr(),
@@ -280,10 +287,10 @@ class BillDetailsModals {
                                     'count': assignedCount.toString(),
                                   },
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
+                                  color: p.textPrimary,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -296,7 +303,7 @@ class BillDetailsModals {
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 14,
-                                color: Colors.blue[900],
+                                color: p.infoStrong,
                               ),
                             ),
                           ],
@@ -310,6 +317,7 @@ class BillDetailsModals {
                   child: Divider(height: 1, thickness: 1),
                 ),
                 _buildSimpleCharges(
+                  p,
                   participant,
                   charges,
                   billData,
@@ -322,19 +330,20 @@ class BillDetailsModals {
                     vertical: 18,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.green[600]!.withValues(alpha: 0.1),
+                    color: p.successStrong.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
-                      color: Colors.green[600]!.withValues(alpha: 0.2),
+                      color: p.successStrong.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('my_total',
+                      Text(
+                        'my_total',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
-                          color: Colors.green[800],
+                          color: p.successStrong,
                           fontSize: 14,
                           letterSpacing: 1.2,
                         ),
@@ -347,7 +356,7 @@ class BillDetailsModals {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
-                          color: Colors.green[800],
+                          color: p.successStrong,
                         ),
                       ),
                     ],
@@ -359,15 +368,16 @@ class BillDetailsModals {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[900],
-                      foregroundColor: Colors.white,
+                      backgroundColor: p.textPrimary,
+                      foregroundColor: p.surface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       elevation: 0,
                     ),
-                    child: Text('got_it_3',
+                    child: Text(
+                      'got_it_3',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
@@ -396,10 +406,11 @@ class BillDetailsModals {
     final discount = (charges['discountAmount'] as num? ?? 0.0).toDouble();
     final delivery = (charges['deliveryFeeAmount'] as num? ?? 0.0).toDouble();
 
+    final p = context.palette;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: p.surfaceMuted,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SafeArea(
@@ -407,30 +418,45 @@ class BillDetailsModals {
         child: Column(
           children: [
             if (tax > 0)
-              _buildChargeRow('receipt_tax'.tr(), tax, currencyCode: currencyCode),
+              _buildChargeRow(
+                p,
+                'receipt_tax'.tr(),
+                tax,
+                currencyCode: currencyCode,
+              ),
             if (service > 0)
               _buildChargeRow(
+                p,
                 'receipt_service_charge'.tr(),
                 service,
                 currencyCode: currencyCode,
               ),
             if (tip > 0)
-              _buildChargeRow('receipt_tip'.tr(), tip, currencyCode: currencyCode),
+              _buildChargeRow(
+                p,
+                'receipt_tip'.tr(),
+                tip,
+                currencyCode: currencyCode,
+              ),
             if (delivery > 0)
               _buildChargeRow(
+                p,
                 'receipt_delivery_fee'.tr(),
                 delivery,
                 currencyCode: currencyCode,
               ),
             ...otherCharges.map(
               (charge) => _buildChargeRow(
-                (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
+                p,
+                (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                    .toString(),
                 ((charge['amount'] as num?)?.toDouble() ?? 0.0),
                 currencyCode: currencyCode,
               ),
             ),
             if (discount > 0)
               _buildChargeRow(
+                p,
                 'receipt_discount'.tr(),
                 -discount,
                 isDiscount: true,
@@ -443,7 +469,8 @@ class BillDetailsModals {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('grand_total',
+                Text(
+                  'grand_total',
                   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
                 ).tr(),
                 Text(
@@ -463,6 +490,7 @@ class BillDetailsModals {
   }
 
   static Widget _buildSimpleCharges(
+    AppPalette p,
     Map<String, dynamic> participant,
     Map<String, dynamic> charges,
     Map<String, dynamic> billData,
@@ -484,8 +512,8 @@ class BillDetailsModals {
     for (final item in items) {
       final assigned = item['assignedTo'] as List? ?? const [];
       if (assigned.contains(uid) && assigned.isNotEmpty) {
-        final itemTotal =
-            ((item['price'] as num) * (item['qty'] as num? ?? 1)).toDouble();
+        final itemTotal = ((item['price'] as num) * (item['qty'] as num? ?? 1))
+            .toDouble();
         userItemsTotal += itemTotal / assigned.length;
       }
     }
@@ -508,6 +536,7 @@ class BillDetailsModals {
       children: [
         if (tax > 0)
           _buildChargeRow(
+            p,
             'tax_portion'.tr(),
             tax,
             small: true,
@@ -515,6 +544,7 @@ class BillDetailsModals {
           ),
         if (service > 0)
           _buildChargeRow(
+            p,
             'service_portion'.tr(),
             service,
             small: true,
@@ -522,6 +552,7 @@ class BillDetailsModals {
           ),
         if (tip > 0)
           _buildChargeRow(
+            p,
             'tip_portion'.tr(),
             tip,
             small: true,
@@ -529,35 +560,37 @@ class BillDetailsModals {
           ),
         if (delivery > 0)
           _buildChargeRow(
+            p,
             'delivery_portion'.tr(),
             delivery,
             small: true,
             currencyCode: currencyCode,
           ),
-        ...otherCharges
-            .map((charge) {
-              final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
-              final splitMethod = charge['splitMethod'] ?? charge['split_method'];
-              final share = splitMethod == 'equal'
-                  ? amount / participantCount
-                  : amount * userProportion;
-              if (share <= 0) {
-                return null;
-              }
-              return _buildChargeRow(
-                'charge_portion'.tr(
-                  namedArgs: {
-                    'label': (charge['label'] ?? 'receipt_other_charge_label'.tr()).toString(),
-                  },
-                ),
-                share,
-                small: true,
-                currencyCode: currencyCode,
-              );
-            })
-            .whereType<Widget>(),
+        ...otherCharges.map((charge) {
+          final amount = ((charge['amount'] as num?)?.toDouble() ?? 0.0);
+          final splitMethod = charge['splitMethod'] ?? charge['split_method'];
+          final share = splitMethod == 'equal'
+              ? amount / participantCount
+              : amount * userProportion;
+          if (share <= 0) {
+            return null;
+          }
+          return _buildChargeRow(
+            p,
+            'charge_portion'.tr(
+              namedArgs: {
+                'label': (charge['label'] ?? 'receipt_other_charge_label'.tr())
+                    .toString(),
+              },
+            ),
+            share,
+            small: true,
+            currencyCode: currencyCode,
+          );
+        }).whereType<Widget>(),
         if (discount > 0)
           _buildChargeRow(
+            p,
             'discount_portion'.tr(),
             -discount,
             small: true,
@@ -569,6 +602,7 @@ class BillDetailsModals {
   }
 
   static Widget _buildChargeRow(
+    AppPalette p,
     String label,
     double amount, {
     bool isDiscount = false,
@@ -582,15 +616,12 @@ class BillDetailsModals {
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: small ? 11 : 13,
-            ),
+            style: TextStyle(color: p.textSecondary, fontSize: small ? 11 : 13),
           ),
           Text(
             "${amount > 0 ? '+' : ''}${CurrencyUtils.format(amount.abs(), currencyCode: currencyCode)}",
             style: TextStyle(
-              color: isDiscount ? Colors.red : Colors.grey[800],
+              color: isDiscount ? p.danger : p.textPrimary,
               fontWeight: small ? FontWeight.w500 : FontWeight.bold,
               fontSize: small ? 11 : 13,
             ),

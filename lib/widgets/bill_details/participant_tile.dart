@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -39,19 +40,23 @@ class ParticipantTile extends StatelessWidget {
         participant['id'] != null && !participant['id'].startsWith('guest_');
     final String? photoUrl = participant['photoUrl'];
 
+    final p = context.palette;
     Color statusColor;
-    Color tileBgColor = Colors.white;
+    Color tileBgColor = p.surface;
 
     switch (status) {
       case 'PAID':
-        statusColor = const Color(0xFF2E7D32); // Deeper Green
-        tileBgColor = const Color(0xFFF1F8E9); // Very subtle green tint
+        statusColor = p.successStrong; // Deeper Green
+        tileBgColor = p.tint(
+          const Color(0xFFF1F8E9),
+          Colors.green,
+        ); // Very subtle green tint
         break;
       case 'REVIEW':
-        statusColor = Colors.orange[800]!;
+        statusColor = p.warningStrong;
         break;
       default:
-        statusColor = const Color(0xFF1976D2); // Material Blue
+        statusColor = p.infoStrong; // Material Blue
     }
 
     return Container(
@@ -61,7 +66,7 @@ class ParticipantTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: p.shadow.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -86,19 +91,19 @@ class ParticipantTile extends StatelessWidget {
                       child: CircularProgressIndicator(
                         value: percentage,
                         strokeWidth: 3.5,
-                        backgroundColor: Colors.grey[100],
+                        backgroundColor: p.surfaceVariant,
                         valueColor: AlwaysStoppedAnimation(statusColor),
                       ),
                     ),
                     CircleAvatar(
                       radius: 24,
-                      backgroundColor: Colors.grey[200],
+                      backgroundColor: p.borderSubtle,
                       backgroundImage: ImageUtils.getAvatarImage(photoUrl),
                       child: photoUrl == null || photoUrl.isEmpty
                           ? Text(
                               _getInitials(participant['name']),
                               style: TextStyle(
-                                color: Colors.grey[700],
+                                color: p.textMedium,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -134,14 +139,15 @@ class ParticipantTile extends StatelessWidget {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.blue[600]!.withValues(alpha: 0.12),
+                                color: p.info.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text('host',
+                              child: Text(
+                                'host',
                                 style: TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.blue[700],
+                                  color: p.infoStrong,
                                   letterSpacing: 0.5,
                                 ),
                               ).tr(),
@@ -162,7 +168,7 @@ class ParticipantTile extends StatelessWidget {
                         "${(percentage * 100).toStringAsFixed(1)}% of total",
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey[500],
+                          color: p.textTertiary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -175,10 +181,10 @@ class ParticipantTile extends StatelessWidget {
                   children: [
                     Text(
                       CurrencyUtils.format(share, currencyCode: currencyCode),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: Colors.black87,
+                        color: p.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 6),

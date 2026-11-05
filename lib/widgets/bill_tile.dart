@@ -10,6 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 
 class BillTile extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -40,17 +41,15 @@ class BillTile extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('bill_deleted').tr(),
-          backgroundColor: Colors.green,
+          backgroundColor: context.palette.success,
         ),
       );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'error_saving'.tr(namedArgs: {'error': e.toString()}),
-          ),
-          backgroundColor: Colors.red,
+          content: Text('error_saving'.tr(namedArgs: {'error': e.toString()})),
+          backgroundColor: context.palette.danger,
         ),
       );
     }
@@ -71,7 +70,7 @@ class BillTile extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: context.palette.danger,
               foregroundColor: Colors.white,
             ),
             child: Text('common_delete').tr(),
@@ -88,6 +87,7 @@ class BillTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     bool amIHost = data['hostId'] == currentUserId;
     final isDraft = data['status'] == 'UNATTEMPTED';
     String storeName = data['storeName'] ?? "Bill";
@@ -118,7 +118,7 @@ class BillTile extends StatelessWidget {
     // Determine Category for Coloring
     Color tileColor;
     if (isDraft) {
-      tileColor = Colors.amber.shade50;
+      tileColor = palette.tint(Colors.amber.shade50, Colors.amber);
     } else {
       bool isSettled = false;
       if (amIHost) {
@@ -135,7 +135,7 @@ class BillTile extends StatelessWidget {
       }
 
       if (isSettled) {
-        tileColor = Colors.green.shade50;
+        tileColor = palette.successSoft;
       } else {
         DateTime now = DateTime.now();
         DateTime threeDaysAgo = now.subtract(const Duration(days: 3));
@@ -143,9 +143,9 @@ class BillTile extends StatelessWidget {
         DateTime date = timestamp?.toDate() ?? DateTime(2000);
 
         if (date.isAfter(threeDaysAgo)) {
-          tileColor = Colors.blue.shade50;
+          tileColor = palette.infoSoft;
         } else {
-          tileColor = Colors.red.shade50;
+          tileColor = palette.dangerSoft;
         }
       }
     }
@@ -181,11 +181,11 @@ class BillTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: palette.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade100,
+              color: palette.surfaceVariant,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -205,7 +205,7 @@ class BillTile extends StatelessWidget {
                   'assets/animations/food.json',
                   fit: BoxFit.cover,
                   errorBuilder: (c, e, s) =>
-                      const Icon(Icons.fastfood, color: Colors.orange),
+                      Icon(Icons.fastfood, color: palette.warning),
                 ),
               ),
             ),
@@ -226,7 +226,7 @@ class BillTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     dateStr,
-                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    style: TextStyle(color: palette.textTertiary, fontSize: 12),
                   ),
                   const SizedBox(height: 8),
                   SizedBox(
@@ -240,12 +240,12 @@ class BillTile extends StatelessWidget {
                               left: i * 16.0,
                               child: CircleAvatar(
                                 radius: 12,
-                                backgroundColor: Colors.grey[300],
+                                backgroundColor: palette.border,
                                 child: Text(
                                   "+${parts.length - 3}",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
-                                    color: Colors.black,
+                                    color: palette.textStrong,
                                   ),
                                 ),
                               ),
@@ -278,9 +278,9 @@ class BillTile extends StatelessWidget {
                 if (isDraft)
                   IconButton(
                     onPressed: () => _confirmDeleteDraft(context),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete_outline_rounded,
-                      color: Colors.redAccent,
+                      color: palette.dangerAccent,
                     ),
                     tooltip: 'common_delete'.tr(),
                   )
@@ -307,9 +307,9 @@ class BillTile extends StatelessWidget {
                       CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 4,
-                        backgroundColor: Colors.grey[200],
+                        backgroundColor: palette.borderSubtle,
                         valueColor: AlwaysStoppedAnimation(
-                          amIHost ? Colors.green : Colors.blue,
+                          amIHost ? palette.success : palette.info,
                         ),
                       ),
                       Text(

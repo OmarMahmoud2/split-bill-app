@@ -10,6 +10,7 @@ import 'package:split_bill_app/widgets/bill_details/bill_summary_widget.dart';
 import 'package:split_bill_app/widgets/bill_details/participant_tile.dart';
 import 'package:split_bill_app/widgets/bill_details/details_modals.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:split_bill_app/utils/share_link_utils.dart';
 import 'services/notification_service.dart';
@@ -66,7 +67,9 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                 Navigator.pop(context);
                 _markAsPaid(allParticipants, index, forcePaid: true);
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.palette.success,
+              ),
               child: Text('approve_payment').tr(),
             ),
           ],
@@ -102,7 +105,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                       child: Text(
                         'common_cancel',
                         style: TextStyle(
-                          color: Colors.grey,
+                          color: context.palette.textTertiary,
                           fontWeight: FontWeight.bold,
                         ),
                       ).tr(),
@@ -121,7 +124,10 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                       ),
                       label: Text('approve').tr(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[700],
+                        // Filled button: *Strong is a light text shade in dark.
+                        backgroundColor: context.palette.isDark
+                            ? context.palette.success
+                            : context.palette.successStrong,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -236,7 +242,10 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           'send_reminder_confirmation'.tr(
             namedArgs: {
               'name': name,
-              'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
+              'amount': CurrencyUtils.format(
+                amount,
+                currencyCode: currencyCode,
+              ),
             },
           ),
         ),
@@ -245,7 +254,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'common_cancel',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: context.palette.textTertiary),
             ).tr(),
           ),
           ElevatedButton(
@@ -255,7 +264,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Colors.white,
+              foregroundColor: context.palette.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -280,10 +289,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         title: 'reminder_title'.tr(namedArgs: {'bill_name': widget.billName}),
         body: 'reminder_body'.tr(
           namedArgs: {
-            'amount': CurrencyUtils.format(
-              amount,
-              currencyCode: currencyCode,
-            ),
+            'amount': CurrencyUtils.format(amount, currencyCode: currencyCode),
           },
         ),
         historyTitleKey: 'reminder_title',
@@ -299,7 +305,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           SnackBar(
             content: Text('reminder_sent_to'.tr(namedArgs: {'name': name})),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.blue[800],
+            backgroundColor:
+                Colors.blue[800], // White text on a fixed blue in both themes.
           ),
         );
       }
@@ -316,7 +323,10 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         title: Text(
           'delete_bill',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: context.palette.danger,
+          ),
         ).tr(),
         content: Text(
           'this_action_is_irreversible_all_participants_will_lose_access_to_this_bill_data',
@@ -329,7 +339,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: context.palette.danger,
               foregroundColor: Colors.white,
             ),
             child: Text('delete_permanently').tr(),
@@ -385,7 +395,9 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             icon: status == 'PAID'
                 ? Icons.undo_rounded
                 : Icons.check_circle_rounded,
-            color: status == 'PAID' ? Colors.orange : Colors.green,
+            color: status == 'PAID'
+                ? context.palette.warning
+                : context.palette.success,
             label: status == 'PAID' ? "Mark as Unpaid" : "Mark as Paid",
             onTap: () {
               Navigator.pop(context);
@@ -395,7 +407,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           if (isAppUser)
             _buildActionItem(
               icon: Icons.notifications_active_rounded,
-              color: Colors.blue,
+              color: context.palette.info,
               label: "Send Reminder",
               onTap: () {
                 Navigator.pop(context);
@@ -413,7 +425,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           else
             _buildActionItem(
               icon: Icons.share_rounded,
-              color: Colors.blue,
+              color: context.palette.info,
               label: "Share via Link",
               onTap: () {
                 Navigator.pop(context);
@@ -445,7 +457,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           if (participant['paymentProof'] != null)
             _buildActionItem(
               icon: Icons.image_rounded,
-              color: Colors.orange[800]!,
+              color: context.palette.warningStrong,
               label: "Review Proof",
               onTap: () {
                 Navigator.pop(context);
@@ -503,12 +515,12 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.1),
+                color: context.palette.info.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.edit_rounded,
-                color: Colors.blue,
+                color: context.palette.info,
                 size: 22,
               ),
             ),
@@ -535,12 +547,12 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: context.palette.danger.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.delete_forever_rounded,
-                color: Colors.red,
+                color: context.palette.danger,
                 size: 22,
               ),
             ),
@@ -549,7 +561,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: Colors.red,
+                color: context.palette.danger,
               ),
             ).tr(),
             onTap: () {
@@ -664,7 +676,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         }
 
         return Scaffold(
-          backgroundColor: Colors.grey[50],
+          backgroundColor: context.palette.surfaceMuted,
           appBar: CustomAppHeader(
             title: widget.billName,
             trailing: IconButton(
@@ -700,7 +712,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: Colors.grey,
+                          color: context.palette.textTertiary,
                           letterSpacing: 1.5,
                         ),
                       ).tr(),
@@ -737,9 +749,9 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                     onPressed: () => _showManagementSheet(data),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     elevation: 10,
-                    child: const Icon(
+                    child: Icon(
                       CupertinoIcons.settings,
-                      color: Colors.white,
+                      color: context.palette.onPrimary,
                       size: 32,
                     ),
                   ),
@@ -754,11 +766,11 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: context.palette.shadow.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -791,24 +803,24 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
-                          color: Colors.black87,
+                          color: context.palette.textPrimary,
                         ),
                       ).tr(),
                       Text(
                         'items_and_charges_breakdown',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[500],
+                          color: context.palette.textTertiary,
                           fontWeight: FontWeight.w500,
                         ),
                       ).tr(),
                     ],
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 16,
-                  color: Colors.grey,
+                  color: context.palette.textTertiary,
                 ),
               ],
             ),

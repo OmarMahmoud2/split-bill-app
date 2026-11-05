@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -22,6 +23,7 @@ class BillSummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -30,7 +32,7 @@ class BillSummaryRow extends StatelessWidget {
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: isPrimary ? Colors.black : Colors.grey[700],
+            color: isPrimary ? p.textStrong : p.textMedium,
           ),
         ),
         Text(
@@ -44,7 +46,7 @@ class BillSummaryRow extends StatelessWidget {
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             color: isPrimary
                 ? Theme.of(context).colorScheme.primary
-                : Colors.black,
+                : p.textStrong,
           ),
         ),
       ],
@@ -74,8 +76,9 @@ class ParticipantShareCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Material(
-      color: Colors.white,
+      color: p.surface,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
@@ -84,7 +87,7 @@ class ParticipantShareCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+            border: Border.all(color: p.textTertiary.withValues(alpha: 0.1)),
           ),
           child: Row(
             children: [
@@ -130,10 +133,11 @@ class ParticipantShareCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.redAccent,
+                              color: p.dangerAccent,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text('big_loser',
+                            child: Text(
+                              'big_loser',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -144,8 +148,9 @@ class ParticipantShareCard extends StatelessWidget {
                         ],
                       ],
                     ),
-                    Text('view_details',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                    Text(
+                      'view_details',
+                      style: TextStyle(fontSize: 12, color: p.textTertiary),
                     ).tr(),
                   ],
                 ),
@@ -194,10 +199,10 @@ class ParticipantShareCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
-                color: Colors.grey,
+                color: p.textTertiary,
               ),
             ],
           ),

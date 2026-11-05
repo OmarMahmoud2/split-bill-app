@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/widgets/loading_state_widget.dart';
 import 'services/notification_service.dart';
 import 'bill_details_screen.dart';
@@ -83,7 +84,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       r'^(.*?) paid (.+?)(?: via (.*?))? for (.+)\.$',
       caseSensitive: false,
     ).firstMatch(body);
-    if (title.toLowerCase().startsWith('payment received') && paidMatch != null) {
+    if (title.toLowerCase().startsWith('payment received') &&
+        paidMatch != null) {
       final methodName = paidMatch.group(3);
       return (
         title: 'payment_received'.tr(),
@@ -151,7 +153,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('clear_all', style: TextStyle(color: Colors.red)).tr(),
+            child: Text(
+              'clear_all',
+              style: TextStyle(color: context.palette.danger),
+            ).tr(),
           ),
         ],
       ),
@@ -183,8 +188,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         body: Center(child: Text('please_log_in_to_view_notifications').tr()),
       );
     }
+    final p = context.palette;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: p.surfaceMuted,
       body: Column(
         children: [
           const SizedBox(height: 65),
@@ -194,11 +200,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: p.surface,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: p.shadow.withValues(alpha: 0.04),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -214,7 +220,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
-                    child: Text('notifications',
+                    child: Text(
+                      'notifications',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
@@ -225,7 +232,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   // Mark as Read (Pill)
                   _buildPillAction(
                     icon: Icons.done_all_rounded,
-                    color: Colors.blue,
+                    color: p.info,
                     onTap: () => NotificationService().markAllAsRead(),
                     tooltip: 'mark_all_read'.tr(),
                   ),
@@ -233,7 +240,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   // Clear All (Pill)
                   _buildPillAction(
                     icon: Icons.delete_sweep_rounded,
-                    color: Colors.red,
+                    color: p.danger,
                     onTap: _clearAll,
                     tooltip: 'clear_all'.tr(),
                   ),
@@ -261,7 +268,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   return EmptyStateWidget(
                     icon: Icons.notifications_none_rounded,
                     title: 'no_notifications'.tr(),
-                    message: 'your_history_is_clean_for_now_any_alerts_will_appear_here'.tr(),
+                    message:
+                        'your_history_is_clean_for_now_any_alerts_will_appear_here'
+                            .tr(),
                   );
                 }
 
@@ -286,11 +295,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: p.surface,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: read ? 0.02 : 0.05),
+                            color: p.shadow.withValues(
+                              alpha: read ? 0.02 : 0.05,
+                            ),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -305,7 +316,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: read
-                                ? Colors.grey[100]
+                                ? p.surfaceVariant
                                 : Theme.of(
                                     context,
                                   ).primaryColor.withValues(alpha: 0.1),
@@ -316,7 +327,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 ? Icons.notifications_none_rounded
                                 : Icons.notifications_active_rounded,
                             color: read
-                                ? Colors.grey
+                                ? p.textTertiary
                                 : Theme.of(context).primaryColor,
                             size: 24,
                           ),
@@ -328,7 +339,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 ? FontWeight.bold
                                 : FontWeight.w900,
                             fontSize: 15,
-                            color: read ? Colors.grey[700] : Colors.black,
+                            color: read ? p.textMedium : p.textStrong,
                           ),
                         ),
                         subtitle: Column(
@@ -339,7 +350,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               child: Text(
                                 body,
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: p.textSecondary,
                                   fontSize: 14,
                                   height: 1.3,
                                 ),
@@ -351,14 +362,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 Icon(
                                   Icons.access_time_rounded,
                                   size: 12,
-                                  color: Colors.grey[400],
+                                  color: p.textDisabled,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   timeAgo,
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.grey[400],
+                                    color: p.textDisabled,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
