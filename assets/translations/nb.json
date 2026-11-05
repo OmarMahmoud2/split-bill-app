@@ -795,5 +795,15 @@
   "theme_mode_system": "Systemstandard",
   "theme_mode_system_subtitle": "Følger innstillingen på enheten",
   "theme_mode_light": "Lyst",
-  "theme_mode_dark": "Mørkt"
+  "theme_mode_dark": "Mørkt",
+  "widget_you_are_owed": "Du har til gode",
+  "widget_you_owe": "Du skylder",
+  "widget_all_settled": "Alt er gjort opp",
+  "widget_updated_at": "Oppdatert {time}",
+  "widget_scan_receipt": "Skann en kvittering",
+  "widget_settle_with": "Gjør opp med",
+  "widget_no_open_balances": "Ingen åpne saldoer",
+  "widget_sign_in_prompt": "Logg på for å se saldoer",
+  "widget_hide_amounts": "Skjul beløp",
+  "widget_show_amounts": "Vis beløp"
 }

@@ -795,5 +795,15 @@
   "theme_mode_system": "Default sistem",
   "theme_mode_system_subtitle": "Mengikuti pengaturan perangkat Anda",
   "theme_mode_light": "Terang",
-  "theme_mode_dark": "Gelap"
+  "theme_mode_dark": "Gelap",
+  "widget_you_are_owed": "Piutang Anda",
+  "widget_you_owe": "Utang Anda",
+  "widget_all_settled": "Semua sudah lunas",
+  "widget_updated_at": "Diperbarui {time}",
+  "widget_scan_receipt": "Pindai struk",
+  "widget_settle_with": "Selesaikan dengan",
+  "widget_no_open_balances": "Tidak ada saldo terbuka",
+  "widget_sign_in_prompt": "Masuk untuk melihat saldo",
+  "widget_hide_amounts": "Sembunyikan jumlah",
+  "widget_show_amounts": "Tampilkan jumlah"
 }

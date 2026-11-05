@@ -795,5 +795,15 @@
   "theme_mode_system": "ตามระบบ",
   "theme_mode_system_subtitle": "ใช้ตามการตั้งค่าของอุปกรณ์",
   "theme_mode_light": "สว่าง",
-  "theme_mode_dark": "มืด"
+  "theme_mode_dark": "มืด",
+  "widget_you_are_owed": "ยอดที่คุณจะได้รับ",
+  "widget_you_owe": "ยอดที่คุณต้องจ่าย",
+  "widget_all_settled": "เคลียร์ครบแล้ว",
+  "widget_updated_at": "อัปเดตเมื่อ {time}",
+  "widget_scan_receipt": "สแกนใบเสร็จ",
+  "widget_settle_with": "เคลียร์ยอดกับ",
+  "widget_no_open_balances": "ไม่มียอดค้าง",
+  "widget_sign_in_prompt": "ลงชื่อเข้าใช้เพื่อดูยอดคงเหลือ",
+  "widget_hide_amounts": "ซ่อนจำนวนเงิน",
+  "widget_show_amounts": "แสดงจำนวนเงิน"
 }

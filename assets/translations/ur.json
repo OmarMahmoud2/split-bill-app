@@ -795,5 +795,15 @@
   "theme_mode_system": "سسٹم کے مطابق",
   "theme_mode_system_subtitle": "آپ کے آلے کی ترتیب کے مطابق",
   "theme_mode_light": "روشن",
-  "theme_mode_dark": "تاریک"
+  "theme_mode_dark": "تاریک",
+  "widget_you_are_owed": "آپ کو ملنا ہے",
+  "widget_you_owe": "آپ کے ذمے",
+  "widget_all_settled": "سب حساب برابر",
+  "widget_updated_at": "آخری اپڈیٹ {time}",
+  "widget_scan_receipt": "رسید اسکین کریں",
+  "widget_settle_with": "حساب برابر کریں",
+  "widget_no_open_balances": "کوئی کھلا بیلنس نہیں",
+  "widget_sign_in_prompt": "بیلنس دیکھنے کے لیے سائن اِن کریں",
+  "widget_hide_amounts": "رقم چھپائیں",
+  "widget_show_amounts": "رقم دکھائیں"
 }

@@ -795,5 +795,15 @@
   "theme_mode_system": "حسب النظام",
   "theme_mode_system_subtitle": "يتبع إعداد جهازك",
   "theme_mode_light": "فاتح",
-  "theme_mode_dark": "داكن"
+  "theme_mode_dark": "داكن",
+  "widget_you_are_owed": "مستحق لك",
+  "widget_you_owe": "عليك",
+  "widget_all_settled": "لا توجد مستحقات",
+  "widget_updated_at": "آخر تحديث {time}",
+  "widget_scan_receipt": "امسح إيصالاً",
+  "widget_settle_with": "سوِّ الحساب مع",
+  "widget_no_open_balances": "لا توجد أرصدة مفتوحة",
+  "widget_sign_in_prompt": "سجّل الدخول لعرض الأرصدة",
+  "widget_hide_amounts": "إخفاء المبالغ",
+  "widget_show_amounts": "إظهار المبالغ"
 }

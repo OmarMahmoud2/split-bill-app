@@ -795,5 +795,15 @@
   "theme_mode_system": "सिस्टम डिफ़ॉल्ट",
   "theme_mode_system_subtitle": "आपके डिवाइस की सेटिंग के अनुसार",
   "theme_mode_light": "लाइट",
-  "theme_mode_dark": "डार्क"
+  "theme_mode_dark": "डार्क",
+  "widget_you_are_owed": "आपको मिलना है",
+  "widget_you_owe": "आपको देना है",
+  "widget_all_settled": "सब हिसाब बराबर",
+  "widget_updated_at": "{time} पर अपडेट किया गया",
+  "widget_scan_receipt": "रसीद स्कैन करें",
+  "widget_settle_with": "इनसे हिसाब करें",
+  "widget_no_open_balances": "कोई बकाया नहीं",
+  "widget_sign_in_prompt": "बैलेंस देखने के लिए साइन इन करें",
+  "widget_hide_amounts": "राशि छिपाएँ",
+  "widget_show_amounts": "राशि दिखाएँ"
 }

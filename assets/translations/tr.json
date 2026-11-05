@@ -795,5 +795,15 @@
   "theme_mode_system": "Sistem varsayılanı",
   "theme_mode_system_subtitle": "Cihaz ayarınızı izler",
   "theme_mode_light": "Açık",
-  "theme_mode_dark": "Koyu"
+  "theme_mode_dark": "Koyu",
+  "widget_you_are_owed": "Alacağınız",
+  "widget_you_owe": "Borcunuz",
+  "widget_all_settled": "Her şey ödendi",
+  "widget_updated_at": "Güncellendi: {time}",
+  "widget_scan_receipt": "Fiş tara",
+  "widget_settle_with": "Hesaplaşılacaklar",
+  "widget_no_open_balances": "Açık bakiye yok",
+  "widget_sign_in_prompt": "Bakiyeleri görmek için giriş yapın",
+  "widget_hide_amounts": "Tutarları gizle",
+  "widget_show_amounts": "Tutarları göster"
 }

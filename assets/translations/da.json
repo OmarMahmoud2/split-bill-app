@@ -795,5 +795,15 @@
   "theme_mode_system": "Systemstandard",
   "theme_mode_system_subtitle": "Følger din enheds indstilling",
   "theme_mode_light": "Lyst",
-  "theme_mode_dark": "Mørkt"
+  "theme_mode_dark": "Mørkt",
+  "widget_you_are_owed": "Du har til gode",
+  "widget_you_owe": "Du skylder",
+  "widget_all_settled": "Alt er gjort op",
+  "widget_updated_at": "Opdateret {time}",
+  "widget_scan_receipt": "Scan en kvittering",
+  "widget_settle_with": "Gør op med",
+  "widget_no_open_balances": "Ingen åbne saldi",
+  "widget_sign_in_prompt": "Log ind for at se saldi",
+  "widget_hide_amounts": "Skjul beløb",
+  "widget_show_amounts": "Vis beløb"
 }

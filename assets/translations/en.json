@@ -795,5 +795,15 @@
   "theme_mode_system": "System default",
   "theme_mode_system_subtitle": "Follows your device setting",
   "theme_mode_light": "Light",
-  "theme_mode_dark": "Dark"
+  "theme_mode_dark": "Dark",
+  "widget_you_are_owed": "You're owed",
+  "widget_you_owe": "You owe",
+  "widget_all_settled": "All settled up",
+  "widget_updated_at": "Updated {time}",
+  "widget_scan_receipt": "Scan a receipt",
+  "widget_settle_with": "Settle with",
+  "widget_no_open_balances": "No open balances",
+  "widget_sign_in_prompt": "Sign in to see balances",
+  "widget_hide_amounts": "Hide amounts",
+  "widget_show_amounts": "Show amounts"
 }

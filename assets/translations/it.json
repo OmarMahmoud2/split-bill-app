@@ -795,5 +795,15 @@
   "theme_mode_system": "Predefinito di sistema",
   "theme_mode_system_subtitle": "Segue l'impostazione del dispositivo",
   "theme_mode_light": "Chiaro",
-  "theme_mode_dark": "Scuro"
+  "theme_mode_dark": "Scuro",
+  "widget_you_are_owed": "Ti devono",
+  "widget_you_owe": "Devi",
+  "widget_all_settled": "Tutto saldato",
+  "widget_updated_at": "Aggiornato alle {time}",
+  "widget_scan_receipt": "Scansiona uno scontrino",
+  "widget_settle_with": "Salda con",
+  "widget_no_open_balances": "Nessun saldo aperto",
+  "widget_sign_in_prompt": "Accedi per vedere i saldi",
+  "widget_hide_amounts": "Nascondi importi",
+  "widget_show_amounts": "Mostra importi"
 }

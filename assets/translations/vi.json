@@ -795,5 +795,15 @@
   "theme_mode_system": "Theo hệ thống",
   "theme_mode_system_subtitle": "Theo cài đặt của thiết bị",
   "theme_mode_light": "Sáng",
-  "theme_mode_dark": "Tối"
+  "theme_mode_dark": "Tối",
+  "widget_you_are_owed": "Bạn được nợ",
+  "widget_you_owe": "Bạn nợ",
+  "widget_all_settled": "Đã thanh toán hết",
+  "widget_updated_at": "Cập nhật lúc {time}",
+  "widget_scan_receipt": "Quét hóa đơn",
+  "widget_settle_with": "Thanh toán với",
+  "widget_no_open_balances": "Không có khoản nợ nào",
+  "widget_sign_in_prompt": "Đăng nhập để xem số dư",
+  "widget_hide_amounts": "Ẩn số tiền",
+  "widget_show_amounts": "Hiện số tiền"
 }

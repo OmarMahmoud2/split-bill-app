@@ -795,5 +795,15 @@
   "theme_mode_system": "시스템 기본값",
   "theme_mode_system_subtitle": "기기 설정을 따릅니다",
   "theme_mode_light": "라이트",
-  "theme_mode_dark": "다크"
+  "theme_mode_dark": "다크",
+  "widget_you_are_owed": "받을 금액",
+  "widget_you_owe": "갚을 금액",
+  "widget_all_settled": "모두 정산됨",
+  "widget_updated_at": "{time} 업데이트",
+  "widget_scan_receipt": "영수증 스캔",
+  "widget_settle_with": "정산할 사람",
+  "widget_no_open_balances": "미정산 금액 없음",
+  "widget_sign_in_prompt": "로그인하고 잔액 보기",
+  "widget_hide_amounts": "금액 숨기기",
+  "widget_show_amounts": "금액 표시"
 }

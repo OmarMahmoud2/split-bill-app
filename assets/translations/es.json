@@ -795,5 +795,15 @@
   "theme_mode_system": "Predeterminado del sistema",
   "theme_mode_system_subtitle": "Sigue el ajuste de tu dispositivo",
   "theme_mode_light": "Claro",
-  "theme_mode_dark": "Oscuro"
+  "theme_mode_dark": "Oscuro",
+  "widget_you_are_owed": "Te deben",
+  "widget_you_owe": "Debes",
+  "widget_all_settled": "Todo saldado",
+  "widget_updated_at": "Actualizado {time}",
+  "widget_scan_receipt": "Escanear un recibo",
+  "widget_settle_with": "Saldar con",
+  "widget_no_open_balances": "No hay saldos pendientes",
+  "widget_sign_in_prompt": "Inicia sesión para ver los saldos",
+  "widget_hide_amounts": "Ocultar importes",
+  "widget_show_amounts": "Mostrar importes"
 }

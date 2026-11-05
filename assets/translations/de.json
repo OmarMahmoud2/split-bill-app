@@ -795,5 +795,15 @@
   "theme_mode_system": "Systemstandard",
   "theme_mode_system_subtitle": "Folgt der Einstellung deines Geräts",
   "theme_mode_light": "Hell",
-  "theme_mode_dark": "Dunkel"
+  "theme_mode_dark": "Dunkel",
+  "widget_you_are_owed": "Dir wird geschuldet",
+  "widget_you_owe": "Du schuldest",
+  "widget_all_settled": "Alles ausgeglichen",
+  "widget_updated_at": "Aktualisiert {time}",
+  "widget_scan_receipt": "Beleg scannen",
+  "widget_settle_with": "Ausgleichen mit",
+  "widget_no_open_balances": "Keine offenen Beträge",
+  "widget_sign_in_prompt": "Melde dich an, um Salden zu sehen",
+  "widget_hide_amounts": "Beträge ausblenden",
+  "widget_show_amounts": "Beträge anzeigen"
 }

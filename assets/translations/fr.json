@@ -795,5 +795,15 @@
   "theme_mode_system": "Paramètre du système",
   "theme_mode_system_subtitle": "Suit le réglage de votre appareil",
   "theme_mode_light": "Clair",
-  "theme_mode_dark": "Sombre"
+  "theme_mode_dark": "Sombre",
+  "widget_you_are_owed": "On vous doit",
+  "widget_you_owe": "Vous devez",
+  "widget_all_settled": "Tout est réglé",
+  "widget_updated_at": "Mis à jour à {time}",
+  "widget_scan_receipt": "Scanner un ticket",
+  "widget_settle_with": "Régler avec",
+  "widget_no_open_balances": "Aucun solde en cours",
+  "widget_sign_in_prompt": "Connectez-vous pour voir vos soldes",
+  "widget_hide_amounts": "Masquer les montants",
+  "widget_show_amounts": "Afficher les montants"
 }

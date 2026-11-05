@@ -795,5 +795,15 @@
   "theme_mode_system": "Systeemstandaard",
   "theme_mode_system_subtitle": "Volgt de instelling van je apparaat",
   "theme_mode_light": "Licht",
-  "theme_mode_dark": "Donker"
+  "theme_mode_dark": "Donker",
+  "widget_you_are_owed": "Te ontvangen",
+  "widget_you_owe": "Jij moet betalen",
+  "widget_all_settled": "Alles verrekend",
+  "widget_updated_at": "Bijgewerkt om {time}",
+  "widget_scan_receipt": "Scan een bon",
+  "widget_settle_with": "Verrekenen met",
+  "widget_no_open_balances": "Geen openstaande saldi",
+  "widget_sign_in_prompt": "Log in om je saldi te zien",
+  "widget_hide_amounts": "Bedragen verbergen",
+  "widget_show_amounts": "Bedragen tonen"
 }

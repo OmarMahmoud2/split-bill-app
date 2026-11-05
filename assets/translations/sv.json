@@ -795,5 +795,15 @@
   "theme_mode_system": "Systemets standard",
   "theme_mode_system_subtitle": "Följer enhetens inställning",
   "theme_mode_light": "Ljust",
-  "theme_mode_dark": "Mörkt"
+  "theme_mode_dark": "Mörkt",
+  "widget_you_are_owed": "Du har att få",
+  "widget_you_owe": "Du är skyldig",
+  "widget_all_settled": "Allt är reglerat",
+  "widget_updated_at": "Uppdaterad {time}",
+  "widget_scan_receipt": "Skanna ett kvitto",
+  "widget_settle_with": "Gör upp med",
+  "widget_no_open_balances": "Inga öppna saldon",
+  "widget_sign_in_prompt": "Logga in för att se saldon",
+  "widget_hide_amounts": "Dölj belopp",
+  "widget_show_amounts": "Visa belopp"
 }

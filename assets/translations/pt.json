@@ -795,5 +795,15 @@
   "theme_mode_system": "Padrão do sistema",
   "theme_mode_system_subtitle": "Segue a configuração do seu dispositivo",
   "theme_mode_light": "Claro",
-  "theme_mode_dark": "Escuro"
+  "theme_mode_dark": "Escuro",
+  "widget_you_are_owed": "Devem a você",
+  "widget_you_owe": "Você deve",
+  "widget_all_settled": "Tudo acertado",
+  "widget_updated_at": "Atualizado às {time}",
+  "widget_scan_receipt": "Escanear um recibo",
+  "widget_settle_with": "Acertar com",
+  "widget_no_open_balances": "Nenhum saldo em aberto",
+  "widget_sign_in_prompt": "Entre para ver seus saldos",
+  "widget_hide_amounts": "Ocultar valores",
+  "widget_show_amounts": "Mostrar valores"
 }

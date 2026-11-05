@@ -795,5 +795,15 @@
   "theme_mode_system": "システム設定",
   "theme_mode_system_subtitle": "デバイスの設定に合わせます",
   "theme_mode_light": "ライト",
-  "theme_mode_dark": "ダーク"
+  "theme_mode_dark": "ダーク",
+  "widget_you_are_owed": "受け取る金額",
+  "widget_you_owe": "支払う金額",
+  "widget_all_settled": "すべて精算済み",
+  "widget_updated_at": "{time} に更新",
+  "widget_scan_receipt": "レシートをスキャン",
+  "widget_settle_with": "精算する相手",
+  "widget_no_open_balances": "未精算の残高はありません",
+  "widget_sign_in_prompt": "サインインして残高を表示",
+  "widget_hide_amounts": "金額を隠す",
+  "widget_show_amounts": "金額を表示"
 }

@@ -795,5 +795,15 @@
   "theme_mode_system": "Domyślny systemowy",
   "theme_mode_system_subtitle": "Zgodnie z ustawieniem urządzenia",
   "theme_mode_light": "Jasny",
-  "theme_mode_dark": "Ciemny"
+  "theme_mode_dark": "Ciemny",
+  "widget_you_are_owed": "Należy Ci się",
+  "widget_you_owe": "Jesteś winien",
+  "widget_all_settled": "Wszystko rozliczone",
+  "widget_updated_at": "Zaktualizowano {time}",
+  "widget_scan_receipt": "Zeskanuj paragon",
+  "widget_settle_with": "Rozlicz się z",
+  "widget_no_open_balances": "Brak otwartych sald",
+  "widget_sign_in_prompt": "Zaloguj się, aby zobaczyć salda",
+  "widget_hide_amounts": "Ukryj kwoty",
+  "widget_show_amounts": "Pokaż kwoty"
 }
