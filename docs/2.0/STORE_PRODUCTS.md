@@ -15,6 +15,6 @@ Entitlement in RevenueCat: `premium`. Default offering packages: `$rc_monthly`, 
 - Google Play: no cancellation-message setting in this account's console yet (Google announced cancel-flow offers at I/O 2026). Alternative: RevenueCat Customer Center in-app with a Play developer-determined offer (needs app code).
 
 ## To do at the 2.0 submission
-1. Yearly (`split_yearly`): add the review screenshot `docs/2.0/store/paywall_yearly_1290x2796.png` and submit it with the 2.0 build.
+1. Yearly (`split_yearly`): review screenshot `docs/2.0/store/paywall_yearly_1290x2796.png` is uploaded (5 Nov 2026); submit the subscription with the 2.0 build.
 2. After Apple approves Yearly: plan a price change for the 14 regional countries to the $7.99 tier.
 3. Submit the retention message with the build (it is in the draft submission).
