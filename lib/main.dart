@@ -21,6 +21,7 @@ import 'participant_bill_screen.dart';
 import 'notifications_screen.dart';
 import 'services/notification_payload.dart';
 import 'services/guest_session.dart';
+import 'services/web_translations_loader.dart';
 import 'services/notification_service.dart';
 import 'services/home_widget_service.dart';
 import 'services/home_widget_data.dart' show WidgetLaunchDeduper;
@@ -108,6 +109,7 @@ Future<void> main() async {
           .map((option) => option.locale)
           .toList(),
       path: 'assets/translations',
+      assetLoader: const VersionedTranslationsLoader(),
       fallbackLocale: const Locale('en'),
       useOnlyLangCode: true,
       child: firebaseInitializationError == null
