@@ -168,54 +168,57 @@ class _BrandIntroState extends State<BrandIntro>
 
   @override
   Widget build(BuildContext context) {
-    if (!_visible) return widget.child;
     final p = context.palette;
+    // Same structure before, during and after the intro: the child stays at
+    // index 0 of the Stack, so its subtree is never remounted when the
+    // overlay goes away.
     return Stack(
       fit: StackFit.expand,
       children: [
         widget.child,
-        AnimatedBuilder(
-          animation: _c,
-          builder: (context, _) {
-            // Part (0–260 ms) then settle level (260–520 ms).
-            final out = _interval(0, 260, Curves.easeOut);
-            final back = _interval(260, 520, AppMotion.emphasizedDecelerate);
-            final split = 0.08 * out * (1 - back);
-            final line = _interval(380, 760, AppMotion.emphasizedDecelerate);
-            final word = _interval(620, 900, Curves.easeOut);
-            final fade = 1 - _interval(_total - 250, _total, Curves.easeIn);
-            return IgnorePointer(
-              child: Opacity(
-                opacity: fade,
-                child: ColoredBox(
-                  color: p.background,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Native splash also lays out on line: keep the mark centred.
-                      EvensMark(split: split, line: math.max(line, 0)),
-                      Positioned(
-                        bottom: MediaQuery.paddingOf(context).bottom + 24,
-                        child: Opacity(
-                          opacity: word,
-                          child: Transform.translate(
-                            offset: Offset(0, 8 * (1 - word)),
-                            child: Text(
-                              'Evens',
-                              style: AppTypography.amountLarge.copyWith(
-                                color: p.textPrimary,
+        if (_visible)
+          AnimatedBuilder(
+            animation: _c,
+            builder: (context, _) {
+              // Part (0–260 ms) then settle level (260–520 ms).
+              final out = _interval(0, 260, Curves.easeOut);
+              final back = _interval(260, 520, AppMotion.emphasizedDecelerate);
+              final split = 0.08 * out * (1 - back);
+              final line = _interval(380, 760, AppMotion.emphasizedDecelerate);
+              final word = _interval(620, 900, Curves.easeOut);
+              final fade = 1 - _interval(_total - 250, _total, Curves.easeIn);
+              return IgnorePointer(
+                child: Opacity(
+                  opacity: fade,
+                  child: ColoredBox(
+                    color: p.background,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Native splash also lays out on line: keep the mark centred.
+                        EvensMark(split: split, line: math.max(line, 0)),
+                        Positioned(
+                          bottom: MediaQuery.paddingOf(context).bottom + 24,
+                          child: Opacity(
+                            opacity: word,
+                            child: Transform.translate(
+                              offset: Offset(0, 8 * (1 - word)),
+                              child: Text(
+                                'Evens',
+                                style: AppTypography.amountLarge.copyWith(
+                                  color: p.textPrimary,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
       ],
     );
   }
