@@ -141,7 +141,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
       padding: const EdgeInsets.only(bottom: 32),
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -157,13 +157,13 @@ class _InsightsScreenState extends State<InsightsScreen> {
           ),
         ),
         LedgerCard(
-          margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          margin: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
           padding: const EdgeInsets.all(16),
           child: WeeklyBars(weekly: i.weekly, peak: i.peakWeek),
         ),
         if (i.slices.isNotEmpty)
           LedgerCard(
-            margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
             child: LedgerRows(
               children: [
                 for (final s in i.slices)
@@ -187,7 +187,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
           ),
         if (payback != null)
           Container(
-            margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(color: p.accentSoft, borderRadius: AppRadii.rowRadius),
             child: Text(payback, style: AppTypography.labelMedium.copyWith(color: p.onAccentSoft, fontSize: 13, fontWeight: FontWeight.w600)),

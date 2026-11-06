@@ -175,7 +175,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 40),
                 children: [
                   Center(
                     child: Semantics(

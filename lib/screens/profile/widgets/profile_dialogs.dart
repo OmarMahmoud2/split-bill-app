@@ -106,7 +106,7 @@ class ProfileDialogs {
 
     return PremiumBottomSheet.show<void>(
       context: context,
-      padding: const EdgeInsets.fromLTRB(0, 12, 0, 24),
+      padding: const EdgeInsetsDirectional.fromSTEB(0, 12, 0, 24),
       child: Builder(
         builder: (sheetContext) => Column(
           mainAxisSize: MainAxisSize.min,

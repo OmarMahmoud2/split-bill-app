@@ -76,7 +76,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
                     );
                   }
                   return ListView(
-                    padding: const EdgeInsets.fromLTRB(0, 16, 0, 32),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 32),
                     children: [
                       LedgerCard(
                         margin: const EdgeInsets.symmetric(horizontal: 20),

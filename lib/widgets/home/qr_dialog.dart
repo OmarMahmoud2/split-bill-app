@@ -48,7 +48,7 @@ class _QrDialogBody extends StatelessWidget {
         side: BorderSide(color: p.border),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 28, 24, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

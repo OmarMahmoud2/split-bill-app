@@ -730,7 +730,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
               child: PersonTotalsStrip(
                 participants: participants,
                 totals: computation.totals,
@@ -750,7 +750,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
             Expanded(
               child: SingleChildScrollView(
                 controller: _scroll,
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -833,7 +833,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
           child: Row(
             children: [
               _CircleIconButton(

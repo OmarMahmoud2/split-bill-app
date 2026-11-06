@@ -114,7 +114,7 @@ Future<void> showGuestLanguagePicker(BuildContext context) async {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 8),
           child: Text(
             'guest_language'.tr(),
             style: AppTypography.headlineMedium.copyWith(color: p.textPrimary),

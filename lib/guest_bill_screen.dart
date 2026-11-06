@@ -400,7 +400,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     if (view == _GuestView.pay && bill != null && me != null) {
       final total = bill.breakdownFor(me.id).totalMinor;
       header = Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 20, 0),
+        padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 20, 0),
         child: Row(
           children: [
             IconButton(
@@ -431,7 +431,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       );
     } else {
       header = const Padding(
-        padding: EdgeInsets.fromLTRB(20, 14, 20, 0),
+        padding: EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [GuestBrand(), GuestLanguageButton()],
@@ -480,7 +480,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   }
 
   Widget _bottomAction(Widget child) =>
-      Padding(padding: const EdgeInsets.fromLTRB(20, 12, 20, 30), child: child);
+      Padding(padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 30), child: child);
 
   Widget _notMeLink(GuestParticipant me) {
     final p = context.palette;
@@ -509,7 +509,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -569,7 +569,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

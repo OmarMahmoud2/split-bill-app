@@ -38,7 +38,7 @@ class GuestSelectorView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 22, 20, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -73,7 +73,7 @@ class GuestSelectorView extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 22, 20, 8),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 22, 20, 8),
             child: Semantics(
               header: true,
               child: Text(
@@ -102,7 +102,7 @@ class GuestSelectorView extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
             child: Text(
               'guest_privacy_note'.tr(),
               style: AppTypography.bodySmall.copyWith(

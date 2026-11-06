@@ -96,7 +96,7 @@ class NewSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

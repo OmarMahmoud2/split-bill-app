@@ -462,7 +462,7 @@ class _ProfileSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SkeletonShimmer(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+        padding: EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -259,7 +259,7 @@ class _SuccessScreenState extends State<SuccessScreen>
             ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
+              padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.xl,
                 0,
                 AppSpacing.xl,

@@ -98,7 +98,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
       children: [
         const LedgerTopBar(),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
           child: Column(
             children: [
               LedgerAvatar(id: friend.id, name: friend.name, photoUrl: friend.photoUrl, size: 72),
@@ -114,7 +114,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
           child: Row(
             children: [
               Expanded(
@@ -201,7 +201,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
           child: TextButton.icon(
             onPressed: () => showQuickIouSheet(
               context,

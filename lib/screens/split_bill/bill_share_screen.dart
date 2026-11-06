@@ -174,7 +174,7 @@ class BillShareScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(borderRadius: AppRadii.sheetRadius),
       builder: (ctx) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 16, 24, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -138,7 +138,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             LedgerTopBar(title: 'groups_new_title'.tr(), close: true),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 20),
                 children: [
                   _label('groups_type'.tr()),
                   Row(
@@ -260,7 +260,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton(

@@ -62,7 +62,7 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
                 padding: const EdgeInsets.only(bottom: 24),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -90,7 +90,7 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
                     )
                   else
                     LedgerCard(
-                      margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      margin: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
                       child: LedgerRows(
                         children: [
                           for (final b in bills)
@@ -151,7 +151,7 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
                     ),
                   ],
                   LedgerCard(
-                    margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                    margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -250,7 +250,7 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
         LedgerTopBar(title: title),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 32),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 32),
             children: [
               if (count == 0 && done.isEmpty)
                 Padding(

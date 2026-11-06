@@ -18,7 +18,7 @@ class AdModal extends StatelessWidget {
   }) {
     return PremiumBottomSheet.show<bool>(
       context: context,
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 20),
       child: AdModal(onWatchAd: onWatchAd),
     );
   }

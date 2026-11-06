@@ -122,7 +122,7 @@ class _PaySheetState extends State<PaySheet> {
         ? 'pay_you_pay'.tr(namedArgs: {'name': widget.recipientName})
         : 'pay_you_pay_in'.tr(namedArgs: {'name': widget.recipientName, 'group': widget.contextLabel!});
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

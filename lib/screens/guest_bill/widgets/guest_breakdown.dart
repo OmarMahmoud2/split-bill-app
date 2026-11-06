@@ -195,7 +195,7 @@ class GuestBreakdownTable extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 6),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 6),
             child: Text(
               'guest_what_you_had'.tr(),
               style: AppTypography.titleSmall.copyWith(
@@ -243,7 +243,7 @@ Future<void> showGuestReceipt(BuildContext context, GuestBill bill) {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 4),
             child: Text(
               guestStoreName(bill),
               style: AppTypography.headlineMedium.copyWith(
@@ -252,7 +252,7 @@ Future<void> showGuestReceipt(BuildContext context, GuestBill bill) {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
             child: Text(
               'guest_receipt_title'.tr(),
               style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
@@ -261,7 +261,7 @@ Future<void> showGuestReceipt(BuildContext context, GuestBill bill) {
           Flexible(
             child: ListView(
               shrinkWrap: true,
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
               children: [
                 for (final item in bill.items)
                   Padding(

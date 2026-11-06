@@ -7,13 +7,13 @@ class PremiumBottomSheet extends StatelessWidget {
   const PremiumBottomSheet({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.fromLTRB(24, 12, 24, 24),
+    this.padding = const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 24),
     this.showPullHandle = true,
     this.isScrollable = false,
   });
 
   final Widget child;
-  final EdgeInsets padding;
+  final EdgeInsetsGeometry padding;
   final bool showPullHandle;
   final bool isScrollable;
 
@@ -36,7 +36,7 @@ class PremiumBottomSheet extends StatelessWidget {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: padding.copyWith(bottom: padding.bottom + bottomInset),
+            padding: padding.add(EdgeInsets.only(bottom: bottomInset)),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height * 0.85,
@@ -80,7 +80,7 @@ class PremiumBottomSheet extends StatelessWidget {
   static Future<T?> show<T>({
     required BuildContext context,
     required Widget child,
-    EdgeInsets padding = const EdgeInsets.fromLTRB(24, 12, 24, 24),
+    EdgeInsetsGeometry padding = const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 24),
     bool isScrollControlled = true,
     bool showPullHandle = true,
     bool isScrollable = false,

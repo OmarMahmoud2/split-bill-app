@@ -286,7 +286,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
             ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 20),
                 children: [
                   TextField(
                     key: const ValueKey('bf_assign_people_search'),
@@ -382,7 +382,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                     ),
                   for (final section in sections) ...[
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 16, 0, 8),
+                      padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 8),
                       child: Text(
                         section.title.toUpperCase(),
                         style: AppTypography.overline.copyWith(
@@ -426,7 +426,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
               child: AssignPillButton(
                 key: const ValueKey('bf_assign_people_continue'),
                 label: 'bf_assign_continue_with'.tr(

@@ -322,7 +322,7 @@ class _GoProCard extends StatelessWidget {
         ? 'prof_go_pro'.tr()
         : 'prof_go_pro_price'.tr(namedArgs: {'price': price!});
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
       child: Semantics(
         button: true,
         child: Material(

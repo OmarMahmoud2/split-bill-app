@@ -296,7 +296,7 @@ class _ExportScreenState extends State<ExportScreen> {
             ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 24),
                 children: [
                   _caption('exp_what'.tr()),
                   if (widget.groupId != null) ...[
@@ -421,7 +421,7 @@ class _ExportScreenState extends State<ExportScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton(

@@ -79,7 +79,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       context,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheet) => Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -250,7 +250,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             padding: const EdgeInsets.only(bottom: 24),
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -265,7 +265,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               ),
               if (budget != null) _BudgetCard(status: budget, currency: group.currency!),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
                 child: LedgerSegmented<_Tab>(
                   segments: [
                     (_Tab.balances, 'groups_tab_balances'.tr()),
@@ -291,7 +291,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
           child: Row(
             children: [
               Expanded(
@@ -324,7 +324,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     final members = [...g.group.members]..sort((a, b) => a.id == me ? -1 : (b.id == me ? 1 : 0));
     if (members.isEmpty) return const SizedBox.shrink();
     return LedgerCard(
-      margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
       child: LedgerRows(
         children: [
           for (final m in members)
@@ -379,7 +379,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     }
     final df = DateFormat.MMMd(localeTag(context));
     return LedgerCard(
-      margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
       child: LedgerRows(
         children: [
           for (final b in bills)
@@ -438,7 +438,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       children: [
         for (final e in totals.entries)
           LedgerCard(
-            margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -497,7 +497,7 @@ class _BudgetCard extends StatelessWidget {
       footer = 'groups_budget_left'.tr(namedArgs: {'amount': left, 'each': each});
     }
     return LedgerCard(
-      margin: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+      margin: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

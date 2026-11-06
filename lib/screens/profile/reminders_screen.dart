@@ -194,7 +194,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
     final prefs = _prefs;
     if (prefs == null) {
       return const Padding(
-        padding: EdgeInsets.fromLTRB(20, 18, 20, 0),
+        padding: EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
         child: SkeletonShimmer(
           child: Column(
             children: [

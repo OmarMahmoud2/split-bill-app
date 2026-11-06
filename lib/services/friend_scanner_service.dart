@@ -188,7 +188,7 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
             child: Align(
               alignment: AlignmentDirectional.centerStart,
               child: Material(
@@ -226,7 +226,7 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
           const Spacer(),
           if (_myUid != null && _myUid!.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
               child: Material(
                 color: card.surface,
                 borderRadius: AppRadii.cardRadius,

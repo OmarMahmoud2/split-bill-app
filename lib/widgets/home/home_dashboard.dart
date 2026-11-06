@@ -213,7 +213,7 @@ class _Hero extends StatelessWidget {
       style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
     );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 22, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -273,7 +273,7 @@ class _QuickActions extends StatelessWidget {
     ];
     final p = context.palette;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
       child: Row(
         children: [
           for (final (i, t) in tiles.indexed) ...[
@@ -465,7 +465,7 @@ class _InsightsTeaser extends StatelessWidget {
     if (i.billCount == 0) return const SizedBox.shrink();
     final month = DateFormat.MMMM(localeTag(context)).format(now);
     return LedgerCard(
-      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      margin: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => InsightsScreen(state: stream))),
       child: Row(
@@ -539,7 +539,7 @@ class _HomeSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const SkeletonShimmer(
     child: Padding(
-      padding: EdgeInsets.fromLTRB(20, 22, 20, 0),
+      padding: EdgeInsetsDirectional.fromSTEB(20, 22, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

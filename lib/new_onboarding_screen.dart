@@ -145,7 +145,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+                    padding: const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 20),
                     child: SizedBox(
                       width: double.infinity,
                       child: FilledButton(
@@ -182,7 +182,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     final p = context.palette;
     return SingleChildScrollView(
       key: ValueKey('onboarding-page-$index'),
-      padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 32, 24, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

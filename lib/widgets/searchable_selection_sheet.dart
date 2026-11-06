@@ -74,7 +74,7 @@ class _SearchableSelectionSheetState<T>
       children: [
         // Header & Search
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -141,7 +141,7 @@ class _SearchableSelectionSheetState<T>
           child: filteredItems.isEmpty
               ? _buildEmptyState(context)
               : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 24),
                   itemCount: filteredItems.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {

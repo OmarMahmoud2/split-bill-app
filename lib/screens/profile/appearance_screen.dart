@@ -46,7 +46,7 @@ class AppearanceScreen extends StatelessWidget {
               leading: V3IconButton.back(context),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
               child: Row(
                 children: [
                   for (final mode in const [

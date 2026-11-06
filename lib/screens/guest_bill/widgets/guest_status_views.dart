@@ -77,7 +77,7 @@ class GuestOutcomeView extends StatelessWidget {
           ),
           if (footer != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 30),
               child: footer,
             ),
         ],
@@ -246,7 +246,7 @@ class GuestMessageView extends StatelessWidget {
           ),
           if (footer != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 30),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 520),
                 child: footer,
@@ -269,7 +269,7 @@ class GuestLoadingSkeleton extends StatelessWidget {
         label: 'feedback_loading'.tr(),
         container: true,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 22, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

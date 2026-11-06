@@ -127,7 +127,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 const SizedBox(height: 18),
                 body,
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 0),
                   child: OutlinedButton(
                     key: const ValueKey('subscription-restore'),
                     onPressed: _busy ? null : _restore,
@@ -285,7 +285,7 @@ class _ProStatus extends StatelessWidget {
         ),
         if (canManage)
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
             child: OutlinedButton(
               key: const ValueKey('subscription-manage'),
               onPressed: onManage,
@@ -340,7 +340,7 @@ class _FreeStatus extends StatelessWidget {
           ],
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
           child: FilledButton(
             key: const ValueKey('subscription-see-plans'),
             onPressed: () {

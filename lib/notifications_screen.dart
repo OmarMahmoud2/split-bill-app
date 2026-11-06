@@ -255,7 +255,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   }
                   return ListView.builder(
                     itemCount: docs.length,
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                    padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 24),
                     itemBuilder: (context, index) {
                       final doc = docs[index];
                       final data = doc.data() as Map<String, dynamic>;

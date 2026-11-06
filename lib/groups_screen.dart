@@ -98,7 +98,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         final active = state.groups.where((g) => !g.archived).toList();
                         final archived = state.groups.where((g) => g.archived).toList();
                         return ListView(
-                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+                          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 120),
                           children: [
                             for (final (i, g) in active.indexed)
                               StaggeredEntrance(
