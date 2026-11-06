@@ -174,6 +174,8 @@ HistoryLine describeHistoryEntry(
     return formatMoneyMinor(value, currency, showSymbol: false, locale: locale);
   }
 
+  // "You" takes its own verb form in many languages (du hast, أضفت).
+  final p = isMe ? 'bf_edit_history_you_' : 'bf_edit_history_';
   final a = entry.args;
   final change = kHistoryChangeCodes.contains(entry.change)
       ? entry.change
@@ -181,49 +183,41 @@ HistoryLine describeHistoryEntry(
   final String action;
   switch (change) {
     case 'renamed':
-      action = translate('bf_edit_history_renamed', {
+      action = translate('${p}renamed', {
         'from': _s(a['from']),
         'to': _s(a['to']),
       });
     case 'item_price':
-      action = translate('bf_edit_history_item_price', {
+      action = translate('${p}item_price', {
         'item': _s(a['item']),
         'from': money(a['from']),
         'to': money(a['to']),
       });
     case 'item_added':
       action = a['to'] == null
-          ? translate('bf_edit_history_item_added_plain', {
-              'item': _s(a['item']),
-            })
-          : translate('bf_edit_history_item_added', {
+          ? translate('${p}item_added_plain', {'item': _s(a['item'])})
+          : translate('${p}item_added', {
               'item': _s(a['item']),
               'amount': money(a['to']),
             });
     case 'item_removed':
-      action = translate('bf_edit_history_item_removed', {
-        'item': _s(a['item']),
-      });
+      action = translate('${p}item_removed', {'item': _s(a['item'])});
     case 'person_added':
-      action = translate('bf_edit_history_person_added', {
-        'name': _s(a['name']),
-      });
+      action = translate('${p}person_added', {'name': _s(a['name'])});
     case 'person_removed':
-      action = translate('bf_edit_history_person_removed', {
-        'name': _s(a['name']),
-      });
+      action = translate('${p}person_removed', {'name': _s(a['name'])});
     case 'charges':
-      action = translate('bf_edit_history_charges', {
+      action = translate('${p}charges', {
         'from': money(a['from']),
         'to': money(a['to']),
       });
     case 'split_method':
-      action = translate('bf_edit_history_split_method', {
+      action = translate('${p}split_method', {
         'from': translate(splitMethodKey(_s(a['from'])), const {}),
         'to': translate(splitMethodKey(_s(a['to'])), const {}),
       });
     case 'currency':
-      action = translate('bf_edit_history_currency', {
+      action = translate('${p}currency', {
         'from': _s(a['from']),
         'to': _s(a['to']),
       });
@@ -234,12 +228,12 @@ HistoryLine describeHistoryEntry(
           (a['id'] != null && _s(a['id']) == entry.by) ||
           (name.isNotEmpty && who == name);
       action = self
-          ? translate('bf_edit_history_marked_paid_self', const {})
-          : translate('bf_edit_history_marked_paid', {'name': who});
+          ? translate('${p}marked_paid_self', const {})
+          : translate('${p}marked_paid', {'name': who});
     case 'created':
-      action = translate('bf_edit_history_created', const {});
+      action = translate('${p}created', const {});
     default:
-      action = translate('bf_edit_history_edited', const {});
+      action = translate('${p}edited', const {});
   }
   return HistoryLine(author: author, action: action);
 }

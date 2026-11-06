@@ -19,12 +19,17 @@ import 'package:split_bill_app/widgets/money_text.dart';
 
 /// One suggested payment and where it belongs.
 class SettleRow {
-  const SettleRow({required this.transfer, required this.groupId, required this.label});
+  const SettleRow({
+    required this.transfer,
+    required this.groupId,
+    required this.label,
+  });
   final Transfer transfer;
   final String? groupId;
   final String label;
 
-  String get key => '${groupId ?? ''}|${transfer.currency}|${transfer.from}|${transfer.to}';
+  String get key =>
+      '${groupId ?? ''}|${transfer.currency}|${transfer.from}|${transfer.to}';
 }
 
 /// Rows for everything between [me] and [friend] (one per group/currency).
@@ -36,17 +41,29 @@ List<SettleRow> friendSettleRows(Counterparty friend, String me) => [
           groupId: c.groupId,
           label: c.label,
           transfer: e.value > 0
-              ? Transfer(currency: e.key, from: friend.id, to: me, amount: e.value)
-              : Transfer(currency: e.key, from: me, to: friend.id, amount: -e.value),
+              ? Transfer(
+                  currency: e.key,
+                  from: friend.id,
+                  to: me,
+                  amount: e.value,
+                )
+              : Transfer(
+                  currency: e.key,
+                  from: me,
+                  to: friend.id,
+                  amount: -e.value,
+                ),
         ),
 ];
 
 class SettleUpScreen extends StatefulWidget {
   /// Settle a whole group.
-  const SettleUpScreen.group({super.key, required String this.groupId}) : friendId = null;
+  const SettleUpScreen.group({super.key, required String this.groupId})
+    : friendId = null;
 
   /// Settle everything with one person.
-  const SettleUpScreen.friend({super.key, required String this.friendId}) : groupId = null;
+  const SettleUpScreen.friend({super.key, required String this.friendId})
+    : groupId = null;
 
   final String? groupId;
   final String? friendId;
@@ -71,7 +88,12 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
     if (_me == null) return;
     _stream = widget.groupId != null
         ? watchGroupLedger(repo, widget.groupId!, fallbackCurrency: fallback)
-        : watchHomeLedger(repo, _me!.uid, fallbackCurrency: fallback, looseLabel: 'friend_direct_label'.tr());
+        : watchHomeLedger(
+            repo,
+            _me!.uid,
+            fallbackCurrency: fallback,
+            looseLabel: 'friend_direct_label'.tr(),
+          );
   }
 
   String _name(String id, Map<String, String> names) =>
@@ -99,7 +121,8 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
       groupId: row.groupId,
       createdBy: me.uid,
     );
-    final last = group != null && open.length == 1 && open.single.key == row.key;
+    final last =
+        group != null && open.length == 1 && open.single.key == row.key;
     final myBefore = group?.view.balanceOf(me.uid)[t.currency] ?? 0;
     final ok = await recordPaymentWithFeedback(
       context,
@@ -112,7 +135,9 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
       paymentCount: _done.length + 1,
       onArchive: group == null || group.group.createdBy != me.uid
           ? null
-          : () => LedgerRepository.instance.updateGroup(group.group.id, {'archived': true}),
+          : () => LedgerRepository.instance.updateGroup(group.group.id, {
+              'archived': true,
+            }),
     );
     if (!mounted) return;
     setState(() {
@@ -121,7 +146,13 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
     });
   }
 
-  Future<void> _pay(SettleRow row, Map<String, String> names, List<SettleRow> open, GroupLedgerInput? group, Set<String> guests) async {
+  Future<void> _pay(
+    SettleRow row,
+    Map<String, String> names,
+    List<SettleRow> open,
+    GroupLedgerInput? group,
+    Set<String> guests,
+  ) async {
     final t = row.transfer;
     final result = await showPaySheet(
       context,
@@ -136,13 +167,20 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
     await _record(row, result.method, names: names, open: open, group: group);
   }
 
-  Future<void> _cash(SettleRow row, Map<String, String> names, List<SettleRow> open, GroupLedgerInput? group) async {
+  Future<void> _cash(
+    SettleRow row,
+    Map<String, String> names,
+    List<SettleRow> open,
+    GroupLedgerInput? group,
+  ) async {
     final t = row.transfer;
     final ok = await confirmCashPayment(
       context,
       fromName: _name(t.from, names),
       toName: _name(t.to, names),
       amount: moneyLabel(context, t.amount, t.currency),
+      fromIsMe: t.from == _me?.uid,
+      toIsMe: t.to == _me?.uid,
     );
     if (!ok || !mounted) return;
     await _record(row, 'cash', names: names, open: open, group: group);
@@ -191,7 +229,13 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
         padding: EdgeInsets.all(20),
         child: SkeletonShimmer(
           child: Column(
-            children: [SkeletonCard(), SizedBox(height: 10), SkeletonCard(), SizedBox(height: 10), SkeletonCard()],
+            children: [
+              SkeletonCard(),
+              SizedBox(height: 10),
+              SkeletonCard(),
+              SizedBox(height: 10),
+              SkeletonCard(),
+            ],
           ),
         ),
       ),
@@ -212,7 +256,12 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
       group = data;
       final view = data.view;
       open = [
-        for (final t in view.allTransfers) SettleRow(transfer: t, groupId: data.group.id, label: data.group.name),
+        for (final t in view.allTransfers)
+          SettleRow(
+            transfer: t,
+            groupId: data.group.id,
+            label: data.group.name,
+          ),
       ];
       for (final m in data.group.members) {
         if (m.name.isNotEmpty) names[m.id] = m.name;
@@ -230,13 +279,21 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
       final friend = data.summary.person(widget.friendId!);
       open = friend == null ? const [] : friendSettleRows(friend, me.uid);
       if (friend != null) names[friend.id] = friend.name;
-      bills = [...data.recentBills, for (final g in data.groupInputs) ...g.bills];
+      bills = [
+        ...data.recentBills,
+        for (final g in data.groupInputs) ...g.bills,
+      ];
       title = 'settle_up_with'.tr(namedArgs: {'name': friend?.name ?? ''});
     } else {
       return Column(
         children: [
           LedgerTopBar(title: 'settle_up_title'.tr()),
-          Expanded(child: ErrorState(title: 'groups_not_found'.tr(), message: 'groups_not_found_body'.tr())),
+          Expanded(
+            child: ErrorState(
+              title: 'groups_not_found'.tr(),
+              message: 'groups_not_found_body'.tr(),
+            ),
+          ),
         ],
       );
     }
@@ -269,8 +326,14 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
                         ? 'settle_all_square_title'.tr()
                         : count == 1
                         ? 'settle_one_payment_settles'.tr()
-                        : 'settle_n_payments_settle'.tr(namedArgs: {'count': '$count'}),
-                    style: AppTypography.headlineLarge.copyWith(color: p.textPrimary, fontSize: 30, fontWeight: FontWeight.w700),
+                        : 'settle_n_payments_settle'.tr(
+                            namedArgs: {'count': '$count'},
+                          ),
+                    style: AppTypography.headlineLarge.copyWith(
+                      color: p.textPrimary,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (group != null && naive > count && count > 0)
@@ -278,7 +341,9 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       'settle_instead_of'.tr(namedArgs: {'count': '$naive'}),
-                      style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: p.textSecondary,
+                      ),
                     ),
                   ),
                 const SizedBox(height: 16),
@@ -314,7 +379,13 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
                 for (final row in done)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: _SettleCard(row: row, me: me.uid, names: names, settled: true, showContext: group == null),
+                    child: _SettleCard(
+                      row: row,
+                      me: me.uid,
+                      names: names,
+                      settled: true,
+                      showContext: group == null,
+                    ),
                   ),
               ],
             ],
@@ -364,7 +435,9 @@ class _SettleCard extends StatelessWidget {
     } else {
       line = 'settle_pays'.tr(namedArgs: {'from': from, 'to': to});
     }
-    final tone = t.to == me ? MoneyTone.owed : (t.from == me ? MoneyTone.owe : MoneyTone.neutral);
+    final tone = t.to == me
+        ? MoneyTone.owed
+        : (t.from == me ? MoneyTone.owe : MoneyTone.neutral);
     final arrow = Directionality.of(context) == TextDirection.rtl
         ? Icons.arrow_back_rounded
         : Icons.arrow_forward_rounded;
@@ -372,15 +445,55 @@ class _SettleCard extends StatelessWidget {
     final buttons = <Widget>[];
     if (!settled) {
       if (t.from == me) {
-        buttons.add(Expanded(child: FilledButton(onPressed: busy ? null : onPay, style: _small, child: Text('settle_pay_name'.tr(namedArgs: {'name': to})))));
+        buttons.add(
+          Expanded(
+            child: FilledButton(
+              onPressed: busy ? null : onPay,
+              style: _small,
+              child: Text('settle_pay_name'.tr(namedArgs: {'name': to})),
+            ),
+          ),
+        );
         buttons.add(const SizedBox(width: 8));
-        buttons.add(Expanded(child: OutlinedButton(onPressed: busy ? null : onCash, style: _smallOutlined, child: Text('settle_record_cash'.tr()))));
+        buttons.add(
+          Expanded(
+            child: OutlinedButton(
+              onPressed: busy ? null : onCash,
+              style: _smallOutlined,
+              child: Text('settle_record_cash'.tr()),
+            ),
+          ),
+        );
       } else if (t.to == me) {
-        buttons.add(Expanded(child: FilledButton(onPressed: busy || !canNudge ? null : onNudge, style: _small, child: Text('settle_nudge_name'.tr(namedArgs: {'name': from})))));
+        buttons.add(
+          Expanded(
+            child: FilledButton(
+              onPressed: busy || !canNudge ? null : onNudge,
+              style: _small,
+              child: Text('settle_nudge_name'.tr(namedArgs: {'name': from})),
+            ),
+          ),
+        );
         buttons.add(const SizedBox(width: 8));
-        buttons.add(Expanded(child: OutlinedButton(onPressed: busy ? null : onCash, style: _smallOutlined, child: Text('settle_record_cash'.tr()))));
+        buttons.add(
+          Expanded(
+            child: OutlinedButton(
+              onPressed: busy ? null : onCash,
+              style: _smallOutlined,
+              child: Text('settle_record_cash'.tr()),
+            ),
+          ),
+        );
       } else if (canNudge) {
-        buttons.add(Expanded(child: OutlinedButton(onPressed: onNudge, style: _smallOutlined, child: Text('settle_remind_name'.tr(namedArgs: {'name': from})))));
+        buttons.add(
+          Expanded(
+            child: OutlinedButton(
+              onPressed: onNudge,
+              style: _smallOutlined,
+              child: Text('settle_remind_name'.tr(namedArgs: {'name': from})),
+            ),
+          ),
+        );
       }
     }
 
@@ -406,21 +519,47 @@ class _SettleCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(line, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+                        Text(
+                          line,
+                          style: AppTypography.titleSmall.copyWith(
+                            color: p.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         if (showContext && row.label.isNotEmpty)
-                          Text(row.label, style: AppTypography.bodySmall.copyWith(color: p.textSecondary)),
+                          Text(
+                            row.label,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: p.textSecondary,
+                            ),
+                          ),
                       ],
                     ),
                   ),
-                  MoneyText(minor: t.amount, currency: t.currency, tone: tone, sign: MoneySign.none),
+                  MoneyText(
+                    minor: t.amount,
+                    currency: t.currency,
+                    tone: tone,
+                    sign: MoneySign.none,
+                  ),
                 ],
               ),
             ),
-            if (buttons.isNotEmpty) ...[const SizedBox(height: 12), Row(children: buttons)],
+            if (buttons.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Row(children: buttons),
+            ],
             if (settled)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text('settle_settled_label'.tr(), style: AppTypography.labelMedium.copyWith(color: p.owed, fontWeight: FontWeight.w600)),
+                child: Text(
+                  'settle_settled_label'.tr(),
+                  style: AppTypography.labelMedium.copyWith(
+                    color: p.owed,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
           ],
         ),
@@ -428,6 +567,14 @@ class _SettleCard extends StatelessWidget {
     );
   }
 
-  static final _small = FilledButton.styleFrom(minimumSize: const Size(44, 44), padding: const EdgeInsets.symmetric(horizontal: 12), textStyle: AppTypography.labelMedium.copyWith(fontSize: 14));
-  static final _smallOutlined = OutlinedButton.styleFrom(minimumSize: const Size(44, 44), padding: const EdgeInsets.symmetric(horizontal: 12), textStyle: AppTypography.labelMedium.copyWith(fontSize: 14));
+  static final _small = FilledButton.styleFrom(
+    minimumSize: const Size(44, 44),
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    textStyle: AppTypography.labelMedium.copyWith(fontSize: 14),
+  );
+  static final _smallOutlined = OutlinedButton.styleFrom(
+    minimumSize: const Size(44, 44),
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    textStyle: AppTypography.labelMedium.copyWith(fontSize: 14),
+  );
 }

@@ -238,7 +238,7 @@ void main() {
       mode: ThemeMode.dark,
     );
     expect(find.text('Free plan'), findsOneWidget);
-    expect(_textContaining('5 points left'), findsOneWidget);
+    expect(_textContaining('Points left: 5'), findsOneWidget);
     expect(find.text('See Pro plans'), findsOneWidget);
     expect(find.byKey(const ValueKey('subscription-manage')), findsNothing);
     expect(tester.takeException(), isNull);

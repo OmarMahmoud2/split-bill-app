@@ -14,25 +14,40 @@ import 'package:split_bill_app/widgets/money_text.dart';
 
 /// "Sara added Taxi to Blue Hole" with its amount.
 class ActivityRow extends StatelessWidget {
-  const ActivityRow({super.key, required this.item, required this.me, this.onTap});
+  const ActivityRow({
+    super.key,
+    required this.item,
+    required this.me,
+    this.onTap,
+  });
   final ActivityItem item;
   final String me;
   final VoidCallback? onTap;
 
   String _what() {
     final title = item.title.isEmpty ? 'bill'.tr() : item.title;
-    final other = item.counterpartId == null ? '' : personName(item.counterpartId!, item.counterpartName ?? '', me);
+    final other = item.counterpartId == null
+        ? ''
+        : personName(item.counterpartId!, item.counterpartName ?? '', me);
+    // "You" takes its own verb form in many languages (du hast, أضفت).
+    final mine = item.actorId == me;
     switch (item.kind) {
       case ActivityKind.billAdded:
-        return 'activity_added'.tr(namedArgs: {'title': title});
+        return (mine ? 'activity_you_added' : 'activity_added').tr(
+          namedArgs: {'title': title},
+        );
       case ActivityKind.payment:
         return item.counterpartId == me
             ? 'activity_paid_you'.tr()
-            : 'activity_paid'.tr(namedArgs: {'name': other});
+            : (mine ? 'activity_you_paid' : 'activity_paid').tr(
+                namedArgs: {'name': other},
+              );
       case ActivityKind.iou:
         return item.counterpartId == me
             ? 'activity_owes_you'.tr()
-            : 'activity_owes'.tr(namedArgs: {'name': other});
+            : (mine ? 'activity_you_owe' : 'activity_owes').tr(
+                namedArgs: {'name': other},
+              );
     }
   }
 
@@ -53,7 +68,8 @@ class ActivityRow extends StatelessWidget {
     if (item.kind == ActivityKind.billAdded && item.tone == ActivityTone.owe) {
       extra.add('activity_you_owe_them'.tr());
     }
-    if (item.title.isNotEmpty && item.kind != ActivityKind.billAdded) extra.add(item.title);
+    if (item.title.isNotEmpty && item.kind != ActivityKind.billAdded)
+      extra.add(item.title);
     return extra.join(' · ');
   }
 
@@ -83,14 +99,27 @@ class ActivityRow extends StatelessWidget {
                     Text.rich(
                       TextSpan(
                         children: [
-                          TextSpan(text: who, style: const TextStyle(fontWeight: FontWeight.w700)),
+                          TextSpan(
+                            text: who,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
                           TextSpan(text: ' ${_what()}'),
                         ],
                       ),
-                      style: AppTypography.bodyMedium.copyWith(color: p.textPrimary, fontSize: 14, height: 1.4),
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: p.textPrimary,
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
                     ),
                     const SizedBox(height: 2),
-                    Text(_when(context), style: AppTypography.caption.copyWith(color: p.textSecondary, fontSize: 12)),
+                    Text(
+                      _when(context),
+                      style: AppTypography.caption.copyWith(
+                        color: p.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -100,7 +129,9 @@ class ActivityRow extends StatelessWidget {
                 currency: item.currency,
                 tone: tone,
                 size: MoneySize.small,
-                sign: item.tone == ActivityTone.neutral ? MoneySign.none : MoneySign.always,
+                sign: item.tone == ActivityTone.neutral
+                    ? MoneySign.none
+                    : MoneySign.always,
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
@@ -183,7 +214,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
       });
       // Short first pages don't scroll, so keep filling the screen.
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && !_done && _scroll.hasClients && _scroll.position.extentAfter < 400) _loadMore();
+        if (mounted &&
+            !_done &&
+            _scroll.hasClients &&
+            _scroll.position.extentAfter < 400)
+          _loadMore();
       });
     } catch (e) {
       if (!mounted) return;
@@ -194,7 +229,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  String _dayLabel(BuildContext context, DateTime day) => switch (dayBucket(day, DateTime.now())) {
+  String _dayLabel(BuildContext context, DateTime day) => switch (dayBucket(
+    day,
+    DateTime.now(),
+  )) {
     DayBucket.today => 'activity_today'.tr(),
     DayBucket.yesterday => 'activity_yesterday'.tr(),
     DayBucket.earlier => DateFormat.MMMMEEEEd(localeTag(context)).format(day),
@@ -209,16 +247,30 @@ class _ActivityScreenState extends State<ActivityScreen> {
     if (me == null) {
       body = ErrorState(title: 'please_log_in_2'.tr());
     } else if (_items.isEmpty && _error != null) {
-      body = ErrorState(message: 'activity_load_failed'.tr(), onRetry: _refresh);
+      body = ErrorState(
+        message: 'activity_load_failed'.tr(),
+        onRetry: _refresh,
+      );
     } else if (_items.isEmpty && (_loading || !_done)) {
       body = const Padding(
         padding: EdgeInsets.all(20),
         child: SkeletonShimmer(
-          child: Column(children: [SkeletonListTile(), SkeletonListTile(), SkeletonListTile(), SkeletonListTile()]),
+          child: Column(
+            children: [
+              SkeletonListTile(),
+              SkeletonListTile(),
+              SkeletonListTile(),
+              SkeletonListTile(),
+            ],
+          ),
         ),
       );
     } else if (_items.isEmpty) {
-      body = EmptyState(icon: Icons.timeline_rounded, title: 'activity_empty_title'.tr(), message: 'activity_empty_body'.tr());
+      body = EmptyState(
+        icon: Icons.timeline_rounded,
+        title: 'activity_empty_title'.tr(),
+        message: 'activity_empty_body'.tr(),
+      );
     } else {
       body = RefreshIndicator(
         onRefresh: _refresh,
@@ -237,9 +289,17 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       ActivityRow(
                         item: item,
                         me: me.uid,
-                        onTap: item.billId == null || item.kind != ActivityKind.billAdded
+                        onTap:
+                            item.billId == null ||
+                                item.kind != ActivityKind.billAdded
                             ? null
-                            : () => openBill(context, billId: item.billId!, hostId: item.actorId, title: item.title, me: me.uid),
+                            : () => openBill(
+                                context,
+                                billId: item.billId!,
+                                hostId: item.actorId,
+                                title: item.title,
+                                me: me.uid,
+                              ),
                       ),
                   ],
                 ),
@@ -248,7 +308,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: ErrorState.inline(message: 'activity_load_failed'.tr(), onRetry: _loadMore),
+                child: ErrorState.inline(
+                  message: 'activity_load_failed'.tr(),
+                  onRetry: _loadMore,
+                ),
               )
             else if (!_done)
               const Padding(

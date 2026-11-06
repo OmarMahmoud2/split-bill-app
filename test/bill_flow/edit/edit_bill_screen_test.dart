@@ -87,7 +87,7 @@ void main() {
     expect(find.text('1 · 2'), findsOneWidget);
     expect(find.text('14% · 12% · —'), findsOneWidget);
     expect(find.text('EGP'), findsOneWidget);
-    expect(find.textContaining('bf_edit_history_created'), findsOneWidget);
+    expect(find.textContaining('bf_edit_history_you_created'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).first, 'Sea Breeze');
     await tester.tap(find.text('bf_edit_save'));

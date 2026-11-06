@@ -10,6 +10,7 @@ import 'package:split_bill_app/data/ledger_repository.dart';
 import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/data/nudge_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/share_link_utils.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
@@ -109,8 +110,12 @@ Future<bool> recordPaymentWithFeedback(
   }
   final me = LedgerMe.current()?.uid;
   final message = payment.from == me
-      ? 'settle_you_paid_toast'.tr(namedArgs: {'name': payment.toName ?? '', 'amount': amount})
-      : 'settle_marked_paid_toast'.tr(namedArgs: {'name': payment.fromName ?? '', 'amount': amount});
+      ? 'settle_you_paid_toast'.tr(
+          namedArgs: {'name': payment.toName ?? '', 'amount': amount},
+        )
+      : 'settle_marked_paid_toast'.tr(
+          namedArgs: {'name': payment.fromName ?? '', 'amount': amount},
+        );
   AppToast.show(context, message: message, type: AppToastType.success);
   return true;
 }
@@ -138,6 +143,26 @@ Future<void> nudgePerson(
   final title = 'nudge_push_title'.tr(namedArgs: args);
   final body = 'nudge_push_body'.tr(namedArgs: args);
   final bill = pickNudgeBill(bills, me.uid, targetId);
+  // Guests have no account to push to (the backend answers no_token): send
+  // them their own pay link instead.
+  if (targetId.startsWith('guest_') && bill != null) {
+    await SharePlus.instance.share(
+      ShareParams(
+        text: 'bf_share_person_text'.tr(
+          namedArgs: {
+            'name': targetName,
+            'amount': amount,
+            'store': bill.title,
+            'link': ShareLinkUtils.buildBillShareUrl(
+              bill.id,
+              participantId: targetId,
+            ),
+          },
+        ),
+      ),
+    );
+    return;
+  }
   final result = await nudgeService.nudge(
     targetId: targetId,
     bill: bill,
@@ -161,13 +186,17 @@ Future<void> nudgePerson(
           : DateFormat.MMMEd(localeTag(context)).format(next);
       AppToast.show(
         context,
-        message: 'nudge_too_soon'.tr(namedArgs: {'name': targetName, 'date': day}),
+        message: 'nudge_too_soon'.tr(
+          namedArgs: {'name': targetName, 'date': day},
+        ),
         type: AppToastType.info,
       );
     case NudgeResult.noSharedBill:
       await SharePlus.instance.share(
         ShareParams(
-          text: 'nudge_share_text'.tr(namedArgs: {'name': targetName, 'amount': amount, 'context': where}),
+          text: 'nudge_share_text'.tr(
+            namedArgs: {'name': targetName, 'amount': amount, 'context': where},
+          ),
         ),
       );
     case NudgeResult.failed:
@@ -195,17 +224,31 @@ Future<bool> confirmCashPayment(
   required String fromName,
   required String toName,
   required String amount,
+  bool fromIsMe = false,
+  bool toIsMe = false,
 }) async {
+  // "You" takes its own verb form in many languages.
+  final key = fromIsMe
+      ? 'settle_record_cash_body_you_paid'
+      : toIsMe
+      ? 'settle_record_cash_body_paid_you'
+      : 'settle_record_cash_body';
   final ok = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text('settle_record_cash_title'.tr()),
       content: Text(
-        'settle_record_cash_body'.tr(namedArgs: {'from': fromName, 'to': toName, 'amount': amount}),
+        key.tr(namedArgs: {'from': fromName, 'to': toName, 'amount': amount}),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common_cancel'.tr())),
-        FilledButton(onPressed: () => Navigator.pop(context, true), child: Text('settle_mark_paid'.tr())),
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text('common_cancel'.tr()),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text('settle_mark_paid'.tr()),
+        ),
       ],
     ),
   );

@@ -135,7 +135,7 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         expect(find.text('Omar M'), findsOneWidget);
-        expect(find.text('Free plan · 3 points'), findsOneWidget);
+        expect(find.text('Free plan · points: 3'), findsOneWidget);
         expect(find.text(r'Go Pro, $2.99 a month'), findsOneWidget);
         expect(find.text('Payment methods'), findsOneWidget);
         expect(find.text('Fri, 7 PM'), findsOneWidget);

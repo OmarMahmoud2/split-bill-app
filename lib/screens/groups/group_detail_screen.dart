@@ -25,7 +25,12 @@ enum _Tab { balances, bills, totals }
 
 /// Budget numbers for the bar ("$232 left for 1 day · about $58 each").
 class BudgetStatus {
-  const BudgetStatus({required this.spentMinor, required this.budgetMinor, required this.daysLeft, required this.members});
+  const BudgetStatus({
+    required this.spentMinor,
+    required this.budgetMinor,
+    required this.daysLeft,
+    required this.members,
+  });
   final int spentMinor;
   final int budgetMinor;
   final int? daysLeft;
@@ -33,7 +38,8 @@ class BudgetStatus {
 
   int get leftMinor => budgetMinor - spentMinor;
   double get fraction => budgetMinor <= 0 ? 0 : spentMinor / budgetMinor;
-  int get eachMinor => members <= 0 || leftMinor <= 0 ? 0 : leftMinor ~/ members;
+  int get eachMinor =>
+      members <= 0 || leftMinor <= 0 ? 0 : leftMinor ~/ members;
 
   static BudgetStatus? of(GroupLedgerInput g, {DateTime? now}) {
     final budget = g.group.budgetMinor;
@@ -44,10 +50,21 @@ class BudgetStatus {
     final end = g.group.endDate;
     int? days;
     if (end != null) {
-      final d = DateTime(end.year, end.month, end.day).difference(DateTime(today.year, today.month, today.day)).inDays + 1;
+      final d =
+          DateTime(
+            end.year,
+            end.month,
+            end.day,
+          ).difference(DateTime(today.year, today.month, today.day)).inDays +
+          1;
       days = d > 0 ? d : null;
     }
-    return BudgetStatus(spentMinor: spent, budgetMinor: budget, daysLeft: days, members: g.group.members.length);
+    return BudgetStatus(
+      spentMinor: spent,
+      budgetMinor: budget,
+      daysLeft: days,
+      members: g.group.members.length,
+    );
   }
 }
 
@@ -68,10 +85,20 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _me ??= LedgerMe.current();
-    _stream ??= watchGroupLedger(LedgerRepository.instance, widget.groupId, fallbackCurrency: preferredCurrency(context));
+    _stream ??= watchGroupLedger(
+      LedgerRepository.instance,
+      widget.groupId,
+      fallbackCurrency: preferredCurrency(context),
+    );
   }
 
-  void _retry() => setState(() => _stream = watchGroupLedger(LedgerRepository.instance, widget.groupId, fallbackCurrency: preferredCurrency(context)));
+  void _retry() => setState(
+    () => _stream = watchGroupLedger(
+      LedgerRepository.instance,
+      widget.groupId,
+      fallbackCurrency: preferredCurrency(context),
+    ),
+  );
 
   Future<void> _editMembers(LedgerGroup g) async {
     var members = [...g.members];
@@ -84,7 +111,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('groups_members'.tr(), style: AppTypography.headlineSmall.copyWith(color: context.palette.textPrimary, fontWeight: FontWeight.w700)),
+              Text(
+                'groups_members'.tr(),
+                style: AppTypography.headlineSmall.copyWith(
+                  color: context.palette.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const SizedBox(height: 14),
               MemberPickerField(
                 members: members,
@@ -92,7 +125,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                 onChanged: (m) => setSheet(() => members = m),
               ),
               const SizedBox(height: 16),
-              FilledButton(onPressed: () => Navigator.pop(context, true), child: Text('common_save_changes'.tr())),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('common_save_changes'.tr()),
+              ),
             ],
           ),
         ),
@@ -104,21 +140,46 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         'members': [for (final m in members) m.toMap()],
         'memberIds': [for (final m in members) m.id],
       });
-      if (mounted) AppToast.show(context, message: 'groups_members_saved'.tr(), type: AppToastType.success);
+      if (mounted)
+        AppToast.show(
+          context,
+          message: 'groups_members_saved'.tr(),
+          type: AppToastType.success,
+        );
     } catch (_) {
-      if (mounted) AppToast.show(context, message: 'groups_save_failed'.tr(), type: AppToastType.error);
+      if (mounted)
+        AppToast.show(
+          context,
+          message: 'groups_save_failed'.tr(),
+          type: AppToastType.error,
+        );
     }
   }
 
   /// Trips in several currencies are a Pro feature.
   Future<void> _openCurrencies(LedgerGroup g) async {
-    if (!await ProAccess.instance.ensure(context, placement: 'group_currencies') || !mounted) return;
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupCurrenciesScreen(groupId: g.id)));
+    if (!await ProAccess.instance.ensure(
+          context,
+          placement: 'group_currencies',
+        ) ||
+        !mounted)
+      return;
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => GroupCurrenciesScreen(groupId: g.id)),
+    );
   }
 
   void _invite(LedgerGroup g) {
     SharePlus.instance.share(
-      ShareParams(text: 'groups_invite_text'.tr(namedArgs: {'name': _me?.name ?? '', 'group': g.name, 'link': AppLinks.appStoreUrl})),
+      ShareParams(
+        text: 'groups_invite_text'.tr(
+          namedArgs: {
+            'name': _me?.name ?? '',
+            'group': g.name,
+            'link': AppLinks.appStoreUrl,
+          },
+        ),
+      ),
     );
   }
 
@@ -126,10 +187,19 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     try {
       await LedgerRepository.instance.updateGroup(g.id, {'archived': archived});
       if (mounted) {
-        AppToast.show(context, message: (archived ? 'groups_archived' : 'groups_unarchived').tr(), type: AppToastType.success);
+        AppToast.show(
+          context,
+          message: (archived ? 'groups_archived' : 'groups_unarchived').tr(),
+          type: AppToastType.success,
+        );
       }
     } catch (_) {
-      if (mounted) AppToast.show(context, message: 'groups_save_failed'.tr(), type: AppToastType.error);
+      if (mounted)
+        AppToast.show(
+          context,
+          message: 'groups_save_failed'.tr(),
+          type: AppToastType.error,
+        );
     }
   }
 
@@ -140,8 +210,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         title: Text('groups_delete_title'.tr(namedArgs: {'name': g.name})),
         content: Text('groups_delete_body'.tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common_cancel'.tr())),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text('groups_delete_confirm'.tr())),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('common_cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('groups_delete_confirm'.tr()),
+          ),
         ],
       ),
     );
@@ -151,10 +227,19 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     try {
       await LedgerRepository.instance.deleteGroup(g.id);
       if (!mounted) return;
-      AppToast.show(context, message: 'groups_deleted'.tr(), type: AppToastType.success);
+      AppToast.show(
+        context,
+        message: 'groups_deleted'.tr(),
+        type: AppToastType.success,
+      );
       nav.pop();
     } catch (_) {
-      if (mounted) AppToast.show(context, message: 'groups_save_failed'.tr(), type: AppToastType.error);
+      if (mounted)
+        AppToast.show(
+          context,
+          message: 'groups_save_failed'.tr(),
+          type: AppToastType.error,
+        );
     }
   }
 
@@ -168,15 +253,29 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           stream: _stream,
           builder: (context, snap) {
             if (snap.hasError) {
-              return Column(children: [const LedgerTopBar(), Expanded(child: ErrorState(onRetry: _retry))]);
+              return Column(
+                children: [
+                  const LedgerTopBar(),
+                  Expanded(child: ErrorState(onRetry: _retry)),
+                ],
+              );
             }
-            if (snap.connectionState == ConnectionState.waiting && !snap.hasData) {
+            if (snap.connectionState == ConnectionState.waiting &&
+                !snap.hasData) {
               return Column(
                 children: const [
                   LedgerTopBar(),
                   Padding(
                     padding: EdgeInsets.all(20),
-                    child: SkeletonShimmer(child: Column(children: [SkeletonCard(), SizedBox(height: 12), SkeletonCard()])),
+                    child: SkeletonShimmer(
+                      child: Column(
+                        children: [
+                          SkeletonCard(),
+                          SizedBox(height: 12),
+                          SkeletonCard(),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               );
@@ -186,7 +285,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               return Column(
                 children: [
                   const LedgerTopBar(),
-                  Expanded(child: ErrorState(title: 'groups_not_found'.tr(), message: 'groups_not_found_body'.tr())),
+                  Expanded(
+                    child: ErrorState(
+                      title: 'groups_not_found'.tr(),
+                      message: 'groups_not_found_body'.tr(),
+                    ),
+                  ),
                 ],
               );
             }
@@ -203,10 +307,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     final group = g.group;
     final view = g.view;
     final isOwner = group.createdBy == me;
-    final currencies = {group.currency ?? preferredCurrency(context), ...totalsByCurrency(g.bills).keys}.toList();
+    final currencies = {
+      group.currency ?? preferredCurrency(context),
+      ...totalsByCurrency(g.bills).keys,
+    }.toList();
     final df = DateFormat.MMMd(localeTag(context));
     final subtitle = [
-      if (group.startDate != null && group.endDate != null) '${df.format(group.startDate!)} – ${df.format(group.endDate!)}',
+      if (group.startDate != null && group.endDate != null)
+        '${df.format(group.startDate!)} – ${df.format(group.endDate!)}',
       plainMemberCount(group.members.length),
       currencies.join(', '),
     ].join(' · ');
@@ -218,7 +326,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           actions: [
             RoundIconButton(
               icon: Icons.person_add_alt_1_rounded,
-              tooltip: isOwner ? 'groups_edit_members'.tr() : 'groups_invite_friends'.tr(),
+              tooltip: isOwner
+                  ? 'groups_edit_members'.tr()
+                  : 'groups_invite_friends'.tr(),
               onPressed: () => isOwner ? _editMembers(group) : _invite(group),
             ),
             PopupMenuButton<String>(
@@ -239,9 +349,22 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               itemBuilder: (_) => [
                 // Trip currency conversion is not shipping in 2.0; the screen
                 // returns with real conversion (see _openCurrencies).
-                PopupMenuItem(value: 'invite', child: Text('groups_invite_friends'.tr())),
-                PopupMenuItem(value: 'archive', child: Text((group.archived ? 'groups_unarchive' : 'groups_archive').tr())),
-                if (isOwner) PopupMenuItem(value: 'delete', child: Text('groups_delete_confirm'.tr())),
+                PopupMenuItem(
+                  value: 'invite',
+                  child: Text('groups_invite_friends'.tr()),
+                ),
+                PopupMenuItem(
+                  value: 'archive',
+                  child: Text(
+                    (group.archived ? 'groups_unarchive' : 'groups_archive')
+                        .tr(),
+                  ),
+                ),
+                if (isOwner)
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text('groups_delete_confirm'.tr()),
+                  ),
               ],
             ),
           ],
@@ -257,14 +380,27 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                   children: [
                     Semantics(
                       header: true,
-                      child: Text(group.name, style: AppTypography.headlineLarge.copyWith(color: p.textPrimary, fontSize: 28, fontWeight: FontWeight.w700)),
+                      child: Text(
+                        group.name,
+                        style: AppTypography.headlineLarge.copyWith(
+                          color: p.textPrimary,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 2),
-                    Text(subtitle, style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
+                    Text(
+                      subtitle,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: p.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              if (budget != null) _BudgetCard(status: budget, currency: group.currency!),
+              if (budget != null)
+                _BudgetCard(status: budget, currency: group.currency!),
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
                 child: LedgerSegmented<_Tab>(
@@ -310,7 +446,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: FilledButton(
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => SettleUpScreen.group(groupId: group.id))),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SettleUpScreen.group(groupId: group.id),
+                    ),
+                  ),
                   child: Text('settle_up_title'.tr()),
                 ),
               ),
@@ -321,8 +461,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     );
   }
 
-  Widget _balances(BuildContext context, GroupLedgerInput g, LedgerView view, String me) {
-    final members = [...g.group.members]..sort((a, b) => a.id == me ? -1 : (b.id == me ? 1 : 0));
+  Widget _balances(
+    BuildContext context,
+    GroupLedgerInput g,
+    LedgerView view,
+    String me,
+  ) {
+    final members = [...g.group.members]
+      ..sort((a, b) => a.id == me ? -1 : (b.id == me ? 1 : 0));
     if (members.isEmpty) return const SizedBox.shrink();
     return LedgerCard(
       margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
@@ -335,7 +481,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     );
   }
 
-  Widget _memberRow(BuildContext context, GroupMember m, Map<String, int> balance, String me) {
+  Widget _memberRow(
+    BuildContext context,
+    GroupMember m,
+    Map<String, int> balance,
+    String me,
+  ) {
     final p = context.palette;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -345,16 +496,32 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             LedgerAvatar(id: m.id, name: m.name, photoUrl: m.photoUrl),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(personName(m.id, m.name, me), style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+              child: Text(
+                personName(m.id, m.name, me),
+                style: AppTypography.titleSmall.copyWith(
+                  color: p.textPrimary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             if (balance.isEmpty)
-              Text('groups_settled'.tr(), style: AppTypography.labelMedium.copyWith(color: p.textSecondary))
+              Text(
+                'groups_settled'.tr(),
+                style: AppTypography.labelMedium.copyWith(
+                  color: p.textSecondary,
+                ),
+              )
             else
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   for (final e in balance.entries)
-                    MoneyText(minor: e.value, currency: e.key, sign: MoneySign.always),
+                    MoneyText(
+                      minor: e.value,
+                      currency: e.key,
+                      sign: MoneySign.always,
+                    ),
                 ],
               ),
           ],
@@ -374,7 +541,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           title: 'groups_no_bills_title'.tr(),
           message: 'groups_no_bills_body'.tr(),
           actionLabel: 'groups_add_bill'.tr(),
-          onAction: () => BillEntryPoints.scan(context, members: g.group.members.where((m) => m.id != me).toList(), groupId: g.group.id),
+          onAction: () => BillEntryPoints.scan(
+            context,
+            members: g.group.members.where((m) => m.id != me).toList(),
+            groupId: g.group.id,
+          ),
         ),
       );
     }
@@ -385,9 +556,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         children: [
           for (final b in bills)
             InkWell(
-              onTap: () => openBill(context, billId: b.id, hostId: b.hostId, title: b.title, me: me),
+              onTap: () => openBill(
+                context,
+                billId: b.id,
+                hostId: b.hostId,
+                title: b.title,
+                me: me,
+              ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: MergeSemantics(
                   child: Row(
                     children: [
@@ -395,18 +575,41 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(b.title.isEmpty ? 'bill'.tr() : b.title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+                            Text(
+                              b.title.isEmpty ? 'bill'.tr() : b.title,
+                              style: AppTypography.titleSmall.copyWith(
+                                color: p.textPrimary,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             Text(
                               [
                                 if (b.date != null) df.format(b.date!),
-                                'groups_paid_by'.tr(namedArgs: {'name': personName(b.hostId, b.nameOf(b.hostId), me)}),
+                                b.hostId == me
+                                    ? 'groups_paid_by_you'.tr()
+                                    : 'groups_paid_by'.tr(
+                                        namedArgs: {
+                                          'name': personName(
+                                            b.hostId,
+                                            b.nameOf(b.hostId),
+                                            me,
+                                          ),
+                                        },
+                                      ),
                               ].join(' · '),
-                              style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
+                              style: AppTypography.bodySmall.copyWith(
+                                color: p.textSecondary,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      MoneyText(minor: b.totalMinor, currency: b.currency, tone: MoneyTone.neutral),
+                      MoneyText(
+                        minor: b.totalMinor,
+                        currency: b.currency,
+                        tone: MoneyTone.neutral,
+                      ),
                     ],
                   ),
                 ),
@@ -423,16 +626,32 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     if (totals.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 24),
-        child: EmptyState(icon: Icons.bar_chart_rounded, title: 'groups_no_bills_title'.tr(), message: 'groups_no_bills_body'.tr()),
+        child: EmptyState(
+          icon: Icons.bar_chart_rounded,
+          title: 'groups_no_bills_title'.tr(),
+          message: 'groups_no_bills_body'.tr(),
+        ),
       );
     }
     // currency -> person -> (paid, share)
     final paid = <String, Map<String, int>>{};
     final share = <String, Map<String, int>>{};
     for (final b in g.bills.where((b) => !b.isDraft)) {
-      paid.putIfAbsent(b.currency, () => {}).update(b.hostId, (v) => v + b.totalMinor, ifAbsent: () => b.totalMinor);
+      paid
+          .putIfAbsent(b.currency, () => {})
+          .update(
+            b.hostId,
+            (v) => v + b.totalMinor,
+            ifAbsent: () => b.totalMinor,
+          );
       for (final s in b.participants) {
-        share.putIfAbsent(b.currency, () => {}).update(s.id, (v) => v + s.shareMinor, ifAbsent: () => s.shareMinor);
+        share
+            .putIfAbsent(b.currency, () => {})
+            .update(
+              s.id,
+              (v) => v + s.shareMinor,
+              ifAbsent: () => s.shareMinor,
+            );
       }
     }
     return Column(
@@ -444,14 +663,42 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('groups_total_spent'.tr(), style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
-                MoneyText(minor: e.value, currency: e.key, tone: MoneyTone.neutral, size: MoneySize.large),
+                Text(
+                  'groups_total_spent'.tr(),
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: p.textSecondary,
+                  ),
+                ),
+                MoneyText(
+                  minor: e.value,
+                  currency: e.key,
+                  tone: MoneyTone.neutral,
+                  size: MoneySize.large,
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     const Expanded(child: SizedBox.shrink()),
-                    SizedBox(width: 92, child: Text('groups_paid'.tr(), textAlign: TextAlign.end, style: AppTypography.labelSmall.copyWith(color: p.textSecondary))),
-                    SizedBox(width: 92, child: Text('groups_share'.tr(), textAlign: TextAlign.end, style: AppTypography.labelSmall.copyWith(color: p.textSecondary))),
+                    SizedBox(
+                      width: 92,
+                      child: Text(
+                        'groups_paid'.tr(),
+                        textAlign: TextAlign.end,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: p.textSecondary,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 92,
+                      child: Text(
+                        'groups_share'.tr(),
+                        textAlign: TextAlign.end,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: p.textSecondary,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 for (final m in g.group.members)
@@ -460,9 +707,34 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                     child: MergeSemantics(
                       child: Row(
                         children: [
-                          Expanded(child: Text(personName(m.id, m.name, me), style: AppTypography.bodyMedium.copyWith(color: p.textPrimary))),
-                          SizedBox(width: 92, child: MoneyText(minor: paid[e.key]?[m.id] ?? 0, currency: e.key, tone: MoneyTone.neutral, size: MoneySize.small, textAlign: TextAlign.end)),
-                          SizedBox(width: 92, child: MoneyText(minor: share[e.key]?[m.id] ?? 0, currency: e.key, tone: MoneyTone.neutral, size: MoneySize.small, textAlign: TextAlign.end)),
+                          Expanded(
+                            child: Text(
+                              personName(m.id, m.name, me),
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: p.textPrimary,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 92,
+                            child: MoneyText(
+                              minor: paid[e.key]?[m.id] ?? 0,
+                              currency: e.key,
+                              tone: MoneyTone.neutral,
+                              size: MoneySize.small,
+                              textAlign: TextAlign.end,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 92,
+                            child: MoneyText(
+                              minor: share[e.key]?[m.id] ?? 0,
+                              currency: e.key,
+                              tone: MoneyTone.neutral,
+                              size: MoneySize.small,
+                              textAlign: TextAlign.end,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -492,10 +764,20 @@ class _BudgetCard extends StatelessWidget {
       footer = 'groups_budget_over'.tr(namedArgs: {'amount': left});
     } else if (status.daysLeft != null) {
       footer = status.daysLeft == 1
-          ? 'groups_budget_left_one_day'.tr(namedArgs: {'amount': left, 'each': each})
-          : 'groups_budget_left_days'.tr(namedArgs: {'amount': left, 'days': '${status.daysLeft}', 'each': each});
+          ? 'groups_budget_left_one_day'.tr(
+              namedArgs: {'amount': left, 'each': each},
+            )
+          : 'groups_budget_left_days'.tr(
+              namedArgs: {
+                'amount': left,
+                'days': '${status.daysLeft}',
+                'each': each,
+              },
+            );
     } else {
-      footer = 'groups_budget_left'.tr(namedArgs: {'amount': left, 'each': each});
+      footer = 'groups_budget_left'.tr(
+        namedArgs: {'amount': left, 'each': each},
+      );
     }
     return LedgerCard(
       margin: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
@@ -505,17 +787,37 @@ class _BudgetCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text('groups_spent_of_budget'.tr(namedArgs: {'budget': budget}), style: AppTypography.bodyMedium.copyWith(color: p.textSecondary))),
-              MoneyText(minor: status.spentMinor, currency: currency, tone: MoneyTone.neutral, size: MoneySize.small, style: const TextStyle(fontWeight: FontWeight.w700)),
+              Expanded(
+                child: Text(
+                  'groups_spent_of_budget'.tr(namedArgs: {'budget': budget}),
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: p.textSecondary,
+                  ),
+                ),
+              ),
+              MoneyText(
+                minor: status.spentMinor,
+                currency: currency,
+                tone: MoneyTone.neutral,
+                size: MoneySize.small,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
             ],
           ),
           const SizedBox(height: 10),
           Semantics(
-            label: 'groups_budget_used'.tr(namedArgs: {'percent': '${(status.fraction * 100).round()}'}),
+            label: 'groups_budget_used'.tr(
+              namedArgs: {'percent': '${(status.fraction * 100).round()}'},
+            ),
             child: BudgetBar(fraction: status.fraction),
           ),
           const SizedBox(height: 10),
-          Text(footer, style: AppTypography.bodySmall.copyWith(color: over ? p.oweInk : p.textSecondary)),
+          Text(
+            footer,
+            style: AppTypography.bodySmall.copyWith(
+              color: over ? p.oweInk : p.textSecondary,
+            ),
+          ),
         ],
       ),
     );

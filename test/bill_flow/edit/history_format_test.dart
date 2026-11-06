@@ -15,6 +15,8 @@ const _en = {
   'bf_edit_history_someone': 'Someone',
   'bf_edit_history_item_price': 'changed {item} from {from} to {to}',
   'bf_edit_history_created': 'created the bill',
+  'bf_edit_history_you_item_price': 'changed {item} from {from} to {to}',
+  'bf_edit_history_you_created': 'created the bill',
   'bf_edit_time_hours': '{count} h ago',
 };
 
