@@ -4,4 +4,4 @@
 - Znajomi płacą z linku, bez aplikacji, metodami płatności ich kraju.
 - Każdy grosz rozliczony: zestawienie każdego udziału, historia.
 - Wszystkie waluty, 22 języki, RTL, tryb ciemny.
-- Pro: nielimitowane skany AI i głos, cykliczne rachunki, CSV/PDF. Bez dziennego limitu.
+- Pro: nielimitowane skany AI i głos, cykliczne rachunki, CSV/PDF. Gratis: rachunki bez limitu, skany AI od razu.

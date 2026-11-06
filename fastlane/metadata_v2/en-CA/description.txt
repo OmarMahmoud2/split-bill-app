@@ -20,8 +20,8 @@ Groups keep a running balance across bills. Settle up with the fewest transfers,
 ANY CURRENCY, 22 LANGUAGES
 Every world currency with the right decimals, right-to-left Arabic and Urdu, dark mode, and local payment methods for more than 60 countries.
 
-FREE, WITH NO DAILY LIMITS
-Unlimited bills, groups, balances and guest links. No daily cap, no interstitial ads. A free monthly allowance of AI scans and voice commands, with more available by watching a short ad.
+FREE TO USE
+Unlimited bills, groups, balances and guest links, and typing bills in by hand is always free. AI scans and voice commands are included to start, with more by watching a short ad. No interstitial ads.
 
 PRO
 Unlimited AI scans and voice, recurring bills such as rent and utilities, and CSV and PDF export. Choose monthly, yearly with a free trial, or a one-time lifetime purchase.

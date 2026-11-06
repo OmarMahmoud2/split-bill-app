@@ -20,8 +20,8 @@ Grup menyimpan saldo berjalan lintas tagihan. Lunasi dengan transfer sesedikit m
 MATA UANG APA PUN, 22 BAHASA
 Semua mata uang dunia dengan desimal yang benar, Arab dan Urdu dari kanan ke kiri, mode gelap, dan metode pembayaran lokal untuk lebih dari 60 negara.
 
-GRATIS, TANPA BATAS HARIAN
-Tagihan, grup, saldo, dan tautan tamu tanpa batas. Tanpa batas harian, tanpa iklan layar penuh. Jatah bulanan gratis untuk pindai AI dan perintah suara, dan tambahan dengan menonton iklan singkat.
+GRATIS DIGUNAKAN
+Tagihan, grup, saldo, dan tautan tamu tanpa batas, dan mengetik tagihan secara manual selalu gratis. Pindai AI dan perintah suara sudah termasuk untuk memulai, dan tambahan dengan menonton iklan singkat. Tanpa iklan layar penuh.
 
 PRO
 Pindai AI dan suara tanpa batas, tagihan rutin seperti sewa dan listrik, serta ekspor CSV dan PDF. Bulanan, tahunan dengan uji coba gratis, atau sekali bayar seumur hidup.

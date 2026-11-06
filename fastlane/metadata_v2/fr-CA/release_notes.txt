@@ -8,4 +8,4 @@ Evens 2.0 est une toute nouvelle appli.
 - Partage par article, à parts égales, exact, en pourcentages ou en parts. Petites dettes rapides.
 - Toutes les devises, 22 langues, droite à gauche, mode sombre.
 - Pro : scans IA et voix illimités, dépenses récurrentes, export CSV et PDF, sans pub.
-- Aucune limite quotidienne dans l'offre gratuite.
+- Offre gratuite : additions, groupes et liens invités illimités, scans IA inclus pour commencer.

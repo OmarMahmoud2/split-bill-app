@@ -8,4 +8,4 @@ Evens 2.0 is a new app from the ground up.
 - Split by item, equally, by exact amounts, percentages or shares. Quick IOUs.
 - Every world currency, 22 languages, right-to-left support and dark mode.
 - Pro: unlimited AI scans and voice, recurring bills, CSV and PDF export, no ads.
-- No daily limits on the free plan.
+- Free plan: unlimited bills, groups and guest links, with AI scans included to start.

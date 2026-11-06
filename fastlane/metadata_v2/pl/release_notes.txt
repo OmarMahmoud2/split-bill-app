@@ -8,4 +8,4 @@ Evens 2.0 to zupełnie nowa aplikacja.
 - Podział po pozycjach, po równo, dokładnie, procentowo lub udziałami. Szybkie długi.
 - Wszystkie waluty, 22 języki, od prawej do lewej, tryb ciemny.
 - Pro: nielimitowane skany AI i głos, cykliczne rachunki, eksport CSV i PDF, bez reklam.
-- Bez dziennego limitu w darmowym planie.
+- Darmowy plan: nielimitowane rachunki, grupy i linki dla gości, ze skanami AI na start.

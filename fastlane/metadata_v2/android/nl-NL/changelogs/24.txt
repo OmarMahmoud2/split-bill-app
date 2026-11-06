@@ -4,4 +4,4 @@
 - Vrienden betalen via een link, zonder app, met betaalmethoden voor hun land.
 - Elke cent verantwoord: uitsplitsing per aandeel, geschiedenis.
 - Alle valuta's, 22 talen, RTL, donkere modus.
-- Pro: onbeperkt AI-scans en spraak, terugkerende rekeningen, CSV/PDF. Geen daglimiet.
+- Pro: onbeperkt AI-scans en spraak, terugkerende rekeningen, CSV/PDF. Gratis: onbeperkt rekeningen, AI-scans inclusief.

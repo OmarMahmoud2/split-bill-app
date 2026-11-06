@@ -20,8 +20,8 @@ Grupper håller ett löpande saldo över alla notor. Gör upp med så få överf
 ALLA VALUTOR, 22 SPRÅK
 Alla världens valutor med rätt decimaler, arabiska och urdu från höger till vänster, mörkt läge och lokala betalsätt för över 60 länder.
 
-GRATIS, UTAN DAGSGRÄNS
-Obegränsat med notor, grupper, saldon och gästlänkar. Ingen dagsgräns, inga helskärmsannonser. En gratis månadspott med AI-skanningar och röstkommandon, fler efter en kort annons.
+GRATIS ATT ANVÄNDA
+Obegränsat med notor, grupper, saldon och gästlänkar, och att lägga in notor för hand är alltid gratis. AI-skanningar och röstkommandon ingår från start, fler efter en kort annons. Inga helskärmsannonser.
 
 PRO
 Obegränsade AI-skanningar och röst, återkommande räkningar som hyra och el, samt export till CSV och PDF. Månadsvis, årsvis med gratis provperiod eller ett engångsköp för alltid.

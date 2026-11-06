@@ -8,4 +8,4 @@ Evens 2.0 sıfırdan yeni bir uygulama.
 - Kaleme göre, eşit, tam, yüzde veya pay ile böl. Hızlı borçlar.
 - Tüm para birimleri, 22 dil, sağdan sola, karanlık mod.
 - Pro: sınırsız yapay zeka taraması ve ses, tekrarlayan hesaplar, CSV ve PDF dışa aktarma, reklamsız.
-- Ücretsiz planda günlük sınır yok.
+- Ücretsiz plan: sınırsız hesap, grup ve misafir bağlantısı, başlangıç için yapay zeka taraması dahil.

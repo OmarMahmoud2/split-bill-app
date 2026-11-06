@@ -20,8 +20,8 @@ Gruplar hesaplar arasında güncel bakiye tutar. En az transferle hesaplaş, öd
 HER PARA BİRİMİ, 22 DİL
 Dünyadaki tüm para birimleri doğru ondalıklarla, sağdan sola Arapça ve Urduca, karanlık mod ve 60'tan fazla ülke için yerel ödeme yöntemleri.
 
-ÜCRETSİZ, GÜNLÜK SINIR YOK
-Sınırsız hesap, grup, bakiye ve misafir bağlantısı. Günlük tavan yok, tam ekran reklam yok. Aylık ücretsiz yapay zeka tarama ve sesli komut hakkı, kısa bir reklamla daha fazlası.
+KULLANIMI ÜCRETSİZ
+Sınırsız hesap, grup, bakiye ve misafir bağlantısı; hesapları elle girmek her zaman ücretsiz. Başlangıç için yapay zeka taraması ve sesli komut hakkı dahil, kısa bir reklamla daha fazlası. Tam ekran reklam yok.
 
 PRO
 Sınırsız yapay zeka taraması ve ses, kira ve faturalar gibi tekrarlayan hesaplar, CSV ve PDF dışa aktarma. Aylık, ücretsiz denemeli yıllık veya tek seferlik ömür boyu.

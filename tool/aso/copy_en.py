@@ -24,8 +24,8 @@ Groups keep a running balance across bills. Settle up with the fewest transfers,
 ANY CURRENCY, 22 LANGUAGES
 Every world currency with the right decimals, right-to-left Arabic and Urdu, dark mode, and local payment methods for more than 60 countries.
 
-FREE, WITH NO DAILY LIMITS
-Unlimited bills, groups, balances and guest links. No daily cap, no interstitial ads. A free monthly allowance of AI scans and voice commands, with more available by watching a short ad.
+FREE TO USE
+Unlimited bills, groups, balances and guest links, and typing bills in by hand is always free. AI scans and voice commands are included to start, with more by watching a short ad. No interstitial ads.
 
 PRO
 Unlimited AI scans and voice, multi-currency groups with daily exchange rates, recurring bills such as rent and utilities, and CSV and PDF export. Choose monthly, yearly with a free trial, or a one-time lifetime purchase.{LEGAL}"""
@@ -47,7 +47,7 @@ RELEASE_EN = """{NAME} 2.0 is a new app from the ground up.
 - Split by item, equally, by exact amounts, percentages or shares. Quick IOUs.
 - Every world currency, 22 languages, right-to-left support and dark mode.
 - Pro: multi-currency with daily rates, recurring bills, CSV and PDF export.
-- No daily limits on the free plan."""
+- Free plan: unlimited bills, groups and guest links, with AI scans included to start."""
 
 CHANGELOG_EN = """2.0 is a new app from the ground up.
 - Scan a receipt, then say who had what (voice assignment).
@@ -56,9 +56,9 @@ CHANGELOG_EN = """2.0 is a new app from the ground up.
 - Every cent accounted for: full breakdown on every share, edit history.
 - Split by item, equally, exact, percentage or shares. Quick IOUs.
 - Every currency, 22 languages, RTL, dark mode.
-- Pro: multi-currency, recurring bills, CSV/PDF export. No daily limits on free."""
+- Pro: multi-currency, recurring bills, CSV/PDF export. Free: AI scans included."""
 
-PROMO_EN = "Scan it. Say who had what. Every cent accounted for. Friends pay from a link in the apps their country uses, no download needed. Free, with no daily limits."
+PROMO_EN = "Scan it. Say who had what. Every cent accounted for. Friends pay from a link in the apps their country uses, no download needed. Free, AI scans included."
 
 SHORT_EN = "Scan receipts, say who had what, settle up. Friends pay from a link, no app."
 

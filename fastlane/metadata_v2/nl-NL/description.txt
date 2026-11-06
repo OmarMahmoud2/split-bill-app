@@ -20,8 +20,8 @@ Groepen houden een lopend saldo bij over alle rekeningen. Verreken met zo min mo
 ELKE VALUTA, 22 TALEN
 Alle wereldvaluta's met de juiste decimalen, Arabisch en Urdu van rechts naar links, donkere modus en lokale betaalmethoden voor meer dan 60 landen.
 
-GRATIS, ZONDER DAGLIMIET
-Onbeperkt rekeningen, groepen, saldo's en gastlinks. Geen daglimiet, geen interstitial-advertenties. Een gratis maandelijks tegoed aan AI-scans en spraakopdrachten, meer na een korte advertentie.
+GRATIS TE GEBRUIKEN
+Onbeperkt rekeningen, groepen, saldo's en gastlinks, en rekeningen handmatig invoeren is altijd gratis. AI-scans en spraakopdrachten zijn om te beginnen inbegrepen, meer na een korte advertentie. Geen interstitial-advertenties.
 
 PRO
 Onbeperkte AI-scans en spraak, terugkerende rekeningen zoals huur en energie, en export naar CSV en PDF. Maandelijks, jaarlijks met gratis proefperiode, of eenmalig voor altijd.

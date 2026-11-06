@@ -4,4 +4,4 @@
 - Friends pay from a link, no app needed, with payment methods for their country.
 - Every cent accounted for: full breakdown on every share, edit history.
 - Every currency, 22 languages, RTL, dark mode.
-- Pro: unlimited AI scans and voice, recurring bills, CSV/PDF export. No daily limits on free.
+- Pro: unlimited AI scans and voice, recurring bills, CSV/PDF export. Free: AI scans included.

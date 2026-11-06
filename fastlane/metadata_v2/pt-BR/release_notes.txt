@@ -8,4 +8,4 @@ Evens 2.0 é um app novo do zero.
 - Divida por item, igualmente, exato, por porcentagem ou cotas. Dívidas rápidas.
 - Todas as moedas, 22 idiomas, direita para esquerda, modo escuro.
 - Pro: escaneamentos com IA e voz ilimitados, contas recorrentes, exportação CSV e PDF, sem anúncios.
-- Sem limite diário no plano grátis.
+- Plano grátis: contas, grupos e links de convidado ilimitados, com escaneamentos com IA inclusos para começar.

@@ -5,4 +5,4 @@
 - Hvert øre gjort rede for: oppdeling per andel, historikk.
 - Del per vare, likt, nøyaktig, prosent eller andeler.
 - Alle valutaer, 22 språk, RTL, mørk modus.
-- Pro: ubegrenset AI og stemme, faste regninger, CSV/PDF. Ingen dagsgrense.
+- Pro: ubegrenset AI, faste regninger, CSV/PDF. Gratis: AI inkludert.

@@ -8,4 +8,4 @@ Evens 2.0 is een volledig nieuwe app.
 - Verdeel per item, gelijk, exact, in procenten of delen. Snelle schulden.
 - Alle valuta's, 22 talen, rechts-naar-links, donkere modus.
 - Pro: onbeperkt AI-scans en spraak, terugkerende rekeningen, CSV- en PDF-export, geen advertenties.
-- Geen daglimiet in het gratis plan.
+- Gratis plan: onbeperkt rekeningen, groepen en gastlinks, met AI-scans om te beginnen inbegrepen.

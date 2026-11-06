@@ -4,4 +4,4 @@
 - Tus amigos pagan desde un enlace, sin app, con los métodos de pago de su país.
 - Cada céntimo justificado: desglose de cada parte, historial.
 - Todas las monedas, 22 idiomas, RTL, modo oscuro.
-- Pro: IA y voz ilimitadas, gastos recurrentes, CSV/PDF. Sin límite diario.
+- Pro: IA y voz ilimitadas, gastos recurrentes, CSV/PDF. Gratis: cuentas ilimitadas, escaneos con IA para empezar.

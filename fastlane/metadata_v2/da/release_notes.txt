@@ -8,4 +8,4 @@ Evens 2.0 er en helt ny app.
 - Del pr. vare, ligeligt, præcist, i procent eller andele. Hurtig gæld.
 - Alle valutaer, 22 sprog, højre-mod-venstre, mørk tilstand.
 - Pro: ubegrænsede AI-scanninger og stemme, tilbagevendende regninger, CSV- og PDF-eksport, ingen reklamer.
-- Intet dagligt loft på gratisplanen.
+- Gratisplan: ubegrænsede regninger, grupper og gæstelinks, med AI-scanninger inkluderet fra start.

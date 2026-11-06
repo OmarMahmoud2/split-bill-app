@@ -8,4 +8,4 @@ Evens 2.0 ist eine komplett neue App.
 - Nach Artikel, gleichmäßig, genau, in Prozent oder Anteilen teilen. Schnelle Schuldscheine.
 - Alle Währungen, 22 Sprachen, Rechts-nach-links, Dark Mode.
 - Pro: unbegrenzte KI-Scans und Sprachbefehle, wiederkehrende Rechnungen, CSV- und PDF-Export, keine Werbung.
-- Kein Tageslimit im kostenlosen Plan.
+- Kostenloser Plan: unbegrenzt Rechnungen, Gruppen und Gast-Links, KI-Scans zum Start inklusive.

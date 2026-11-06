@@ -20,8 +20,8 @@ Los grupos llevan un saldo acumulado entre cuentas. Salda con el mínimo de tran
 CUALQUIER MONEDA, 22 IDIOMAS
 Todas las monedas del mundo con sus decimales correctos, árabe y urdu de derecha a izquierda, modo oscuro y métodos de pago locales para más de 60 países.
 
-GRATIS, SIN LÍMITE DIARIO
-Cuentas, grupos, saldos y enlaces de invitado ilimitados. Sin tope diario y sin anuncios a pantalla completa. Una cuota mensual gratuita de escaneos con IA y comandos de voz, y más viendo un anuncio corto.
+GRATIS PARA USAR
+Cuentas, grupos, saldos y enlaces de invitado ilimitados, y apuntar las cuentas a mano es siempre gratis. Los escaneos con IA y los comandos de voz vienen incluidos para empezar, y más viendo un anuncio corto. Sin anuncios a pantalla completa.
 
 PRO
 Escaneos con IA y voz ilimitados, gastos recurrentes como la renta y los servicios, y exportación a CSV y PDF. Mensual, anual con prueba gratuita o un pago único para siempre.

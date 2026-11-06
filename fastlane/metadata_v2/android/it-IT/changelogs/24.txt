@@ -4,4 +4,4 @@
 - Gli amici pagano da un link, senza app, con i metodi di pagamento del loro paese.
 - Ogni centesimo giustificato: dettaglio di ogni quota, cronologia.
 - Tutte le valute, 22 lingue, RTL, modalità scura.
-- Pro: scansioni IA e voce illimitate, spese ricorrenti, CSV/PDF. Nessun limite giornaliero.
+- Pro: scansioni IA e voce illimitate, spese ricorrenti, CSV/PDF. Gratis: scansioni IA incluse.

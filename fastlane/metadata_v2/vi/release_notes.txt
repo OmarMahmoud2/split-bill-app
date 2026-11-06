@@ -8,4 +8,4 @@ Evens 2.0 là ứng dụng hoàn toàn mới.
 - Chia theo món, đều, chính xác, phần trăm hoặc phần. Nợ nhanh.
 - Mọi loại tiền, 22 ngôn ngữ, phải sang trái, chế độ tối.
 - Pro: quét AI và giọng nói không giới hạn, hóa đơn định kỳ, xuất CSV và PDF, không quảng cáo.
-- Gói miễn phí không giới hạn mỗi ngày.
+- Gói miễn phí: hóa đơn, nhóm và link khách không giới hạn, có sẵn quét AI để bắt đầu.

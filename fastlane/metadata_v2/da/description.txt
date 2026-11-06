@@ -20,8 +20,8 @@ Grupper holder en løbende saldo på tværs af regninger. Afregn med færrest mu
 ALLE VALUTAER, 22 SPROG
 Alle verdens valutaer med de rigtige decimaler, arabisk og urdu fra højre mod venstre, mørk tilstand og lokale betalingsmetoder for over 60 lande.
 
-GRATIS, UDEN DAGLIGT LOFT
-Ubegrænsede regninger, grupper, saldi og gæstelinks. Intet dagligt loft, ingen helsidesreklamer. En gratis månedlig pulje af AI-scanninger og stemmekommandoer, flere efter en kort reklame.
+GRATIS AT BRUGE
+Ubegrænsede regninger, grupper, saldi og gæstelinks, og det er altid gratis at taste regninger ind selv. AI-scanninger og stemmekommandoer følger med fra start, flere efter en kort reklame. Ingen helsidesreklamer.
 
 PRO
 Ubegrænsede AI-scanninger og stemme, tilbagevendende regninger som husleje og el, samt eksport til CSV og PDF. Månedligt, årligt med gratis prøveperiode eller et engangskøb for altid.
