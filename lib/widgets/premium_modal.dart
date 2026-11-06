@@ -63,7 +63,6 @@ class _PremiumModalState extends State<PremiumModal> {
   static const _perks = [
     'pw_perk_scans',
     'pw_perk_voice',
-    'pw_perk_trips',
     'pw_perk_export',
     'pw_perk_no_ads',
   ];

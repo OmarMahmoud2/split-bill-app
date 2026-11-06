@@ -237,7 +237,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                 }
               },
               itemBuilder: (_) => [
-                PopupMenuItem(value: 'currencies', child: Text('fx_title_short'.tr())),
+                // Trip currency conversion is not shipping in 2.0; the screen
+                // returns with real conversion (see _openCurrencies).
                 PopupMenuItem(value: 'invite', child: Text('groups_invite_friends'.tr())),
                 PopupMenuItem(value: 'archive', child: Text((group.archived ? 'groups_unarchive' : 'groups_archive').tr())),
                 if (isOwner) PopupMenuItem(value: 'delete', child: Text('groups_delete_confirm'.tr())),
