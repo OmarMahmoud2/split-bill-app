@@ -22,6 +22,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 
 let env;
@@ -41,9 +42,9 @@ const bill = {
   storeName: 'Cafe',
   participants_uids: [HOST, FRIEND],
   participants: [
-    { name: 'Host', uid: HOST, status: 'PAID' },
-    { name: 'Friend', uid: FRIEND, status: 'PENDING' },
-    { name: 'Walk-in', status: 'PENDING' },
+    { id: HOST, name: 'Host', uid: HOST, status: 'PAID' },
+    { id: FRIEND, name: 'Friend', uid: FRIEND, status: 'PENDING' },
+    { id: 'walk-in-1', name: 'Walk-in', status: 'PENDING' },
   ],
 };
 
@@ -106,8 +107,18 @@ describe('users', () => {
     await assertSucceeds(getDocs(collection(google(ADMIN), 'users')));
   });
 
-  it('stage A: signed-in users can still get a user by id', async () => {
+  it('lets non-anonymous active users get another user by id (1.2.0 still reads them)', async () => {
     await assertSucceeds(getDoc(doc(google(FRIEND), 'users', HOST)));
+    await assertSucceeds(getDoc(doc(google(HOST), 'users', HOST)));
+    await assertSucceeds(getDoc(doc(google(ADMIN), 'users', HOST)));
+  });
+
+  it('denies anonymous guests and suspended users reading other users docs', async () => {
+    await assertFails(getDoc(doc(guest(), 'users', HOST)));
+    await assertFails(getDoc(doc(guest(), 'users', GUEST)));
+    await assertFails(getDoc(doc(google('suspended-uid'), 'users', HOST)));
+    // A suspended user still reads their own doc (to see the state).
+    await assertSucceeds(getDoc(doc(google('suspended-uid'), 'users', 'suspended-uid')));
   });
 
   it('denies self-granting points', async () => {
@@ -162,15 +173,52 @@ describe('bills', () => {
     await assertFails(getDocs(query(collection(google(STRANGER), 'bills'), where('participants_uids', 'array-contains', FRIEND))));
   });
 
-  it('allows a guest to update payment state only', async () => {
-    const participants = bill.participants.map((p, i) => (i === 2 ? { ...p, status: 'REVIEW' } : p));
-    await assertSucceeds(updateDoc(doc(guest(), 'bills', 'b1'), { participants }));
+  const withStatus = (i, status) => bill.participants.map((p, k) => (k === i ? { ...p, status } : p));
+
+  it('lets a bill member update payment state only', async () => {
+    await assertSucceeds(updateDoc(doc(google(FRIEND), 'bills', 'b1'), { participants: withStatus(1, 'REVIEW') }));
+    await assertSucceeds(updateDoc(doc(google(HOST), 'bills', 'b1'), { participants: withStatus(2, 'PAID') }));
   });
 
-  it('denies guests adding or removing participants or changing other fields', async () => {
-    await assertFails(updateDoc(doc(guest(), 'bills', 'b1'), { participants: bill.participants.slice(0, 2) }));
-    await assertFails(updateDoc(doc(guest(), 'bills', 'b1'), { storeName: 'Hacked' }));
-    await assertFails(updateDoc(doc(guest(), 'bills', 'b1'), { participants_uids: [GUEST] }));
+  it('denies anonymous guests writing bills directly (they use the backend)', async () => {
+    await assertFails(updateDoc(doc(guest(), 'bills', 'b1'), { participants: withStatus(2, 'REVIEW') }));
+    await assertFails(updateDoc(doc(anon(), 'bills', 'b1'), { participants: withStatus(2, 'REVIEW') }));
+  });
+
+  it('denies non-members and suspended users writing payment state', async () => {
+    await assertFails(updateDoc(doc(google(STRANGER), 'bills', 'b1'), { participants: withStatus(2, 'PAID') }));
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'bills', 'bs'), { ...bill, participants_uids: [HOST, 'suspended-uid'] });
+    });
+    await assertFails(updateDoc(doc(google('suspended-uid'), 'bills', 'bs'), { participants: withStatus(2, 'PAID') }));
+  });
+
+  it('denies members changing list length or participant identity', async () => {
+    const f = (b) => updateDoc(doc(google(FRIEND), 'bills', 'b1'), b);
+    await assertFails(f({ participants: bill.participants.slice(0, 2) }));
+    await assertFails(f({ participants: [...bill.participants, { name: 'Extra', status: 'PENDING' }] }));
+    // Re-pointing an entry at someone else, or renaming it.
+    await assertFails(f({ participants: bill.participants.map((p, k) => (k === 2 ? { ...p, id: FRIEND } : p)) }));
+    await assertFails(f({ participants: bill.participants.map((p, k) => (k === 1 ? { ...p, name: 'Renamed' } : p)) }));
+    await assertFails(f({ participants: bill.participants.map((p, k) => (k === 0 ? { name: 'Host', status: 'PAID', uid: HOST } : p)) }));
+    await assertFails(f({ participants: [bill.participants[1], bill.participants[0], bill.participants[2]] }));
+  });
+
+  it('works for large bills (rules expression budget)', async () => {
+    const many = Array.from({ length: 30 }, (_, i) => ({ id: `p${i}`, name: `P${i}`, status: 'PENDING' }));
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'bills', 'big'), { ...bill, participants: many });
+    });
+    const next = many.map((p, i) => (i === 25 ? { ...p, status: 'REVIEW' } : p));
+    await assertSucceeds(updateDoc(doc(google(FRIEND), 'bills', 'big'), { participants: next }));
+    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'big'), { participants: next.slice(0, 29) }));
+    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'big'), { participants: next.map((p, i) => (i === 3 ? { ...p, id: 'x' } : p)) }));
+  });
+
+  it('denies members changing other fields', async () => {
+    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'b1'), { storeName: 'Hacked' }));
+    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'b1'), { participants_uids: [HOST, FRIEND, STRANGER] }));
+    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'b1'), { participants: withStatus(1, 'PAID'), hostId: FRIEND }));
   });
 
   it('denies unauthenticated updates', async () => {
@@ -198,7 +246,35 @@ describe('publicProfiles', () => {
   });
 });
 
+describe('publicProfiles limits', () => {
+  const put = (data) => setDoc(doc(google(FRIEND), 'publicProfiles', FRIEND), { updatedAt: serverTimestamp(), ...data });
+  it('accepts normal values', async () => {
+    await assertSucceeds(put({ displayName: 'F'.repeat(80), photoUrl: 'https://x.test/p.jpg', customPaymentMethods: Array.from({ length: 20 }, () => ({ name: 'a', value: 'b', type: 'c' })) }));
+    await assertSucceeds(put({ displayName: null, photoUrl: null, customPaymentMethods: [] }));
+  });
+  it('rejects oversized or mistyped values', async () => {
+    await assertFails(put({ displayName: 'F'.repeat(81) }));
+    await assertFails(put({ displayName: 5 }));
+    await assertFails(put({ photoUrl: 'http://x.test/p.jpg' }));
+    await assertFails(put({ photoUrl: 'https://x.test/' + 'a'.repeat(500) }));
+    await assertFails(put({ photoUrl: 7 }));
+    await assertFails(put({ customPaymentMethods: Array.from({ length: 21 }, () => ({ name: 'a' })) }));
+    await assertFails(put({ customPaymentMethods: 'cash' }));
+  });
+});
+
 describe('phoneClaims', () => {
+  it('requires an E.164 document id', async () => {
+    const claim = (phone) => setDoc(doc(google(FRIEND), 'phoneClaims', phone), { uid: FRIEND, createdAt: serverTimestamp() });
+    await assertSucceeds(claim('+14155550123'));
+    await assertFails(claim('01000000002'));
+    await assertFails(claim('+0123456789'));
+    await assertFails(claim('+12345'));
+    await assertFails(claim('+1234567890123456'));
+    await assertFails(claim('+1415555abcd'));
+    await assertFails(claim('+1 415 555 0123'));
+  });
+
   it('lets a user claim a free number for themselves only', async () => {
     await assertSucceeds(setDoc(doc(google(FRIEND), 'phoneClaims', '+201000000002'), { uid: FRIEND, createdAt: serverTimestamp() }));
     await assertFails(setDoc(doc(google(FRIEND), 'phoneClaims', '+201000000003'), { uid: STRANGER }));
@@ -215,16 +291,59 @@ describe('phoneClaims', () => {
 });
 
 describe('notifications', () => {
-  const note = () => ({ title: 'Paid', body: 'Friend paid', date: serverTimestamp(), read: false, data: { billId: 'b1' } });
+  const note = (extra = {}) => ({ title: 'Paid', body: 'Friend paid', date: serverTimestamp(), read: false, data: { billId: 'b1' }, ...extra });
+  const col = (db, uid, id) => doc(db, 'users', uid, 'notifications', id);
 
-  it('lets signed-in users and guests write a well-formed notification', async () => {
-    await assertSucceeds(setDoc(doc(guest(), 'users', HOST, 'notifications', 'n1'), note()));
+  it('lets a guest notify the bill host, and members notify each other', async () => {
+    await assertSucceeds(setDoc(col(guest(), HOST, 'n1'), note()));
+    await assertSucceeds(setDoc(col(google(FRIEND), HOST, 'n1b'), note()));
+    await assertSucceeds(setDoc(col(google(HOST), FRIEND, 'n1c'), note()));
+    await assertSucceeds(setDoc(col(google(HOST), FRIEND, 'n1d'), note({ titleKey: 'k', bodyKey: 'k2', titleArgs: { a: 'b' }, bodyArgs: { a: 'b' } })));
   });
 
   it('rejects unauthenticated or malformed notifications', async () => {
-    await assertFails(setDoc(doc(anon(), 'users', HOST, 'notifications', 'n2'), note()));
-    await assertFails(setDoc(doc(guest(), 'users', HOST, 'notifications', 'n3'), { ...note(), read: true }));
-    await assertFails(setDoc(doc(guest(), 'users', HOST, 'notifications', 'n4'), { ...note(), title: 'x'.repeat(201) }));
+    await assertFails(setDoc(col(anon(), HOST, 'n2'), note()));
+    await assertFails(setDoc(col(guest(), HOST, 'n3'), note({ read: true })));
+    await assertFails(setDoc(col(guest(), HOST, 'n4'), note({ title: 'x'.repeat(201) })));
+    await assertFails(setDoc(col(guest(), HOST, 'n4b'), note({ body: 'x'.repeat(1001) })));
+  });
+
+  it('rejects notifications without a shared bill', async () => {
+    await assertFails(setDoc(col(google(STRANGER), HOST, 'n5'), note()));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n6'), note({ data: null })));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n7'), note({ data: { type: 'x' } })));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n8'), note({ data: { billId: 'missing' } })));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n9'), note({ data: { billId: 5 } })));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n9b'), (() => { const { data, ...rest } = note(); return rest; })()));
+  });
+
+  it('rejects notifying someone who is not on the bill', async () => {
+    await assertFails(setDoc(col(google(HOST), STRANGER, 'n10'), note()));
+    await assertFails(setDoc(col(google(FRIEND), STRANGER, 'n11'), note()));
+  });
+
+  it('guests may only notify the host, never members', async () => {
+    await assertFails(setDoc(col(guest(), FRIEND, 'n12'), note()));
+    await assertFails(setDoc(col(guest(), STRANGER, 'n13'), note()));
+  });
+
+  it('caps the data map and key/arg sizes', async () => {
+    const big = Object.fromEntries(Array.from({ length: 25 }, (_, i) => [`k${i}`, 'v']));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n14'), note({ data: { billId: 'b1', ...big } })));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n15'), note({ bodyArgs: big })));
+    await assertFails(setDoc(col(google(FRIEND), HOST, 'n16'), note({ titleKey: 'x'.repeat(101) })));
+  });
+
+  it('admins may notify anyone without a bill (admin_message)', async () => {
+    await assertSucceeds(setDoc(col(google(ADMIN), STRANGER, 'n17'), note({ data: { type: 'admin_message' } })));
+    await assertSucceeds(setDoc(col(google(ADMIN), STRANGER, 'n18'), note({ data: null })));
+  });
+
+  it('suspended users cannot notify', async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'bills', 'bs'), { ...bill, participants_uids: [HOST, 'suspended-uid'] });
+    });
+    await assertFails(setDoc(col(google('suspended-uid'), HOST, 'n19'), note({ data: { billId: 'bs' } })));
   });
 
   it('only the owner reads their notifications', async () => {
@@ -432,6 +551,33 @@ describe('recurring bill templates', () => {
     await assertFails(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r4'), t({ frequency: 'daily' })));
     await assertFails(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r5'), t({ createdBy: HOST })));
   });
+  it('validates template field types and ranges', async () => {
+    const c = (id, extra) => setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', id), t(extra));
+    await assertFails(c('v1', { amountMinor: 1000000001 }));
+    await assertSucceeds(c('v2', { amountMinor: 1000000000 }));
+    await assertFails(c('v3', { currency: 'egp' }));
+    await assertFails(c('v4', { currency: 'EG' }));
+    await assertFails(c('v5', { currency: 'EGPP' }));
+    await assertFails(c('v6', { nextOn: 'tomorrow' }));
+    await assertFails(c('v7', { anchorDay: 0 }));
+    await assertFails(c('v8', { anchorDay: 32 }));
+    await assertFails(c('v9', { anchorDay: 1.5 }));
+    await assertFails(c('v10', { active: 'yes' }));
+    await assertFails(c('v11', { amountMinor: 10.5 }));
+  });
+  it('memberIds may only name current group members', async () => {
+    const c = (id, extra) => setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', id), t(extra));
+    await assertFails(c('m1', { memberIds: [HOST, STRANGER] }));
+    await assertSucceeds(c('m2', { memberIds: [HOST, 'guest-member'] }));
+    await assertFails(c('m3', { memberIds: 'all' }));
+  });
+  it('a member who left the group cannot edit their template', async () => {
+    await assertSucceeds(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), t()));
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'groups', 'g1'), { name: 'Dahab trip', createdBy: HOST, members: [], memberIds: [HOST] });
+    });
+    await assertFails(updateDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), { active: false }));
+  });
   it('only the creator updates, the owner can delete', async () => {
     await assertSucceeds(setDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), t()));
     await assertSucceeds(updateDoc(doc(google(FRIEND), 'groups', 'g1', 'recurring', 'r1'), { active: false }));
@@ -455,5 +601,91 @@ describe('admin audit log', () => {
     await assertFails(deleteDoc(doc(google(ADMIN), 'adminAudit', 'a1')));
     await assertFails(getDoc(doc(google(FRIEND), 'adminAudit', 'a1')));
     await assertSucceeds(getDoc(doc(google(ADMIN), 'adminAudit', 'a1')));
+  });
+});
+
+describe('account tombstones (delete + recreate)', () => {
+  const T = 'tomb-uid';
+
+  const seedUser = (uid, data) => env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'users', uid), data);
+  });
+
+  // Mirrors the app's account deletion batch.
+  const deleteAccount = async (uid, { tombstone = true } = {}) => {
+    const db = google(uid);
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'users', uid));
+    if (tombstone) batch.set(doc(db, 'accountTombstones', uid), { deletedAt: serverTimestamp() });
+    return batch.commit();
+  };
+
+  it('owner delete needs the tombstone in the same batch', async () => {
+    await seedUser(T, { displayName: 'T', points: 1 });
+    await assertFails(deleteDoc(doc(google(T), 'users', T)));
+    await assertFails(deleteAccount(T, { tombstone: false }));
+    await assertSucceeds(deleteAccount(T));
+  });
+
+  it('exploit: delete + recreate cannot reset points', async () => {
+    await seedUser(T, { displayName: 'T', points: 0 });
+    await assertSucceeds(deleteAccount(T));
+    await assertFails(setDoc(doc(google(T), 'users', T), { displayName: 'T', points: 7 }));
+    await assertFails(setDoc(doc(google(T), 'users', T), { displayName: 'T' }));
+    await assertFails(setDoc(doc(google(T), 'users', T), { points: 7 }, { merge: true }));
+  });
+
+  it('exploit: delete + recreate cannot wash out a suspension', async () => {
+    await seedUser(T, { displayName: 'T', suspended: true });
+    await assertSucceeds(deleteAccount(T));
+    // Missing doc + tombstone is treated as suspended.
+    await assertFails(setDoc(doc(google(T), 'bills', 'tb1'), { ...bill, hostId: T, participants_uids: [T] }));
+    await assertFails(setDoc(doc(google(T), 'groups', 'tg1'), { name: 'X', createdBy: T, createdAt: serverTimestamp(), members: [], memberIds: [T] }));
+    await assertFails(setDoc(doc(google(T), 'users', T), { displayName: 'T' }));
+  });
+
+  it('a user who never deleted their doc but has none yet is still active', async () => {
+    await assertSucceeds(setDoc(doc(google('brand-new'), 'groups', 'bn1'), { name: 'X', createdBy: 'brand-new', createdAt: serverTimestamp(), members: [], memberIds: ['brand-new'] }));
+    await assertSucceeds(setDoc(doc(google('brand-new2'), 'users', 'brand-new2'), { points: 7 }));
+  });
+
+  it('the welcome grant on update is blocked once a tombstone exists', async () => {
+    await seedUser('late-uid', { fcmToken: 'x' });
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'accountTombstones', 'late-uid'), { deletedAt: Timestamp.now() });
+    });
+    await assertFails(setDoc(doc(google('late-uid'), 'users', 'late-uid'), { points: 7 }, { merge: true }));
+  });
+
+  it('tombstone shape: owner creates once with server time, nobody else', async () => {
+    await assertFails(setDoc(doc(google(T), 'accountTombstones', T), { deletedAt: Timestamp.fromMillis(0) }));
+    await assertFails(setDoc(doc(google(T), 'accountTombstones', T), { deletedAt: serverTimestamp(), extra: 1 }));
+    await assertFails(setDoc(doc(google(STRANGER), 'accountTombstones', T), { deletedAt: serverTimestamp() }));
+    await assertFails(setDoc(doc(guest(), 'accountTombstones', GUEST), { deletedAt: serverTimestamp() }));
+    await assertSucceeds(setDoc(doc(google(T), 'accountTombstones', T), { deletedAt: serverTimestamp() }));
+  });
+
+  it('tombstones are immutable for users, readable by owner and admin only', async () => {
+    await assertSucceeds(setDoc(doc(google(T), 'accountTombstones', T), { deletedAt: serverTimestamp() }));
+    await assertFails(setDoc(doc(google(T), 'accountTombstones', T), { deletedAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(google(T), 'accountTombstones', T), { deletedAt: Timestamp.now() }));
+    await assertFails(deleteDoc(doc(google(T), 'accountTombstones', T)));
+    await assertSucceeds(getDoc(doc(google(T), 'accountTombstones', T)));
+    await assertSucceeds(getDoc(doc(google(ADMIN), 'accountTombstones', T)));
+    await assertFails(getDoc(doc(google(STRANGER), 'accountTombstones', T)));
+    await assertSucceeds(deleteDoc(doc(google(ADMIN), 'accountTombstones', T)));
+  });
+
+  it('admins can still delete any user doc and clear a tombstone', async () => {
+    await assertSucceeds(deleteDoc(doc(google(ADMIN), 'users', HOST)));
+  });
+
+  it('a retry after a half-finished deletion works without rewriting the tombstone', async () => {
+    await seedUser(T, { displayName: 'T' });
+    await assertSucceeds(deleteAccount(T));
+    const db = google(T);
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'users', T));
+    await assertSucceeds(batch.commit());
   });
 });

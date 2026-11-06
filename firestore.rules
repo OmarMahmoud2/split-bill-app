@@ -5,8 +5,10 @@ rules_version = '2';
 // - users / bills can no longer be enumerated
 // - points, premium and admin fields are server-only
 //
-// Stage B (once 1.2.0 adoption is high): tighten users `get` to owner/admin.
-// 1.2.0+ clients read other people via publicProfiles and never need it.
+// users `get` is owner/admin plus non-anonymous active users: the 1.2.0 app
+// still reads other people's user docs (QR scan, group member check and the
+// publicProfiles fallback). Tighten to owner/admin once 1.2.0 is retired; the
+// 2.0 app reads publicProfiles only.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -26,9 +28,18 @@ service cloud.firestore {
 
     // Admins can suspend an account (users/{uid}.suspended). Suspended users
     // keep read access but cannot create or change shared data.
+    //
+    // A missing user doc is only "not suspended" for an account that was never
+    // deleted: deleting the doc leaves an accountTombstones/{uid} marker, so
+    // delete + recreate cannot launder a suspension or reset points.
+    function hasTombstone(uid) {
+      return exists(/databases/$(database)/documents/accountTombstones/$(uid));
+    }
+
     function notSuspended() {
-      return !exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('suspended', false) != true;
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('suspended', false) != true
+        : !hasTombstone(request.auth.uid);
     }
 
     function isActiveUser() {
@@ -184,9 +195,11 @@ service cloud.firestore {
     }
 
     // New accounts get the 7-point welcome grant and nothing else protected.
+    // A deleted account (tombstone) can never be recreated or re-granted.
     function validUserCreate() {
       let data = request.resource.data;
-      return !data.keys().hasAny(protectedUserFields().removeAll(['points']))
+      return !hasTombstone(request.auth.uid)
+        && !data.keys().hasAny(protectedUserFields().removeAll(['points']))
         && (!data.keys().hasAny(['points']) || data.points == 7);
     }
 
@@ -197,7 +210,8 @@ service cloud.firestore {
       return !changed.hasAny(protectedUserFields().removeAll(['points']))
         && (
           !changed.hasAny(['points'])
-          || (!resource.data.keys().hasAny(['points']) && request.resource.data.points == 7)
+          || (!resource.data.keys().hasAny(['points']) && request.resource.data.points == 7
+              && !hasTombstone(request.auth.uid))
         );
     }
 
@@ -226,15 +240,65 @@ service cloud.firestore {
       return listHasUid(resource.data, 'participants_uids');
     }
 
-    // Participants and anonymous web guests may only touch payment state,
-    // and may not add or remove participants.
+    // Bill members (non-anonymous, active) may only touch payment state, and
+    // may not add or remove participants or change who an entry belongs to.
+    // Anonymous web guests write through the backend (guest-payment endpoint),
+    // never directly. Rules cannot loop and have a 1000-expression budget, so the first 12 entries are checked
+    // one by one; the list length is fixed for every bill.
+    function sameParticipant(i) {
+      let oldP = resource.data.participants;
+      let newP = request.resource.data.participants;
+      return i >= oldP.size()
+        || (newP[i].get('id', null) == oldP[i].get('id', null)
+            && newP[i].get('name', null) == oldP[i].get('name', null));
+    }
+
+    function participantsKeepIdentity() {
+      return sameParticipant(0) && sameParticipant(1) && sameParticipant(2) && sameParticipant(3) && sameParticipant(4)
+        && sameParticipant(5) && sameParticipant(6) && sameParticipant(7) && sameParticipant(8) && sameParticipant(9)
+        && sameParticipant(10) && sameParticipant(11);
+    }
+
     function paymentOnlyBillUpdate() {
-      return signedIn()
+      return isActiveUser()
+        && (resource.data.hostId == request.auth.uid || billMember())
         && request.resource.data.diff(resource.data)
           .affectedKeys()
           .hasOnly(['participants'])
         && request.resource.data.participants is list
-        && request.resource.data.participants.size() == resource.data.participants.size();
+        && resource.data.participants is list
+        && request.resource.data.participants.size() == resource.data.participants.size()
+        && participantsKeepIdentity();
+    }
+
+    // The notification must be about a bill the writer shares with the
+    // recipient: both are the host or in participants_uids. Anonymous web
+    // guests are not in participants_uids; they may only notify the host.
+    function notificationBill() {
+      return get(/databases/$(database)/documents/bills/$(request.resource.data.data.billId)).data;
+    }
+
+    function inBill(bill, uid) {
+      return bill.get('hostId', '') == uid
+        || (bill.get('participants_uids', []) is list && uid in bill.get('participants_uids', []));
+    }
+
+    function validNotificationTarget(targetUid) {
+      return isAdmin()
+        || (
+          request.resource.data.get('data', null) is map
+          && request.resource.data.data.get('billId', null) is string
+          && request.resource.data.data.billId.size() > 0
+          && request.resource.data.data.billId.size() <= 200
+          && !request.resource.data.data.billId.matches('.*/.*')
+          && exists(/databases/$(database)/documents/bills/$(request.resource.data.data.billId))
+          && inBill(notificationBill(), targetUid)
+          && (
+            isAnonymous()
+              ? notificationBill().get('hostId', '') == targetUid
+              : inBill(notificationBill(), request.auth.uid)
+          )
+        );
     }
 
     function validNotificationCreate() {
@@ -254,7 +318,23 @@ service cloud.firestore {
         && request.resource.data.body is string
         && request.resource.data.body.size() <= 1000
         && request.resource.data.read == false
-        && request.resource.data.date == request.time;
+        && request.resource.data.date == request.time
+        && optionalField(request.resource.data, 'data',
+             request.resource.data.get('data', null) == null
+             || (request.resource.data.get('data', null) is map
+                 && request.resource.data.data.keys().size() <= 20))
+        && optionalField(request.resource.data, 'titleKey',
+             request.resource.data.get('titleKey', null) is string
+             && request.resource.data.get('titleKey', '').size() <= 100)
+        && optionalField(request.resource.data, 'bodyKey',
+             request.resource.data.get('bodyKey', null) is string
+             && request.resource.data.get('bodyKey', '').size() <= 100)
+        && optionalField(request.resource.data, 'titleArgs',
+             request.resource.data.get('titleArgs', null) is map
+             && request.resource.data.get('titleArgs', {}).keys().size() <= 20)
+        && optionalField(request.resource.data, 'bodyArgs',
+             request.resource.data.get('bodyArgs', null) is map
+             && request.resource.data.get('bodyArgs', {}).keys().size() <= 20);
     }
 
     // --- BILLS ---
@@ -337,9 +417,11 @@ service cloud.firestore {
           && isMemberOfGroup(groupId)
           && request.resource.data.keys().hasOnly(recurringKeys().concat(['createdBy', 'createdAt', 'memberIds']))
           && request.resource.data.createdBy == request.auth.uid
-          && validRecurring(request.resource.data);
+          && validRecurring(request.resource.data)
+          && validRecurringMembers(request.resource.data, groupId);
 
-        allow update: if (isAdmin() || (isActiveUser() && resource.data.createdBy == request.auth.uid))
+        allow update: if (isAdmin() || (isActiveUser() && resource.data.createdBy == request.auth.uid
+                                        && isMemberOfGroup(groupId)))
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(recurringKeys())
           && validRecurring(request.resource.data);
 
@@ -355,9 +437,20 @@ service cloud.firestore {
 
     function validRecurring(data) {
       return data.name is string && data.name.size() <= 120
-        && data.amountMinor is int && data.amountMinor > 0 && data.amountMinor <= 1000000000000
-        && data.currency is string && data.currency.size() <= 8
-        && data.frequency in ['weekly', 'monthly', 'yearly'];
+        && data.amountMinor is int && data.amountMinor > 0 && data.amountMinor <= 1000000000
+        && data.currency is string && data.currency.matches('^[A-Z]{3}$')
+        && data.frequency in ['weekly', 'monthly', 'yearly']
+        && data.nextOn is timestamp
+        && data.active is bool
+        && data.anchorDay is int && data.anchorDay >= 1 && data.anchorDay <= 31;
+    }
+
+    // A template may only name people who are in the group.
+    function validRecurringMembers(data, groupId) {
+      return !data.keys().hasAny(['memberIds'])
+        || (data.memberIds is list
+            && data.memberIds.size() <= 100
+            && data.memberIds.hasOnly(groupDoc(groupId).data.memberIds));
     }
 
     // --- ADMIN AUDIT LOG ---
@@ -394,6 +487,20 @@ service cloud.firestore {
     }
 
     // --- PUBLIC PROFILES ---
+    function validPublicProfile(data) {
+      return optionalField(data, 'displayName',
+               data.get('displayName', null) == null
+               || (data.get('displayName', null) is string && data.get('displayName', '').size() <= 80))
+        && optionalField(data, 'photoUrl',
+               data.get('photoUrl', null) == null
+               || (data.get('photoUrl', null) is string
+                   && data.get('photoUrl', '').size() <= 500
+                   && data.get('photoUrl', '').matches('^https://.*')))
+        && optionalField(data, 'customPaymentMethods',
+               data.get('customPaymentMethods', null) is list
+               && data.get('customPaymentMethods', []).size() <= 20);
+    }
+
     // The only per-user data other people (and guests) may read.
     match /publicProfiles/{userId} {
       allow read: if signedIn();
@@ -404,7 +511,8 @@ service cloud.firestore {
           'photoUrl',
           'customPaymentMethods',
           'updatedAt'
-        ]);
+        ])
+        && validPublicProfile(request.resource.data);
 
       allow delete: if isAdmin() || isOwner(userId);
     }
@@ -416,6 +524,7 @@ service cloud.firestore {
       allow get: if isFullUser();
 
       allow create: if isActiveUser()
+        && phone.matches('^\\+[1-9][0-9]{6,14}$')
         && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
         && request.resource.data.uid == request.auth.uid;
 
@@ -423,10 +532,24 @@ service cloud.firestore {
         || (isFullUser() && resource.data.uid == request.auth.uid);
     }
 
+    // --- ACCOUNT TOMBSTONES ---
+    // Written by the owner in the same batch that deletes users/{uid}. It
+    // blocks recreating the account (points reset) and keeps a suspension
+    // from being washed out by delete + recreate. Only admins can remove it.
+    match /accountTombstones/{userId} {
+      allow read: if isAdmin() || isOwner(userId);
+      allow create: if isAdmin()
+        || (isOwner(userId)
+            && request.resource.data.keys().hasOnly(['deletedAt'])
+            && request.resource.data.deletedAt == request.time);
+      allow update, delete: if isAdmin();
+    }
+
     // --- USERS ---
     match /users/{userId} {
-      // Stage A: get by id stays open to signed-in users for 1.1.x clients.
-      allow get: if signedIn();
+      // Owner and admin; other non-anonymous active users only because the
+      // 1.2.0 app still reads other users' docs. Anonymous guests never.
+      allow get: if isAdmin() || isOwner(userId) || isActiveUser();
       allow list: if isAdmin();
 
       allow create: if isAdmin()
@@ -435,14 +558,20 @@ service cloud.firestore {
       allow update: if isAdmin()
         || (isOwner(userId) && validOwnerUserUpdate());
 
-      allow delete: if isAdmin() || isOwner(userId);
+      // Owners may delete their own doc only together with the tombstone
+      // written in the same batch.
+      allow delete: if isAdmin()
+        || (isOwner(userId)
+            && existsAfter(/databases/$(database)/documents/accountTombstones/$(userId)));
 
       // --- USER NOTIFICATIONS ---
       match /notifications/{notificationId} {
         allow read: if isAdmin() || isOwner(userId);
 
-        // App users and web guests can notify others, but only with the expected shape.
-        allow create: if signedIn() && notSuspended() && validNotificationCreate();
+        // Members (and web guests, host only) can notify others about a shared
+        // bill, with the expected shape. Admins may notify anyone.
+        allow create: if signedIn() && notSuspended() && validNotificationCreate()
+          && validNotificationTarget(userId);
 
         allow update: if (isAdmin() || isOwner(userId))
           && request.resource.data.diff(resource.data)
