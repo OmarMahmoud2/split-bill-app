@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/countries.dart';
+import 'package:split_bill_app/services/admin_account_api.dart';
 import 'package:split_bill_app/services/admin_user_actions.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/currency_utils.dart';
@@ -72,6 +73,8 @@ class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
       AdminUserActions(
         backend: FirestoreAdminActionBackend(),
         adminUid: _adminUid,
+        accountDisabler: (uid, {required disabled, reason}) =>
+            disableAccountViaBackend(uid, disabled: disabled, reason: reason),
       );
   late final Stream<Map<String, dynamic>?> _userStream =
       widget.userStream ??

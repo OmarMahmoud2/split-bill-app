@@ -77,9 +77,22 @@ class AdminActionException implements Exception {
 }
 
 class AdminActionResult {
-  const AdminActionResult({required this.auditLogged});
+  const AdminActionResult({
+    required this.auditLogged,
+    this.authUpdated = false,
+  });
   final bool auditLogged;
+
+  /// For suspend/unsuspend: the backend also disabled or enabled the Firebase
+  /// Auth account (and revoked sessions). False means only the Firestore flag
+  /// was written.
+  final bool authUpdated;
 }
+
+/// Disables or re-enables the Auth account via the backend, which also writes
+/// the suspension flags and the audit entry. Returns true when it succeeded.
+typedef AccountDisabler =
+    Future<bool> Function(String uid, {required bool disabled, String? reason});
 
 /// Points are clamped to this range.
 const int adminMaxPoints = 999999;
@@ -105,10 +118,15 @@ String deleteConfirmationTarget({required String uid, String? email}) {
 }
 
 class AdminUserActions {
-  AdminUserActions({required this.backend, required this.adminUid});
+  AdminUserActions({
+    required this.backend,
+    required this.adminUid,
+    this.accountDisabler,
+  });
 
   final AdminActionBackend backend;
   final String adminUid;
+  final AccountDisabler? accountDisabler;
 
   static const _batchLimit = 400;
 
@@ -194,14 +212,22 @@ class AdminUserActions {
     ], _audit(admin ? 'admin.grant' : 'admin.revoke', uid, const {}));
   }
 
-  /// Sets the `suspended` flag. Enforcement needs rules + backend checks.
+  /// Suspends or unsuspends. With an [accountDisabler] the backend disables
+  /// the Firebase Auth account too (sessions are revoked, so a suspended user
+  /// cannot keep using a live token); it also writes the flags and the audit
+  /// entry. If it is unavailable, the Firestore flag is written here instead
+  /// ([AdminActionResult.authUpdated] is then false).
   Future<AdminActionResult> setSuspended(
     String uid, {
     required bool suspended,
     String? reason,
-  }) {
+  }) async {
     if (suspended && uid == adminUid) {
       throw const AdminActionException(AdminActionError.selfTarget);
+    }
+    if (accountDisabler != null &&
+        await accountDisabler!(uid, disabled: suspended, reason: reason)) {
+      return const AdminActionResult(auditLogged: true, authUpdated: true);
     }
     return _run(
       [

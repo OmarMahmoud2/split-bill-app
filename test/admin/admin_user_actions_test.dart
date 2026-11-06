@@ -93,6 +93,52 @@ void main() {
     );
   });
 
+  test(
+    'suspend goes through the backend when it can, so Auth is disabled',
+    () async {
+      final calls = <(String, bool, String?)>[];
+      final viaBackend = AdminUserActions(
+        backend: backend,
+        adminUid: 'admin',
+        accountDisabler: (uid, {required disabled, reason}) async {
+          calls.add((uid, disabled, reason));
+          return true;
+        },
+      );
+
+      final r = await viaBackend.setSuspended(
+        'u1',
+        suspended: true,
+        reason: 'spam',
+      );
+
+      expect(calls, [('u1', true, 'spam')]);
+      expect(r.authUpdated, isTrue);
+      // The backend wrote the flags and audit entry; nothing local.
+      expect(backend.commits, isEmpty);
+
+      await viaBackend.setSuspended('u1', suspended: false);
+      expect(calls.last, ('u1', false, null));
+    },
+  );
+
+  test(
+    'suspend falls back to the Firestore flag when the backend fails',
+    () async {
+      final fallback = AdminUserActions(
+        backend: backend,
+        adminUid: 'admin',
+        accountDisabler: (uid, {required disabled, reason}) async => false,
+      );
+
+      final r = await fallback.setSuspended('u1', suspended: true);
+
+      expect(r.authUpdated, isFalse);
+      expect(backend.docs['users/u1']!['suspended'], isTrue);
+      expectAudit('user.suspend');
+    },
+  );
+
   test('reset phone claim, optionally clearing the profile', () async {
     backend.docs['phoneClaims/+201000000001'] = {'uid': 'u1'};
     await actions.resetPhoneClaim(
