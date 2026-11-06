@@ -139,6 +139,22 @@ void main() {
     }
   });
 
+  test('web: init never touches the sink and every event is a no-op', () async {
+    final web = AnalyticsService.withSink(sink);
+    await web.init(isWeb: true);
+    expect(web.enabled, isFalse);
+    expect(
+      sink.collection,
+      isNull,
+    ); // setAnalyticsCollectionEnabled never called
+    expect(sink.consentDenied, isFalse);
+    web.widgetOpened();
+    web.setIsPro(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(sink.events, isEmpty);
+    expect(sink.props, isEmpty);
+  });
+
   test('sink errors are swallowed', () {
     final bad = _ThrowingSink();
     final b = AnalyticsService.withSink(bad);

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 /// Where analytics events go. The real one wraps Firebase Analytics; tests
@@ -81,20 +80,16 @@ class AnalyticsService {
   bool get enabled => _enabled;
   final Map<String, String> _lastUserProps = {};
 
-  /// Call once after Firebase.initializeApp. Enabled in release builds only,
-  /// and on web only when a GA measurement id is configured.
-  Future<void> init() async {
-    if (kDebugMode) {
+  /// Call once after Firebase.initializeApp. Enabled in release builds on
+  /// mobile only. On web analytics is always off: Firebase JS would send an
+  /// automatic page_view with the full URL, and guest links carry billId, p
+  /// and uid query parameters. Nothing is called on the sink on web.
+  Future<void> init({@visibleForTesting bool isWeb = kIsWeb}) async {
+    if (isWeb) {
       _enabled = false;
-    } else if (kIsWeb) {
-      String? measurementId;
-      try {
-        measurementId = Firebase.app().options.measurementId;
-      } catch (_) {}
-      _enabled = measurementId != null && measurementId.isNotEmpty;
-    } else {
-      _enabled = true;
+      return;
     }
+    _enabled = !kDebugMode;
     try {
       await _sink.setCollectionEnabled(_enabled);
       if (_enabled) await _sink.setConsentDenyingAds();

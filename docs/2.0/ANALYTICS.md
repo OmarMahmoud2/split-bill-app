@@ -9,7 +9,7 @@ Package: `firebase_analytics 12.6.1` (with `firebase_core 4.15.2`). Wrapper: `li
 - Numbers are bucketed (items 1-5/6-10/11+, people 2/3-4/5+, payments 1/2-3/4-6/7+).
 - Consent: `analytics_storage` granted; `ad_storage`, `ad_user_data`, `ad_personalization` denied (set at runtime and as native defaults in Info.plist and AndroidManifest).
 - No advertising ID: `GOOGLE_ANALYTICS_ADID_COLLECTION_ENABLED=false` (iOS) and `google_analytics_adid_collection_enabled=false` (Android). The IDFV is not disabled; it is the vendor id, not the IDFA, and is what the iOS SDK uses for the app-instance id. No AdSupport linkage is added by this change.
-- Collection is on in release builds only (off in debug and tests). On web it is on only when a GA measurement id is configured (`FIREBASE_WEB_MEASUREMENT_ID` / `_webMeasurementId`); with an empty id it is a no-op.
+- Collection is on in release builds only (off in debug and tests). On web analytics is disabled, always, whatever measurement id is configured: `AnalyticsService` is a no-op on web and never calls `setAnalyticsCollectionEnabled(true)`. Firebase JS would send an automatic `page_view` with the full URL, and guest links carry `billId`, `p` and `uid` query parameters.
 - No automatic screen tracking and no NavigatorObserver. Manual `screen_view` for the four main tabs only.
 - Firebase's automatic events (first_open, session_start, app_update, etc.) remain on.
 - Not covered here: Google Mobile Ads (rewarded ads) and the ATT prompt are separate and keep their own behaviour.
@@ -53,7 +53,7 @@ Booleans are sent as the strings "true"/"false".
 - iOS: `ios/Runner/GoogleService-Info.plist` currently has `IS_ANALYTICS_ENABLED = false` (it is gitignored). Enable Google Analytics for the Firebase project, re-download the plist, and confirm it is `true`; otherwise iOS sends nothing.
 - Android: `android/app/google-services.json` has no `analytics_service` entry; re-download it after enabling Analytics.
 - iOS: run `pod install` (new pod FirebaseAnalytics) before the next native build.
-- Web: set the measurement id dart-define to enable web analytics.
+- Web: nothing to do. Web analytics is disabled in code; do not add a web measurement id expecting it to turn on.
 
 ## Store disclosures this implies
 
