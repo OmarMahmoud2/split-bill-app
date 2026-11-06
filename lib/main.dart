@@ -23,6 +23,7 @@ import 'services/notification_payload.dart';
 import 'services/guest_session.dart';
 import 'services/web_translations_loader.dart';
 import 'services/notification_service.dart';
+import 'services/analytics_service.dart';
 import 'services/home_widget_service.dart';
 import 'services/home_widget_data.dart' show WidgetLaunchDeduper;
 import 'scan_receipt_screen.dart';
@@ -107,6 +108,7 @@ Future<Object?> _initializeFirebase() async {
       await Firebase.initializeApp();
     }
     debugPrint("✅ App Launch: Firebase Initialized");
+    unawaited(AnalyticsService.instance.init());
     return null;
   } catch (e) {
     debugPrint("❌ App Launch: Firebase Error: $e");
