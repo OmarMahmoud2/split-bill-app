@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
 
@@ -116,6 +117,7 @@ class _SearchableSelectionSheetState<T>
                     suffixIcon: _query.isEmpty
                         ? null
                         : IconButton(
+                            tooltip: 'bf_bills_clear_search'.tr(),
                             onPressed: () {
                               _searchController.clear();
                               setState(() => _query = '');
