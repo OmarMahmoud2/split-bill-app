@@ -208,19 +208,24 @@ int? parseMoneyInput(String text, String currency) {
 
 // -------------------------------------------------------------------- display
 
-/// "14%" for a charge as a share of the items subtotal, "—" when there is
-/// none. Falls back to the amount when the subtotal is zero.
+/// "14%" for a charge as a share of the items subtotal (pass [serviceMinor]
+/// for the tax), "—" when there is none. Falls back to the amount when the subtotal is zero.
 String chargePercentLabel(
   int chargeMinor,
   int subtotalMinor,
   String currency, {
   String? locale,
+  int serviceMinor = 0,
 }) {
   if (chargeMinor == 0) return '—';
   if (subtotalMinor <= 0) {
     return formatMoneyMinor(chargeMinor, currency, locale: locale);
   }
-  final pct = chargeMinor * 100 / subtotalMinor;
+  var pct = chargeMinor * 100 / subtotalMinor;
+  // VAT charged on items plus service (Egypt, the Gulf): show that whole rate.
+  bool whole(double v) => (v * 10).round() % 10 == 0;
+  final withService = chargeMinor * 100 / (subtotalMinor + serviceMinor);
+  if (serviceMinor > 0 && !whole(pct) && whole(withService)) pct = withService;
   return '${NumberFormat('#,##0.#', locale).format(pct)}%';
 }
 

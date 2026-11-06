@@ -475,11 +475,12 @@ class _EditBillScreenState extends State<EditBillScreen> {
     final paidBy = hostIsMe
         ? 'bf_edit_history_you'.tr()
         : _c.nameOf(_c.hostUid);
-    String pct(int v) => chargePercentLabel(
+    String pct(int v, {int serviceMinor = 0}) => chargePercentLabel(
       v,
       draft.itemsSubtotalMinor,
       draft.currency,
       locale: locale,
+      serviceMinor: serviceMinor,
     );
 
     return ListView(
@@ -550,7 +551,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
             _SummaryRow(
               label: 'bf_edit_row_charges'.tr(),
               value:
-                  '${pct(draft.taxMinor)} · ${pct(draft.serviceMinor)} · '
+                  '${pct(draft.taxMinor, serviceMinor: draft.serviceMinor)} · ${pct(draft.serviceMinor)} · '
                   '${pct(draft.tipMinor)}',
               onTap: _openCharges,
             ),

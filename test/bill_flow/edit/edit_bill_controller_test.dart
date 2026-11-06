@@ -171,6 +171,18 @@ void main() {
       expect(chargePercentLabel(1400, 10000, 'USD', locale: 'en'), '14%');
       expect(chargePercentLabel(1250, 10000, 'USD', locale: 'en'), '12.5%');
       expect(chargePercentLabel(0, 10000, 'USD'), '—');
+      // Egypt: 14% VAT on items 1115.00 plus 12% service 133.80.
+      expect(
+        chargePercentLabel(
+          17483,
+          111500,
+          'EGP',
+          locale: 'en',
+          serviceMinor: 13380,
+        ),
+        '14%',
+      );
+      expect(chargePercentLabel(13380, 111500, 'EGP', locale: 'en'), '12%');
       expect(chargePercentLabel(500, 0, 'USD', locale: 'en'), r'$5.00');
     });
   });

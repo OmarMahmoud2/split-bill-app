@@ -183,7 +183,12 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
     }
     final pct = value == null || value == 0
         ? null
-        : chargePercentLabel(value, widget.subtotalMinor, widget.currency);
+        : chargePercentLabel(
+            value,
+            widget.subtotalMinor,
+            widget.currency,
+            serviceMinor: c == _Charge.tax ? (_value(_Charge.service) ?? 0) : 0,
+          );
     return TextField(
       controller: _controllers[c],
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
