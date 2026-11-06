@@ -2135,5 +2135,8 @@
   "bf_bill_marked_unpaid_payment_kept": "{name} ödenmedi olarak işaretlendi. Kaydedilen ödeme grup defterinde kalır.",
   "account_suspended_title": "Hesap askıya alındı",
   "account_suspended_message": "Bu hesap askıya alındı. Bunun bir hata olduğunu düşünüyorsanız {email} adresiyle iletişime geçin.",
-  "bf_summary_saved_offline": "Çevrimdışısınız. Hesap bu telefona kaydedildi ve tekrar çevrimiçi olduğunuzda eşitlenecek."
+  "bf_summary_saved_offline": "Çevrimdışısınız. Hesap bu telefona kaydedildi ve tekrar çevrimiçi olduğunuzda eşitlenecek.",
+  "pw_out_voice_title": "Ücretsiz sesli komutların bitti",
+  "pw_out_voice_body": "Bir sesli komut {points} puan harcar. Ürünleri dokunarak atamaya ücretsiz ve sınırsız devam edebilirsin.",
+  "pw_out_voice_tap": "Bunun yerine dokunarak ata"
 }

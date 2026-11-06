@@ -2135,5 +2135,8 @@
   "bf_bill_marked_unpaid_payment_kept": "{name} är markerad som obetald. Den registrerade betalningen finns kvar i gruppens bok.",
   "account_suspended_title": "Kontot är avstängt",
   "account_suspended_message": "Det här kontot har stängts av. Om du tror att det är ett misstag, kontakta {email}.",
-  "bf_summary_saved_offline": "Du är offline. Notan är sparad på den här telefonen och synkas när du är online igen."
+  "bf_summary_saved_offline": "Du är offline. Notan är sparad på den här telefonen och synkas när du är online igen.",
+  "pw_out_voice_title": "Dina gratis röstkommandon är slut",
+  "pw_out_voice_body": "Ett röstkommando kostar {points} poäng. Du kan fortfarande tilldela varor genom att trycka, gratis och obegränsat.",
+  "pw_out_voice_tap": "Tilldela genom att trycka istället"
 }

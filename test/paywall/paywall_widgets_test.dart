@@ -169,6 +169,27 @@ void main() {
     expect(typed, isTrue);
   });
 
+  testWidgets('out-of-points sheet words voice differently from scans', (
+    tester,
+  ) async {
+    await _mount(
+      tester,
+      Scaffold(
+        body: NoPointsDialog(
+          requiredPoints: 2,
+          feature: NoPointsFeature.voice,
+          onWatchAd: () async {},
+          loadPlans: () async => PaywallPlan.previews,
+        ),
+      ),
+    );
+    expect(find.text("You're out of free scans"), findsNothing);
+    expect(find.text("You're out of free voice commands"), findsOneWidget);
+    expect(_textContaining('A voice command uses 2 points'), findsOneWidget);
+    expect(find.text('Assign by tapping instead'), findsOneWidget);
+    expect(find.text('Watch a short ad for points'), findsOneWidget);
+  });
+
   testWidgets('ad explainer is optional', (tester) async {
     await _mount(
       tester,

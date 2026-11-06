@@ -544,6 +544,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
           context,
           requiredPoints: FeatureCosts.voiceCommandPoints,
           onWatchAd: _watchAdForPoint,
+          feature: NoPointsFeature.voice,
         );
       }
       return false;
@@ -564,8 +565,15 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
     if (!RewardedAdHelper.isReady) {
       AppToast.show(
         context,
-        message: 'ad_is_still_loading_please_try_again_in_a_moment'.tr(),
+        message: 'fetching_an_ad_please_try_again_in_a_moment'.tr(),
+        type: AppToastType.info,
       );
+      try {
+        // Same as the scanner: start the load so the next tap can show it.
+        await RewardedAdHelper.loadAd();
+      } catch (e) {
+        debugPrint('Ad failed to initialize: $e');
+      }
       return;
     }
     await RewardedAdHelper.showAdAndReward(

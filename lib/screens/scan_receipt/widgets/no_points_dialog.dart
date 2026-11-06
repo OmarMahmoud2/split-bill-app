@@ -7,7 +7,10 @@ import 'package:split_bill_app/widgets/paywall/paywall_plans.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/widgets/premium_modal.dart';
 
-/// "Out of free scans" sheet: Go Pro, watch a short ad for points, or type
+/// Which feature ran out of points; picks the wording.
+enum NoPointsFeature { scan, voice }
+
+/// "Out of free scans" (or voice commands) sheet: Go Pro, watch a short ad for points, or type
 /// the bill in by hand (always free).
 class NoPointsDialog extends StatefulWidget {
   const NoPointsDialog({
@@ -16,7 +19,10 @@ class NoPointsDialog extends StatefulWidget {
     required this.requiredPoints,
     this.onTypeItIn,
     this.loadPlans,
+    this.feature = NoPointsFeature.scan,
   });
+
+  final NoPointsFeature feature;
 
   final Future<void> Function() onWatchAd;
   final int requiredPoints;
@@ -33,6 +39,7 @@ class NoPointsDialog extends StatefulWidget {
     required int requiredPoints,
     required Future<void> Function() onWatchAd,
     VoidCallback? onTypeItIn,
+    NoPointsFeature feature = NoPointsFeature.scan,
   }) {
     return PremiumBottomSheet.show(
       context: context,
@@ -41,6 +48,7 @@ class NoPointsDialog extends StatefulWidget {
         requiredPoints: requiredPoints,
         onWatchAd: onWatchAd,
         onTypeItIn: onTypeItIn,
+        feature: feature,
       ),
     );
   }
@@ -79,6 +87,7 @@ class _NoPointsDialogState extends State<NoPointsDialog> {
     // The navigator's own context outlives this sheet, so follow-up
     // routes can open from it after the sheet closes.
     final hostContext = navigator.context;
+    final voice = widget.feature == NoPointsFeature.voice;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -87,13 +96,13 @@ class _NoPointsDialogState extends State<NoPointsDialog> {
         Semantics(
           header: true,
           child: Text(
-            'pw_out_title'.tr(),
+            (voice ? 'pw_out_voice_title' : 'pw_out_title').tr(),
             style: AppTypography.headlineLarge.copyWith(color: p.textPrimary),
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'pw_out_body'.tr(
+          (voice ? 'pw_out_voice_body' : 'pw_out_body').tr(
             namedArgs: {'points': widget.requiredPoints.toString()},
           ),
           style: AppTypography.bodyLarge.copyWith(
@@ -144,7 +153,7 @@ class _NoPointsDialogState extends State<NoPointsDialog> {
             foregroundColor: p.textPrimary,
             minimumSize: const Size.fromHeight(54),
           ),
-          child: Text('pw_out_type_it'.tr()),
+          child: Text((voice ? 'pw_out_voice_tap' : 'pw_out_type_it').tr()),
         ),
       ],
     );

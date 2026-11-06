@@ -2135,5 +2135,8 @@
   "bf_bill_marked_unpaid_payment_kept": "{name} er markeret som ubetalt. Den registrerede betaling bliver i gruppens regnskab.",
   "account_suspended_title": "Konto suspenderet",
   "account_suspended_message": "Denne konto er blevet suspenderet. Hvis du mener, det er en fejl, så kontakt {email}.",
-  "bf_summary_saved_offline": "Du er offline. Regningen er gemt på din telefon og synkroniseres, når du er online igen."
+  "bf_summary_saved_offline": "Du er offline. Regningen er gemt på din telefon og synkroniseres, når du er online igen.",
+  "pw_out_voice_title": "Du har ikke flere gratis stemmekommandoer",
+  "pw_out_voice_body": "En stemmekommando koster {points} point. Du kan stadig fordele varer ved at trykke, gratis og ubegrænset.",
+  "pw_out_voice_tap": "Fordel ved at trykke i stedet"
 }

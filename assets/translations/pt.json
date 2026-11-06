@@ -2135,5 +2135,8 @@
   "bf_bill_marked_unpaid_payment_kept": "{name} marcado como em aberto. O pagamento registrado continua no livro do grupo.",
   "account_suspended_title": "Conta suspensa",
   "account_suspended_message": "Esta conta foi suspensa. Se acha que é um engano, entre em contato com {email}.",
-  "bf_summary_saved_offline": "Você está offline. A conta foi salva neste celular e sincroniza quando a conexão voltar."
+  "bf_summary_saved_offline": "Você está offline. A conta foi salva neste celular e sincroniza quando a conexão voltar.",
+  "pw_out_voice_title": "Seus comandos de voz grátis acabaram",
+  "pw_out_voice_body": "Um comando de voz usa {points} pontos. Você ainda pode atribuir os itens tocando, grátis e sem limite.",
+  "pw_out_voice_tap": "Atribuir tocando"
 }

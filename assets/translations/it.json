@@ -2135,5 +2135,8 @@
   "bf_bill_marked_unpaid_payment_kept": "{name} segnato come non pagato. Il pagamento registrato resta nel registro del gruppo.",
   "account_suspended_title": "Account sospeso",
   "account_suspended_message": "Questo account è stato sospeso. Se pensi sia un errore, scrivi a {email}.",
-  "bf_summary_saved_offline": "Sei offline. Il conto è salvato su questo telefono e si sincronizzerà quando torni online."
+  "bf_summary_saved_offline": "Sei offline. Il conto è salvato su questo telefono e si sincronizzerà quando torni online.",
+  "pw_out_voice_title": "Hai finito i comandi vocali gratuiti",
+  "pw_out_voice_body": "Un comando vocale usa {points} punti. Puoi sempre assegnare le voci toccando, gratis e senza limiti.",
+  "pw_out_voice_tap": "Assegna toccando invece"
 }

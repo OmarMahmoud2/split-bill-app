@@ -2135,5 +2135,8 @@
   "bf_bill_marked_unpaid_payment_kept": "{name}さんを未払いにしました。記録済みの支払いはグループの台帳に残ります。",
   "account_suspended_title": "アカウントは停止されています",
   "account_suspended_message": "このアカウントは停止されています。誤りだと思われる場合は {email} までご連絡ください。",
-  "bf_summary_saved_offline": "オフラインです。会計はこの端末に保存され、オンラインに戻ると同期されます。"
+  "bf_summary_saved_offline": "オフラインです。会計はこの端末に保存され、オンラインに戻ると同期されます。",
+  "pw_out_voice_title": "無料の音声コマンドを使い切りました",
+  "pw_out_voice_body": "音声コマンドは1回{points}ポイントです。タップでの割り当ては引き続き無料・無制限で使えます。",
+  "pw_out_voice_tap": "代わりにタップで割り当てる"
 }

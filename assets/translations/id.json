@@ -2135,5 +2135,8 @@
   "bf_bill_marked_unpaid_payment_kept": "{name} ditandai belum dibayar. Pembayaran yang tercatat tetap ada di buku besar grup.",
   "account_suspended_title": "Akun ditangguhkan",
   "account_suspended_message": "Akun ini telah ditangguhkan. Jika menurutmu ini kesalahan, hubungi {email}.",
-  "bf_summary_saved_offline": "Kamu sedang offline. Tagihan tersimpan di ponsel ini dan akan disinkronkan saat kembali online."
+  "bf_summary_saved_offline": "Kamu sedang offline. Tagihan tersimpan di ponsel ini dan akan disinkronkan saat kembali online.",
+  "pw_out_voice_title": "Perintah suara gratismu habis",
+  "pw_out_voice_body": "Satu perintah suara memakai {points} poin. Kamu tetap bisa menetapkan item dengan mengetuk, gratis dan tanpa batas.",
+  "pw_out_voice_tap": "Tetapkan dengan mengetuk saja"
 }
