@@ -153,6 +153,12 @@ void main() {
       expect(repo.recorded.single.method, 'cash');
       expect(find.byType(SuccessScreen), findsOneWidget);
       expect(find.text('settle_everyone_square'), findsOneWidget);
+      // Always a way out, with share and archive as optional extras.
+      expect(find.text('done'), findsOneWidget);
+      expect(find.text('settle_share_recap'), findsOneWidget);
+      await tester.tap(find.text('done'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SuccessScreen), findsNothing);
     });
 
     testWidgets('shows fewest payments vs the naive count', (tester) async {

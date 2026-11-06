@@ -8,9 +8,6 @@ import 'package:split_bill_app/theme/app_spacing.dart';
 import 'package:split_bill_app/theme/app_typography.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
 
-// TODO(v3-screens): adopt this reusable SuccessScreen in the bill flow and
-// retire lib/success_screen.dart (the old Lottie version, kept for now).
-
 /// Full-screen v3 success moment.
 ///
 /// A check draws and scales in, the amount counts up (or rolls from
@@ -45,6 +42,8 @@ class SuccessScreen extends StatefulWidget {
     this.amountTone = MoneyTone.neutral,
     this.secondaryLabel,
     this.onSecondary,
+    this.tertiaryLabel,
+    this.onTertiary,
     this.celebrate = false,
     this.haptic = true,
     this.showCheck = true,
@@ -65,13 +64,15 @@ class SuccessScreen extends StatefulWidget {
     MoneyTone amountTone = MoneyTone.neutral,
     String? secondaryLabel,
     VoidCallback? onSecondary,
+    String? tertiaryLabel,
+    VoidCallback? onTertiary,
     bool celebrate = false,
     bool haptic = true,
   }) {
     return Navigator.of(context).push<T>(
       PageRouteBuilder<T>(
-        transitionDuration: AppMotion.slow,
-        reverseTransitionDuration: AppMotion.medium,
+        transitionDuration: AppMotion.durationFor(context, AppMotion.slow),
+        reverseTransitionDuration: AppMotion.durationFor(context, AppMotion.medium),
         pageBuilder: (_, _, _) => SuccessScreen(
           title: title,
           primaryLabel: primaryLabel,
@@ -85,6 +86,8 @@ class SuccessScreen extends StatefulWidget {
           amountTone: amountTone,
           secondaryLabel: secondaryLabel,
           onSecondary: onSecondary,
+          tertiaryLabel: tertiaryLabel,
+          onTertiary: onTertiary,
           celebrate: celebrate,
           haptic: haptic,
         ),
@@ -113,6 +116,10 @@ class SuccessScreen extends StatefulWidget {
   final VoidCallback onPrimary;
   final String? secondaryLabel;
   final VoidCallback? onSecondary;
+
+  /// Optional third, quietest action (e.g. "Archive group").
+  final String? tertiaryLabel;
+  final VoidCallback? onTertiary;
 
   /// Quiet one-shot confetti. Only for whole-group-settled moments.
   final bool celebrate;
@@ -342,6 +349,17 @@ class _SuccessScreenState extends State<SuccessScreen>
                             child: Text(widget.secondaryLabel!),
                           ),
                         ],
+                        if (widget.tertiaryLabel != null &&
+                            widget.onTertiary != null)
+                          TextButton(
+                            onPressed: widget.onTertiary,
+                            style: TextButton.styleFrom(
+                              foregroundColor: p.textSecondary,
+                              minimumSize: const Size(0, AppSpacing.buttonLg),
+                              textStyle: AppTypography.labelLarge,
+                            ),
+                            child: Text(widget.tertiaryLabel!),
+                          ),
                       ],
                     ),
                   ),

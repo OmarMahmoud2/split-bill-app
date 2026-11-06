@@ -79,8 +79,10 @@ Future<bool> recordPaymentWithFeedback(
       amountSign: MoneySign.always,
       amountTone: MoneyTone.auto,
       celebrate: true,
-      primaryLabel: 'settle_share_recap'.tr(),
-      onPrimary: () {
+      primaryLabel: 'done'.tr(),
+      onPrimary: nav.pop,
+      secondaryLabel: 'settle_share_recap'.tr(),
+      onSecondary: () {
         SharePlus.instance.share(
           ShareParams(
             text: 'settle_recap_share_text'.tr(
@@ -93,11 +95,13 @@ Future<bool> recordPaymentWithFeedback(
           ),
         );
       },
-      secondaryLabel: onArchive == null ? 'done'.tr() : 'settle_archive_group'.tr(),
-      onSecondary: () {
-        nav.pop();
-        onArchive?.call();
-      },
+      tertiaryLabel: onArchive == null ? null : 'settle_archive_group'.tr(),
+      onTertiary: onArchive == null
+          ? null
+          : () {
+              nav.pop();
+              onArchive.call();
+            },
     );
     return true;
   }
