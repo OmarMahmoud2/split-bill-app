@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Ein Sprachbefehl kostet {points} Punkte. Du kannst Positionen weiterhin per Tippen zuweisen, kostenlos und unbegrenzt.",
   "pw_out_voice_tap": "Stattdessen per Tippen zuweisen",
   "update_version_available": "Version {version} ist jetzt verfügbar.",
-  "update_new_version_available": "Eine neue Version ist jetzt verfügbar."
+  "update_new_version_available": "Eine neue Version ist jetzt verfügbar.",
+  "startup_error_title": "Evens konnte nicht gestartet werden",
+  "startup_error_message": "Prüfe deine Verbindung und versuche es erneut. Wenn es weiterhin auftritt, wende dich an den Support."
 }

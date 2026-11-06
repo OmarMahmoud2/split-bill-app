@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "A voice command uses {points} points. You can still assign items by tapping, free and unlimited.",
   "pw_out_voice_tap": "Assign by tapping instead",
   "update_version_available": "Version {version} is now available.",
-  "update_new_version_available": "A new version is now available."
+  "update_new_version_available": "A new version is now available.",
+  "startup_error_title": "We could not start Evens",
+  "startup_error_message": "Check your connection, then try again. If this keeps happening, contact support."
 }

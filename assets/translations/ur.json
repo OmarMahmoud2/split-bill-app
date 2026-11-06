@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "ایک وائس کمانڈ میں {points} پوائنٹس لگتے ہیں۔ آپ ٹیپ کر کے آئٹمز تفویض کر سکتے ہیں، مفت اور لامحدود۔",
   "pw_out_voice_tap": "اس کے بجائے ٹیپ کر کے تفویض کریں",
   "update_version_available": "ورژن {version} اب دستیاب ہے۔",
-  "update_new_version_available": "نیا ورژن اب دستیاب ہے۔"
+  "update_new_version_available": "نیا ورژن اب دستیاب ہے۔",
+  "startup_error_title": "ہم Evens شروع نہیں کر سکے",
+  "startup_error_message": "اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔ اگر یہ بار بار ہو تو سپورٹ سے رابطہ کریں۔"
 }

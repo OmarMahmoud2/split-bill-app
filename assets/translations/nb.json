@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "En talekommando koster {points} poeng. Du kan fortsatt fordele varer ved å trykke, gratis og ubegrenset.",
   "pw_out_voice_tap": "Fordel ved å trykke i stedet",
   "update_version_available": "Versjon {version} er nå tilgjengelig.",
-  "update_new_version_available": "En ny versjon er nå tilgjengelig."
+  "update_new_version_available": "En ny versjon er nå tilgjengelig.",
+  "startup_error_title": "Vi kunne ikke starte Evens",
+  "startup_error_message": "Sjekk tilkoblingen og prøv igjen. Hvis det fortsetter, kontakt support."
 }

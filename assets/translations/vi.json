@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Một lệnh giọng nói dùng {points} điểm. Bạn vẫn có thể gán món bằng cách chạm, miễn phí và không giới hạn.",
   "pw_out_voice_tap": "Gán bằng cách chạm",
   "update_version_available": "Phiên bản {version} đã sẵn sàng.",
-  "update_new_version_available": "Đã có phiên bản mới."
+  "update_new_version_available": "Đã có phiên bản mới.",
+  "startup_error_title": "Không thể khởi động Evens",
+  "startup_error_message": "Hãy kiểm tra kết nối rồi thử lại. Nếu vẫn lỗi, hãy liên hệ hỗ trợ."
 }

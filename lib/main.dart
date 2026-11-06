@@ -28,6 +28,8 @@ import 'services/home_widget_data.dart' show WidgetLaunchDeduper;
 import 'scan_receipt_screen.dart';
 import 'utils/app_theme.dart';
 import 'theme/app_typography.dart';
+import 'theme/app_palette.dart';
+import 'config/app_links.dart' as links;
 import 'theme/font_licenses.dart';
 import 'auth_wrapper.dart';
 import 'services/bill_link_routing.dart';
@@ -52,25 +54,7 @@ Future<void> main() async {
   registerFontLicenses();
   debugPrint("🚀 App Launch: Widgets Initialized");
 
-  Object? firebaseInitializationError;
-
-  try {
-    final firebaseOptions = DefaultFirebaseOptions.currentPlatformOrNull;
-
-    if (firebaseOptions != null) {
-      await Firebase.initializeApp(options: firebaseOptions);
-    } else if (kIsWeb) {
-      throw StateError(
-        'Firebase web options are missing. Build with FIREBASE_WEB_* dart-defines.',
-      );
-    } else {
-      await Firebase.initializeApp();
-    }
-    debugPrint("✅ App Launch: Firebase Initialized");
-  } catch (e) {
-    debugPrint("❌ App Launch: Firebase Error: $e");
-    firebaseInitializationError = e;
-  }
+  final firebaseInitializationError = await _initializeFirebase();
 
   // Initialize notifications without awaiting (non-blocking).
   if (!kIsWeb) {
@@ -105,86 +89,197 @@ Future<void> main() async {
   if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
 
   debugPrint("🚀 App Launch: Calling runApp()");
-  runApp(
-    EasyLocalization(
-      supportedLocales: supportedLocaleOptions
-          .map((option) => option.locale)
-          .toList(),
-      path: 'assets/translations',
-      assetLoader: const VersionedTranslationsLoader(),
-      fallbackLocale: const Locale('en'),
-      useOnlyLangCode: true,
-      child: firebaseInitializationError == null
-          ? MultiProvider(
-              providers: [
-                ChangeNotifierProvider(
-                  create: (_) => AppSettingsProvider()..initialize(),
-                ),
-              ],
-              child: const MyApp(),
-            )
-          : FirebaseStartupErrorApp(error: firebaseInitializationError),
-    ),
+  runApp(_buildRoot(firebaseInitializationError));
+}
+
+/// Initializes Firebase; returns the error, or null on success.
+Future<Object?> _initializeFirebase() async {
+  try {
+    final firebaseOptions = DefaultFirebaseOptions.currentPlatformOrNull;
+
+    if (firebaseOptions != null) {
+      await Firebase.initializeApp(options: firebaseOptions);
+    } else if (kIsWeb) {
+      throw StateError(
+        'Firebase web options are missing. Build with FIREBASE_WEB_* dart-defines.',
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+    debugPrint("✅ App Launch: Firebase Initialized");
+    return null;
+  } catch (e) {
+    debugPrint("❌ App Launch: Firebase Error: $e");
+    return e;
+  }
+}
+
+Widget _buildRoot(Object? firebaseInitializationError) {
+  return EasyLocalization(
+    supportedLocales: supportedLocaleOptions
+        .map((option) => option.locale)
+        .toList(),
+    path: 'assets/translations',
+    assetLoader: const VersionedTranslationsLoader(),
+    fallbackLocale: const Locale('en'),
+    useOnlyLangCode: true,
+    child: firebaseInitializationError == null
+        ? MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (_) => AppSettingsProvider()..initialize(),
+              ),
+            ],
+            child: const MyApp(),
+          )
+        : FirebaseStartupErrorApp(
+            error: firebaseInitializationError,
+            onRetry: _retryStartup,
+          ),
   );
 }
 
-class FirebaseStartupErrorApp extends StatelessWidget {
-  const FirebaseStartupErrorApp({super.key, required this.error});
+/// Re-runs Firebase init from the startup error screen. On success the real
+/// app replaces it; otherwise the error screen stays (returns the new error).
+Future<Object?> _retryStartup() async {
+  final error = await _initializeFirebase();
+  if (error == null) {
+    if (!kIsWeb) unawaited(NotificationService().init());
+    runApp(_buildRoot(null));
+  }
+  return error;
+}
+
+/// Shown when Firebase fails to start. Translated when the translations are
+/// loaded by then (EasyLocalization is above it); plain English otherwise.
+class FirebaseStartupErrorApp extends StatefulWidget {
+  const FirebaseStartupErrorApp({super.key, required this.error, this.onRetry});
 
   final Object error;
 
+  /// Re-runs initialization; returns the new error, or null when it worked
+  /// (the caller then replaces this screen with the app).
+  final Future<Object?> Function()? onRetry;
+
+  @override
+  State<FirebaseStartupErrorApp> createState() =>
+      _FirebaseStartupErrorAppState();
+}
+
+class _FirebaseStartupErrorAppState extends State<FirebaseStartupErrorApp> {
+  late Object _error = widget.error;
+  bool _retrying = false;
+
+  /// `key.tr()`, or [english] when the translations are not loaded (tr()
+  /// returns the key itself then).
+  String _t(String key, String english, {Map<String, String>? args}) {
+    final text = key.tr(namedArgs: args);
+    return text == key ? english : text;
+  }
+
+  Future<void> _retry() async {
+    if (_retrying || widget.onRetry == null) return;
+    setState(() => _retrying = true);
+    final error = await widget.onRetry!();
+    if (!mounted) return;
+    setState(() {
+      _retrying = false;
+      if (error != null) _error = error;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final easy = EasyLocalization.of(context);
     return MaterialApp(
       title: 'Evens',
       debugShowCheckedModeBanner: false,
+      locale: easy?.locale,
+      supportedLocales: easy?.supportedLocales ?? const [Locale('en')],
+      localizationsDelegates: easy?.delegates,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.cloud_off_rounded,
-                      size: 48,
-                      color: Theme.of(context).colorScheme.error,
+      home: Builder(
+        builder: (context) {
+          final p = context.palette;
+          final email = links.AppLinks.supportEmail;
+          return Scaffold(
+            backgroundColor: p.background,
+            body: SafeArea(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.cloud_off_rounded, size: 48, color: p.error),
+                        const SizedBox(height: 20),
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            _t(
+                              'startup_error_title',
+                              'We could not start Evens',
+                            ),
+                            textAlign: TextAlign.center,
+                            style: AppTypography.headlineMedium.copyWith(
+                              color: p.textPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          _t(
+                            'startup_error_message',
+                            'Check your connection, then try again. If this keeps happening, contact support.',
+                          ),
+                          textAlign: TextAlign.center,
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: p.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SelectableText(
+                          email,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.labelLarge.copyWith(
+                            color: p.textPrimary,
+                          ),
+                        ),
+                        if (widget.onRetry != null) ...[
+                          const SizedBox(height: 24),
+                          FilledButton(
+                            onPressed: _retrying ? null : _retry,
+                            child: _retrying
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(_t('feedback_try_again', 'Try again')),
+                          ),
+                        ],
+                        if (kDebugMode) ...[
+                          const SizedBox(height: 16),
+                          SelectableText(
+                            _error.toString(),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'We could not start Evens',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      kIsWeb
-                          ? 'Please refresh the page. If this keeps happening, contact support.'
-                          : 'Check your connection, then close and reopen the app. If this keeps happening, contact support.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    if (kDebugMode) ...[
-                      const SizedBox(height: 16),
-                      SelectableText(
-                        error.toString(),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -369,8 +464,7 @@ class _MyAppState extends State<MyApp> {
           uid: user.uid,
           personalId: uid,
         );
-        final billName =
-            (data?['storeName'] as String?) ?? 'bill'.tr();
+        final billName = (data?['storeName'] as String?) ?? 'bill'.tr();
         switch (target) {
           case BillLinkTarget.host:
             navigatorKey.currentState?.push(
@@ -417,8 +511,10 @@ class _MyAppState extends State<MyApp> {
   void _openGuestEntry(String billId, String? participantId) {
     navigatorKey.currentState?.push(
       MaterialPageRoute(
-        builder: (context) =>
-            GuestBillScreen(billId: billId, initialParticipantId: participantId),
+        builder: (context) => GuestBillScreen(
+          billId: billId,
+          initialParticipantId: participantId,
+        ),
       ),
     );
   }

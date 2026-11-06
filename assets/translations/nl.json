@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Een spraakopdracht kost {points} punten. Je kunt items nog steeds toewijzen door te tikken, gratis en onbeperkt.",
   "pw_out_voice_tap": "Wijs in plaats daarvan toe door te tikken",
   "update_version_available": "Versie {version} is nu beschikbaar.",
-  "update_new_version_available": "Er is een nieuwe versie beschikbaar."
+  "update_new_version_available": "Er is een nieuwe versie beschikbaar.",
+  "startup_error_title": "We konden Evens niet starten",
+  "startup_error_message": "Controleer je verbinding en probeer het opnieuw. Blijft het gebeuren, neem dan contact op met support."
 }

@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Ett röstkommando kostar {points} poäng. Du kan fortfarande tilldela varor genom att trycka, gratis och obegränsat.",
   "pw_out_voice_tap": "Tilldela genom att trycka istället",
   "update_version_available": "Version {version} är nu tillgänglig.",
-  "update_new_version_available": "En ny version är nu tillgänglig."
+  "update_new_version_available": "En ny version är nu tillgänglig.",
+  "startup_error_title": "Vi kunde inte starta Evens",
+  "startup_error_message": "Kontrollera anslutningen och försök igen. Om det fortsätter, kontakta supporten."
 }

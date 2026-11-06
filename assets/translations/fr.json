@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Une commande vocale utilise {points} points. Vous pouvez toujours attribuer les articles en touchant, gratuit et illimité.",
   "pw_out_voice_tap": "Attribuer en touchant à la place",
   "update_version_available": "La version {version} est maintenant disponible.",
-  "update_new_version_available": "Une nouvelle version est maintenant disponible."
+  "update_new_version_available": "Une nouvelle version est maintenant disponible.",
+  "startup_error_title": "Impossible de démarrer Evens",
+  "startup_error_message": "Vérifiez votre connexion, puis réessayez. Si le problème persiste, contactez le support."
 }

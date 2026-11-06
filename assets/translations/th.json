@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "คำสั่งเสียงหนึ่งครั้งใช้ {points} แต้ม คุณยังกำหนดรายการด้วยการแตะได้ฟรีไม่จำกัด",
   "pw_out_voice_tap": "กำหนดด้วยการแตะแทน",
   "update_version_available": "เวอร์ชัน {version} พร้อมให้ใช้งานแล้ว",
-  "update_new_version_available": "มีเวอร์ชันใหม่พร้อมให้ใช้งานแล้ว"
+  "update_new_version_available": "มีเวอร์ชันใหม่พร้อมให้ใช้งานแล้ว",
+  "startup_error_title": "ไม่สามารถเริ่ม Evens ได้",
+  "startup_error_message": "ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง หากยังเกิดขึ้นอีก โปรดติดต่อฝ่ายสนับสนุน"
 }

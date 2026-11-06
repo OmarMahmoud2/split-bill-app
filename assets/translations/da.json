@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "En stemmekommando koster {points} point. Du kan stadig fordele varer ved at trykke, gratis og ubegrænset.",
   "pw_out_voice_tap": "Fordel ved at trykke i stedet",
   "update_version_available": "Version {version} er nu tilgængelig.",
-  "update_new_version_available": "En ny version er nu tilgængelig."
+  "update_new_version_available": "En ny version er nu tilgængelig.",
+  "startup_error_title": "Vi kunne ikke starte Evens",
+  "startup_error_message": "Tjek din forbindelse, og prøv igen. Hvis det fortsætter, så kontakt support."
 }

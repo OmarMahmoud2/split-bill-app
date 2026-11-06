@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "音声コマンドは1回{points}ポイントです。タップでの割り当ては引き続き無料・無制限で使えます。",
   "pw_out_voice_tap": "代わりにタップで割り当てる",
   "update_version_available": "バージョン {version} が利用可能になりました。",
-  "update_new_version_available": "新しいバージョンが利用可能になりました。"
+  "update_new_version_available": "新しいバージョンが利用可能になりました。",
+  "startup_error_title": "Evensを起動できませんでした",
+  "startup_error_message": "接続を確認して、もう一度お試しください。解決しない場合はサポートまでご連絡ください。"
 }

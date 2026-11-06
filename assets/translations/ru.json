@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Голосовая команда стоит {points} балла(ов). Назначать позиции касанием по-прежнему можно бесплатно и без ограничений.",
   "pw_out_voice_tap": "Назначить касанием",
   "update_version_available": "Версия {version} уже доступна.",
-  "update_new_version_available": "Доступна новая версия."
+  "update_new_version_available": "Доступна новая версия.",
+  "startup_error_title": "Не удалось запустить Evens",
+  "startup_error_message": "Проверьте подключение и попробуйте снова. Если ошибка повторяется, напишите в поддержку."
 }

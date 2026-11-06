@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "يستخدم الأمر الصوتي {points} نقاط. ما زال بإمكانك توزيع العناصر بالضغط، مجانًا وبلا حدود.",
   "pw_out_voice_tap": "وزّع بالضغط بدلًا من ذلك",
   "update_version_available": "الإصدار {version} متاح الآن.",
-  "update_new_version_available": "يتوفر إصدار جديد الآن."
+  "update_new_version_available": "يتوفر إصدار جديد الآن.",
+  "startup_error_title": "تعذّر تشغيل Evens",
+  "startup_error_message": "تحقق من اتصالك ثم حاول مرة أخرى. إذا استمرت المشكلة، تواصل مع الدعم."
 }

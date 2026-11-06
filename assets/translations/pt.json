@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Um comando de voz usa {points} pontos. Você ainda pode atribuir os itens tocando, grátis e sem limite.",
   "pw_out_voice_tap": "Atribuir tocando",
   "update_version_available": "A versão {version} já está disponível.",
-  "update_new_version_available": "Uma nova versão já está disponível."
+  "update_new_version_available": "Uma nova versão já está disponível.",
+  "startup_error_title": "Não foi possível iniciar o Evens",
+  "startup_error_message": "Verifique sua conexão e tente de novo. Se continuar, fale com o suporte."
 }

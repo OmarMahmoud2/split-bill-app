@@ -2140,5 +2140,7 @@
   "pw_out_voice_body": "Satu perintah suara memakai {points} poin. Kamu tetap bisa menetapkan item dengan mengetuk, gratis dan tanpa batas.",
   "pw_out_voice_tap": "Tetapkan dengan mengetuk saja",
   "update_version_available": "Versi {version} sekarang tersedia.",
-  "update_new_version_available": "Versi baru sekarang tersedia."
+  "update_new_version_available": "Versi baru sekarang tersedia.",
+  "startup_error_title": "Kami tidak dapat memulai Evens",
+  "startup_error_message": "Periksa koneksimu, lalu coba lagi. Jika terus terjadi, hubungi dukungan."
 }
