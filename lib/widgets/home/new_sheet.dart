@@ -28,10 +28,9 @@ class BillEntryPoints {
     MaterialPageRoute(builder: (_) => ManualEntryScreen(participants: _participants(members), groupId: groupId)),
   );
 
-  /// "Say it": the bill flow has no standalone voice expense (voice assign
-  /// needs items), so this opens Scan; the assign screen has the mic button.
-  /// Set to null to hide the option.
-  static BillEntry? voice = (context, {members, groupId}) => scan(context, members: members, groupId: groupId);
+  /// "Say it": hidden (null) until a standalone voice expense exists. Voice
+  /// assign needs items, so opening Scan under this name would mislead.
+  static BillEntry? voice;
 }
 
 class NewSheetOption {

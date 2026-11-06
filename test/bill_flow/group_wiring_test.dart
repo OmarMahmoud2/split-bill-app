@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:split_bill_app/manual_entry_screen.dart';
 import 'package:split_bill_app/scan_receipt_screen.dart';
@@ -12,8 +13,29 @@ void main() {
     expect(const SplitBillScreen(receiptData: {}, groupId: 'g').groupId, 'g');
   });
 
-  test('"Say it" is registered', () {
-    expect(BillEntryPoints.voice, isNotNull);
+  test('"Say it" stays hidden until standalone voice entry exists', () {
+    expect(BillEntryPoints.voice, isNull);
+  });
+
+  testWidgets('New sheet offers no "Say it" option', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showNewSheet(
+              context,
+              onQuickIou: () {},
+              onStartGroup: () {},
+            ),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(find.text('new_scan_title'), findsOneWidget);
+    expect(find.text('new_say_title'), findsNothing);
   });
 
   test('personal link uses /bill/<id>?p= and keeps ?uid= compatibility', () {
