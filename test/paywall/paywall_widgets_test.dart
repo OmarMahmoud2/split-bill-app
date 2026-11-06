@@ -63,6 +63,13 @@ Finder _textContaining(String s) => find.byWidgetPredicate(
   (w) => w is Text && (w.data ?? w.textSpan?.toPlainText() ?? '').contains(s),
 );
 
+Future<void> _tapPlan(WidgetTester tester, String key) async {
+  final f = find.byKey(ValueKey(key));
+  await tester.ensureVisible(f);
+  await tester.pumpAndSettle();
+  await tester.tap(f);
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() async {
@@ -77,28 +84,22 @@ void main() {
       await _mount(tester, const PremiumModal.preview(), mode: mode);
       expect(tester.takeException(), isNull);
 
-      expect(find.text('Split everything, without limits'), findsOneWidget);
+      expect(find.text('Every bill, no limits'), findsOneWidget);
       for (final perk in [
-        'Unlimited AI receipt scans',
-        'Unlimited voice assigning',
-        'Recurring bills and PDF or CSV export',
-        'No ads, anywhere',
+        'AI receipt scans',
+        'Voice assigning',
+        'Recurring bills',
+        'PDF and CSV export',
+        'Ads',
       ]) {
         expect(find.text(perk), findsOneWidget);
       }
-      // Trip currency conversion is not sold until it ships.
       expect(find.text('Trips with several currencies'), findsNothing);
-      expect(find.byKey(const ValueKey('paywall-plan-yearly')), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('paywall-plan-monthly')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('paywall-plan-lifetime')),
-        findsOneWidget,
-      );
-      expect(find.text(r'7 days free, then $24.99 a year'), findsOneWidget);
-      expect(find.text(r'$2.08/mo'), findsOneWidget);
+      for (final k in ['yearly', 'monthly', 'lifetime']) {
+        expect(find.byKey(ValueKey('paywall-plan-$k')), findsOneWidget);
+      }
+      expect(find.text('7 days free'), findsOneWidget);
+      expect(find.text(r'$2.08 a month'), findsOneWidget);
 
       // Yearly is the default, with the store's trial.
       expect(find.text('Start 7-day free trial'), findsOneWidget);
@@ -107,20 +108,16 @@ void main() {
       expect(find.text('Privacy'), findsOneWidget);
       expect(find.byKey(const ValueKey('paywall-restore')), findsOneWidget);
 
-      await tester.tap(find.byKey(const ValueKey('paywall-plan-monthly')));
+      await _tapPlan(tester, 'paywall-plan-monthly');
       await tester.pumpAndSettle();
-      expect(find.text(r'Subscribe for $2.99 a month'), findsOneWidget);
-      expect(_textContaining('Renews automatically'), findsOneWidget);
-      expect(_textContaining(r'$2.99 per month'), findsOneWidget);
+      expect(find.text('Continue with Monthly'), findsOneWidget);
+      expect(_textContaining(r'Renews every month at $2.99'), findsOneWidget);
 
-      await tester.ensureVisible(
-        find.byKey(const ValueKey('paywall-plan-lifetime')),
-      );
-      await tester.tap(find.byKey(const ValueKey('paywall-plan-lifetime')));
+      await _tapPlan(tester, 'paywall-plan-lifetime');
       await tester.pumpAndSettle();
-      expect(find.text(r'Buy lifetime for $59.99'), findsOneWidget);
-      expect(_textContaining('One-time purchase, no renewal.'), findsOneWidget);
-      expect(_textContaining('Renews automatically'), findsNothing);
+      expect(find.text('Get Lifetime'), findsOneWidget);
+      expect(_textContaining('One payment, no renewal.'), findsOneWidget);
+      expect(_textContaining('Renews every'), findsNothing);
       expect(tester.takeException(), isNull);
     });
   }

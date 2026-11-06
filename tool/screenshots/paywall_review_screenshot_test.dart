@@ -20,15 +20,20 @@ class _Translations extends AssetLoader {
   const _Translations();
   @override
   Future<Map<String, dynamic>> load(String path, Locale locale) async =>
-      jsonDecode(File('assets/translations/${locale.languageCode}.json')
-              .readAsStringSync())
+      jsonDecode(
+            File(
+              'assets/translations/${locale.languageCode}.json',
+            ).readAsStringSync(),
+          )
           as Map<String, dynamic>;
 }
 
 Future<void> _font(String family, List<String> files) async {
   final loader = FontLoader(family);
   for (final f in files) {
-    loader.addFont(Future.value(ByteData.sublistView(File(f).readAsBytesSync())));
+    loader.addFont(
+      Future.value(ByteData.sublistView(File(f).readAsBytesSync())),
+    );
   }
   await loader.load();
 }
@@ -51,7 +56,13 @@ void main() {
       'assets/fonts/InterTight/InterTight-SemiBold.ttf',
       'assets/fonts/InterTight/InterTight-Bold.ttf',
     ]);
-    final sdk = File(Platform.resolvedExecutable).parent.path; // unused fallback
+    await _font('IBMPlexMono', [
+      'assets/fonts/IBMPlexMono/IBMPlexMono-Regular.ttf',
+      'assets/fonts/IBMPlexMono/IBMPlexMono-Medium.ttf',
+    ]);
+    final sdk = File(
+      Platform.resolvedExecutable,
+    ).parent.path; // unused fallback
     final flutterRoot = Platform.environment['FLUTTER_ROOT'] ?? '';
     final icons = File(
       '$flutterRoot/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
