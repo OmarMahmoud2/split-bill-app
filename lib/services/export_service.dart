@@ -266,12 +266,35 @@ class ExportService {
     ];
   }
 
+  /// Every string the report prints, to find which scripts it needs.
+  static String reportText(List<ExportBill> bills, ExportLabels labels) {
+    return [
+      labels.date,
+      labels.title,
+      labels.group,
+      labels.currency,
+      labels.total,
+      labels.yourShare,
+      labels.status,
+      labels.paid,
+      labels.unpaid,
+      labels.reportTitle,
+      labels.totalsHeading,
+      labels.billsHeading,
+      labels.receiptsHeading,
+      labels.periodLabel,
+      labels.generatedLabel,
+      for (final b in bills) ...[b.title, b.groupName ?? '', b.currency],
+    ].join(' ');
+  }
+
   /// A PDF report: title, period, totals per currency, a bill table and,
   /// when [receipts] is given, one page per receipt photo.
   ///
   /// [font]/[boldFont] should be the app's Inter TTFs; Inter covers Latin,
-  /// Cyrillic, Greek and Vietnamese. Arabic, Devanagari, Thai and CJK text
-  /// has no glyphs in the bundled fonts and renders as boxes.
+  /// Cyrillic, Greek and Vietnamese. For Arabic, Devanagari, Thai and CJK
+  /// text pass [fontFallback] (see `PdfFontFallback`); without it those
+  /// characters render as boxes.
   /// [formatAmount] formats minor units for display (locale aware).
   static Future<Uint8List> buildPdf({
     required List<ExportBill> bills,
@@ -281,11 +304,16 @@ class ExportService {
     Map<String, Uint8List> receipts = const {},
     pw.Font? font,
     pw.Font? boldFont,
+    List<pw.Font> fontFallback = const [],
     bool rtl = false,
   }) async {
     final fmtDate = formatDate ?? isoDate;
     final theme = (font != null)
-        ? pw.ThemeData.withFont(base: font, bold: boldFont ?? font)
+        ? pw.ThemeData.withFont(
+            base: font,
+            bold: boldFont ?? font,
+            fontFallback: fontFallback,
+          )
         : pw.ThemeData.base();
     final doc = pw.Document(title: labels.reportTitle, creator: 'Evens');
     final sorted = sortBills(bills);

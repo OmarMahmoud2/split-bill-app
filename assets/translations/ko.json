@@ -2143,5 +2143,6 @@
   "update_new_version_available": "새 버전을 지금 사용할 수 있어요.",
   "startup_error_title": "Evens를 시작할 수 없어요",
   "startup_error_message": "연결을 확인한 뒤 다시 시도해 주세요. 계속 문제가 생기면 지원팀에 문의해 주세요.",
-  "payment_apple_cash_message_plain": "Apple Cash로 {amount}을(를) 보냅니다"
+  "payment_apple_cash_message_plain": "Apple Cash로 {amount}을(를) 보냅니다",
+  "exp_fonts_unavailable": "PDF를 만들었지만 일부 문자가 표시되지 않을 수 있어요. 온라인 상태에서 다시 시도해 글꼴을 받아 주세요."
 }

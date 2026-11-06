@@ -2143,5 +2143,6 @@
   "update_new_version_available": "新しいバージョンが利用可能になりました。",
   "startup_error_title": "Evensを起動できませんでした",
   "startup_error_message": "接続を確認して、もう一度お試しください。解決しない場合はサポートまでご連絡ください。",
-  "payment_apple_cash_message_plain": "Apple Cashで{amount}を支払います"
+  "payment_apple_cash_message_plain": "Apple Cashで{amount}を支払います",
+  "exp_fonts_unavailable": "PDFを作成しましたが、一部の文字が表示されない場合があります。オンラインでもう一度お試しください。"
 }

@@ -2143,5 +2143,6 @@
   "update_new_version_available": "Dostępna jest nowa wersja.",
   "startup_error_title": "Nie udało się uruchomić Evens",
   "startup_error_message": "Sprawdź połączenie i spróbuj ponownie. Jeśli problem się powtarza, skontaktuj się z pomocą.",
-  "payment_apple_cash_message_plain": "Płacę Ci {amount} przez Apple Cash"
+  "payment_apple_cash_message_plain": "Płacę Ci {amount} przez Apple Cash",
+  "exp_fonts_unavailable": "PDF utworzono, ale niektóre znaki mogą się nie wyświetlać. Połącz się z internetem i spróbuj ponownie, aby pobrać czcionki."
 }

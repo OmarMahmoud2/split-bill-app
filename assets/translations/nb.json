@@ -2143,5 +2143,6 @@
   "update_new_version_available": "En ny versjon er nå tilgjengelig.",
   "startup_error_title": "Vi kunne ikke starte Evens",
   "startup_error_message": "Sjekk tilkoblingen og prøv igjen. Hvis det fortsetter, kontakt support.",
-  "payment_apple_cash_message_plain": "Jeg betaler deg {amount} via Apple Cash"
+  "payment_apple_cash_message_plain": "Jeg betaler deg {amount} via Apple Cash",
+  "exp_fonts_unavailable": "PDF-en er laget, men noen tegn vises kanskje ikke. Gå på nett og prøv igjen for å hente skriftene."
 }

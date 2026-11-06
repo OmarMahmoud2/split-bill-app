@@ -2143,5 +2143,6 @@
   "update_new_version_available": "نیا ورژن اب دستیاب ہے۔",
   "startup_error_title": "ہم Evens شروع نہیں کر سکے",
   "startup_error_message": "اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔ اگر یہ بار بار ہو تو سپورٹ سے رابطہ کریں۔",
-  "payment_apple_cash_message_plain": "میں آپ کو Apple Cash سے {amount} بھیج رہا ہوں"
+  "payment_apple_cash_message_plain": "میں آپ کو Apple Cash سے {amount} بھیج رہا ہوں",
+  "exp_fonts_unavailable": "PDF بن گئی، لیکن کچھ حروف شاید نظر نہ آئیں۔ فونٹس حاصل کرنے کے لیے آن لائن ہو کر دوبارہ کوشش کریں۔"
 }

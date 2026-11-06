@@ -2143,5 +2143,6 @@
   "update_new_version_available": "新版本现已推出。",
   "startup_error_title": "无法启动 Evens",
   "startup_error_message": "请检查网络连接后重试。如果问题持续出现，请联系支持。",
-  "payment_apple_cash_message_plain": "通过 Apple Cash 向你支付 {amount}"
+  "payment_apple_cash_message_plain": "通过 Apple Cash 向你支付 {amount}",
+  "exp_fonts_unavailable": "PDF 已生成，但部分字符可能无法显示。请联网后重试以获取字体。"
 }

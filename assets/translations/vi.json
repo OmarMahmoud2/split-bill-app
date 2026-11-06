@@ -2143,5 +2143,6 @@
   "update_new_version_available": "Đã có phiên bản mới.",
   "startup_error_title": "Không thể khởi động Evens",
   "startup_error_message": "Hãy kiểm tra kết nối rồi thử lại. Nếu vẫn lỗi, hãy liên hệ hỗ trợ.",
-  "payment_apple_cash_message_plain": "Mình trả bạn {amount} qua Apple Cash"
+  "payment_apple_cash_message_plain": "Mình trả bạn {amount} qua Apple Cash",
+  "exp_fonts_unavailable": "Đã tạo PDF, nhưng một số ký tự có thể không hiển thị. Hãy kết nối mạng và thử lại để tải phông chữ."
 }

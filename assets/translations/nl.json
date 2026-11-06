@@ -2143,5 +2143,6 @@
   "update_new_version_available": "Er is een nieuwe versie beschikbaar.",
   "startup_error_title": "We konden Evens niet starten",
   "startup_error_message": "Controleer je verbinding en probeer het opnieuw. Blijft het gebeuren, neem dan contact op met support.",
-  "payment_apple_cash_message_plain": "Ik betaal je {amount} via Apple Cash"
+  "payment_apple_cash_message_plain": "Ik betaal je {amount} via Apple Cash",
+  "exp_fonts_unavailable": "PDF gemaakt, maar sommige tekens worden misschien niet getoond. Ga online en probeer opnieuw om de lettertypen op te halen."
 }

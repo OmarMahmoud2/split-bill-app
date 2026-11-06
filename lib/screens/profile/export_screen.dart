@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 import 'package:split_bill_app/services/export_service.dart';
+import 'package:split_bill_app/services/pdf_font_fallback.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
@@ -206,6 +207,7 @@ class _ExportScreenState extends State<ExportScreen> {
       final stamp = isoDate(DateTime.now());
       final dir = await getTemporaryDirectory();
       late final File file;
+      var fontsComplete = true;
       if (_format == ExportFormat.csv) {
         file = File('${dir.path}/split-bill-$stamp.csv');
         await file.writeAsString(ExportService.buildCsv(bills, labels));
@@ -219,6 +221,12 @@ class _ExportScreenState extends State<ExportScreen> {
             if (await f.exists()) receipts[b.id] = await f.readAsBytes();
           }
         }
+        // Inter has no Arabic/Indic/Thai/CJK glyphs: fetch a Noto subset for
+        // the scripts this report uses (offline: boxes, and we say so).
+        final fonts = await PdfFontFallback().load(
+          ExportService.reportText(bills, labels),
+        );
+        fontsComplete = fonts.complete;
         final bytes = await ExportService.buildPdf(
           bills: bills,
           labels: labels,
@@ -227,6 +235,7 @@ class _ExportScreenState extends State<ExportScreen> {
           receipts: receipts,
           font: await _font('assets/fonts/Inter/Inter-Regular.ttf'),
           boldFont: await _font('assets/fonts/Inter/Inter-Bold.ttf'),
+          fontFallback: fonts.fonts,
           rtl: rtl,
         );
         file = File('${dir.path}/split-bill-$stamp.pdf');
@@ -246,8 +255,8 @@ class _ExportScreenState extends State<ExportScreen> {
       if (!mounted) return;
       AppToast.show(
         context,
-        message: 'exp_done'.tr(),
-        type: AppToastType.success,
+        message: fontsComplete ? 'exp_done'.tr() : 'exp_fonts_unavailable'.tr(),
+        type: fontsComplete ? AppToastType.success : AppToastType.warning,
       );
     } catch (e) {
       debugPrint('Export failed: $e');
