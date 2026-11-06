@@ -81,12 +81,13 @@ void main() {
       for (final perk in [
         'Unlimited AI receipt scans',
         'Unlimited voice assigning',
-        'Trips with several currencies',
         'Recurring bills and PDF or CSV export',
         'No ads, anywhere',
       ]) {
         expect(find.text(perk), findsOneWidget);
       }
+      // Trip currency conversion is not sold until it ships.
+      expect(find.text('Trips with several currencies'), findsNothing);
       expect(find.byKey(const ValueKey('paywall-plan-yearly')), findsOneWidget);
       expect(
         find.byKey(const ValueKey('paywall-plan-monthly')),
