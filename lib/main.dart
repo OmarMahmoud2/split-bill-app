@@ -30,6 +30,9 @@ import 'utils/app_theme.dart';
 import 'theme/app_typography.dart';
 import 'theme/font_licenses.dart';
 import 'auth_wrapper.dart';
+import 'services/bill_link_routing.dart';
+import 'screens/bill_link_error_screen.dart';
+import 'widgets/bill_details/bill_view_logic.dart' show billErrorKey;
 import 'package:split_bill_app/widgets/brand/brand_intro.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
@@ -361,33 +364,64 @@ class _MyAppState extends State<MyApp> {
             .doc(billId)
             .get();
 
-        if (doc.exists) {
-          final data = doc.data()!;
-          bool amIHost = data['hostId'] == user.uid;
-          String billName = data['storeName'] ?? "Bill";
-
-          if (amIHost) {
+        final data = doc.data();
+        final target = resolveBillLinkTarget(
+          data: doc.exists ? data : null,
+          uid: user.uid,
+          personalId: uid,
+        );
+        final billName =
+            (data?['storeName'] as String?) ?? 'bill'.tr();
+        switch (target) {
+          case BillLinkTarget.host:
             navigatorKey.currentState?.push(
               MaterialPageRoute(
                 builder: (context) =>
                     BillDetailsScreen(billId: billId, billName: billName),
               ),
             );
-          } else {
+          case BillLinkTarget.participant:
             navigatorKey.currentState?.push(
               MaterialPageRoute(
                 builder: (context) =>
                     ParticipantBillScreen(billId: billId, billName: billName),
               ),
             );
-          }
-        } else {
-          debugPrint("Bill not found: $billId");
+          case BillLinkTarget.guestEntry:
+            _openGuestEntry(billId, uid);
+          case BillLinkTarget.notFound:
+            debugPrint('Bill not found: $billId');
+            navigatorKey.currentState?.push(
+              MaterialPageRoute(builder: (_) => const BillLinkErrorScreen()),
+            );
         }
       } catch (e) {
-        debugPrint("Error navigating to bill: $e");
+        debugPrint('Error navigating to bill: $e');
+        // A personal link for someone else's entry may not be readable with
+        // this account: the guest page still works.
+        if (uid != null && uid != user.uid) {
+          _openGuestEntry(billId, uid);
+          return;
+        }
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (_) => BillLinkErrorScreen(
+              notFound: false,
+              message: billErrorKey(e).tr(),
+            ),
+          ),
+        );
       }
     });
+  }
+
+  void _openGuestEntry(String billId, String? participantId) {
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) =>
+            GuestBillScreen(billId: billId, initialParticipantId: participantId),
+      ),
+    );
   }
 
   @override
