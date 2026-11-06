@@ -82,6 +82,7 @@ flutter:
     - assets/translations/
     - assets/fonts/Inter/OFL.txt
     - assets/fonts/InterTight/OFL.txt
+    - assets/fonts/IBMPlexMono/OFL.txt
 
   # v3 typography. SIL Open Font License 1.1 (assets/fonts/*/OFL.txt).
   # Static instances of the Google Fonts variable fonts (ofl/inter,
@@ -104,6 +105,13 @@ flutter:
           weight: 600
         - asset: assets/fonts/InterTight/InterTight-Bold.ttf
           weight: 700
+    # Only inside the paywall receipt (Pro perks and "Due today").
+    - family: IBMPlexMono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono/IBMPlexMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBMPlexMono/IBMPlexMono-Medium.ttf
+          weight: 500
 
 # App Icon Configuration
 flutter_launcher_icons:
