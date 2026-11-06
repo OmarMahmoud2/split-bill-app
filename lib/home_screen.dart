@@ -14,7 +14,6 @@ import 'package:split_bill_app/screens/groups/create_group_screen.dart';
 import 'package:split_bill_app/screens/settle/quick_iou_sheet.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/widgets/banner_ad_widget.dart';
 import 'package:split_bill_app/widgets/home/home_dashboard.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/home/new_sheet.dart';
@@ -121,7 +120,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         unread: _unread,
         actions: actions,
         onRetry: () => setState(_connect),
-        footer: widget.showAds ? const _AdFooter() : null,
       ),
       GroupsScreen(state: _ledger, embedded: true),
       const ActivityScreen(embedded: true),
@@ -229,29 +227,6 @@ class _TabBar extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Banner ad for free users (premium hides it).
-class _AdFooter extends StatelessWidget {
-  const _AdFooter();
-
-  @override
-  Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return const SizedBox.shrink();
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
-      builder: (context, snap) {
-        if (!snap.hasData || RevenueCatService.isUserActivePremium(snap.data!.data())) {
-          return const SizedBox.shrink();
-        }
-        return const Padding(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-          child: BannerAdWidget(),
-        );
-      },
     );
   }
 }
