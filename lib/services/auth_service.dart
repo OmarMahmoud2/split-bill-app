@@ -150,19 +150,34 @@ class AuthService {
         }
       }
 
-      // E. The user document last.
+      // E. The user document last, in the same batch as the tombstone that
+      // the rules require for an owner delete. The tombstone stops the uid
+      // from being recreated with fresh points or a cleared suspension. A
+      // retry after a half-finished deletion finds it already written.
       refs.remove(userRef);
-      final ordered = [...refs, userRef];
+      final tombstoneRef = db.collection('accountTombstones').doc(uid);
+      var tombstoneExists = false;
+      try {
+        tombstoneExists = (await tombstoneRef.get()).exists;
+      } catch (e) {
+        debugPrint('Tombstone lookup failed: $e');
+      }
 
       // Firestore batches hold at most 500 writes.
       const chunk = 400;
-      for (var i = 0; i < ordered.length; i += chunk) {
+      final others = refs.toList();
+      for (var i = 0; i < others.length; i += chunk) {
         final batch = db.batch();
-        for (final ref in ordered.skip(i).take(chunk)) {
+        for (final ref in others.skip(i).take(chunk)) {
           batch.delete(ref);
         }
         await batch.commit();
       }
+      final last = db.batch()..delete(userRef);
+      if (!tombstoneExists) {
+        last.set(tombstoneRef, {'deletedAt': FieldValue.serverTimestamp()});
+      }
+      await last.commit();
 
       // STEP 3: Delete from Firebase Auth
       await user.delete();
