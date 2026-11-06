@@ -2142,5 +2142,6 @@
   "update_version_available": "版本 {version} 现已推出。",
   "update_new_version_available": "新版本现已推出。",
   "startup_error_title": "无法启动 Evens",
-  "startup_error_message": "请检查网络连接后重试。如果问题持续出现，请联系支持。"
+  "startup_error_message": "请检查网络连接后重试。如果问题持续出现，请联系支持。",
+  "payment_apple_cash_message_plain": "通过 Apple Cash 向你支付 {amount}"
 }

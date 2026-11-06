@@ -88,7 +88,7 @@ class _PaySheetState extends State<PaySheet> {
   Future<void> _open(StoredPaymentMethod m) async {
     AppHaptics.light();
     final launch = m.launch(
-      (handle) => PaymentRequest(
+      (handle) => localizedPaymentRequest(
         handle: handle,
         amount: Money(widget.amountMinor, normalizeCurrency(widget.currency)),
         note: widget.note ?? widget.contextLabel,

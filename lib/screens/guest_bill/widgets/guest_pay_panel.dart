@@ -53,7 +53,7 @@ List<GuestPayOption> guestPayOptions(
         !(web ? safari : type.isAvailableOn(currentPaymentPlatform()))) {
       continue;
     }
-    final request = PaymentRequest(
+    final request = localizedPaymentRequest(
       handle: method.value,
       amount: amountMinor > 0 ? Money(amountMinor, bill.currency) : null,
       note: bill.storeName.isEmpty ? null : bill.storeName,

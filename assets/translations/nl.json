@@ -2142,5 +2142,6 @@
   "update_version_available": "Versie {version} is nu beschikbaar.",
   "update_new_version_available": "Er is een nieuwe versie beschikbaar.",
   "startup_error_title": "We konden Evens niet starten",
-  "startup_error_message": "Controleer je verbinding en probeer het opnieuw. Blijft het gebeuren, neem dan contact op met support."
+  "startup_error_message": "Controleer je verbinding en probeer het opnieuw. Blijft het gebeuren, neem dan contact op met support.",
+  "payment_apple_cash_message_plain": "Ik betaal je {amount} via Apple Cash"
 }

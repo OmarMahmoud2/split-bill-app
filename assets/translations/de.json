@@ -2142,5 +2142,6 @@
   "update_version_available": "Version {version} ist jetzt verfügbar.",
   "update_new_version_available": "Eine neue Version ist jetzt verfügbar.",
   "startup_error_title": "Evens konnte nicht gestartet werden",
-  "startup_error_message": "Prüfe deine Verbindung und versuche es erneut. Wenn es weiterhin auftritt, wende dich an den Support."
+  "startup_error_message": "Prüfe deine Verbindung und versuche es erneut. Wenn es weiterhin auftritt, wende dich an den Support.",
+  "payment_apple_cash_message_plain": "Ich bezahle dir {amount} per Apple Cash"
 }

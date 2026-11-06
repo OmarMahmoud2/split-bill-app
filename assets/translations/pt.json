@@ -2142,5 +2142,6 @@
   "update_version_available": "A versão {version} já está disponível.",
   "update_new_version_available": "Uma nova versão já está disponível.",
   "startup_error_title": "Não foi possível iniciar o Evens",
-  "startup_error_message": "Verifique sua conexão e tente de novo. Se continuar, fale com o suporte."
+  "startup_error_message": "Verifique sua conexão e tente de novo. Se continuar, fale com o suporte.",
+  "payment_apple_cash_message_plain": "Estou te pagando {amount} via Apple Cash"
 }

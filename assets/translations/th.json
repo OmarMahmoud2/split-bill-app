@@ -2142,5 +2142,6 @@
   "update_version_available": "เวอร์ชัน {version} พร้อมให้ใช้งานแล้ว",
   "update_new_version_available": "มีเวอร์ชันใหม่พร้อมให้ใช้งานแล้ว",
   "startup_error_title": "ไม่สามารถเริ่ม Evens ได้",
-  "startup_error_message": "ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง หากยังเกิดขึ้นอีก โปรดติดต่อฝ่ายสนับสนุน"
+  "startup_error_message": "ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง หากยังเกิดขึ้นอีก โปรดติดต่อฝ่ายสนับสนุน",
+  "payment_apple_cash_message_plain": "จ่ายให้คุณ {amount} ผ่าน Apple Cash"
 }

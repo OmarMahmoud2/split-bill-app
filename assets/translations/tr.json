@@ -2142,5 +2142,6 @@
   "update_version_available": "{version} sürümü artık mevcut.",
   "update_new_version_available": "Yeni bir sürüm artık mevcut.",
   "startup_error_title": "Evens başlatılamadı",
-  "startup_error_message": "Bağlantınızı kontrol edip tekrar deneyin. Sorun sürerse destekle iletişime geçin."
+  "startup_error_message": "Bağlantınızı kontrol edip tekrar deneyin. Sorun sürerse destekle iletişime geçin.",
+  "payment_apple_cash_message_plain": "Sana Apple Cash ile {amount} ödüyorum"
 }

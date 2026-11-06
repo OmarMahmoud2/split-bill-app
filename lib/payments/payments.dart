@@ -20,3 +20,4 @@ export 'legacy_payment_adapter.dart';
 export 'payment_launcher.dart';
 export 'payment_method_type.dart';
 export 'payment_models.dart';
+export 'payment_message.dart';

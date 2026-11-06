@@ -2142,5 +2142,6 @@
   "update_version_available": "Versi {version} sekarang tersedia.",
   "update_new_version_available": "Versi baru sekarang tersedia.",
   "startup_error_title": "Kami tidak dapat memulai Evens",
-  "startup_error_message": "Periksa koneksimu, lalu coba lagi. Jika terus terjadi, hubungi dukungan."
+  "startup_error_message": "Periksa koneksimu, lalu coba lagi. Jika terus terjadi, hubungi dukungan.",
+  "payment_apple_cash_message_plain": "Membayarmu {amount} lewat Apple Cash"
 }

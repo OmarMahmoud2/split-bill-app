@@ -2142,5 +2142,6 @@
   "update_version_available": "संस्करण {version} अब उपलब्ध है।",
   "update_new_version_available": "नया संस्करण अब उपलब्ध है।",
   "startup_error_title": "हम Evens शुरू नहीं कर सके",
-  "startup_error_message": "अपना कनेक्शन जाँचें और फिर कोशिश करें। अगर यह बार-बार हो, तो सहायता से संपर्क करें।"
+  "startup_error_message": "अपना कनेक्शन जाँचें और फिर कोशिश करें। अगर यह बार-बार हो, तो सहायता से संपर्क करें।",
+  "payment_apple_cash_message_plain": "मैं आपको Apple Cash से {amount} भेज रहा हूँ"
 }

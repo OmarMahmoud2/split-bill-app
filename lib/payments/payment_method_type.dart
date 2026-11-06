@@ -355,6 +355,8 @@ PaymentLaunch _swish(PaymentMethodType t, PaymentRequest r) {
 /// prefilled note; the payer taps Apple Cash there.
 PaymentLaunch _appleCash(PaymentMethodType t, PaymentRequest r) {
   final handle = t.normalizeHandle(r.handle);
+  // Callers pass a localized message (see payment_message.dart); this
+  // English text is only the last resort.
   final message =
       r.message ??
       [
