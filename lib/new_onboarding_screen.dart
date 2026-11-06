@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,6 +69,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onboarding_complete', true);
       await prefs.setBool('onboarding_complete_v2', true);
+      AnalyticsService.instance.onboardingComplete();
       if (!mounted) return;
       AppHaptics.success();
       AuthFlow.backToRoot(context);

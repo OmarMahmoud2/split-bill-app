@@ -9,6 +9,7 @@ void registerFontLicenses() {
     for (final (family, path) in const [
       ('Inter', 'assets/fonts/Inter/OFL.txt'),
       ('Inter Tight', 'assets/fonts/InterTight/OFL.txt'),
+      ('IBM Plex Mono', 'assets/fonts/IBMPlexMono/OFL.txt'),
     ]) {
       final text = await rootBundle.loadString(path);
       yield LicenseEntryWithLineBreaks([family], text);

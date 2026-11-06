@@ -62,6 +62,8 @@ Map<String, dynamic> buildManualReceiptData({
     'serviceChargeAmount': 0.0,
     'discountAmount': 0.0,
     'currencyCode': currencyCode,
+    // Marker for analytics (bill_created source); not stored on the bill.
+    'entryMode': 'manual',
   };
 }
 

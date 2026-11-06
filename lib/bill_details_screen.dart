@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -213,6 +214,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         tx.update(_billRef, update);
         after = {...data, ...update};
       });
+      if (paid) AnalyticsService.instance.paymentMarkedPaid('host');
       if (!mounted) return;
       final summary = collectionSummary(
         BillReader(after ?? bill),
@@ -383,6 +385,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           sharePositionOrigin: _shareOrigin(),
         ),
       );
+      AnalyticsService.instance.billShared('system_share');
     } catch (_) {
       await Clipboard.setData(ClipboardData(text: url));
       if (!mounted) return;
@@ -642,6 +645,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           ),
         });
       });
+      AnalyticsService.instance.proofRejected();
       if (!mounted) return;
       AppToast.show(
         context,

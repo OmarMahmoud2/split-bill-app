@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:split_bill_app/services/analytics_service.dart';
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -82,6 +84,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.instance.guestLinkOpened();
     _subscribe();
   }
 
@@ -276,6 +279,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     final payer = me.name.isEmpty ? 'guest'.tr() : me.name;
     final store = guestStoreName(bill);
     final withProof = proof != null;
+    AnalyticsService.instance.guestPaymentSubmitted(withProof: withProof);
     unawaited(
       _repo.notifyHost(
         GuestPaymentNotice(

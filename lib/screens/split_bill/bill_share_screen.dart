@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -113,6 +114,7 @@ class BillShareScreen extends StatelessWidget {
     }
     if (ok) {
       AppHaptics.light();
+      AnalyticsService.instance.billShared('link');
       return;
     }
     if (!context.mounted) return;
@@ -122,6 +124,7 @@ class BillShareScreen extends StatelessWidget {
   Future<void> _share(BuildContext context, String text) async {
     try {
       await SharePlus.instance.share(ShareParams(text: text));
+      AnalyticsService.instance.billShared('system_share');
     } catch (_) {
       if (!context.mounted) return;
       await _copy(context, text);
@@ -130,6 +133,7 @@ class BillShareScreen extends StatelessWidget {
 
   Future<void> _copy(BuildContext context, String text) async {
     await Clipboard.setData(ClipboardData(text: text));
+    AnalyticsService.instance.billShared('link');
     AppHaptics.success();
     if (!context.mounted) return;
     AppToast.show(

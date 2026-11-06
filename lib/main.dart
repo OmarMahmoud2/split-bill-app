@@ -364,8 +364,10 @@ class _MyAppState extends State<MyApp> {
   void _routeNotificationData(Map<String, dynamic> data) {
     switch (notificationTapTarget(data)) {
       case NotificationTapTarget.bill:
+        AnalyticsService.instance.notificationOpened('bill');
         _handleBillNavigation(data['billId'] as String, uid: data['uid']);
       case NotificationTapTarget.notifications:
+        AnalyticsService.instance.reminderOpened('engagement');
         // e.g. server engagement reminders: show the notification history.
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (FirebaseAuth.instance.currentUser == null) return;
@@ -399,6 +401,7 @@ class _MyAppState extends State<MyApp> {
   void _handleWidgetUri(Uri uri) {
     final route = WidgetRoute.tryParse(uri);
     if (route == null || !_widgetLaunchDeduper.shouldHandle(uri)) return;
+    AnalyticsService.instance.widgetOpened();
 
     switch (route.kind) {
       case WidgetRouteKind.friend when route.billId != null:

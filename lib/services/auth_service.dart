@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/services/notification_service.dart';
+import 'package:split_bill_app/services/analytics_service.dart';
 
 class AuthService {
   // 1. Create instances of the tools we need
@@ -36,6 +37,7 @@ class AuthService {
       // D. Finally, sign in to Firebase with that credential
       final result = await _auth.signInWithCredential(credential);
       await _handlePostSignIn(result.user);
+      _trackAuth('google', result);
       return result;
     } on FirebaseAuthException catch (e) {
       throw _formatAuthError(e);
@@ -65,6 +67,7 @@ class AuthService {
 
       final result = await _auth.signInWithCredential(authCredential);
       await _handlePostSignIn(result.user);
+      _trackAuth('apple', result);
       return result;
     } on SignInWithAppleAuthorizationException catch (e) {
       if (e.code == AuthorizationErrorCode.canceled) {
@@ -241,6 +244,7 @@ class AuthService {
         password: password,
       );
       await _handlePostSignIn(result.user);
+      _trackAuth('email', result);
       return result;
     } on FirebaseAuthException catch (e) {
       throw _formatAuthError(e);
@@ -349,6 +353,14 @@ class AuthService {
     }
 
     throw 'Please sign out and sign in again to continue.';
+  }
+
+  void _trackAuth(String method, UserCredential result) {
+    if (result.additionalUserInfo?.isNewUser ?? false) {
+      AnalyticsService.instance.signUp(method);
+    } else {
+      AnalyticsService.instance.login(method);
+    }
   }
 
   Future<void> _handlePostSignIn(User? user) async {

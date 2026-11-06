@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -277,6 +278,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           ),
         });
       });
+      AnalyticsService.instance.paymentMarkedPaid('member');
       if (hostId != null) {
         unawaited(
           _notifyHost(

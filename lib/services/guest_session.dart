@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:split_bill_app/services/analytics_service.dart';
 
 /// Guests opening a shared bill sign in anonymously so Firestore rules can
 /// require auth. Anonymous sessions are never treated as app members.
@@ -18,6 +19,7 @@ class GuestSession {
   static Future<User?> _signInAnonymously() async {
     try {
       final credential = await FirebaseAuth.instance.signInAnonymously();
+      AnalyticsService.instance.signUp('anonymous_guest');
       return credential.user;
     } catch (e) {
       debugPrint('Guest anonymous sign-in failed: $e');

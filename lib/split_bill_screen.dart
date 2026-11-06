@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -544,6 +545,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       itemCount: itemCount,
     );
     if (voice == null || voice.isEmpty) {
+      AnalyticsService.instance.voiceAssign(success: false);
       AppToast.show(
         context,
         message: 'bf_assign_voice_nothing'.tr(),
@@ -561,6 +563,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         itemAssignments.remove(index);
       });
     });
+    AnalyticsService.instance.voiceAssign(success: true);
     AppHaptics.success();
     AppToast.show(
       context,

@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -475,6 +476,13 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       );
       return;
     }
+    final rawItems = widget.receiptData['items'];
+    AnalyticsService.instance.billCreated(
+      source: widget.receiptData['entryMode'] == 'manual' ? 'manual' : 'scan',
+      items: rawItems is List ? rawItems.length : 0,
+      people: widget.participants.length,
+      splitMethod: billData['splitMethod']?.toString() ?? 'items',
+    );
     if (!mounted) return;
     // 2.0 has no interstitial ads: saving goes straight to the success screen.
     _showSuccess(billId, billData);

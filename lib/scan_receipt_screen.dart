@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -595,6 +596,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
       if (!isPremium) {
         final points = (userData?['points'] as num?)?.toInt() ?? 0;
         if (points < FeatureCosts.receiptScanPoints) {
+          AnalyticsService.instance.receiptScan('no_points');
           await _showNoPointsDialog(FeatureCosts.receiptScanPoints);
           return;
         }
@@ -740,6 +742,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
         _phase = _ScanPhase.review;
       });
       AppHaptics.success();
+      AnalyticsService.instance.receiptScan('success');
     } catch (e) {
       debugPrint('Receipt scan failed: $e');
       if (!mounted || attempt != _attempt) return;
@@ -749,8 +752,11 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
         _error = content;
       });
       AppHaptics.error();
-      if (e is ReceiptScanException &&
-          e.failure == ReceiptScanFailure.noCredits) {
+      final noCredits =
+          e is ReceiptScanException &&
+          e.failure == ReceiptScanFailure.noCredits;
+      AnalyticsService.instance.receiptScan(noCredits ? 'no_points' : 'fail');
+      if (noCredits) {
         await _showNoPointsDialog(FeatureCosts.receiptScanPoints);
       }
     }
