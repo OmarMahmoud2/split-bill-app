@@ -37,8 +37,11 @@ class UserPreferencesService {
         remoteMethods is List && remoteMethods.isNotEmpty;
 
     final updates = <String, dynamic>{
-      if ((data['displayName'] as String?)?.trim().isEmpty ?? true)
-        'displayName': user.displayName ?? 'User',
+      // No English placeholder: leave it empty and let the UI show its
+      // translated fallback.
+      if (((data['displayName'] as String?)?.trim().isEmpty ?? true) &&
+          (user.displayName?.trim().isNotEmpty ?? false))
+        'displayName': user.displayName,
       if (!data.containsKey('email') && user.email != null) 'email': user.email,
       if ((data['photoUrl'] as String?)?.trim().isEmpty ?? true)
         'photoUrl': user.photoURL,

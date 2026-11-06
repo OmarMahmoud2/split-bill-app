@@ -1,3 +1,4 @@
+import 'package:split_bill_app/utils/display_name.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -175,10 +176,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               data['premiumProductId']?.toString(),
             );
             final view = ProfileViewData(
-              name:
-                  (data['displayName'] as String?) ??
-                  _user.displayName ??
-                  'user'.tr(),
+              name: firstNonBlank([
+                data['displayName'] as String?,
+                _user.displayName,
+              ], fallback: 'user'.tr()),
               photoUrl: data['photoUrl'] as String?,
               isPro: isPro,
               planLabel: planKind == null

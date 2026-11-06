@@ -2,6 +2,7 @@
 /// `phoneClaims`, else added as a guest) or by scanning their QR code.
 library;
 
+import 'package:split_bill_app/utils/display_name.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ Future<GroupMember?> pickMemberFromContacts(BuildContext context) async {
         final profile = await PublicProfileService.fetch(uid);
         return GroupMember(
           id: uid,
-          name: (profile?['displayName'] as String?) ?? name,
+          name: firstNonBlank([profile?['displayName'] as String?], fallback: name),
           photoUrl: profile?['photoUrl'] as String?,
           phoneNumber: v,
         );
