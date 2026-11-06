@@ -2,6 +2,7 @@ import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:split_bill_app/data/ledger_repository.dart';
