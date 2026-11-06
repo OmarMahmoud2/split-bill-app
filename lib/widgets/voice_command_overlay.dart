@@ -562,6 +562,16 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
   }
 
   Future<void> _watchAdForPoint() async {
+    if (await RewardedAdHelper.isDailyCapReached()) {
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'ad_daily_cap_reached'.tr(),
+        type: AppToastType.info,
+      );
+      return;
+    }
+    if (!mounted) return;
     if (!RewardedAdHelper.isReady) {
       AppToast.show(
         context,

@@ -162,7 +162,7 @@ void main() {
     expect(_textContaining('A scan uses 2 points'), findsOneWidget);
     expect(find.text(r'Go Pro · from $2.08 a month'), findsOneWidget);
     expect(find.text('Watch a short ad for points'), findsOneWidget);
-    await tester.tap(find.text('Type it in instead'));
+    await tester.tap(find.text('Type it in instead (free)'));
     await tester.pumpAndSettle();
     expect(typed, isTrue);
   });
@@ -184,7 +184,7 @@ void main() {
     expect(find.text("You're out of free scans"), findsNothing);
     expect(find.text("You're out of free voice commands"), findsOneWidget);
     expect(_textContaining('A voice command uses 2 points'), findsOneWidget);
-    expect(find.text('Assign by tapping instead'), findsOneWidget);
+    expect(find.text('Assign by tapping instead (free)'), findsOneWidget);
     expect(find.text('Watch a short ad for points'), findsOneWidget);
   });
 

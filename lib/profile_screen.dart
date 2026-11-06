@@ -407,6 +407,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ------------------------------------------------------------ rewarded ad
 
   Future<void> _showRewardedAd() async {
+    if (await RewardedAdHelper.isDailyCapReached()) {
+      if (!mounted) return;
+      AppToast.show(context, message: 'ad_daily_cap_reached'.tr());
+      return;
+    }
+    if (!mounted) return;
     if (!RewardedAdHelper.isReady) {
       AppToast.show(context, message: 'prof_ad_loading'.tr());
       try {

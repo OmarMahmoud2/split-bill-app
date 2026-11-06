@@ -66,7 +66,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ).shareReplay(maxSize: 1);
     _unread = repo.watchHasUnread(me.uid).shareReplay(maxSize: 1);
     _publish?.cancel();
-    _publish = _ledger!.listen(HomeBalances.publish, onError: (_) {});
+    _publish = _ledger!.listen(HomeBalances.publish, onError: (Object e) {
+      if (kDebugMode) debugPrint('home ledger error: $e');
+    });
   }
 
   @override

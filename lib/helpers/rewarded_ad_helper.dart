@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:split_bill_app/config/api_keys.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'dart:io' show Platform;
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Helper for loading and showing rewarded ads to earn points
 class RewardedAdHelper {
@@ -19,6 +20,39 @@ class RewardedAdHelper {
   // Production Ad Unit IDs from ApiKeys
   static const String _prodAndroidAdUnitId = ApiKeys.adMobAndroidRewarded;
   static const String _prodIosAdUnitId = ApiKeys.adMobIosRewarded;
+
+  /// The backend grants at most this many rewarded points per UTC day
+  /// (SPLIT_BILL_REWARDED_AD_DAILY_CAP). Extra ads would earn nothing.
+  static const int dailyCap = 3;
+  static const String _countKey = 'rewarded_ad_count';
+  static const String _dayKey = 'rewarded_ad_day';
+
+  static String _utcDay() =>
+      DateTime.now().toUtc().toIso8601String().substring(0, 10);
+
+  /// Ads this device has completed today (UTC, like the backend).
+  static Future<int> watchedToday() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getString(_dayKey) != _utcDay()) return 0;
+      return prefs.getInt(_countKey) ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  /// True once today's ad limit is used; the app then stops offering ads.
+  static Future<bool> isDailyCapReached() async =>
+      (await watchedToday()) >= dailyCap;
+
+  static Future<void> _recordWatched() async {
+    try {
+      final count = await watchedToday();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_dayKey, _utcDay());
+      await prefs.setInt(_countKey, count + 1);
+    } catch (_) {}
+  }
 
   static RewardedAd? _rewardedAd;
   static bool _isAdReady = false;
@@ -105,8 +139,7 @@ class RewardedAdHelper {
           .collection('users')
           .doc(user.uid)
           .get();
-      final isPremium =
-          RevenueCatService.isUserActivePremium(userDoc.data());
+      final isPremium = RevenueCatService.isUserActivePremium(userDoc.data());
       if (!isPremium) {
         await loadAd();
       }
@@ -137,6 +170,7 @@ class RewardedAdHelper {
           debugPrint('🎉 User earned reward: ${reward.amount} ${reward.type}');
         }
         rewardEarned = true;
+        _recordWatched();
         AnalyticsService.instance.rewardedAdCompleted();
 
         // The backend adds the point; wait briefly so the UI shows it.
@@ -158,8 +192,10 @@ class RewardedAdHelper {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return 0;
     try {
-      final doc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
       return (doc.data()?['points'] as num?)?.toInt() ?? 0;
     } catch (_) {
       return 0;
