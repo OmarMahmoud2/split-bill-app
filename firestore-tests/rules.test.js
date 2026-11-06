@@ -429,6 +429,16 @@ describe('groups (2.0 ledgers)', () => {
     await assertFails(getDocs(query(collection(google(STRANGER), 'groups'), where('memberIds', 'array-contains', HOST))));
   });
 
+  it('members list their own groups (the home screen query)', async () => {
+    await assertSucceeds(getDocs(query(collection(google(FRIEND), 'groups'), where('memberIds', 'array-contains', FRIEND))));
+    await assertSucceeds(getDocs(query(collection(google(HOST), 'groups'), where('memberIds', 'array-contains', HOST))));
+  });
+
+  it('members list a group\'s bills and payments', async () => {
+    await assertSucceeds(getDocs(query(collection(google(FRIEND), 'bills'), where('groupId', '==', 'g1'), orderBy('date', 'desc'), limit(50))));
+    await assertSucceeds(getDocs(query(collection(google(FRIEND), 'groups', 'g1', 'payments'), orderBy('createdAt', 'desc'), limit(50))));
+  });
+
   it('members change ledger settings; only the owner changes name or members', async () => {
     await assertSucceeds(updateDoc(doc(google(FRIEND), 'groups', 'g1'), { budgetMinor: 90000, archived: true, updatedAt: serverTimestamp() }));
     await assertFails(updateDoc(doc(google(FRIEND), 'groups', 'g1'), { name: 'Mine now' }));

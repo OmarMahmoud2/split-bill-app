@@ -398,9 +398,13 @@ service cloud.firestore {
         && request.auth.uid in request.resource.data.memberIds
         && validGroupLedgerFields(request.resource.data);
 
-      allow read: if isAdmin()
+      allow get: if isAdmin()
         || isGroupOwner(resource.data)
         || isGroupMember(resource.data);
+      // Queries ("my groups") must be provable from the query itself, so the
+      // list rule reads memberIds directly instead of through keys() helpers.
+      allow list: if isAdmin()
+        || (signedIn() && request.auth.uid in resource.data.memberIds);
 
       // The owner edits everything; members may update the ledger settings
       // (budget, dates, simplify, archive) but not membership or the name.
