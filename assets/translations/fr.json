@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Vous êtes hors ligne. L'addition est enregistrée sur ce téléphone et se synchronisera au retour de la connexion.",
   "pw_out_voice_title": "Vous n'avez plus de commandes vocales gratuites",
   "pw_out_voice_body": "Une commande vocale utilise {points} points. Vous pouvez toujours attribuer les articles en touchant, gratuit et illimité.",
-  "pw_out_voice_tap": "Attribuer en touchant à la place"
+  "pw_out_voice_tap": "Attribuer en touchant à la place",
+  "update_version_available": "La version {version} est maintenant disponible.",
+  "update_new_version_available": "Une nouvelle version est maintenant disponible."
 }

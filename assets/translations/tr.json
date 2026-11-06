@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Çevrimdışısınız. Hesap bu telefona kaydedildi ve tekrar çevrimiçi olduğunuzda eşitlenecek.",
   "pw_out_voice_title": "Ücretsiz sesli komutların bitti",
   "pw_out_voice_body": "Bir sesli komut {points} puan harcar. Ürünleri dokunarak atamaya ücretsiz ve sınırsız devam edebilirsin.",
-  "pw_out_voice_tap": "Bunun yerine dokunarak ata"
+  "pw_out_voice_tap": "Bunun yerine dokunarak ata",
+  "update_version_available": "{version} sürümü artık mevcut.",
+  "update_new_version_available": "Yeni bir sürüm artık mevcut."
 }

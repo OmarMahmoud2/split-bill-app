@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Bạn đang ngoại tuyến. Hóa đơn đã lưu trên điện thoại này và sẽ đồng bộ khi có mạng lại.",
   "pw_out_voice_title": "Bạn đã hết lệnh giọng nói miễn phí",
   "pw_out_voice_body": "Một lệnh giọng nói dùng {points} điểm. Bạn vẫn có thể gán món bằng cách chạm, miễn phí và không giới hạn.",
-  "pw_out_voice_tap": "Gán bằng cách chạm"
+  "pw_out_voice_tap": "Gán bằng cách chạm",
+  "update_version_available": "Phiên bản {version} đã sẵn sàng.",
+  "update_new_version_available": "Đã có phiên bản mới."
 }

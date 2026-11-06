@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "你已离线。账单已保存在此手机上，恢复网络后会自动同步。",
   "pw_out_voice_title": "免费语音指令已用完",
   "pw_out_voice_body": "一次语音指令需要 {points} 积分。你仍可通过点按来分配项目，免费且不限次数。",
-  "pw_out_voice_tap": "改用点按分配"
+  "pw_out_voice_tap": "改用点按分配",
+  "update_version_available": "版本 {version} 现已推出。",
+  "update_new_version_available": "新版本现已推出。"
 }

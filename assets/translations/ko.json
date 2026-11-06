@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "오프라인 상태입니다. 정산서는 이 휴대폰에 저장되었고 온라인에 연결되면 동기화됩니다.",
   "pw_out_voice_title": "무료 음성 명령을 모두 사용했어요",
   "pw_out_voice_body": "음성 명령은 {points}포인트를 사용해요. 탭으로 항목을 배정하는 것은 계속 무료, 무제한이에요.",
-  "pw_out_voice_tap": "대신 탭으로 배정하기"
+  "pw_out_voice_tap": "대신 탭으로 배정하기",
+  "update_version_available": "버전 {version}을(를) 지금 사용할 수 있어요.",
+  "update_new_version_available": "새 버전을 지금 사용할 수 있어요."
 }

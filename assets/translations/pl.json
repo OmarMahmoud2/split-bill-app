@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Brak połączenia. Rachunek zapisano na tym telefonie i zsynchronizuje się po powrocie online.",
   "pw_out_voice_title": "Skończyły Ci się darmowe polecenia głosowe",
   "pw_out_voice_body": "Jedno polecenie głosowe kosztuje {points} pkt. Pozycje nadal możesz przypisywać dotykiem, za darmo i bez limitu.",
-  "pw_out_voice_tap": "Przypisz dotykiem"
+  "pw_out_voice_tap": "Przypisz dotykiem",
+  "update_version_available": "Wersja {version} jest już dostępna.",
+  "update_new_version_available": "Dostępna jest nowa wersja."
 }

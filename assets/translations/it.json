@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Sei offline. Il conto è salvato su questo telefono e si sincronizzerà quando torni online.",
   "pw_out_voice_title": "Hai finito i comandi vocali gratuiti",
   "pw_out_voice_body": "Un comando vocale usa {points} punti. Puoi sempre assegnare le voci toccando, gratis e senza limiti.",
-  "pw_out_voice_tap": "Assegna toccando invece"
+  "pw_out_voice_tap": "Assegna toccando invece",
+  "update_version_available": "La versione {version} è ora disponibile.",
+  "update_new_version_available": "È disponibile una nuova versione."
 }

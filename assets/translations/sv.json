@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Du är offline. Notan är sparad på den här telefonen och synkas när du är online igen.",
   "pw_out_voice_title": "Dina gratis röstkommandon är slut",
   "pw_out_voice_body": "Ett röstkommando kostar {points} poäng. Du kan fortfarande tilldela varor genom att trycka, gratis och obegränsat.",
-  "pw_out_voice_tap": "Tilldela genom att trycka istället"
+  "pw_out_voice_tap": "Tilldela genom att trycka istället",
+  "update_version_available": "Version {version} är nu tillgänglig.",
+  "update_new_version_available": "En ny version är nu tillgänglig."
 }

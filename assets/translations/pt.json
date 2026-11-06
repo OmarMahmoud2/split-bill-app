@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Você está offline. A conta foi salva neste celular e sincroniza quando a conexão voltar.",
   "pw_out_voice_title": "Seus comandos de voz grátis acabaram",
   "pw_out_voice_body": "Um comando de voz usa {points} pontos. Você ainda pode atribuir os itens tocando, grátis e sem limite.",
-  "pw_out_voice_tap": "Atribuir tocando"
+  "pw_out_voice_tap": "Atribuir tocando",
+  "update_version_available": "A versão {version} já está disponível.",
+  "update_new_version_available": "Uma nova versão já está disponível."
 }

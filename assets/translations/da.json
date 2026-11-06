@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Du er offline. Regningen er gemt på din telefon og synkroniseres, når du er online igen.",
   "pw_out_voice_title": "Du har ikke flere gratis stemmekommandoer",
   "pw_out_voice_body": "En stemmekommando koster {points} point. Du kan stadig fordele varer ved at trykke, gratis og ubegrænset.",
-  "pw_out_voice_tap": "Fordel ved at trykke i stedet"
+  "pw_out_voice_tap": "Fordel ved at trykke i stedet",
+  "update_version_available": "Version {version} er nu tilgængelig.",
+  "update_new_version_available": "En ny version er nu tilgængelig."
 }

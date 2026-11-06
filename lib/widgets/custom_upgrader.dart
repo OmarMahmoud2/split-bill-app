@@ -5,7 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/theme.dart';
 
 class CustomUpgrader extends StatefulWidget {
   final Widget child;
@@ -46,138 +46,169 @@ class _CustomUpgraderState extends State<CustomUpgrader> {
 
   void _showCustomUpdateDialog() {
     showGeneralDialog(
-      context:
-          context, // Note: might need navigatorKey context if init hasn't finished building, but usually safe in standard flow
+      context: context,
       barrierDismissible: false,
-      barrierLabel: "Update Available",
-      transitionDuration: const Duration(milliseconds: 500),
-      pageBuilder: (context, anim1, anim2) {
-        final p = context.palette;
-        return Stack(
-          children: [
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(color: Colors.black.withValues(alpha: 0.5)),
-            ),
-            Center(
-              child: ScaleTransition(
-                scale: CurvedAnimation(parent: anim1, curve: Curves.elasticOut),
-                child: Dialog(
-                  backgroundColor: Colors.transparent,
-                  insetPadding: const EdgeInsets.all(20),
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: p.surface,
-                      borderRadius: BorderRadius.circular(32),
-                      boxShadow: [
-                        BoxShadow(
-                          color: p.infoAccent.withValues(alpha: 0.2),
-                          blurRadius: 30,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Animation
-                        SizedBox(
-                          height: 140,
-                          child: Lottie.asset(
-                            'assets/animations/update_rocket.json', // Requires asset
-                            errorBuilder: (c, e, s) => Icon(
-                              Icons.rocket_launch_rounded,
-                              size: 100,
-                              color: p.infoAccent,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'update_available',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w900,
-                            color: p.textPrimary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ).tr(),
-                        const SizedBox(height: 12),
-                        Text(
-                          "Version ${_upgrader.currentAppStoreVersion ?? 'New'} is now available.",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: p.textSecondary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'we_ve_added_new_features_and_fixed_some_bugs_to_improve_your_experience',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: p.textSecondary,
-                            height: 1.4,
-                          ),
-                          textAlign: TextAlign.center,
-                        ).tr(),
-                        const SizedBox(height: 24),
-
-                        // Update Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final uri = Uri.parse(AppLinks.storeUrl);
-                              if (await canLaunchUrl(uri)) {
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: p.infoAccent,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              elevation: 4,
-                              shadowColor: p.infoAccent.withValues(alpha: 0.4),
-                            ),
-                            child: Text(
-                              'update_now',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ).tr(),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(
-                            'later',
-                            style: TextStyle(color: p.textTertiary),
-                          ).tr(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      barrierLabel: 'update_available'.tr(),
+      transitionDuration: AppMotion.durationFor(
+        context,
+        const Duration(milliseconds: 500),
+      ),
+      pageBuilder: (context, anim1, anim2) => UpdateDialogContent(
+        animation: anim1,
+        version: _upgrader.currentAppStoreVersion,
+        onUpdate: _openStore,
+        onLater: () => Navigator.pop(context),
+      ),
     );
+  }
+
+  Future<void> _openStore() async {
+    final uri = Uri.parse(AppLinks.storeUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return widget.child;
+  }
+}
+
+/// The update prompt itself: v3 tokens, translated, and a plain fade (no
+/// bounce, no looping animation) under Reduce Motion.
+class UpdateDialogContent extends StatelessWidget {
+  const UpdateDialogContent({
+    super.key,
+    required this.animation,
+    required this.onUpdate,
+    required this.onLater,
+    this.version,
+  });
+
+  final Animation<double> animation;
+  final String? version;
+  final VoidCallback onUpdate;
+  final VoidCallback onLater;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final reduce = AppMotion.reduceMotion(context);
+    final card = Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: p.surface,
+          borderRadius: BorderRadius.circular(32),
+          boxShadow: [
+            BoxShadow(
+              color: p.shadow.withValues(alpha: 0.2),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExcludeSemantics(
+              child: SizedBox(
+                height: 140,
+                child: reduce
+                    ? Icon(
+                        Icons.rocket_launch_rounded,
+                        size: 100,
+                        color: p.infoAccent,
+                      )
+                    : Lottie.asset(
+                        'assets/animations/update_rocket.json',
+                        errorBuilder: (c, e, s) => Icon(
+                          Icons.rocket_launch_rounded,
+                          size: 100,
+                          color: p.infoAccent,
+                        ),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Semantics(
+              header: true,
+              child: Text(
+                'update_available'.tr(),
+                style: AppTypography.headlineLarge.copyWith(
+                  color: p.textPrimary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              version == null || version!.isEmpty
+                  ? 'update_new_version_available'.tr()
+                  : 'update_version_available'.tr(
+                      namedArgs: {'version': version!},
+                    ),
+              style: AppTypography.titleSmall.copyWith(
+                color: p.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'we_ve_added_new_features_and_fixed_some_bugs_to_improve_your_experience'
+                  .tr(),
+              style: AppTypography.bodyMedium.copyWith(
+                color: p.textSecondary,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: onUpdate,
+                child: Text('update_now'.tr()),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: onLater,
+              child: Text(
+                'later'.tr(),
+                style: AppTypography.labelLarge.copyWith(
+                  color: p.textTertiary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    return Stack(
+      children: [
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: ColoredBox(
+            color: p.scrim.withValues(alpha: 0.5),
+            child: const SizedBox.expand(),
+          ),
+        ),
+        Center(
+          child: reduce
+              ? FadeTransition(opacity: animation, child: card)
+              : ScaleTransition(
+                  scale: CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.elasticOut,
+                  ),
+                  child: card,
+                ),
+        ),
+      ],
+    );
   }
 }

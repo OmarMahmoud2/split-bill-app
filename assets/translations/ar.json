@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "أنت غير متصل. تم حفظ الفاتورة على هاتفك وستتم مزامنتها عند عودة الاتصال.",
   "pw_out_voice_title": "انتهت أوامرك الصوتية المجانية",
   "pw_out_voice_body": "يستخدم الأمر الصوتي {points} نقاط. ما زال بإمكانك توزيع العناصر بالضغط، مجانًا وبلا حدود.",
-  "pw_out_voice_tap": "وزّع بالضغط بدلًا من ذلك"
+  "pw_out_voice_tap": "وزّع بالضغط بدلًا من ذلك",
+  "update_version_available": "الإصدار {version} متاح الآن.",
+  "update_new_version_available": "يتوفر إصدار جديد الآن."
 }

@@ -2138,5 +2138,7 @@
   "bf_summary_saved_offline": "Sin conexión. La cuenta se guardó en este teléfono y se sincronizará al volver a conectarte.",
   "pw_out_voice_title": "Te quedaste sin comandos de voz gratis",
   "pw_out_voice_body": "Un comando de voz usa {points} puntos. Aún puedes asignar los artículos tocando, gratis e ilimitado.",
-  "pw_out_voice_tap": "Asignar tocando en su lugar"
+  "pw_out_voice_tap": "Asignar tocando en su lugar",
+  "update_version_available": "La versión {version} ya está disponible.",
+  "update_new_version_available": "Ya hay una nueva versión disponible."
 }
