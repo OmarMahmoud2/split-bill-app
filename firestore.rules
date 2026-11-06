@@ -243,8 +243,10 @@ service cloud.firestore {
     // Bill members (non-anonymous, active) may only touch payment state, and
     // may not add or remove participants or change who an entry belongs to.
     // Anonymous web guests write through the backend (guest-payment endpoint),
-    // never directly. Rules cannot loop and have a 1000-expression budget, so the first 12 entries are checked
-    // one by one; the list length is fixed for every bill.
+    // never directly. Rules cannot loop and have a 1000-expression budget, so
+    // the first 12 entries are checked one by one. A non-host member may only
+    // write bills with at most 12 participants directly; bigger bills go
+    // through the backend (POST /api/split-bill/bills/<id>/guest-payment/).
     function sameParticipant(i) {
       let oldP = resource.data.participants;
       let newP = request.resource.data.participants;
@@ -259,6 +261,29 @@ service cloud.firestore {
         && sameParticipant(10) && sameParticipant(11);
     }
 
+    // memberPaymentOnly also pins id and name (not payment keys), so members
+    // skip participantsKeepIdentity to stay inside the expression budget.
+    // Payment keys a member may write on an entry: the 1.2.0 app writes
+    // paymentProof, status and paymentTime; 2.0 adds paymentMethod. Never
+    // isPaid (host confirmation) or amounts/uid/phone/photo. A member may
+    // move an entry to REVIEW or PENDING, never to PAID.
+    function memberPaymentEntry(i) {
+      let oldP = resource.data.participants;
+      let newP = request.resource.data.participants;
+      return i >= oldP.size()
+        || (newP[i].diff(oldP[i]).affectedKeys()
+              .hasOnly(['paymentProof', 'status', 'paymentTime', 'paymentMethod'])
+            && (newP[i].get('status', null) == oldP[i].get('status', null)
+                || newP[i].get('status', null) in ['REVIEW', 'PENDING']));
+    }
+
+    function memberPaymentOnly() {
+      return resource.data.participants.size() <= 12
+        && memberPaymentEntry(0) && memberPaymentEntry(1) && memberPaymentEntry(2) && memberPaymentEntry(3)
+        && memberPaymentEntry(4) && memberPaymentEntry(5) && memberPaymentEntry(6) && memberPaymentEntry(7)
+        && memberPaymentEntry(8) && memberPaymentEntry(9) && memberPaymentEntry(10) && memberPaymentEntry(11);
+    }
+
     function paymentOnlyBillUpdate() {
       return isActiveUser()
         && (resource.data.hostId == request.auth.uid || billMember())
@@ -268,7 +293,9 @@ service cloud.firestore {
         && request.resource.data.participants is list
         && resource.data.participants is list
         && request.resource.data.participants.size() == resource.data.participants.size()
-        && participantsKeepIdentity();
+        && (resource.data.hostId == request.auth.uid
+            ? participantsKeepIdentity()
+            : memberPaymentOnly());
     }
 
     // The notification must be about a bill the writer shares with the

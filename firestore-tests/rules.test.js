@@ -204,15 +204,65 @@ describe('bills', () => {
     await assertFails(f({ participants: [bill.participants[1], bill.participants[0], bill.participants[2]] }));
   });
 
-  it('works for large bills (rules expression budget)', async () => {
-    const many = Array.from({ length: 30 }, (_, i) => ({ id: `p${i}`, name: `P${i}`, status: 'PENDING' }));
-    await env.withSecurityRulesDisabled(async (ctx) => {
-      await setDoc(doc(ctx.firestore(), 'bills', 'big'), { ...bill, participants: many });
-    });
-    const next = many.map((p, i) => (i === 25 ? { ...p, status: 'REVIEW' } : p));
-    await assertSucceeds(updateDoc(doc(google(FRIEND), 'bills', 'big'), { participants: next }));
-    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'big'), { participants: next.slice(0, 29) }));
-    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'big'), { participants: next.map((p, i) => (i === 3 ? { ...p, id: 'x' } : p)) }));
+  // The exact 1.2.0 member write (participant_bill_screen.dart on main): copy
+  // the list, set paymentProof/status/paymentTime on my own entry, write the
+  // whole list back. Entries carry the usual share fields.
+  const full = (n) => Array.from({ length: n }, (_, i) => ({
+    id: i === 0 ? HOST : i === 1 ? FRIEND : `p${i}`, name: `P${i}`, uid: i === 0 ? HOST : i === 1 ? FRIEND : undefined,
+    amount: 10 + i, phoneNumber: `+2010000000${i}`, photoUrl: `https://x/${i}.jpg`, status: i === 0 ? 'PAID' : 'PENDING', isPaid: i === 0,
+  })).map((p) => Object.fromEntries(Object.entries(p).filter(([, v]) => v !== undefined)));
+  const seed = (id, participants) => env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'bills', id), { ...bill, participants });
+  });
+  const mine = (list, patch) => list.map((p, k) => (k === 1 ? { ...p, ...patch } : p));
+
+  it('1.2.0 member mark-paid shapes keep working', async () => {
+    const list = full(5);
+    await seed('c1', list);
+    const ref = doc(google(FRIEND), 'bills', 'c1');
+    // With proof.
+    await assertSucceeds(updateDoc(ref, { participants: mine(list, { paymentProof: 'QUJD', status: 'REVIEW', paymentTime: Timestamp.now() }) }));
+    // Without proof (key written as null).
+    await seed('c2', list);
+    await assertSucceeds(updateDoc(doc(google(FRIEND), 'bills', 'c2'), { participants: mine(list, { paymentProof: null, status: 'REVIEW', paymentTime: Timestamp.now() }) }));
+  });
+
+  it('2.0 member mark-paid shape (adds paymentMethod) works', async () => {
+    const list = full(5);
+    await seed('c3', list);
+    await assertSucceeds(updateDoc(doc(google(FRIEND), 'bills', 'c3'), {
+      participants: mine(list, { paymentProof: 'data:image/jpeg;base64,QUJD', status: 'REVIEW', paymentTime: Timestamp.now(), paymentMethod: 'InstaPay' }),
+    }));
+  });
+
+  it('denies a member changing anything but payment keys on any entry', async () => {
+    const list = full(5);
+    await seed('c4', list);
+    const f = (participants) => updateDoc(doc(google(FRIEND), 'bills', 'c4'), { participants });
+    const other = (patch) => list.map((p, k) => (k === 3 ? { ...p, ...patch } : p));
+    await assertFails(f(other({ amount: 0 })));
+    await assertFails(f(other({ uid: FRIEND })));
+    await assertFails(f(other({ phoneNumber: '+1' })));
+    await assertFails(f(other({ photoUrl: 'https://evil/x.jpg' })));
+    await assertFails(f(other({ isPaid: true })));
+    await assertFails(f(mine(list, { amount: 1 })));
+    await assertFails(f(mine(list, { status: 'REVIEW', isPaid: true })));
+    await assertFails(f(mine(list, { status: 'REVIEW', extra: 1 })));
+    await assertFails(f(mine(list, { status: 'PAID' })));
+    // The host may still change anything on an entry (identity aside).
+    await assertSucceeds(updateDoc(doc(google(HOST), 'bills', 'c4'), { participants: other({ amount: 99, isPaid: true, status: 'PAID' }) }));
+  });
+
+  it('member direct writes stop above 12 participants; host and backend path cover big bills', async () => {
+    const twelve = full(12);
+    await seed('t12', twelve);
+    await assertSucceeds(updateDoc(doc(google(FRIEND), 'bills', 't12'), { participants: mine(twelve, { status: 'REVIEW' }) }));
+    const many = full(30);
+    await seed('big', many);
+    // Member: denied even for a pure payment change (use the backend).
+    await assertFails(updateDoc(doc(google(FRIEND), 'bills', 'big'), { participants: mine(many, { status: 'REVIEW' }) }));
+    // Host: allowed as before.
+    await assertSucceeds(updateDoc(doc(google(HOST), 'bills', 'big'), { participants: many.map((p, i) => (i === 25 ? { ...p, status: 'PAID', isPaid: true } : p)) }));
   });
 
   it('denies members changing other fields', async () => {
