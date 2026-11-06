@@ -38,6 +38,7 @@ import 'screens/bill_link_error_screen.dart';
 import 'widgets/bill_details/bill_view_logic.dart' show billErrorKey;
 import 'package:split_bill_app/widgets/brand/brand_intro.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
+import 'package:split_bill_app/widgets/locale_rebuilder.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
 import 'config/supported_preferences.dart';
 import 'providers/app_settings_provider.dart';
@@ -574,7 +575,7 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           locale: context.locale,
           supportedLocales: context.supportedLocales,
-          localizationsDelegates: context.localizationDelegates,
+          localizationsDelegates: freshDelegates(context.localizationDelegates),
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: appSettings.themeMode,
@@ -588,7 +589,11 @@ class _MyAppState extends State<MyApp> {
           // AppBar (AppBarTheme.systemOverlayStyle covers the rest).
           builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
             value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
-            child: AppLocaleTypography(child: child ?? const SizedBox.shrink()),
+            child: LocaleRebuilder(
+              child: AppLocaleTypography(
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
           ),
 
           // Web has no store update prompt, so the upgrader (and its
