@@ -8,6 +8,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:split_bill_app/data/models.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/add_members_sheet.dart'
+    show AddGuestSheet;
+import 'package:split_bill_app/screens/split_bill/widgets/assignment_logic.dart'
+    show guestParticipant;
 import 'package:split_bill_app/services/contact_service.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
@@ -20,7 +24,8 @@ List<String> phoneVariations(String raw) {
   final cleaned = raw.replaceAll(RegExp(r'[^\d+]'), '');
   final out = <String>{cleaned};
   if (cleaned.startsWith('01')) out.add('+20${cleaned.substring(1)}');
-  if (!cleaned.startsWith('+') && !cleaned.startsWith('0')) out.add('+20$cleaned');
+  if (!cleaned.startsWith('+') && !cleaned.startsWith('0'))
+    out.add('+20$cleaned');
   if (cleaned.startsWith('201')) out.add('+$cleaned');
   if (cleaned.startsWith('00')) out.add('+${cleaned.substring(2)}');
   return out.where((v) => v.startsWith('+')).toList();
@@ -35,13 +40,18 @@ Future<GroupMember?> pickMemberFromContacts(BuildContext context) async {
     final name = contact.displayName ?? '';
     for (final v in phoneVariations(phone)) {
       try {
-        final claim = await FirebaseFirestore.instance.collection('phoneClaims').doc(v).get();
+        final claim = await FirebaseFirestore.instance
+            .collection('phoneClaims')
+            .doc(v)
+            .get();
         final uid = claim.data()?['uid']?.toString();
         if (uid == null) continue;
         final profile = await PublicProfileService.fetch(uid);
         return GroupMember(
           id: uid,
-          name: firstNonBlank([profile?['displayName'] as String?], fallback: name),
+          name: firstNonBlank([
+            profile?['displayName'] as String?,
+          ], fallback: name),
           photoUrl: profile?['photoUrl'] as String?,
           phoneNumber: v,
         );
@@ -57,7 +67,11 @@ Future<GroupMember?> pickMemberFromContacts(BuildContext context) async {
     );
   } catch (_) {
     if (context.mounted) {
-      AppToast.show(context, message: 'groups_contacts_failed'.tr(), type: AppToastType.error);
+      AppToast.show(
+        context,
+        message: 'groups_contacts_failed'.tr(),
+        type: AppToastType.error,
+      );
     }
     return null;
   }
@@ -77,7 +91,9 @@ Future<GroupMember?> scanMemberQr(BuildContext context) async {
             borderRadius: AppRadii.cardRadius,
             child: MobileScanner(
               onDetect: (capture) {
-                final code = capture.barcodes.isEmpty ? null : capture.barcodes.first.rawValue;
+                final code = capture.barcodes.isEmpty
+                    ? null
+                    : capture.barcodes.first.rawValue;
                 if (code != null && code.isNotEmpty) {
                   AppHaptics.success();
                   Navigator.of(context).pop(code);
@@ -93,7 +109,11 @@ Future<GroupMember?> scanMemberQr(BuildContext context) async {
   final profile = await PublicProfileService.fetch(uid);
   if (profile == null) {
     if (context.mounted) {
-      AppToast.show(context, message: 'groups_qr_not_found'.tr(), type: AppToastType.error);
+      AppToast.show(
+        context,
+        message: 'groups_qr_not_found'.tr(),
+        type: AppToastType.error,
+      );
     }
     return null;
   }
@@ -104,8 +124,8 @@ Future<GroupMember?> scanMemberQr(BuildContext context) async {
   );
 }
 
-/// Chips of the chosen people with remove buttons, plus "Contacts" and
-/// "Scan QR" buttons.
+/// Chips of the chosen people with remove buttons, plus "Contacts",
+/// "Scan QR" and "Add guest" buttons.
 class MemberPickerField extends StatelessWidget {
   const MemberPickerField({
     super.key,
@@ -138,11 +158,18 @@ class MemberPickerField extends StatelessWidget {
           children: [
             for (final m in members)
               InputChip(
-                avatar: LedgerAvatar(id: m.id, name: m.name, photoUrl: m.photoUrl, size: 24),
+                avatar: LedgerAvatar(
+                  id: m.id,
+                  name: m.name,
+                  photoUrl: m.photoUrl,
+                  size: 24,
+                ),
                 label: Text(m.name.isEmpty ? 'someone_label'.tr() : m.name),
                 onDeleted: lockedIds.contains(m.id)
                     ? null
-                    : () => onChanged(members.where((x) => x.id != m.id).toList()),
+                    : () => onChanged(
+                        members.where((x) => x.id != m.id).toList(),
+                      ),
                 deleteButtonTooltipMessage: 'groups_remove_member'.tr(),
                 backgroundColor: p.surface,
                 side: BorderSide(color: p.border),
@@ -155,7 +182,8 @@ class MemberPickerField extends StatelessWidget {
           children: [
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () async => _add(await pickMemberFromContacts(context)),
+                onPressed: () async =>
+                    _add(await pickMemberFromContacts(context)),
                 icon: const Icon(Icons.contacts_rounded, size: 18),
                 label: Text('groups_add_from_contacts'.tr()),
               ),
@@ -169,6 +197,21 @@ class MemberPickerField extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 10),
+        // Name-only people (no account yet), same as on a bill.
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            key: const ValueKey('group-add-guest'),
+            onPressed: () async {
+              final name = await AddGuestSheet.show(context, ctaKey: 'add');
+              if (name == null || name.trim().isEmpty) return;
+              _add(GroupMember.fromMap(guestParticipant(name)));
+            },
+            icon: const Icon(Icons.person_add_alt_outlined, size: 18),
+            label: Text('bf_assign_add_guest'.tr()),
+          ),
         ),
       ],
     );

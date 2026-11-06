@@ -140,13 +140,18 @@ class AddMembersSheet extends StatelessWidget {
 
 /// "Add guest": a name only. Pops the trimmed name, or null.
 class AddGuestSheet extends StatefulWidget {
-  const AddGuestSheet({super.key});
+  const AddGuestSheet({super.key, this.ctaKey = 'bf_assign_add_guest_cta'});
 
-  static Future<String?> show(BuildContext context) =>
-      PremiumBottomSheet.show<String>(
-        context: context,
-        child: const AddGuestSheet(),
-      );
+  /// Button label key ("Add to bill" by default; groups pass "add").
+  final String ctaKey;
+
+  static Future<String?> show(
+    BuildContext context, {
+    String ctaKey = 'bf_assign_add_guest_cta',
+  }) => PremiumBottomSheet.show<String>(
+    context: context,
+    child: AddGuestSheet(ctaKey: ctaKey),
+  );
 
   @override
   State<AddGuestSheet> createState() => _AddGuestSheetState();
@@ -216,7 +221,7 @@ class _AddGuestSheetState extends State<AddGuestSheet> {
         ),
         const SizedBox(height: AppSpacing.xl),
         AssignPillButton(
-          label: 'bf_assign_add_guest_cta'.tr(),
+          label: widget.ctaKey.tr(),
           onPressed: _controller.text.trim().isEmpty ? null : _submit,
         ),
       ],
