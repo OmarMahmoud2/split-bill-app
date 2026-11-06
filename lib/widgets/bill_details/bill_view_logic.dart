@@ -97,12 +97,12 @@ CollectionSummary collectionSummary(BillReader reader, {String? hostId}) {
     final share = reader.shareMinorOf(p);
     people++;
     owed += share;
+    collected += reader.paidMinorOf(p);
     switch (payStatusOf(p)) {
       case PayStatus.paid:
-        collected += share;
         paidPeople++;
       case PayStatus.review:
-        review += share;
+        review += reader.outstandingMinorOf(p);
       case PayStatus.notYet:
         break;
     }
@@ -122,7 +122,8 @@ Map<String, dynamic>? nextToRemind(BillReader reader, {String? hostId}) {
   for (final p in reader.participants) {
     final id = p['id']?.toString() ?? '';
     if (hostId != null && id == hostId) continue;
-    if (payStatusOf(p) == PayStatus.notYet && reader.shareMinorOf(p) > 0) {
+    if (payStatusOf(p) == PayStatus.notYet &&
+        reader.outstandingMinorOf(p) > 0) {
       return p;
     }
   }

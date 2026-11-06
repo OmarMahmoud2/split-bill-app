@@ -131,11 +131,17 @@ class BillListEntry {
       amount = 0;
       for (final p in parts) {
         if (p['id']?.toString() == uid) continue;
-        if (!settled && p['status'] == 'PAID') continue;
-        amount += reader.shareMinorOf(p);
+        amount += settled
+            ? reader.shareMinorOf(p)
+            : reader.outstandingMinorOf(p);
       }
     } else {
-      amount = -reader.shareMinorFor(uid);
+      final me = reader.participant(uid);
+      amount = me == null
+          ? 0
+          : -(settled
+                ? reader.shareMinorOf(me)
+                : reader.outstandingMinorOf(me));
     }
     final raw = data['date'];
     final date = raw is Timestamp

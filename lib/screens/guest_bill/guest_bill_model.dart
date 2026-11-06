@@ -12,6 +12,7 @@
 /// with [toMinorUnits].
 library;
 
+import '../../bill_flow/participant_payment.dart';
 import '../../domain/item_split.dart';
 import '../../domain/money.dart';
 import '../../domain/split_methods.dart';
@@ -121,6 +122,7 @@ class GuestParticipant {
     required this.name,
     required this.status,
     this.shareMinor,
+    this.paidMinor = 0,
     this.phoneNumber,
     this.hasProof = false,
   });
@@ -131,6 +133,16 @@ class GuestParticipant {
 
   /// Stored share in minor units (`shareMinor`, else legacy `share`).
   final int? shareMinor;
+
+  /// What the host has already received (see `paidMinorFromMap`).
+  final int paidMinor;
+
+  /// What is still due: the share minus what was paid.
+  int get outstandingMinor {
+    final left = (shareMinor ?? 0) - paidMinor;
+    return left > 0 ? left : 0;
+  }
+
   final String? phoneNumber;
   final bool hasProof;
 
@@ -198,12 +210,14 @@ class GuestBill {
       final p = Map<String, dynamic>.from(raw);
       final pid = p['id']?.toString();
       if (pid == null || pid.isEmpty) continue;
+      final share = _minorOf(p['shareMinor'], p['share'], currency);
       participants.add(
         GuestParticipant(
           id: pid,
           name: (p['name'] ?? '').toString(),
           status: _statusOf(p),
-          shareMinor: _minorOf(p['shareMinor'], p['share'], currency),
+          shareMinor: share,
+          paidMinor: paidMinorFromMap(p, share ?? 0),
           phoneNumber: _nonEmpty(p['phoneNumber']?.toString()),
           hasProof: (p['paymentProof']?.toString().isNotEmpty ?? false),
         ),
@@ -335,6 +349,14 @@ class GuestBill {
   int get displayTotalMinor =>
       totalMinor ??
       participants.fold<int>(0, (sum, p) => sum + (p.shareMinor ?? 0));
+
+  /// What [participantId] still has to pay: their total minus what the host
+  /// already received (the whole total when nothing was paid).
+  int dueMinorFor(String participantId) {
+    final total = breakdownFor(participantId).totalMinor;
+    final left = total - (participant(participantId)?.paidMinor ?? 0);
+    return left > 0 ? left : 0;
+  }
 
   /// The payer's breakdown; see [GuestBreakdown].
   GuestBreakdown breakdownFor(String participantId) =>

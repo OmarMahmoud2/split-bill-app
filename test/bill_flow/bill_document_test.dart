@@ -111,7 +111,13 @@ void main() {
         ],
         hostUid: 'uid1',
         previousParticipants: [
-          {'id': 'b', 'isPaid': true, 'status': 'PAID', 'paidVia': 'cash'},
+          {
+            'id': 'b',
+            'isPaid': true,
+            'status': 'PAID',
+            'paidVia': 'cash',
+            'shareMinor': (fields['participants'] as List).last['shareMinor'],
+          },
         ],
       );
       final mona = (again['participants'] as List).last as Map;

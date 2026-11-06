@@ -25,8 +25,11 @@ library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:split_bill_app/bill_flow/bill_calculator.dart';
+import 'package:split_bill_app/bill_flow/participant_payment.dart';
 import 'package:split_bill_app/domain/item_split.dart';
 import 'package:split_bill_app/domain/money.dart';
+
+export 'package:split_bill_app/bill_flow/participant_payment.dart';
 
 /// The placeholder id older screens use for the signed-in host.
 const String kCurrentUserPlaceholder = 'current_user';
@@ -180,6 +183,16 @@ Map<String, dynamic> buildBillFields({
     totalMinor += share;
     final prev = previousById[id];
     final isHost = id == hostUid;
+    // A paid share that grew (tip added, item changed) reopens: the person
+    // owes the difference, `paidMinor` keeps what the host already received.
+    final prevShare = prev == null
+        ? 0
+        : prev['shareMinor'] is num
+        ? (prev['shareMinor'] as num).round()
+        : minorFromAny(prev['share'], code);
+    final wasPaid = !isHost && prev != null && isParticipantPaid(prev);
+    final prevPaid = wasPaid ? paidMinorFromMap(prev, prevShare) : 0;
+    final reopen = wasPaid && share > prevPaid;
     num? splitInput;
     switch (draft.method) {
       case SplitMethod.exact:
@@ -203,8 +216,13 @@ Map<String, dynamic> buildBillFields({
       'shareMinor': share,
       'breakdown': person == null ? <String, int>{} : breakdownToMap(person),
       'splitInput': ?splitInput,
-      'isPaid': prev?['isPaid'] ?? isHost,
-      'status': prev?['status'] ?? (isHost ? 'PAID' : 'PENDING'),
+      'isPaid': isHost || (wasPaid ? !reopen : prev?['isPaid'] ?? false),
+      'status': isHost
+          ? 'PAID'
+          : reopen
+          ? 'PENDING'
+          : prev?['status'] ?? 'PENDING',
+      if (wasPaid) 'paidMinor': reopen ? prevPaid : share,
     });
   }
 
@@ -309,6 +327,12 @@ class BillReader {
     return minorFromAny(participant['share'], currency);
   }
 
+  int paidMinorOf(Map<String, dynamic> participant) =>
+      paidMinorFromMap(participant, shareMinorOf(participant));
+
+  int outstandingMinorOf(Map<String, dynamic> participant) =>
+      outstandingMinorFromMap(participant, shareMinorOf(participant));
+
   Map<String, dynamic>? participant(String id) {
     for (final p in participants) {
       if (_str(p['id']) == id) return p;
@@ -353,9 +377,7 @@ class BillReader {
       final item = itemList[i];
       final ua = item['unitAssignments'];
       if (ua is Map && ua.isNotEmpty) {
-        units[i] = {
-          for (final e in ua.entries) _str(e.key): _int(e.value),
-        };
+        units[i] = {for (final e in ua.entries) _str(e.key): _int(e.value)};
       } else {
         assignments[i] = [
           for (final id in (item['assignedTo'] as List?) ?? const []) _str(id),
@@ -408,7 +430,9 @@ class BillReader {
     // roulette, or legacy rounding), keep the stored numbers as overrides
     // so the bill keeps its saved shares and its total.
     final computed = computeBill(draft);
-    final stored = {for (final p in participants) _str(p['id']): shareMinorOf(p)};
+    final stored = {
+      for (final p in participants) _str(p['id']): shareMinorOf(p),
+    };
     final differs = stored.entries.any(
       (e) => computed.shareOf(e.key) != e.value,
     );

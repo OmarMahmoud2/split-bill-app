@@ -255,7 +255,8 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
     if (!mounted) return;
     setState(() => _submitting = true);
     final reader = BillReader(bill);
-    final shareMinor = reader.shareMinorFor(uid);
+    final me = reader.participant(uid);
+    final shareMinor = me == null ? 0 : reader.outstandingMinorOf(me);
     try {
       // Through the backend, not a direct write: rules only let members write
       // bills of up to 12 participants, and the backend touches this one
@@ -411,7 +412,10 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
             );
           }
           final status = payStatusOf(me);
-          final shareMinor = reader.shareMinorOf(me);
+          // What is still due; the full share once paid.
+          final shareMinor = status == PayStatus.paid
+              ? reader.shareMinorOf(me)
+              : reader.outstandingMinorOf(me);
           final hostId = bill['hostId']?.toString() ?? '';
           final store = _storeName(bill);
 

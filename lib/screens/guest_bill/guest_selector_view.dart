@@ -137,7 +137,7 @@ class _NameRow extends StatelessWidget {
       GuestPayStatus.paid => 'guest_status_paid'.tr(),
       GuestPayStatus.review => 'guest_status_review'.tr(),
       GuestPayStatus.pending => guestAmount(
-        participant.shareMinor ?? 0,
+        participant.outstandingMinor,
         currency,
         symbol: false,
       ),

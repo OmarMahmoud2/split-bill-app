@@ -25,7 +25,7 @@ PaymentRecord? groupSettlementForPaidShare({
   if (memberId == hostId || !uids.contains(memberId)) return null;
 
   final reader = BillReader(bill);
-  final amountMinor = reader.shareMinorOf(participant);
+  final amountMinor = reader.outstandingMinorOf(participant);
   if (amountMinor <= 0) return null;
 
   return PaymentRecord(
