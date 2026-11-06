@@ -4,6 +4,8 @@ import 'dart:math' as math;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
+import 'package:split_bill_app/bill_flow/voice/voice_logic.dart'
+    show firstNameOf;
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
@@ -89,7 +91,11 @@ class _BillRouletteScreenState extends State<BillRouletteScreen> {
       ? const Duration(milliseconds: 150)
       : const Duration(milliseconds: 2600);
 
-  String _name(int i) => (widget.participants[i]['name'] ?? '?').toString();
+  // First names fit the wheel and the button ("Omar pays", not "Omar Mahmo…").
+  String _name(int i) {
+    final first = firstNameOf(widget.participants[i]['name']);
+    return first.isEmpty ? '?' : first;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,9 +160,8 @@ class _BillRouletteScreenState extends State<BillRouletteScreen> {
                     for (var i = 0; i < widget.participants.length; i++)
                       FortuneItem(
                         style: FortuneItemStyle(
-                          color: p.avatarTintFor(
-                            (widget.participants[i]['id'] ?? '$i').toString(),
-                          ),
+                          // By position so neighbouring slices never share a tint.
+                          color: p.avatarTints[i % p.avatarTints.length],
                           borderColor: p.surface,
                           borderWidth: 2,
                           textStyle: AppTypography.titleSmall.copyWith(

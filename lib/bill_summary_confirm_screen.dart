@@ -25,6 +25,7 @@ import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/bill_details/bill_breakdown_card.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
+import 'package:split_bill_app/utils/dispose_later.dart';
 
 /// Friendly key + args for the first issue of a computation. Pure.
 (String, Map<String, String>)? summaryIssueCopy(
@@ -275,7 +276,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
         ],
       ),
     );
-    controller.dispose();
+    disposeAfterRouteCloses([controller]);
     if (value == null || !mounted) return;
     final next = _draft.copyWith(
       overrides: {..._draft.overrides, id: value},

@@ -13,6 +13,7 @@ import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 import 'admin_user_filters.dart';
 import 'widgets/admin_avatar.dart';
 import 'widgets/send_notification_sheet.dart';
+import 'package:split_bill_app/utils/dispose_later.dart';
 
 /// Bills and groups a user is part of.
 class AdminUserCounts {
@@ -646,7 +647,7 @@ class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
         ],
       ),
     );
-    controller.dispose();
+    disposeAfterRouteCloses([controller]);
     if (value == null || !mounted) return;
     if (value < 0 || value > adminMaxPoints) {
       AppToast.show(
@@ -828,7 +829,7 @@ class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
       ),
     );
     final typed = controller.text;
-    controller.dispose();
+    disposeAfterRouteCloses([controller]);
     if (ok != true || !mounted) return;
     final done = await _perform(
       () => _actions.deleteUserData(

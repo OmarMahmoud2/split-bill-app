@@ -254,6 +254,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
       expect(backend.docs.containsKey('users/u1'), isFalse);
       expect(backend.audits.single['action'], 'user.deleteData');
+      await tester.pump(const Duration(seconds: 1)); // disposeAfterRouteCloses
     });
 
     testWidgets('own account: remove admin, suspend and delete disabled', (

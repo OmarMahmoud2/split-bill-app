@@ -13,6 +13,7 @@ import 'package:split_bill_app/screens/scan_receipt/widgets/scan_top_bar.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
+import 'package:split_bill_app/utils/dispose_later.dart';
 
 /// "Review, everything editable, nothing hidden": the scanned receipt with
 /// its header (store, date, currency, item count), the review banner, the
@@ -412,7 +413,7 @@ class ReceiptResultView extends StatelessWidget {
       onSave();
       AppHaptics.selection();
     }
-    name.dispose();
+    disposeAfterRouteCloses([name]);
   }
 
   Future<void> _showAmountDialog(
@@ -462,7 +463,7 @@ class ReceiptResultView extends StatelessWidget {
       onSave();
       AppHaptics.selection();
     }
-    local.dispose();
+    disposeAfterRouteCloses([local]);
   }
 
   Future<void> _showAllChargesDialog(BuildContext context) async {
@@ -526,9 +527,7 @@ class ReceiptResultView extends StatelessWidget {
       onSave();
       AppHaptics.selection();
     }
-    for (final c in locals) {
-      c.dispose();
-    }
+    disposeAfterRouteCloses(locals);
   }
 
   Future<void> _showItemEditorDialog(BuildContext context, {int? index}) async {
@@ -661,9 +660,7 @@ class ReceiptResultView extends StatelessWidget {
       onDeleteItem(index);
       AppHaptics.light();
     }
-    name.dispose();
-    qty.dispose();
-    price.dispose();
+    disposeAfterRouteCloses([name, qty, price]);
   }
 
   bool _isFlagged(int index) {
