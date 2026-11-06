@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Użytkownicy",
   "adm3_users_row_subtitle": "Konta: {count} · szukaj, filtruj, zarządzaj",
   "adm3_users_title": "Użytkownicy",
-  "adm3_yes": "Tak"
+  "adm3_yes": "Tak",
+  "bf_bill_proof_reject": "Odrzuć",
+  "bf_bill_proof_reject_title": "Odrzucić ten dowód?",
+  "bf_bill_proof_reject_body": "Dowód {name} zostanie usunięty, a jej lub jego udział wróci do statusu nieopłaconego.",
+  "bf_bill_proof_rejected": "Udział {name} jest znowu nieopłacony.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} oznaczono jako nieopłacone. Zapisana płatność pozostaje w rozliczeniu grupy."
 }

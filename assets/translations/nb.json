@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Brukere",
   "adm3_users_row_subtitle": "{count} kontoer · søk, filtrer og administrer",
   "adm3_users_title": "Brukere",
-  "adm3_yes": "Ja"
+  "adm3_yes": "Ja",
+  "bf_bill_proof_reject": "Avvis",
+  "bf_bill_proof_reject_title": "Avvise dette beviset?",
+  "bf_bill_proof_reject_body": "Beviset fra {name} fjernes, og andelen blir ubetalt igjen.",
+  "bf_bill_proof_rejected": "Andelen til {name} er ubetalt igjen.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} er markert som ubetalt. Den registrerte betalingen blir stående i gruppens regnskap."
 }

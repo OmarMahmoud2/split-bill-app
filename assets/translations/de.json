@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Nutzer",
   "adm3_users_row_subtitle": "{count} Konten · suchen, filtern, verwalten",
   "adm3_users_title": "Nutzer",
-  "adm3_yes": "Ja"
+  "adm3_yes": "Ja",
+  "bf_bill_proof_reject": "Ablehnen",
+  "bf_bill_proof_reject_title": "Diesen Nachweis ablehnen?",
+  "bf_bill_proof_reject_body": "Der Nachweis von {name} wird entfernt und der Anteil gilt wieder als unbezahlt.",
+  "bf_bill_proof_rejected": "Der Anteil von {name} ist wieder unbezahlt.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} ist als unbezahlt markiert. Die erfasste Zahlung bleibt im Gruppenkonto."
 }

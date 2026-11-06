@@ -2127,5 +2127,10 @@
   "adm3_users_row": "المستخدمون",
   "adm3_users_row_subtitle": "الحسابات: {count} · بحث وتصفية وإدارة",
   "adm3_users_title": "المستخدمون",
-  "adm3_yes": "نعم"
+  "adm3_yes": "نعم",
+  "bf_bill_proof_reject": "رفض",
+  "bf_bill_proof_reject_title": "رفض هذا الإثبات؟",
+  "bf_bill_proof_reject_body": "سيتم حذف إثبات {name} وسيعود نصيبه إلى غير مدفوع.",
+  "bf_bill_proof_rejected": "عاد نصيب {name} إلى غير مدفوع.",
+  "bf_bill_marked_unpaid_payment_kept": "تم تعيين {name} كغير مدفوع. يبقى الدفع المسجل في دفتر المجموعة."
 }

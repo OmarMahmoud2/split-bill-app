@@ -202,4 +202,21 @@ void main() {
     expect(historyChangeKey('item_price'), 'bf_bill_history_item_price');
     expect(historyChangeKey('whatever'), 'bf_bill_history_edited');
   });
+
+  test('rejectProof clears the proof and sets the share back to unpaid', () {
+    final out = rejectProof({
+      'id': 'ali',
+      'name': 'Ali',
+      'status': 'REVIEW',
+      'paymentProof': 'data:image/png;base64,AAAA',
+      'paymentMethod': 'InstaPay',
+      'paymentTime': 1,
+    });
+    expect(out['status'], 'PENDING');
+    expect(out['isPaid'], false);
+    expect(out.containsKey('paymentProof'), isFalse);
+    expect(out.containsKey('paymentMethod'), isFalse);
+    expect(out['name'], 'Ali');
+    expect(payStatusOf(out), PayStatus.notYet);
+  });
 }

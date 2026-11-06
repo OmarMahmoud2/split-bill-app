@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Usuarios",
   "adm3_users_row_subtitle": "{count} cuentas · busca, filtra y gestiona",
   "adm3_users_title": "Usuarios",
-  "adm3_yes": "Sí"
+  "adm3_yes": "Sí",
+  "bf_bill_proof_reject": "Rechazar",
+  "bf_bill_proof_reject_title": "¿Rechazar este comprobante?",
+  "bf_bill_proof_reject_body": "Se eliminará el comprobante de {name} y su parte volverá a estar sin pagar.",
+  "bf_bill_proof_rejected": "La parte de {name} vuelve a estar sin pagar.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} marcado como sin pagar. El pago registrado permanece en el libro del grupo."
 }

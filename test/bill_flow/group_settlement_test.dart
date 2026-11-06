@@ -79,4 +79,62 @@ void main() {
       isNull,
     );
   });
+
+  group('settlement link on toggle', () {
+    test('unmark whose delete failed keeps the link', () {
+      expect(
+        nextSettlementPaymentId(
+          paid: false,
+          previousId: 'pay1',
+          recordedId: null,
+          deleteSucceeded: false,
+        ),
+        'pay1',
+      );
+    });
+
+    test('unmark whose delete worked clears the link', () {
+      expect(
+        nextSettlementPaymentId(
+          paid: false,
+          previousId: 'pay1',
+          recordedId: null,
+          deleteSucceeded: true,
+        ),
+        isNull,
+      );
+    });
+
+    test('re-marking reuses the existing payment instead of a second one', () {
+      final plan = planSettlementLink(
+        paid: true,
+        previousId: 'pay1',
+        hasSettlement: true,
+      );
+      expect(plan.recordNew, isFalse);
+      expect(plan.reuseId, 'pay1');
+      expect(
+        nextSettlementPaymentId(
+          paid: true,
+          previousId: 'pay1',
+          recordedId: null,
+          deleteSucceeded: true,
+        ),
+        'pay1',
+      );
+    });
+
+    test('first mark records a new payment; unmark plans a delete', () {
+      expect(
+        planSettlementLink(paid: true, previousId: '', hasSettlement: true)
+            .recordNew,
+        isTrue,
+      );
+      expect(
+        planSettlementLink(paid: false, previousId: 'pay1', hasSettlement: false)
+            .deleteId,
+        'pay1',
+      );
+    });
+  });
 }

@@ -2127,5 +2127,10 @@
   "adm3_users_row": "صارفین",
   "adm3_users_row_subtitle": "{count} اکاؤنٹس · تلاش، فلٹر اور انتظام",
   "adm3_users_title": "صارفین",
-  "adm3_yes": "ہاں"
+  "adm3_yes": "ہاں",
+  "bf_bill_proof_reject": "مسترد کریں",
+  "bf_bill_proof_reject_title": "کیا یہ ثبوت مسترد کریں؟",
+  "bf_bill_proof_reject_body": "{name} کا ثبوت ہٹا دیا جائے گا اور ان کا حصہ دوبارہ ادا نہیں شدہ ہو جائے گا۔",
+  "bf_bill_proof_rejected": "{name} کا حصہ دوبارہ ادا نہیں شدہ ہے۔",
+  "bf_bill_marked_unpaid_payment_kept": "{name} کو ادا نہیں شدہ نشان زد کیا گیا۔ درج شدہ ادائیگی گروپ کے کھاتے میں رہے گی۔"
 }

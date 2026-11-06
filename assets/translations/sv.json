@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Användare",
   "adm3_users_row_subtitle": "{count} konton · sök, filtrera och hantera",
   "adm3_users_title": "Användare",
-  "adm3_yes": "Ja"
+  "adm3_yes": "Ja",
+  "bf_bill_proof_reject": "Avvisa",
+  "bf_bill_proof_reject_title": "Avvisa det här beviset?",
+  "bf_bill_proof_reject_body": "{name}s bevis tas bort och andelen blir obetald igen.",
+  "bf_bill_proof_rejected": "{name}s andel är obetald igen.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} är markerad som obetald. Den registrerade betalningen finns kvar i gruppens bok."
 }

@@ -26,6 +26,7 @@ class ProofCard extends StatelessWidget {
     this.image,
     this.detail,
     this.onViewProof,
+    this.onReject,
     this.busy = false,
   });
 
@@ -36,6 +37,9 @@ class ProofCard extends StatelessWidget {
   final String? detail;
   final VoidCallback onConfirm;
   final VoidCallback? onViewProof;
+
+  /// Host rejects the proof: clears it and sets the share back to unpaid.
+  final VoidCallback? onReject;
   final bool busy;
 
   @override
@@ -69,78 +73,96 @@ class ProofCard extends StatelessWidget {
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.hairline),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (image != null && onViewProof != null)
-            Semantics(
-              button: true,
-              label: 'bf_bill_proof_view'.tr(namedArgs: {'name': name}),
-              excludeSemantics: true,
-              child: InkWell(
-                onTap: onViewProof,
-                borderRadius: BorderRadius.circular(8),
-                child: thumb,
-              ),
-            )
-          else
-            ExcludeSemantics(child: thumb),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppTypography.titleSmall.copyWith(
-                    color: p.textPrimary,
-                    fontWeight: FontWeight.w600,
+          Row(
+            children: [
+              if (image != null && onViewProof != null)
+                Semantics(
+                  button: true,
+                  label: 'bf_bill_proof_view'.tr(namedArgs: {'name': name}),
+                  excludeSemantics: true,
+                  child: InkWell(
+                    onTap: onViewProof,
+                    borderRadius: BorderRadius.circular(8),
+                    child: thumb,
                   ),
+                )
+              else
+                ExcludeSemantics(child: thumb),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTypography.titleSmall.copyWith(
+                        color: p.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (detail != null && detail!.isNotEmpty)
+                      Text(
+                        detail!,
+                        style: AppTypography.bodySmall.copyWith(
+                          color: p.textSecondary,
+                        ),
+                      ),
+                  ],
                 ),
-                if (detail != null && detail!.isNotEmpty)
-                  Text(
-                    detail!,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: p.textSecondary,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              SizedBox(
+                height: 44,
+                child: Center(
+                  child: Material(
+                    color: p.accent,
+                    shape: const StadiumBorder(),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: busy ? null : onConfirm,
+                      child: Container(
+                        height: 36,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        alignment: Alignment.center,
+                        child: busy
+                            ? SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: p.onAccent,
+                                ),
+                              )
+                            : Text(
+                                'bf_bill_proof_confirm'.tr(),
+                                style: AppTypography.labelMedium.copyWith(
+                                  color: p.onAccent,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
-              ],
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          SizedBox(
-            height: 44,
-            child: Center(
-              child: Material(
-                color: p.accent,
-                shape: const StadiumBorder(),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: busy ? null : onConfirm,
-                  child: Container(
-                    height: 36,
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    alignment: Alignment.center,
-                    child: busy
-                        ? SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: p.onAccent,
-                            ),
-                          )
-                        : Text(
-                            'bf_bill_proof_confirm'.tr(),
-                            style: AppTypography.labelMedium.copyWith(
-                              color: p.onAccent,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                  ),
                 ),
               ),
-            ),
+            ],
           ),
+          if (onReject != null)
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton(
+                onPressed: busy ? null : onReject,
+                style: TextButton.styleFrom(
+                  foregroundColor: p.owe,
+                  minimumSize: const Size(0, 44),
+                  textStyle: AppTypography.labelMedium,
+                ),
+                child: Text('bf_bill_proof_reject'.tr()),
+              ),
+            ),
         ],
       ),
     );

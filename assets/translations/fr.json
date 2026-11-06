@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Utilisateurs",
   "adm3_users_row_subtitle": "{count} comptes · rechercher, filtrer, gérer",
   "adm3_users_title": "Utilisateurs",
-  "adm3_yes": "Oui"
+  "adm3_yes": "Oui",
+  "bf_bill_proof_reject": "Refuser",
+  "bf_bill_proof_reject_title": "Refuser ce justificatif ?",
+  "bf_bill_proof_reject_body": "Le justificatif de {name} sera supprimé et sa part repassera en impayée.",
+  "bf_bill_proof_rejected": "La part de {name} est de nouveau impayée.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} est marqué impayé. Le paiement enregistré reste dans le registre du groupe."
 }

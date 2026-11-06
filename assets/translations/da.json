@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Brugere",
   "adm3_users_row_subtitle": "{count} konti · søg, filtrer og administrer",
   "adm3_users_title": "Brugere",
-  "adm3_yes": "Ja"
+  "adm3_yes": "Ja",
+  "bf_bill_proof_reject": "Afvis",
+  "bf_bill_proof_reject_title": "Afvis dette bevis?",
+  "bf_bill_proof_reject_body": "{name}s bevis fjernes, og deres andel bliver til ubetalt igen.",
+  "bf_bill_proof_rejected": "{name}s andel er ubetalt igen.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} er markeret som ubetalt. Den registrerede betaling bliver i gruppens regnskab."
 }

@@ -138,19 +138,25 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             createdBy: _user?.uid ?? '',
           )
         : null;
-    String? settlementId;
+    final previousSettlementId =
+        participant[settlementPaymentIdField]?.toString() ?? '';
+    final plan = planSettlementLink(
+      paid: paid,
+      previousId: previousSettlementId,
+      hasSettlement: settlement != null,
+    );
+    String? recordedId;
+    var deleteSucceeded = true;
     try {
-      if (settlement != null) {
-        settlementId = await ledger.recordPayment(settlement);
+      if (plan.recordNew && settlement != null) {
+        recordedId = await ledger.recordPayment(settlement);
       }
-      final previousSettlementId =
-          participant[settlementPaymentIdField]?.toString() ?? '';
-      if (!paid && previousSettlementId.isNotEmpty) {
+      if (plan.deleteId != null) {
         final groupId = bill['groupId']?.toString();
         try {
           await ledger.deletePayment(
             PaymentRecord(
-              id: previousSettlementId,
+              id: plan.deleteId!,
               from: id,
               to: bill['hostId']?.toString() ?? '',
               amountMinor: 0,
@@ -161,9 +167,17 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           );
         } catch (_) {
           // Older than the 24 h delete window: the payment stays in the
-          // group ledger, which still reflects money that changed hands.
+          // group ledger and the share keeps its link, so marking it paid
+          // again reuses that payment instead of recording a second one.
+          deleteSucceeded = false;
         }
       }
+      final settlementId = nextSettlementPaymentId(
+        paid: paid,
+        previousId: previousSettlementId,
+        recordedId: recordedId,
+        deleteSucceeded: deleteSucceeded,
+      );
       Map<String, dynamic>? after;
       await FirebaseFirestore.instance.runTransaction((tx) async {
         final snap = await tx.get(_billRef);
@@ -179,8 +193,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             'status': paid ? 'PAID' : 'PENDING',
             'isPaid': paid,
             if (paid) 'paidConfirmedAt': Timestamp.now(),
-            if (settlementId != null) settlementPaymentIdField: settlementId,
-            if (!paid) settlementPaymentIdField: null,
+            if (settlementId != null || !paid)
+              settlementPaymentIdField: settlementId,
           },
         );
         final update = <String, dynamic>{
@@ -223,9 +237,13 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
       } else {
         AppToast.show(
           context,
-          message: (paid ? 'bf_bill_marked_paid' : 'bf_bill_marked_unpaid').tr(
-            namedArgs: {'name': name},
-          ),
+          message:
+              (paid
+                      ? 'bf_bill_marked_paid'
+                      : deleteSucceeded
+                      ? 'bf_bill_marked_unpaid'
+                      : 'bf_bill_marked_unpaid_payment_kept')
+                  .tr(namedArgs: {'name': name}),
           type: paid ? AppToastType.success : AppToastType.info,
         );
       }
@@ -233,13 +251,13 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         unawaited(_notifyAccepted(id));
       }
     } catch (e) {
-      if (settlement != null && settlementId != null) {
+      if (settlement != null && recordedId != null) {
         // The bill update failed: undo the payment so nothing counts twice.
         unawaited(
           ledger
               .deletePayment(
                 PaymentRecord(
-                  id: settlementId,
+                  id: recordedId,
                   from: settlement.from,
                   to: settlement.to,
                   amountMinor: settlement.amountMinor,
@@ -582,6 +600,61 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     );
   }
 
+  /// Host rejects a submitted proof: clears it and sets the share back to
+  /// unpaid, after confirming.
+  Future<void> _rejectProof(Map<String, dynamic> participant) async {
+    final id = participant['id']?.toString() ?? '';
+    final name = participant['name']?.toString() ?? '';
+    if (id.isEmpty || _busy.contains(id)) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('bf_bill_proof_reject_title'.tr()),
+        content: Text(
+          'bf_bill_proof_reject_body'.tr(namedArgs: {'name': name}),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('common_cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('bf_bill_proof_reject'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _busy.add(id));
+    try {
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        final snap = await tx.get(_billRef);
+        final data = snap.data();
+        if (data == null) {
+          throw FirebaseException(plugin: 'cloud_firestore', code: 'not-found');
+        }
+        tx.update(_billRef, {
+          'participants': updateParticipant(
+            (data['participants'] as List?) ?? const [],
+            id,
+            rejectProof,
+          ),
+        });
+      });
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'bf_bill_proof_rejected'.tr(namedArgs: {'name': name}),
+        type: AppToastType.info,
+      );
+    } catch (e) {
+      _showError(e, retry: () => _rejectProof(participant));
+    } finally {
+      if (mounted) setState(() => _busy.remove(id));
+    }
+  }
+
   void _viewProof(
     Map<String, dynamic> participant,
     Uint8List image,
@@ -750,6 +823,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                         ? null
                         : () => _viewProof(pt, proof, bill),
                     onConfirm: () => _setPaid(pt, paid: true, bill: bill),
+                    onReject: () => _rejectProof(pt),
                   );
                 },
               ),

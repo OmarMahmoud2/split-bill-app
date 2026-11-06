@@ -312,3 +312,15 @@ List<Map<String, dynamic>> updateParticipant(
   if (!found) throw StateError('participant $id not on bill');
   return out;
 }
+
+/// [participant] with the submitted payment proof cleared and the share back
+/// to unpaid (the host rejected the proof).
+Map<String, dynamic> rejectProof(Map<String, dynamic> participant) {
+  final out = Map<String, dynamic>.from(participant)
+    ..remove('paymentProof')
+    ..remove('paymentMethod')
+    ..remove('paymentTime');
+  out['status'] = 'PENDING';
+  out['isPaid'] = false;
+  return out;
+}

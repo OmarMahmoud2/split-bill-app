@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Gebruikers",
   "adm3_users_row_subtitle": "{count} accounts · zoeken, filteren en beheren",
   "adm3_users_title": "Gebruikers",
-  "adm3_yes": "Ja"
+  "adm3_yes": "Ja",
+  "bf_bill_proof_reject": "Afwijzen",
+  "bf_bill_proof_reject_title": "Dit bewijs afwijzen?",
+  "bf_bill_proof_reject_body": "Het bewijs van {name} wordt verwijderd en het aandeel staat weer als onbetaald.",
+  "bf_bill_proof_rejected": "Het aandeel van {name} is weer onbetaald.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} is als onbetaald gemarkeerd. De geregistreerde betaling blijft in het groepsboek staan."
 }

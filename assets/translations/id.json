@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Pengguna",
   "adm3_users_row_subtitle": "{count} akun · cari, saring, dan kelola",
   "adm3_users_title": "Pengguna",
-  "adm3_yes": "Ya"
+  "adm3_yes": "Ya",
+  "bf_bill_proof_reject": "Tolak",
+  "bf_bill_proof_reject_title": "Tolak bukti ini?",
+  "bf_bill_proof_reject_body": "Bukti {name} akan dihapus dan bagiannya kembali belum dibayar.",
+  "bf_bill_proof_rejected": "Bagian {name} kembali belum dibayar.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} ditandai belum dibayar. Pembayaran yang tercatat tetap ada di buku besar grup."
 }

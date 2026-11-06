@@ -11,6 +11,7 @@ import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
 import 'package:split_bill_app/widgets/bill_details/participant_bill_view.dart';
 import 'package:split_bill_app/widgets/bill_details/participant_tile.dart';
 import 'package:split_bill_app/widgets/bill_details/pay_methods_list.dart';
+import 'package:split_bill_app/widgets/bill_details/proof_card.dart';
 
 import 'fixtures.dart';
 
@@ -46,6 +47,28 @@ void main() {
           SystemChannels.platform,
           (call) async => null,
         );
+  });
+
+  group('ProofCard', () {
+    testWidgets('host can reject the proof', (tester) async {
+      var rejected = 0;
+      await tester.pumpWidget(
+        _app(
+          ProofCard(
+            name: 'Ali',
+            onConfirm: () {},
+            onReject: () => rejected++,
+          ),
+        ),
+      );
+      await tester.tap(find.text('bf_bill_proof_reject'));
+      expect(rejected, 1);
+    });
+
+    testWidgets('no reject action when none is given', (tester) async {
+      await tester.pumpWidget(_app(ProofCard(name: 'Ali', onConfirm: () {})));
+      expect(find.text('bf_bill_proof_reject'), findsNothing);
+    });
   });
 
   group('BillBreakdownCard', () {

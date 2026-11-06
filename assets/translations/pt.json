@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Usuários",
   "adm3_users_row_subtitle": "{count} contas · busque, filtre e gerencie",
   "adm3_users_title": "Usuários",
-  "adm3_yes": "Sim"
+  "adm3_yes": "Sim",
+  "bf_bill_proof_reject": "Recusar",
+  "bf_bill_proof_reject_title": "Recusar este comprovante?",
+  "bf_bill_proof_reject_body": "O comprovante de {name} será removido e a parte voltará a ficar em aberto.",
+  "bf_bill_proof_rejected": "A parte de {name} voltou a ficar em aberto.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} marcado como em aberto. O pagamento registrado continua no livro do grupo."
 }

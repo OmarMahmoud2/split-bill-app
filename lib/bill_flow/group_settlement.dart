@@ -41,3 +41,55 @@ PaymentRecord? groupSettlementForPaidShare({
     groupId: groupId,
   );
 }
+
+/// What to do with a share's linked settle-up payment when the host toggles
+/// it paid or unpaid.
+class SettlementLinkPlan {
+  const SettlementLinkPlan({
+    required this.reuseId,
+    required this.recordNew,
+    required this.deleteId,
+  });
+
+  /// Existing payment to keep linked (re-marking paid).
+  final String? reuseId;
+
+  /// A new payment must be recorded.
+  final bool recordNew;
+
+  /// Payment to delete (unmarking).
+  final String? deleteId;
+}
+
+/// Re-marking a share paid reuses its existing payment instead of recording
+/// a second one; unmarking deletes it.
+SettlementLinkPlan planSettlementLink({
+  required bool paid,
+  required String? previousId,
+  required bool hasSettlement,
+}) {
+  final prev = (previousId ?? '').isEmpty ? null : previousId;
+  if (paid) {
+    return SettlementLinkPlan(
+      reuseId: prev,
+      recordNew: prev == null && hasSettlement,
+      deleteId: null,
+    );
+  }
+  return SettlementLinkPlan(reuseId: null, recordNew: false, deleteId: prev);
+}
+
+/// The `settlementPaymentId` to store after the toggle. When unmarking and the
+/// payment could not be deleted (older than the 24 h window) the link stays,
+/// so re-marking reuses it.
+String? nextSettlementPaymentId({
+  required bool paid,
+  required String? previousId,
+  required String? recordedId,
+  required bool deleteSucceeded,
+}) {
+  final prev = (previousId ?? '').isEmpty ? null : previousId;
+  if (paid) return recordedId ?? prev;
+  if (prev != null && !deleteSucceeded) return prev;
+  return null;
+}

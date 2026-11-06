@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Người dùng",
   "adm3_users_row_subtitle": "{count} tài khoản · tìm, lọc và quản lý",
   "adm3_users_title": "Người dùng",
-  "adm3_yes": "Có"
+  "adm3_yes": "Có",
+  "bf_bill_proof_reject": "Từ chối",
+  "bf_bill_proof_reject_title": "Từ chối bằng chứng này?",
+  "bf_bill_proof_reject_body": "Bằng chứng của {name} sẽ bị xóa và phần của họ quay lại trạng thái chưa trả.",
+  "bf_bill_proof_rejected": "Phần của {name} lại chưa được trả.",
+  "bf_bill_marked_unpaid_payment_kept": "Đã đánh dấu {name} chưa trả. Khoản thanh toán đã ghi vẫn nằm trong sổ nhóm."
 }

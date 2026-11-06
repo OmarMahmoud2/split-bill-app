@@ -2127,5 +2127,10 @@
   "adm3_users_row": "उपयोगकर्ता",
   "adm3_users_row_subtitle": "{count} खाते · खोजें, फ़िल्टर करें, प्रबंधित करें",
   "adm3_users_title": "उपयोगकर्ता",
-  "adm3_yes": "हां"
+  "adm3_yes": "हां",
+  "bf_bill_proof_reject": "अस्वीकार करें",
+  "bf_bill_proof_reject_title": "इस प्रमाण को अस्वीकार करें?",
+  "bf_bill_proof_reject_body": "{name} का प्रमाण हटा दिया जाएगा और उनका हिस्सा फिर से अवैतनिक हो जाएगा।",
+  "bf_bill_proof_rejected": "{name} का हिस्सा फिर से अवैतनिक है।",
+  "bf_bill_marked_unpaid_payment_kept": "{name} को अवैतनिक चिह्नित किया गया। दर्ज किया गया भुगतान समूह के खाते में बना रहेगा।"
 }

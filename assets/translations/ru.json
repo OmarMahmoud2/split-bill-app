@@ -2127,5 +2127,10 @@
   "adm3_users_row": "Пользователи",
   "adm3_users_row_subtitle": "Аккаунтов: {count} · поиск, фильтры, управление",
   "adm3_users_title": "Пользователи",
-  "adm3_yes": "Да"
+  "adm3_yes": "Да",
+  "bf_bill_proof_reject": "Отклонить",
+  "bf_bill_proof_reject_title": "Отклонить это подтверждение?",
+  "bf_bill_proof_reject_body": "Подтверждение от {name} будет удалено, а доля снова станет неоплаченной.",
+  "bf_bill_proof_rejected": "Доля {name} снова не оплачена.",
+  "bf_bill_marked_unpaid_payment_kept": "{name} отмечен как не оплативший. Записанный платёж остаётся в журнале группы."
 }
