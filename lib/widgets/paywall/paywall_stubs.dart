@@ -111,15 +111,6 @@ class _Stub extends StatelessWidget {
                 color: p.surface,
                 borderRadius: radius,
                 border: Border.all(color: borderColor, width: 2),
-                boxShadow: selected
-                    ? [
-                        BoxShadow(
-                          color: p.shadow.withValues(alpha: 0.12),
-                          blurRadius: 22,
-                          offset: const Offset(0, 10),
-                        ),
-                      ]
-                    : const [],
               ),
             ),
           ),
@@ -134,7 +125,12 @@ class _Stub extends StatelessWidget {
                 borderRadius: radius,
                 onTap: onTap,
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 44),
+                  // Fill the stub so the centred column stays centred
+                  // (the Stack would otherwise anchor it to the start).
+                  constraints: const BoxConstraints(
+                    minHeight: 44,
+                    minWidth: double.infinity,
+                  ),
                   child: Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(8, 16, 8, 12),
                     child: Column(
