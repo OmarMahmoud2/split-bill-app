@@ -47,23 +47,9 @@ class PublicProfileService {
       debugPrint('Public profile read failed for $uid: $e');
     }
 
-    // Users who haven't opened 1.2.0 yet have no public profile. The full doc
-    // is still readable until the Stage B rules ship.
-    try {
-      final doc = await _db.collection('users').doc(uid).get();
-      final data = doc.data();
-      if (data == null) return null;
-      return {
-        'uid': uid,
-        'displayName': data['displayName'],
-        'photoUrl': data['photoUrl'],
-        'customPaymentMethods': data['customPaymentMethods'],
-        'paymentMethods': data['paymentMethods'],
-      };
-    } catch (e) {
-      debugPrint('Legacy profile read failed for $uid: $e');
-      return null;
-    }
+    // No public profile means the user never synced one; their private
+    // user doc is not readable by other people.
+    return null;
   }
 
   /// Claims [phone] for the signed-in user. Returns false when another
