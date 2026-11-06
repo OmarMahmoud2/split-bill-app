@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:ui';
 import 'dart:async';
 
@@ -46,6 +47,15 @@ class AppSettingsProvider extends ChangeNotifier {
 
   /// Whether [AppHaptics] fires. Device-local, defaults to on.
   bool get hapticsEnabled => _hapticsEnabled;
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    // Property values only (language code, theme name); de-duplicated.
+    AnalyticsService.instance
+      ..setAppLocale(_locale.languageCode)
+      ..setThemeMode(_themeMode.name);
+  }
 
   Future<void> initialize() async {
     if (_initialized) return;

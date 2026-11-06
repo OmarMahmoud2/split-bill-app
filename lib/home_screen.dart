@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -32,6 +33,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _tab = 0;
+  static const _tabNames = ['home', 'groups', 'activity', 'you'];
   Stream<HomeLedgerState>? _ledger;
   Stream<bool>? _unread;
   StreamSubscription<HomeLedgerState>? _publish;
@@ -42,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     if (widget.showAds) unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
+    AnalyticsService.instance.screen(_tabNames[0]);
   }
 
   @override
@@ -84,6 +87,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     if (i == _tab) return;
     AppHaptics.selection();
     setState(() => _tab = i);
+    if (i >= 0 && i < _tabNames.length) {
+      AnalyticsService.instance.screen(_tabNames[i]);
+    }
   }
 
   void _quickIou() {

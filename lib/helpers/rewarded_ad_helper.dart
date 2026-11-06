@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -136,6 +137,7 @@ class RewardedAdHelper {
           debugPrint('🎉 User earned reward: ${reward.amount} ${reward.type}');
         }
         rewardEarned = true;
+        AnalyticsService.instance.rewardedAdCompleted();
 
         // The backend adds the point; wait briefly so the UI shows it.
         final user = FirebaseAuth.instance.currentUser;

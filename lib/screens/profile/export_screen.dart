@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -179,7 +180,7 @@ class _ExportScreenState extends State<ExportScreen> {
     if (_busy) return;
     if (_isPro != true) {
       AppHaptics.light();
-      final upgraded = await PremiumModal.show(context);
+      final upgraded = await PremiumModal.show(context, placement: 'export');
       if (upgraded != true || !mounted) return;
       setState(() => _isPro = true);
     }
@@ -251,6 +252,9 @@ class _ExportScreenState extends State<ExportScreen> {
               ? null
               : box.localToGlobal(Offset.zero) & box.size,
         ),
+      );
+      AnalyticsService.instance.export(
+        _format == ExportFormat.csv ? 'csv' : 'pdf',
       );
       if (!mounted) return;
       AppToast.show(

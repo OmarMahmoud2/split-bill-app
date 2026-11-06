@@ -106,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final settings = context.read<AppSettingsProvider>();
     switch (action) {
       case ProfileAction.goPro:
-        await PremiumModal.show(context);
+        await PremiumModal.show(context, placement: 'profile');
       case ProfileAction.editProfile:
         await _push(EditProfileScreen(currentData: data));
       case ProfileAction.paymentMethods:

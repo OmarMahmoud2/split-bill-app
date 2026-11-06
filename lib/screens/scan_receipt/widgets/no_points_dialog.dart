@@ -117,7 +117,7 @@ class _NoPointsDialogState extends State<NoPointsDialog> {
           onPressed: () {
             AppHaptics.light();
             navigator.pop();
-            PremiumModal.show(hostContext);
+            PremiumModal.show(hostContext, placement: 'no_points');
           },
           style: FilledButton.styleFrom(
             backgroundColor: p.accent,

@@ -2,6 +2,7 @@
 /// debts and members.
 library;
 
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -103,6 +104,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       );
       return;
     }
+    AnalyticsService.instance.groupCreated();
     if (!mounted) return;
     final nav = Navigator.of(context);
     nav.pop();

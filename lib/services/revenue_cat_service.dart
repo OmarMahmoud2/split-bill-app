@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -44,9 +45,13 @@ class RevenueCatService {
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
       unawaited(_handleAuthChange(memberOrNull(user)));
     });
-    Purchases.addCustomerInfoUpdateListener((_) {
+    Purchases.addCustomerInfoUpdateListener((info) {
+      AnalyticsService.instance.setIsPro(
+        info.entitlements.all[_entitlementId]?.isActive ?? false,
+      );
       unawaited(syncPremiumStatus());
     });
+    unawaited(isPremium().then(AnalyticsService.instance.setIsPro));
     await _handleAuthChange(memberOrNull(FirebaseAuth.instance.currentUser));
   }
 

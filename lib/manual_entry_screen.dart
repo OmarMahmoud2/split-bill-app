@@ -62,8 +62,6 @@ Map<String, dynamic> buildManualReceiptData({
     'serviceChargeAmount': 0.0,
     'discountAmount': 0.0,
     'currencyCode': currencyCode,
-    // Marker for analytics (bill_created source); not stored on the bill.
-    'entryMode': 'manual',
   };
 }
 
@@ -181,13 +179,17 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     }
 
     AppHaptics.selection();
-    final manualReceiptData = buildManualReceiptData(
-      whatFor: _storeController.text.trim(),
-      items: _items,
-      amountMinor: amountMinor,
-      date: _selectedDate,
-      currencyCode: currencyCode,
-    );
+    final manualReceiptData = {
+      ...buildManualReceiptData(
+        whatFor: _storeController.text.trim(),
+        items: _items,
+        amountMinor: amountMinor,
+        date: _selectedDate,
+        currencyCode: currencyCode,
+      ),
+      // Marker for analytics (bill_created source); not stored on the bill.
+      'entryMode': 'manual',
+    };
 
     Navigator.push(
       context,

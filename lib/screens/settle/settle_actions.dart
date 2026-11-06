@@ -2,6 +2,7 @@
 /// (with the right success moment), and nudge someone who owes you.
 library;
 
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -56,6 +57,7 @@ Future<bool> recordPaymentWithFeedback(
     );
     return false;
   }
+  AnalyticsService.instance.settleUpDone(paymentCount < 1 ? 1 : paymentCount);
   if (!context.mounted) return true;
   final amount = moneyLabel(context, payment.amountMinor, payment.currency);
   if (settlesGroup) {

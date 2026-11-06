@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -21,7 +22,9 @@ const String _proEntitlement = 'premium';
 /// store-localized prices, a CTA that says exactly what happens, and the
 /// full subscription terms with Terms, Privacy and Restore right under it.
 class PremiumModal extends StatefulWidget {
-  const PremiumModal({super.key}) : loadPlans = null, _preview = false;
+  const PremiumModal({super.key, this.placement = 'unknown'})
+    : loadPlans = null,
+      _preview = false;
 
   /// Design/test preview with injectable plans; never buys anything.
   @visibleForTesting
@@ -29,22 +32,29 @@ class PremiumModal extends StatefulWidget {
     super.key,
     Future<List<PaywallPlan>> Function()? loadPlans,
   }) : loadPlans = loadPlans ?? _previewPlans,
+       placement = 'preview',
        _preview = true;
 
   /// Plan source; null reads the current RevenueCat offering.
   final Future<List<PaywallPlan>> Function()? loadPlans;
   final bool _preview;
 
+  /// Which feature or screen opened the paywall (analytics only).
+  final String placement;
+
   static Future<List<PaywallPlan>> _previewPlans() async =>
       PaywallPlan.previews;
 
   /// Opens the paywall as a full-screen route. Resolves to true after a
   /// successful purchase or restore.
-  static Future<bool?> show(BuildContext context) {
+  static Future<bool?> show(
+    BuildContext context, {
+    String placement = 'unknown',
+  }) {
     return Navigator.of(context).push<bool>(
       MaterialPageRoute<bool>(
         fullscreenDialog: true,
-        builder: (_) => const PremiumModal(),
+        builder: (_) => PremiumModal(placement: placement),
       ),
     );
   }
@@ -70,6 +80,7 @@ class _PremiumModalState extends State<PremiumModal> {
   @override
   void initState() {
     super.initState();
+    if (!widget._preview) AnalyticsService.instance.paywallView(widget.placement);
     _load();
   }
 
@@ -107,6 +118,7 @@ class _PremiumModalState extends State<PremiumModal> {
     if (widget._preview || package == null) return;
 
     setState(() => _busy = true);
+    AnalyticsService.instance.purchaseStarted(plan.kind.name);
     try {
       try {
         await RevenueCatService.syncCurrentUser();
@@ -119,6 +131,10 @@ class _PremiumModalState extends State<PremiumModal> {
           false;
       if (!mounted) return;
       if (active) {
+        AnalyticsService.instance.purchaseSuccess(
+          plan.kind.name,
+          isTrial: plan.hasFreeTrial,
+        );
         unawaited(RevenueCatService.syncPremiumStatus());
         await _celebrate(restored: false);
       } else {
@@ -152,6 +168,7 @@ class _PremiumModalState extends State<PremiumModal> {
       unawaited(RevenueCatService.syncPremiumStatus());
       if (!mounted) return;
       if (active) {
+        AnalyticsService.instance.purchaseRestored();
         await _celebrate(restored: true);
       } else {
         _toast('no_previous_purchase_found', AppToastType.info);

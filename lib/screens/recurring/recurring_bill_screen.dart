@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -231,7 +232,7 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
   Future<void> _save() async {
     if (_saving) return;
     if (_isPro != true) {
-      final upgraded = await PremiumModal.show(context);
+      final upgraded = await PremiumModal.show(context, placement: 'recurring');
       if (upgraded != true || !mounted) return;
       setState(() => _isPro = true);
     }
@@ -265,6 +266,7 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
       } else {
         await RecurringBillService().save(group.id, template);
       }
+      AnalyticsService.instance.recurringCreated();
       if (!mounted) return;
       AppToast.show(
         context,

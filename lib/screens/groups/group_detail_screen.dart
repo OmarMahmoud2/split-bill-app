@@ -112,7 +112,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   /// Trips in several currencies are a Pro feature.
   Future<void> _openCurrencies(LedgerGroup g) async {
-    if (!await ProAccess.instance.ensure(context) || !mounted) return;
+    if (!await ProAccess.instance.ensure(context, placement: 'group_currencies') || !mounted) return;
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupCurrenciesScreen(groupId: g.id)));
   }
 

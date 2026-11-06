@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -73,6 +74,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       final info = await Purchases.restorePurchases();
       final active = info.entitlements.all['premium']?.isActive ?? false;
       unawaited(RevenueCatService.syncPremiumStatus());
+      if (active) AnalyticsService.instance.purchaseRestored();
       if (!mounted) return;
       AppToast.show(
         context,
@@ -345,7 +347,7 @@ class _FreeStatus extends StatelessWidget {
             key: const ValueKey('subscription-see-plans'),
             onPressed: () {
               AppHaptics.light();
-              PremiumModal.show(context);
+              PremiumModal.show(context, placement: 'subscription');
             },
             style: FilledButton.styleFrom(
               backgroundColor: p.accent,
