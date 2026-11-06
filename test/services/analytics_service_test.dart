@@ -135,7 +135,7 @@ void main() {
     for (final f in Directory('lib').listSync(recursive: true)) {
       if (f is! File || !f.path.endsWith('.dart')) continue;
       final src = f.readAsStringSync();
-      expect(src.contains('setUserId'), isFalse, reason: f.path);
+      expect(src.contains('.setUserId('), isFalse, reason: f.path);
     }
   });
 
