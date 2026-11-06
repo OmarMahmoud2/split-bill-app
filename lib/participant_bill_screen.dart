@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
 import 'package:split_bill_app/payments/payments.dart';
+import 'package:split_bill_app/screens/guest_bill/guest_bill_repository.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
@@ -256,33 +257,21 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
     final reader = BillReader(bill);
     final shareMinor = reader.shareMinorFor(uid);
     try {
-      String? hostId;
-      await FirebaseFirestore.instance.runTransaction((tx) async {
-        final snap = await tx.get(_billRef);
-        final data = snap.data();
-        if (data == null) {
-          throw FirebaseException(plugin: 'cloud_firestore', code: 'not-found');
-        }
-        hostId = data['hostId']?.toString();
-        tx.update(_billRef, {
-          'participants': updateParticipant(
-            (data['participants'] as List?) ?? const [],
-            uid,
-            (p) => {
-              ...p,
-              'paymentProof': proof,
-              'status': 'REVIEW',
-              'paymentTime': Timestamp.now(),
-              if (_usedMethodLabel != null) 'paymentMethod': _usedMethodLabel,
-            },
-          ),
-        });
-      });
+      // Through the backend, not a direct write: rules only let members write
+      // bills of up to 12 participants, and the backend touches this one
+      // entry only (matched by uid), whatever the bill size.
+      final hostId = bill['hostId']?.toString();
+      await FirestoreGuestBillRepository().submitPayment(
+        billId: widget.billId,
+        participantId: uid,
+        proofDataUrl: proof,
+        method: _usedMethodLabel,
+      );
       AnalyticsService.instance.paymentMarkedPaid('member');
       if (hostId != null) {
         unawaited(
           _notifyHost(
-            hostId!,
+            hostId,
             bill,
             formatMoneyMinor(shareMinor, reader.currency),
             withProof: proof != null,

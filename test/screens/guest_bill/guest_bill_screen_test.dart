@@ -33,6 +33,7 @@ class FakeRepo implements GuestBillRepository {
     required String billId,
     required String participantId,
     String? proofDataUrl,
+    String? method,
   }) async {
     if (failSubmit) throw StateError('offline');
     submissions.add((participantId, proofDataUrl));

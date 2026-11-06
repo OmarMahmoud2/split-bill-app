@@ -53,6 +53,24 @@ void main() {
     expect(body['status'], 'REVIEW');
   });
 
+  test('submitPayment sends the payment method label when given', () async {
+    late Map<String, dynamic> body;
+    final client = MockClient((request) async {
+      body = jsonDecode(request.body) as Map<String, dynamic>;
+      return http.Response('{}', 200);
+    });
+
+    await repo(
+      client,
+    ).submitPayment(billId: 'b', participantId: 'p1', method: ' InstaPay ');
+    expect(body['method'], 'InstaPay');
+
+    await repo(
+      client,
+    ).submitPayment(billId: 'b', participantId: 'p1', method: '');
+    expect(body.containsKey('method'), isFalse);
+  });
+
   test('a backend refusal surfaces as GuestPaymentRejected', () async {
     final client = MockClient((_) async => http.Response('{}', 403));
 

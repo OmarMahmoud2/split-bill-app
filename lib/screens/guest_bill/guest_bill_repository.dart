@@ -73,6 +73,7 @@ abstract class GuestBillRepository {
     required String billId,
     required String participantId,
     String? proofDataUrl,
+    String? method,
   });
 
   /// Best effort: never throws.
@@ -112,14 +113,16 @@ class FirestoreGuestBillRepository implements GuestBillRepository {
         .map((s) => s.exists ? s.data() : null);
   }
 
-  /// Guests never write the bill document (rules deny it). The backend
-  /// validates the participant, the status and the proof, then updates the
+  /// Guests never write the bill document (rules deny it). Signed-in members
+  /// use the same endpoint for their own entry, so bills of any size work.
+  /// The backend validates the participant, the status and the proof, then updates the
   /// one entry (POST .../guest-payment/).
   @override
   Future<void> submitPayment({
     required String billId,
     required String participantId,
     String? proofDataUrl,
+    String? method,
   }) async {
     final String? token;
     if (_idToken != null) {
@@ -143,6 +146,8 @@ class FirestoreGuestBillRepository implements GuestBillRepository {
               'participantId': participantId,
               'status': 'REVIEW',
               if (proofDataUrl != null) 'proofImage': proofDataUrl,
+              if (method != null && method.trim().isNotEmpty)
+                'method': method.trim(),
             }),
           )
           .timeout(const Duration(seconds: 30));
