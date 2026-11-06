@@ -58,4 +58,36 @@ void main() {
     await tester.tap(find.text('prof_sign_out'));
     expect(signedOut, 1);
   });
+
+  testWidgets('AuthFlow.backToRoot pops to the root and asks AuthWrapper to reload', (
+    tester,
+  ) async {
+    final before = AuthFlow.refresh.value;
+    late BuildContext inner;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (c) {
+                  inner = c;
+                  return const Text('pushed');
+                },
+              ),
+            ),
+            child: const Text('root'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('root'));
+    await tester.pumpAndSettle();
+    expect(find.text('pushed'), findsOneWidget);
+    AuthFlow.backToRoot(inner);
+    await tester.pumpAndSettle();
+    expect(find.text('pushed'), findsNothing);
+    expect(find.text('root'), findsOneWidget);
+    expect(AuthFlow.refresh.value, before + 1);
+  });
 }

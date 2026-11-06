@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:split_bill_app/auth_wrapper.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/services/auth_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
@@ -229,10 +228,7 @@ class ProfileDialogs {
                 _blockingProgress(rootContext, 'signing_out'.tr());
                 try {
                   await AuthService().signOut();
-                  rootNavigator.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const AuthWrapper()),
-                    (route) => false,
-                  );
+                  rootNavigator.popUntil((route) => route.isFirst);
                 } catch (_) {
                   if (rootNavigator.canPop()) rootNavigator.pop();
                   if (rootContext.mounted) {
@@ -302,10 +298,7 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
       await AuthService().deleteAccount(
         password: requiresPassword ? password : null,
       );
-      rootNavigator.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const AuthWrapper()),
-        (route) => false,
-      );
+      rootNavigator.popUntil((route) => route.isFirst);
     } catch (e) {
       if (rootNavigator.canPop()) rootNavigator.pop();
       if (rootContext.mounted) {

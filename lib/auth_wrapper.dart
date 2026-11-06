@@ -81,6 +81,22 @@ class SuspendedAccountScreen extends StatelessWidget {
   );
 }
 
+/// Lets flows that change what [AuthWrapper] shows (onboarding done, phone
+/// saved, signed in or out) hand control back to it without replacing the
+/// root route, so BrandIntro and CustomUpgrader stay above it.
+class AuthFlow {
+  AuthFlow._();
+
+  /// Bumped to make [AuthWrapper] re-read onboarding status and the user doc.
+  static final ValueNotifier<int> refresh = ValueNotifier<int>(0);
+
+  /// Re-evaluates the gate and pops back to the root (AuthWrapper).
+  static void backToRoot(BuildContext context, {bool reload = true}) {
+    if (reload) refresh.value++;
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+}
+
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -89,7 +105,7 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  late final Future<bool> _onboardingStatus;
+  late Future<bool> _onboardingStatus;
   final Stream<User?> _authChanges = FirebaseAuth.instance.authStateChanges();
 
   // Cached per uid so rebuilds don't refetch the user doc or flash a loader.
@@ -119,6 +135,22 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     _onboardingStatus = _checkOnboardingStatus();
+    AuthFlow.refresh.addListener(_onRefresh);
+  }
+
+  @override
+  void dispose() {
+    AuthFlow.refresh.removeListener(_onRefresh);
+    super.dispose();
+  }
+
+  void _onRefresh() {
+    if (!mounted) return;
+    setState(() {
+      _onboardingStatus = _checkOnboardingStatus();
+      _userDocUid = null;
+      _userDocFuture = null;
+    });
   }
 
   Future<bool> _checkOnboardingStatus() async {

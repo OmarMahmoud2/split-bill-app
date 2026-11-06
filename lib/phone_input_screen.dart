@@ -4,8 +4,8 @@ import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/auth_wrapper.dart' show AuthFlow;
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:split_bill_app/home_screen.dart';
 import 'package:split_bill_app/services/permission_flow.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
 import 'package:split_bill_app/services/user_preferences_service.dart';
@@ -44,7 +44,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     String localeCode,
   ) => {
     'photoUrl': user.photoURL,
-    'displayName': user.displayName ?? 'User',
+    'displayName': user.displayName ?? '',
     'email': user.email,
     // Welcome grant: 7 points, once, never reset.
     if (existing == null || !existing.containsKey('points')) 'points': 7,
@@ -54,11 +54,9 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   };
 
   void _goHome() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => const PermissionGate(child: HomeScreen()),
-      ),
-    );
+    // AuthWrapper re-reads the user doc and shows the permission gate and
+    // Home itself; replacing the root route would drop the update check.
+    AuthFlow.backToRoot(context);
   }
 
   Future<void> _savePhone() async {

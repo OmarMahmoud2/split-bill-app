@@ -70,15 +70,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
       await prefs.setBool('onboarding_complete_v2', true);
       if (!mounted) return;
       AppHaptics.success();
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (_, _, _) => const AuthWrapper(),
-          transitionsBuilder: (_, animation, _, child) =>
-              FadeTransition(opacity: animation, child: child),
-          transitionDuration: AppMotion.slow,
-        ),
-        (route) => false,
-      );
+      AuthFlow.backToRoot(context);
     } catch (_) {
       if (!mounted) return;
       setState(() => _completing = false);

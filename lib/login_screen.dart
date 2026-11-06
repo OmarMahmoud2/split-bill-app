@@ -75,9 +75,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _toAuthWrapper() {
     if (!mounted) return;
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const AuthWrapper()));
+    // AuthWrapper (the root) reacts to the sign-in itself; keep it, and the
+    // update check above it, in the tree.
+    AuthFlow.backToRoot(context, reload: false);
   }
 
   void _showError(Object error) {
