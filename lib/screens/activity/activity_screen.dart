@@ -2,6 +2,8 @@
 /// time (see [LedgerRepository.fetchActivity]).
 library;
 
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/activity.dart';
@@ -158,10 +160,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
   bool _done = false;
   Object? _error;
   LedgerMe? _me;
+  StreamSubscription<HomeLedgerState>? _ledger;
 
   @override
   void initState() {
     super.initState();
+    // The tab stays alive in the home IndexedStack: reload the first page
+    // whenever bills or payments change, so new ones show without a pull.
+    _ledger = HomeBalances.stream.skip(1).listen((_) {
+      if (mounted && !_loading) _refresh();
+    });
     _scroll.addListener(() {
       if (_scroll.position.extentAfter < 400) _loadMore();
     });
@@ -178,6 +186,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   void dispose() {
+    _ledger?.cancel();
     _scroll.dispose();
     super.dispose();
   }
