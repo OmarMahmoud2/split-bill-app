@@ -36,7 +36,6 @@ import 'widgets/bill_details/bill_view_logic.dart' show billErrorKey;
 import 'package:split_bill_app/widgets/brand/brand_intro.dart';
 import 'package:split_bill_app/widgets/custom_upgrader.dart';
 import 'services/revenue_cat_service.dart'; // Premium purchases
-import 'helpers/rewarded_ad_helper.dart';
 import 'config/supported_preferences.dart';
 import 'providers/app_settings_provider.dart';
 import 'web_download_screen.dart';
@@ -81,11 +80,11 @@ Future<void> main() async {
 
   // Initialize Google Mobile Ads SDK early so rewarded ads can preload
   if (!kIsWeb) {
+    // The rewarded ad is NOT preloaded here: PermissionGate warms it up once
+    // the ATT answer is in, so no ad request precedes the prompt.
     unawaited(
       MobileAds.instance.initialize().then((_) {
         debugPrint('✅ App Launch: Google Mobile Ads Initialized');
-        // Preload a rewarded ad for free users as soon as SDK is ready
-        RewardedAdHelper.warmUpIfEligible();
       }),
     );
   }

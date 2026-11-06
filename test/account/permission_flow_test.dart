@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -188,5 +189,11 @@ void main() {
     );
     expect(find.byType(NotificationPermissionScreen), findsNothing);
     expect(find.text('HOME'), findsOneWidget);
+  });
+
+  test('startup never warms up ads before the permission gate', () {
+    // The warm-up runs from PermissionGate.onFinished (after the ATT answer).
+    final main = File('lib/main.dart').readAsStringSync();
+    expect(main.contains('warmUpIfEligible'), isFalse);
   });
 }
