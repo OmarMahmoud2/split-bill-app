@@ -16,6 +16,7 @@
 library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:split_bill_app/bill_flow/participant_payment.dart';
 import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/domain/settlement.dart';
 
@@ -192,11 +193,22 @@ class BillShare {
     required this.shareMinor,
     required this.status,
     this.photoUrl,
+    this.paidMinor = 0,
   });
 
   final String id;
   final String name;
   final int shareMinor;
+
+  /// What the host has received from this person (see `paidMinorFromMap`).
+  final int paidMinor;
+
+  /// What they still owe: share minus what was paid, never negative.
+  int get outstandingMinor {
+    if (isPaid) return 0;
+    final left = shareMinor - paidMinor;
+    return left > 0 ? left : 0;
+  }
 
   /// PAID, PENDING or REVIEW (paid, waiting for the host to confirm).
   final String status;
@@ -243,13 +255,15 @@ class BillRecord {
         final pid = _asString(m['id']) ?? _asString(m['uid']);
         if (pid == null) continue;
         final isPaid = m['isPaid'] == true;
+        final shareMinor = readMinor(m, 'shareMinor', 'share', currency);
         parts.add(
           BillShare(
             id: pid,
             name: _asString(m['name']) ?? '',
             photoUrl: _asString(m['photoUrl']),
-            shareMinor: readMinor(m, 'shareMinor', 'share', currency),
+            shareMinor: shareMinor,
             status: _asString(m['status']) ?? (isPaid ? 'PAID' : 'PENDING'),
+            paidMinor: paidMinorFromMap(m, shareMinor),
           ),
         );
       }
@@ -293,7 +307,8 @@ class BillRecord {
   /// Unpaid shares of people other than the host.
   Map<String, int> get unpaidShares => {
     for (final p in participants)
-      if (p.id != hostId && !p.isPaid && p.shareMinor > 0) p.id: p.shareMinor,
+      if (p.id != hostId && !p.isPaid && p.outstandingMinor > 0)
+        p.id: p.outstandingMinor,
   };
 
   /// Still has someone who owes the host.

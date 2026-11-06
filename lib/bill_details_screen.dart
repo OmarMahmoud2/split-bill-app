@@ -139,8 +139,12 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             createdBy: _user?.uid ?? '',
           )
         : null;
+    // A reopened share (paid, then raised by an edit) records a new payment
+    // for the difference instead of reusing the first one.
     final previousSettlementId =
-        participant[settlementPaymentIdField]?.toString() ?? '';
+        paid && BillReader(bill).paidMinorOf(participant) > 0
+        ? ''
+        : participant[settlementPaymentIdField]?.toString() ?? '';
     final plan = planSettlementLink(
       paid: paid,
       previousId: previousSettlementId,
@@ -190,9 +194,10 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           (data['participants'] as List?) ?? const [],
           id,
           (p) => {
-            ...p,
+            ...(paid ? p : (Map<String, dynamic>.of(p)..remove('paidMinor'))),
             'status': paid ? 'PAID' : 'PENDING',
             'isPaid': paid,
+            if (paid) 'paidMinor': BillReader(data).shareMinorOf(p),
             if (paid) 'paidConfirmedAt': Timestamp.now(),
             if (settlementId != null || !paid)
               settlementPaymentIdField: settlementId,
@@ -314,7 +319,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     final id = participant['id'].toString();
     final name = participant['name']?.toString() ?? '';
     final amount = formatMoneyMinor(
-      reader.shareMinorOf(participant),
+      reader.outstandingMinorOf(participant),
       reader.currency,
     );
     setState(() => _reminding = true);
@@ -423,7 +428,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           'name': participant['name']?.toString() ?? '',
           'store': store,
           'amount': formatMoneyMinor(
-            reader.shareMinorOf(participant),
+            reader.outstandingMinorOf(participant),
             reader.currency,
           ),
           'url': url,
@@ -787,7 +792,9 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                     name: others[i]['name']?.toString() ?? '',
                     photoUrl: others[i]['photoUrl']?.toString(),
                     tintKey: others[i]['id']?.toString(),
-                    shareMinor: reader.shareMinorOf(others[i]),
+                    shareMinor: payStatusOf(others[i]) == PayStatus.paid
+                        ? reader.shareMinorOf(others[i])
+                        : reader.outstandingMinorOf(others[i]),
                     currency: currency,
                     status: payStatusOf(others[i]),
                     showDivider: i > 0,

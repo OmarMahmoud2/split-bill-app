@@ -512,6 +512,12 @@ class EditBillController extends ChangeNotifier {
     final paid = !_isPaid(p);
     p['status'] = paid ? 'PAID' : 'PENDING';
     p['isPaid'] = paid;
+    if (paid) {
+      // Paid in full at today's share (save reads shareMinor as the paid one).
+      p['shareMinor'] = p['paidMinor'] = computation.shareOf(id);
+    } else {
+      p.remove('paidMinor');
+    }
     _participants[i] = p;
     _changed();
   }

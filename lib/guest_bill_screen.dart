@@ -253,7 +253,6 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   }
 
   Future<void> _submit(GuestBill bill, GuestParticipant me) async {
-    final breakdown = bill.breakdownFor(me.id);
     final proof = _proof;
     setState(() => _sending = true);
     try {
@@ -275,7 +274,8 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       return;
     }
 
-    final amount = guestAmount(breakdown.totalMinor, bill.currency);
+    final dueMinor = bill.dueMinorFor(me.id);
+    final amount = guestAmount(dueMinor, bill.currency);
     final payer = me.name.isEmpty ? 'guest'.tr() : me.name;
     final store = guestStoreName(bill);
     final withProof = proof != null;
@@ -288,7 +288,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
           payerName: payer,
           storeName: store,
           formattedAmount: amount,
-          amount: fromMinorUnits(breakdown.totalMinor, bill.currency),
+          amount: fromMinorUnits(dueMinor, bill.currency),
           withProof: withProof,
           title: withProof
               ? 'payment_received'.tr()
@@ -323,7 +323,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       message: 'guest_sent_message'.tr(
         namedArgs: {'host': guestHostName(bill)},
       ),
-      amountMinor: breakdown.totalMinor,
+      amountMinor: dueMinor,
       currency: bill.currency,
       primaryLabel: 'guest_done'.tr(),
       onPrimary: navigator.pop,
@@ -402,7 +402,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     final me = bill?.participant(_selectedId);
     final Widget header;
     if (view == _GuestView.pay && bill != null && me != null) {
-      final total = bill.breakdownFor(me.id).totalMinor;
+      final total = bill.dueMinorFor(me.id);
       header = Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 20, 0),
         child: Row(
@@ -483,8 +483,10 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     }
   }
 
-  Widget _bottomAction(Widget child) =>
-      Padding(padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 30), child: child);
+  Widget _bottomAction(Widget child) => Padding(
+    padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 30),
+    child: child,
+  );
 
   Widget _notMeLink(GuestParticipant me) {
     final p = context.palette;
@@ -535,7 +537,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                     child: Directionality(
                       textDirection: TextDirection.ltr,
                       child: MoneyText(
-                        minor: breakdown.totalMinor,
+                        minor: bill.dueMinorFor(me.id),
                         currency: breakdown.currency,
                         tone: MoneyTone.neutral,
                         size: MoneySize.hero,
@@ -568,7 +570,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   }
 
   Widget _phonePay(GuestBill bill, GuestParticipant me) {
-    final total = bill.breakdownFor(me.id).totalMinor;
+    final total = bill.dueMinorFor(me.id);
     return Column(
       children: [
         Expanded(
@@ -611,10 +613,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       message: 'guest_waiting_message'.tr(
         namedArgs: {
           'host': host,
-          'amount': guestAmount(
-            bill.breakdownFor(me.id).totalMinor,
-            bill.currency,
-          ),
+          'amount': guestAmount(bill.dueMinorFor(me.id), bill.currency),
         },
       ),
       footer: const GuestGetAppCard(),
@@ -794,7 +793,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
             'guest_hi_share_is'.tr(
               namedArgs: {
                 'name': name,
-                'amount': guestAmount(breakdown.totalMinor, bill.currency),
+                'amount': guestAmount(bill.dueMinorFor(me.id), bill.currency),
               },
             ),
             style: AppTypography.displayLarge.copyWith(color: p.textPrimary),
@@ -840,7 +839,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
               const SizedBox(height: 12),
               GuestPayMethods(
                 bill: bill,
-                options: guestPayOptions(bill, breakdown.totalMinor),
+                options: guestPayOptions(bill, bill.dueMinorFor(me.id)),
                 launcher: widget.launcher,
                 compact: true,
               ),
