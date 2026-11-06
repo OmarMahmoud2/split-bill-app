@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "رفض هذا الإثبات؟",
   "bf_bill_proof_reject_body": "سيتم حذف إثبات {name} وسيعود نصيبه إلى غير مدفوع.",
   "bf_bill_proof_rejected": "عاد نصيب {name} إلى غير مدفوع.",
-  "bf_bill_marked_unpaid_payment_kept": "تم تعيين {name} كغير مدفوع. يبقى الدفع المسجل في دفتر المجموعة."
+  "bf_bill_marked_unpaid_payment_kept": "تم تعيين {name} كغير مدفوع. يبقى الدفع المسجل في دفتر المجموعة.",
+  "account_suspended_title": "تم تعليق الحساب",
+  "account_suspended_message": "تم تعليق هذا الحساب. إذا كنت تعتقد أن هذا خطأ، تواصل مع {email}."
 }

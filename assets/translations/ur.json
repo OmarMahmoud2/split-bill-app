@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "کیا یہ ثبوت مسترد کریں؟",
   "bf_bill_proof_reject_body": "{name} کا ثبوت ہٹا دیا جائے گا اور ان کا حصہ دوبارہ ادا نہیں شدہ ہو جائے گا۔",
   "bf_bill_proof_rejected": "{name} کا حصہ دوبارہ ادا نہیں شدہ ہے۔",
-  "bf_bill_marked_unpaid_payment_kept": "{name} کو ادا نہیں شدہ نشان زد کیا گیا۔ درج شدہ ادائیگی گروپ کے کھاتے میں رہے گی۔"
+  "bf_bill_marked_unpaid_payment_kept": "{name} کو ادا نہیں شدہ نشان زد کیا گیا۔ درج شدہ ادائیگی گروپ کے کھاتے میں رہے گی۔",
+  "account_suspended_title": "اکاؤنٹ معطل ہے",
+  "account_suspended_message": "یہ اکاؤنٹ معطل کر دیا گیا ہے۔ اگر آپ کو لگتا ہے کہ یہ غلطی ہے تو {email} سے رابطہ کریں۔"
 }

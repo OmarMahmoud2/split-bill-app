@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "Refuser ce justificatif ?",
   "bf_bill_proof_reject_body": "Le justificatif de {name} sera supprimé et sa part repassera en impayée.",
   "bf_bill_proof_rejected": "La part de {name} est de nouveau impayée.",
-  "bf_bill_marked_unpaid_payment_kept": "{name} est marqué impayé. Le paiement enregistré reste dans le registre du groupe."
+  "bf_bill_marked_unpaid_payment_kept": "{name} est marqué impayé. Le paiement enregistré reste dans le registre du groupe.",
+  "account_suspended_title": "Compte suspendu",
+  "account_suspended_message": "Ce compte a été suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez {email}."
 }

@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "この証明を却下しますか？",
   "bf_bill_proof_reject_body": "{name}さんの証明が削除され、負担分は未払いに戻ります。",
   "bf_bill_proof_rejected": "{name}さんの負担分は未払いに戻りました。",
-  "bf_bill_marked_unpaid_payment_kept": "{name}さんを未払いにしました。記録済みの支払いはグループの台帳に残ります。"
+  "bf_bill_marked_unpaid_payment_kept": "{name}さんを未払いにしました。記録済みの支払いはグループの台帳に残ります。",
+  "account_suspended_title": "アカウントは停止されています",
+  "account_suspended_message": "このアカウントは停止されています。誤りだと思われる場合は {email} までご連絡ください。"
 }

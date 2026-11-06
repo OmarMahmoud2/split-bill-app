@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "Odrzucić ten dowód?",
   "bf_bill_proof_reject_body": "Dowód {name} zostanie usunięty, a jej lub jego udział wróci do statusu nieopłaconego.",
   "bf_bill_proof_rejected": "Udział {name} jest znowu nieopłacony.",
-  "bf_bill_marked_unpaid_payment_kept": "{name} oznaczono jako nieopłacone. Zapisana płatność pozostaje w rozliczeniu grupy."
+  "bf_bill_marked_unpaid_payment_kept": "{name} oznaczono jako nieopłacone. Zapisana płatność pozostaje w rozliczeniu grupy.",
+  "account_suspended_title": "Konto zawieszone",
+  "account_suspended_message": "To konto zostało zawieszone. Jeśli uważasz, że to pomyłka, napisz na {email}."
 }

@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "ปฏิเสธหลักฐานนี้ไหม",
   "bf_bill_proof_reject_body": "หลักฐานของ {name} จะถูกลบ และส่วนของเขาจะกลับเป็นยังไม่ชำระ",
   "bf_bill_proof_rejected": "ส่วนของ {name} กลับเป็นยังไม่ชำระแล้ว",
-  "bf_bill_marked_unpaid_payment_kept": "ทำเครื่องหมาย {name} ว่ายังไม่ชำระ รายการชำระที่บันทึกไว้ยังอยู่ในสมุดบัญชีกลุ่ม"
+  "bf_bill_marked_unpaid_payment_kept": "ทำเครื่องหมาย {name} ว่ายังไม่ชำระ รายการชำระที่บันทึกไว้ยังอยู่ในสมุดบัญชีกลุ่ม",
+  "account_suspended_title": "บัญชีถูกระงับ",
+  "account_suspended_message": "บัญชีนี้ถูกระงับ หากคุณคิดว่าเป็นความผิดพลาด โปรดติดต่อ {email}"
 }

@@ -11,12 +11,74 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/services/permission_flow.dart';
 import 'package:split_bill_app/services/guest_session.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
+import 'package:split_bill_app/services/auth_service.dart';
+import 'package:split_bill_app/config/app_links.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/feedback/feedback.dart';
 
 /// Setup is done once the user saved a phone number or chose "Not now".
 bool isAccountSetupComplete(Map<String, dynamic>? data) {
   if (data == null) return false;
   final phone = data['phoneNumber']?.toString() ?? '';
   return phone.isNotEmpty || data['phonePromptSkippedAt'] != null;
+}
+
+/// What the signed-in user sees, from their user document.
+enum AccountGate { loadError, suspended, needsSetup, ready }
+
+AccountGate accountGateFor({Object? error, Map<String, dynamic>? data}) {
+  // A failed read is not a new user: ask to retry instead of the phone prompt.
+  if (error != null) return AccountGate.loadError;
+  if (data?['suspended'] == true) return AccountGate.suspended;
+  if (!isAccountSetupComplete(data)) return AccountGate.needsSetup;
+  return AccountGate.ready;
+}
+
+/// "We couldn't load your account", with retry and a way to sign out.
+class AccountLoadErrorScreen extends StatelessWidget {
+  const AccountLoadErrorScreen({
+    super.key,
+    required this.onRetry,
+    required this.onSignOut,
+  });
+
+  final VoidCallback onRetry;
+  final VoidCallback onSignOut;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: context.palette.background,
+    body: SafeArea(
+      child: ErrorState(
+        onRetry: onRetry,
+        secondaryLabel: 'prof_sign_out'.tr(),
+        onSecondary: onSignOut,
+      ),
+    ),
+  );
+}
+
+/// Shown instead of the app when `users/{uid}.suspended` is true.
+class SuspendedAccountScreen extends StatelessWidget {
+  const SuspendedAccountScreen({super.key, required this.onSignOut});
+
+  final VoidCallback onSignOut;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: context.palette.background,
+    body: SafeArea(
+      child: ErrorState(
+        icon: Icons.block_rounded,
+        title: 'account_suspended_title'.tr(),
+        message: 'account_suspended_message'.tr(
+          namedArgs: {'email': AppLinks.supportEmail},
+        ),
+        retryLabel: 'prof_sign_out'.tr(),
+        onRetry: onSignOut,
+      ),
+    ),
+  );
 }
 
 class AuthWrapper extends StatefulWidget {
@@ -110,12 +172,28 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   final data =
                       userSnapshot.data?.data() as Map<String, dynamic>?;
 
-                  // Phone is optional: ask once, until saved or skipped.
-                  if (!isAccountSetupComplete(data)) {
-                    return const PhoneInputScreen();
+                  switch (accountGateFor(
+                    error: userSnapshot.error,
+                    data: data,
+                  )) {
+                    case AccountGate.loadError:
+                      return AccountLoadErrorScreen(
+                        onRetry: () => setState(() {
+                          _userDocUid = null;
+                          _userDocFuture = null;
+                        }),
+                        onSignOut: () => AuthService().signOut(),
+                      );
+                    case AccountGate.suspended:
+                      return SuspendedAccountScreen(
+                        onSignOut: () => AuthService().signOut(),
+                      );
+                    // Phone is optional: ask once, until saved or skipped.
+                    case AccountGate.needsSetup:
+                      return const PhoneInputScreen();
+                    case AccountGate.ready:
+                      return const PermissionGate(child: HomeScreen());
                   }
-
-                  return const PermissionGate(child: HomeScreen());
                 },
               );
             }

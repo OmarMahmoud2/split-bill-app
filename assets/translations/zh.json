@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "要拒绝此凭证吗？",
   "bf_bill_proof_reject_body": "将移除 {name} 的凭证，其份额恢复为未支付。",
   "bf_bill_proof_rejected": "{name} 的份额已恢复为未支付。",
-  "bf_bill_marked_unpaid_payment_kept": "已将 {name} 标记为未支付。已记录的付款仍保留在群组账本中。"
+  "bf_bill_marked_unpaid_payment_kept": "已将 {name} 标记为未支付。已记录的付款仍保留在群组账本中。",
+  "account_suspended_title": "账号已被暂停",
+  "account_suspended_message": "此账号已被暂停。如果你认为这是误判，请联系 {email}。"
 }

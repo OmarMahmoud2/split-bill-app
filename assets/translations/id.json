@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "Tolak bukti ini?",
   "bf_bill_proof_reject_body": "Bukti {name} akan dihapus dan bagiannya kembali belum dibayar.",
   "bf_bill_proof_rejected": "Bagian {name} kembali belum dibayar.",
-  "bf_bill_marked_unpaid_payment_kept": "{name} ditandai belum dibayar. Pembayaran yang tercatat tetap ada di buku besar grup."
+  "bf_bill_marked_unpaid_payment_kept": "{name} ditandai belum dibayar. Pembayaran yang tercatat tetap ada di buku besar grup.",
+  "account_suspended_title": "Akun ditangguhkan",
+  "account_suspended_message": "Akun ini telah ditangguhkan. Jika menurutmu ini kesalahan, hubungi {email}."
 }

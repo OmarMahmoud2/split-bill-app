@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "Afvis dette bevis?",
   "bf_bill_proof_reject_body": "{name}s bevis fjernes, og deres andel bliver til ubetalt igen.",
   "bf_bill_proof_rejected": "{name}s andel er ubetalt igen.",
-  "bf_bill_marked_unpaid_payment_kept": "{name} er markeret som ubetalt. Den registrerede betaling bliver i gruppens regnskab."
+  "bf_bill_marked_unpaid_payment_kept": "{name} er markeret som ubetalt. Den registrerede betaling bliver i gruppens regnskab.",
+  "account_suspended_title": "Konto suspenderet",
+  "account_suspended_message": "Denne konto er blevet suspenderet. Hvis du mener, det er en fejl, så kontakt {email}."
 }

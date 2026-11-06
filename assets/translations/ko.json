@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "이 증빙을 거절할까요?",
   "bf_bill_proof_reject_body": "{name}님의 증빙이 삭제되고 분담금은 미납으로 돌아갑니다.",
   "bf_bill_proof_rejected": "{name}님의 분담금이 다시 미납 상태입니다.",
-  "bf_bill_marked_unpaid_payment_kept": "{name}님을 미납으로 표시했습니다. 기록된 결제는 그룹 장부에 남습니다."
+  "bf_bill_marked_unpaid_payment_kept": "{name}님을 미납으로 표시했습니다. 기록된 결제는 그룹 장부에 남습니다.",
+  "account_suspended_title": "계정이 정지되었습니다",
+  "account_suspended_message": "이 계정은 정지되었습니다. 오류라고 생각되시면 {email}(으)로 문의해 주세요."
 }

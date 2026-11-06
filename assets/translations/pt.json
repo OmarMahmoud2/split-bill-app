@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "Recusar este comprovante?",
   "bf_bill_proof_reject_body": "O comprovante de {name} será removido e a parte voltará a ficar em aberto.",
   "bf_bill_proof_rejected": "A parte de {name} voltou a ficar em aberto.",
-  "bf_bill_marked_unpaid_payment_kept": "{name} marcado como em aberto. O pagamento registrado continua no livro do grupo."
+  "bf_bill_marked_unpaid_payment_kept": "{name} marcado como em aberto. O pagamento registrado continua no livro do grupo.",
+  "account_suspended_title": "Conta suspensa",
+  "account_suspended_message": "Esta conta foi suspensa. Se acha que é um engano, entre em contato com {email}."
 }

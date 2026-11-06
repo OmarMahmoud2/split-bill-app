@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "इस प्रमाण को अस्वीकार करें?",
   "bf_bill_proof_reject_body": "{name} का प्रमाण हटा दिया जाएगा और उनका हिस्सा फिर से अवैतनिक हो जाएगा।",
   "bf_bill_proof_rejected": "{name} का हिस्सा फिर से अवैतनिक है।",
-  "bf_bill_marked_unpaid_payment_kept": "{name} को अवैतनिक चिह्नित किया गया। दर्ज किया गया भुगतान समूह के खाते में बना रहेगा।"
+  "bf_bill_marked_unpaid_payment_kept": "{name} को अवैतनिक चिह्नित किया गया। दर्ज किया गया भुगतान समूह के खाते में बना रहेगा।",
+  "account_suspended_title": "खाता निलंबित है",
+  "account_suspended_message": "यह खाता निलंबित कर दिया गया है। अगर आपको लगता है कि यह गलती है, तो {email} से संपर्क करें।"
 }

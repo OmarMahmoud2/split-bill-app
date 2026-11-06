@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "Bu kanıt reddedilsin mi?",
   "bf_bill_proof_reject_body": "{name} kişisinin kanıtı silinecek ve payı yeniden ödenmemiş olacak.",
   "bf_bill_proof_rejected": "{name} kişisinin payı yeniden ödenmemiş.",
-  "bf_bill_marked_unpaid_payment_kept": "{name} ödenmedi olarak işaretlendi. Kaydedilen ödeme grup defterinde kalır."
+  "bf_bill_marked_unpaid_payment_kept": "{name} ödenmedi olarak işaretlendi. Kaydedilen ödeme grup defterinde kalır.",
+  "account_suspended_title": "Hesap askıya alındı",
+  "account_suspended_message": "Bu hesap askıya alındı. Bunun bir hata olduğunu düşünüyorsanız {email} adresiyle iletişime geçin."
 }

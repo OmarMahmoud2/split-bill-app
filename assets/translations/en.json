@@ -2132,5 +2132,7 @@
   "bf_bill_proof_reject_title": "Reject this proof?",
   "bf_bill_proof_reject_body": "{name}'s proof will be removed and their share goes back to unpaid.",
   "bf_bill_proof_rejected": "{name}'s share is unpaid again.",
-  "bf_bill_marked_unpaid_payment_kept": "{name} marked unpaid. The recorded payment stays in the group ledger."
+  "bf_bill_marked_unpaid_payment_kept": "{name} marked unpaid. The recorded payment stays in the group ledger.",
+  "account_suspended_title": "Account suspended",
+  "account_suspended_message": "This account has been suspended. If you think this is a mistake, contact {email}."
 }
