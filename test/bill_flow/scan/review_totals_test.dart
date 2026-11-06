@@ -104,6 +104,17 @@ void main() {
     expect(percentLabel(10, 0), isNull);
   });
 
+  test(
+    'taxPercentLabel uses items plus service when that is the whole rate',
+    () {
+      // Egypt: 14% VAT on 1115.00 + 12% service 133.80.
+      expect(taxPercentLabel(17483, 111500, 13380), '14');
+      expect(taxPercentLabel(903, 6450, 0), '14');
+      expect(taxPercentLabel(125, 1000, 0), '12.5');
+      expect(taxPercentLabel(125, 1000, 37), '12.5');
+    },
+  );
+
   group('buildManualReceiptData', () {
     test('keeps the legacy shape SplitBillScreen reads', () {
       final data = buildManualReceiptData(

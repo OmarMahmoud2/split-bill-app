@@ -185,8 +185,8 @@ class ReceiptResultView extends StatelessWidget {
     final subtotal = draft.itemsSubtotalMinor;
     final byWhatEachHad = 'bf_scan_review_by_what_each_had'.tr();
 
-    String withPct(String label, int amount) {
-      final pct = percentLabel(amount, subtotal);
+    String withPct(String label, int amount, [String? rate]) {
+      final pct = rate ?? percentLabel(amount, subtotal);
       return pct == null
           ? '$label · $byWhatEachHad'
           : '$label $pct% · $byWhatEachHad';
@@ -200,7 +200,11 @@ class ReceiptResultView extends StatelessWidget {
       ),
       if (draft.taxMinor > 0)
         _ChargeRow(
-          label: withPct('receipt_tax'.tr(), draft.taxMinor),
+          label: withPct(
+            'receipt_tax'.tr(),
+            draft.taxMinor,
+            taxPercentLabel(draft.taxMinor, subtotal, draft.serviceMinor),
+          ),
           minor: draft.taxMinor,
           currency: currency,
           onTap: () =>
@@ -886,9 +890,7 @@ class _LinkRow extends StatelessWidget {
     final p = context.palette;
     return Row(
       children: [
-        if (label.isEmpty)
-          const Spacer()
-        else
+        if (label.isNotEmpty)
           Expanded(
             child: Text(
               label,

@@ -580,7 +580,20 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
     );
   }
 
+  // A second tap while the picker opens cancels the first request and drops the photo.
+  bool _picking = false;
+
   Future<void> _pickImage(ImageSource source) async {
+    if (_picking) return;
+    _picking = true;
+    try {
+      await _pickImageOnce(source);
+    } finally {
+      _picking = false;
+    }
+  }
+
+  Future<void> _pickImageOnce(ImageSource source) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 

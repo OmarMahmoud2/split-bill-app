@@ -78,3 +78,15 @@ String? percentLabel(int part, int whole) {
   if (tenths % 10 == 0) return '${tenths ~/ 10}';
   return '${tenths ~/ 10}.${tenths % 10}';
 }
+
+/// The tax rate label. Where VAT is charged on items plus service (Egypt,
+/// the Gulf), the rate on items alone looks odd (14% shows as 15.7%), so the
+/// whole-number rate on items plus service wins.
+String? taxPercentLabel(int tax, int subtotal, int service) {
+  final onItems = percentLabel(tax, subtotal);
+  if (service <= 0 || onItems == null || !onItems.contains('.')) return onItems;
+  final withService = percentLabel(tax, subtotal + service);
+  return withService != null && !withService.contains('.')
+      ? withService
+      : onItems;
+}
