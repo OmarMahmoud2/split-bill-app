@@ -7,5 +7,5 @@ Evens 2.0 sıfırdan yeni bir uygulama.
 - Her kuruşun hesabı belli: her pay için tam döküm, geçmişle birlikte.
 - Kaleme göre, eşit, tam, yüzde veya pay ile böl. Hızlı borçlar.
 - Tüm para birimleri, 22 dil, sağdan sola, karanlık mod.
-- Pro: günlük kurlarla çoklu para birimi, tekrarlayan hesaplar, CSV ve PDF dışa aktarma.
+- Pro: sınırsız yapay zeka taraması ve ses, tekrarlayan hesaplar, CSV ve PDF dışa aktarma, reklamsız.
 - Ücretsiz planda günlük sınır yok.

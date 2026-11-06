@@ -7,5 +7,5 @@ Evens 2.0 adalah aplikasi baru dari nol.
 - Tiap rupiah jelas: rincian lengkap tiap bagian, dengan riwayat.
 - Bagi per item, rata, pasti, persentase, atau porsi. Utang kilat.
 - Semua mata uang, 22 bahasa, kanan ke kiri, mode gelap.
-- Pro: multi mata uang dengan kurs harian, tagihan rutin, ekspor CSV dan PDF.
+- Pro: pindai AI dan suara tanpa batas, tagihan rutin, ekspor CSV dan PDF, tanpa iklan.
 - Tanpa batas harian di paket gratis.

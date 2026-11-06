@@ -4,4 +4,4 @@
 - Vos amis paient depuis un lien, sans appli, avec les moyens de paiement de leur pays.
 - Chaque centime justifié : détail de chaque part, historique.
 - Toutes les devises, 22 langues, RTL, mode sombre.
-- Pro : multidevise, dépenses récurrentes, CSV/PDF. Aucune limite quotidienne.
+- Pro : IA et voix illimitées, dépenses récurrentes, CSV/PDF. Aucune limite quotidienne.

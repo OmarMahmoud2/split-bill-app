@@ -4,4 +4,4 @@
 - Freunde zahlen per Link, ohne App, mit Zahlungsarten für ihr Land.
 - Jeder Cent nachvollziehbar: Aufschlüsselung je Anteil, Verlauf.
 - Alle Währungen, 22 Sprachen, RTL, Dark Mode.
-- Pro: mehrere Währungen, wiederkehrende Rechnungen, CSV/PDF. Kein Tageslimit.
+- Pro: unbegrenzte KI-Scans und Sprache, wiederkehrende Rechnungen, CSV/PDF. Kein Tageslimit.

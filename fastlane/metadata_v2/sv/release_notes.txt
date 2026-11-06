@@ -7,5 +7,5 @@ Evens 2.0 är en helt ny app.
 - Varje öre redovisat: full uppdelning per andel, med historik.
 - Dela per vara, lika, exakt, i procent eller andelar. Snabba skulder.
 - Alla valutor, 22 språk, höger-till-vänster, mörkt läge.
-- Pro: flera valutor med dagskurser, återkommande räkningar, CSV- och PDF-export.
+- Pro: obegränsade AI-skanningar och röst, återkommande räkningar, CSV- och PDF-export, inga annonser.
 - Ingen dagsgräns i gratisplanen.

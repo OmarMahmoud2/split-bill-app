@@ -5,4 +5,4 @@
 - Her kuruşun hesabı belli: her pay için döküm, geçmiş.
 - Kaleme göre, eşit, tam, yüzde veya pay ile böl.
 - Tüm para birimleri, 22 dil, RTL, karanlık mod.
-- Pro: çoklu para birimi, tekrarlayan hesaplar, CSV/PDF. Günlük sınır yok.
+- Pro: sınırsız yapay zeka ve ses, tekrarlayan hesaplar, CSV/PDF. Günlük sınır yok.

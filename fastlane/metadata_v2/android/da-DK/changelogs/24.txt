@@ -4,4 +4,4 @@
 - Venner betaler via et link, uden app, med betalingsmetoder for deres land.
 - Hver øre gjort op: opdeling pr. andel, historik.
 - Alle valutaer, 22 sprog, RTL, mørk tilstand.
-- Pro: flere valutaer, tilbagevendende regninger, CSV/PDF. Intet dagligt loft.
+- Pro: ubegrænset AI-scanning og stemme, tilbagevendende regninger, CSV/PDF. Intet dagligt loft.

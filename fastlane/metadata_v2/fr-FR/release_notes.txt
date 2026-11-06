@@ -7,5 +7,5 @@ Evens 2.0 est une toute nouvelle appli.
 - Chaque centime justifié : détail complet de chaque part, avec historique.
 - Partage par article, à parts égales, exact, en pourcentages ou en parts. Petites dettes rapides.
 - Toutes les devises, 22 langues, droite à gauche, mode sombre.
-- Pro : multidevise avec taux du jour, dépenses récurrentes, export CSV et PDF.
+- Pro : scans IA et voix illimités, dépenses récurrentes, export CSV et PDF, sans pub.
 - Aucune limite quotidienne dans l'offre gratuite.

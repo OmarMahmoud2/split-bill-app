@@ -24,7 +24,7 @@ Dünyadaki tüm para birimleri doğru ondalıklarla, sağdan sola Arapça ve Urd
 Sınırsız hesap, grup, bakiye ve misafir bağlantısı. Günlük tavan yok, tam ekran reklam yok. Aylık ücretsiz yapay zeka tarama ve sesli komut hakkı, kısa bir reklamla daha fazlası.
 
 PRO
-Sınırsız yapay zeka taraması ve ses, günlük kurlarla çok para birimli gruplar, kira ve faturalar gibi tekrarlayan hesaplar, CSV ve PDF dışa aktarma. Aylık, ücretsiz denemeli yıllık veya tek seferlik ömür boyu.
+Sınırsız yapay zeka taraması ve ses, kira ve faturalar gibi tekrarlayan hesaplar, CSV ve PDF dışa aktarma. Aylık, ücretsiz denemeli yıllık veya tek seferlik ömür boyu.
 
 Abonelikler satın alma onayında Apple Kimliği hesabından tahsil edilir ve mevcut dönemin bitiminden en az 24 saat önce otomatik yenileme kapatılmadıkça otomatik olarak yenilenir. App Store hesap ayarlarından yönetebilir veya iptal edebilirsin.
 

@@ -7,5 +7,5 @@ Evens 2.0 is a new app from the ground up.
 - Every cent accounted for: a full breakdown on every share, with edit history.
 - Split by item, equally, by exact amounts, percentages or shares. Quick IOUs.
 - Every world currency, 22 languages, right-to-left support and dark mode.
-- Pro: multi-currency with daily rates, recurring bills, CSV and PDF export.
+- Pro: unlimited AI scans and voice, recurring bills, CSV and PDF export, no ads.
 - No daily limits on the free plan.

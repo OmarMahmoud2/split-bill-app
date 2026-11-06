@@ -7,5 +7,5 @@ Evens 2.0 é um app novo do zero.
 - Cada centavo justificado: detalhamento completo de cada parte, com histórico.
 - Divida por item, igualmente, exato, por porcentagem ou cotas. Dívidas rápidas.
 - Todas as moedas, 22 idiomas, direita para esquerda, modo escuro.
-- Pro: várias moedas com câmbio do dia, contas recorrentes, exportação CSV e PDF.
+- Pro: escaneamentos com IA e voz ilimitados, contas recorrentes, exportação CSV e PDF, sem anúncios.
 - Sem limite diário no plano grátis.

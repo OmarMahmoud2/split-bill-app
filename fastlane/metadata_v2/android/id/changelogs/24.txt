@@ -4,4 +4,4 @@
 - Teman bayar lewat tautan, tanpa aplikasi, dengan metode pembayaran negaranya.
 - Tiap rupiah jelas: rincian tiap bagian, riwayat.
 - Semua mata uang, 22 bahasa, RTL, mode gelap.
-- Pro: multi mata uang, tagihan rutin, CSV/PDF. Tanpa batas harian.
+- Pro: pindai AI dan suara tanpa batas, tagihan rutin, CSV/PDF. Tanpa batas harian.

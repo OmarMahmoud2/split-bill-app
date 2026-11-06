@@ -5,4 +5,4 @@
 - Từng đồng rõ ràng: chi tiết mỗi phần, lịch sử.
 - Chia theo món, đều, chính xác, phần trăm hoặc phần.
 - Mọi loại tiền, 22 ngôn ngữ, RTL, chế độ tối.
-- Pro: đa tiền tệ, hóa đơn định kỳ, CSV/PDF. Không giới hạn mỗi ngày.
+- Pro: quét AI và giọng nói không giới hạn, hóa đơn định kỳ, CSV/PDF. Không giới hạn mỗi ngày.

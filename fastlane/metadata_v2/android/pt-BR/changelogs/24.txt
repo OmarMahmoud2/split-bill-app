@@ -4,4 +4,4 @@
 - Seus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
 - Cada centavo justificado: detalhamento de cada parte, histórico.
 - Todas as moedas, 22 idiomas, RTL, modo escuro.
-- Pro: várias moedas, contas recorrentes, CSV/PDF. Sem limite diário.
+- Pro: IA e voz ilimitadas, contas recorrentes, CSV/PDF. Sem limite diário.

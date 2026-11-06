@@ -7,5 +7,5 @@ Evens 2.0 là ứng dụng hoàn toàn mới.
 - Từng đồng rõ ràng: chi tiết đầy đủ mỗi phần, có lịch sử.
 - Chia theo món, đều, chính xác, phần trăm hoặc phần. Nợ nhanh.
 - Mọi loại tiền, 22 ngôn ngữ, phải sang trái, chế độ tối.
-- Pro: đa tiền tệ với tỷ giá ngày, hóa đơn định kỳ, xuất CSV và PDF.
+- Pro: quét AI và giọng nói không giới hạn, hóa đơn định kỳ, xuất CSV và PDF, không quảng cáo.
 - Gói miễn phí không giới hạn mỗi ngày.

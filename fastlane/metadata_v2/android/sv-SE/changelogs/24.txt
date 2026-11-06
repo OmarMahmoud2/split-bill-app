@@ -5,4 +5,4 @@
 - Varje öre redovisat: uppdelning per andel, historik.
 - Dela per vara, lika, exakt, procent eller andelar.
 - Alla valutor, 22 språk, RTL, mörkt läge.
-- Pro: flera valutor, återkommande räkningar, CSV/PDF. Ingen dagsgräns.
+- Pro: obegränsad AI och röst, återkommande räkningar, CSV/PDF. Ingen dagsgräns.

@@ -7,5 +7,5 @@ Evens 2.0 to zupełnie nowa aplikacja.
 - Każdy grosz rozliczony: pełne zestawienie każdego udziału, z historią.
 - Podział po pozycjach, po równo, dokładnie, procentowo lub udziałami. Szybkie długi.
 - Wszystkie waluty, 22 języki, od prawej do lewej, tryb ciemny.
-- Pro: wiele walut z dziennymi kursami, cykliczne rachunki, eksport CSV i PDF.
+- Pro: nielimitowane skany AI i głos, cykliczne rachunki, eksport CSV i PDF, bez reklam.
 - Bez dziennego limitu w darmowym planie.

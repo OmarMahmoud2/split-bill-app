@@ -7,5 +7,5 @@ Evens 2.0 is een volledig nieuwe app.
 - Elke cent verantwoord: volledige uitsplitsing per aandeel, met geschiedenis.
 - Verdeel per item, gelijk, exact, in procenten of delen. Snelle schulden.
 - Alle valuta's, 22 talen, rechts-naar-links, donkere modus.
-- Pro: meerdere valuta's met dagkoersen, terugkerende rekeningen, CSV- en PDF-export.
+- Pro: onbeperkt AI-scans en spraak, terugkerende rekeningen, CSV- en PDF-export, geen advertenties.
 - Geen daglimiet in het gratis plan.
