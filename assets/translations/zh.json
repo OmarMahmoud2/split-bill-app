@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "{name} 的份额已恢复为未支付。",
   "bf_bill_marked_unpaid_payment_kept": "已将 {name} 标记为未支付。已记录的付款仍保留在群组账本中。",
   "account_suspended_title": "账号已被暂停",
-  "account_suspended_message": "此账号已被暂停。如果你认为这是误判，请联系 {email}。"
+  "account_suspended_message": "此账号已被暂停。如果你认为这是误判，请联系 {email}。",
+  "bf_summary_saved_offline": "你已离线。账单已保存在此手机上，恢复网络后会自动同步。"
 }

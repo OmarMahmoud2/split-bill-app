@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "Der Anteil von {name} ist wieder unbezahlt.",
   "bf_bill_marked_unpaid_payment_kept": "{name} ist als unbezahlt markiert. Die erfasste Zahlung bleibt im Gruppenkonto.",
   "account_suspended_title": "Konto gesperrt",
-  "account_suspended_message": "Dieses Konto wurde gesperrt. Wenn du glaubst, dass das ein Fehler ist, schreibe an {email}."
+  "account_suspended_message": "Dieses Konto wurde gesperrt. Wenn du glaubst, dass das ein Fehler ist, schreibe an {email}.",
+  "bf_summary_saved_offline": "Du bist offline. Die Rechnung ist auf deinem Handy gespeichert und wird synchronisiert, sobald du wieder online bist."
 }

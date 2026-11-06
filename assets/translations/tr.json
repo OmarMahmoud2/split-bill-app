@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "{name} kişisinin payı yeniden ödenmemiş.",
   "bf_bill_marked_unpaid_payment_kept": "{name} ödenmedi olarak işaretlendi. Kaydedilen ödeme grup defterinde kalır.",
   "account_suspended_title": "Hesap askıya alındı",
-  "account_suspended_message": "Bu hesap askıya alındı. Bunun bir hata olduğunu düşünüyorsanız {email} adresiyle iletişime geçin."
+  "account_suspended_message": "Bu hesap askıya alındı. Bunun bir hata olduğunu düşünüyorsanız {email} adresiyle iletişime geçin.",
+  "bf_summary_saved_offline": "Çevrimdışısınız. Hesap bu telefona kaydedildi ve tekrar çevrimiçi olduğunuzda eşitlenecek."
 }

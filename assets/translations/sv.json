@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "{name}s andel är obetald igen.",
   "bf_bill_marked_unpaid_payment_kept": "{name} är markerad som obetald. Den registrerade betalningen finns kvar i gruppens bok.",
   "account_suspended_title": "Kontot är avstängt",
-  "account_suspended_message": "Det här kontot har stängts av. Om du tror att det är ett misstag, kontakta {email}."
+  "account_suspended_message": "Det här kontot har stängts av. Om du tror att det är ett misstag, kontakta {email}.",
+  "bf_summary_saved_offline": "Du är offline. Notan är sparad på den här telefonen och synkas när du är online igen."
 }

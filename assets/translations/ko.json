@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "{name}님의 분담금이 다시 미납 상태입니다.",
   "bf_bill_marked_unpaid_payment_kept": "{name}님을 미납으로 표시했습니다. 기록된 결제는 그룹 장부에 남습니다.",
   "account_suspended_title": "계정이 정지되었습니다",
-  "account_suspended_message": "이 계정은 정지되었습니다. 오류라고 생각되시면 {email}(으)로 문의해 주세요."
+  "account_suspended_message": "이 계정은 정지되었습니다. 오류라고 생각되시면 {email}(으)로 문의해 주세요.",
+  "bf_summary_saved_offline": "오프라인 상태입니다. 정산서는 이 휴대폰에 저장되었고 온라인에 연결되면 동기화됩니다."
 }

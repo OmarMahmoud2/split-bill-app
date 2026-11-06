@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "La quota di {name} è di nuovo non pagata.",
   "bf_bill_marked_unpaid_payment_kept": "{name} segnato come non pagato. Il pagamento registrato resta nel registro del gruppo.",
   "account_suspended_title": "Account sospeso",
-  "account_suspended_message": "Questo account è stato sospeso. Se pensi sia un errore, scrivi a {email}."
+  "account_suspended_message": "Questo account è stato sospeso. Se pensi sia un errore, scrivi a {email}.",
+  "bf_summary_saved_offline": "Sei offline. Il conto è salvato su questo telefono e si sincronizzerà quando torni online."
 }

@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "Andelen til {name} er ubetalt igjen.",
   "bf_bill_marked_unpaid_payment_kept": "{name} er markert som ubetalt. Den registrerte betalingen blir stående i gruppens regnskap.",
   "account_suspended_title": "Kontoen er suspendert",
-  "account_suspended_message": "Denne kontoen er suspendert. Hvis du mener dette er en feil, kontakt {email}."
+  "account_suspended_message": "Denne kontoen er suspendert. Hvis du mener dette er en feil, kontakt {email}.",
+  "bf_summary_saved_offline": "Du er frakoblet. Regningen er lagret på denne telefonen og synkroniseres når du er på nett igjen."
 }

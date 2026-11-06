@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "La part de {name} est de nouveau impayée.",
   "bf_bill_marked_unpaid_payment_kept": "{name} est marqué impayé. Le paiement enregistré reste dans le registre du groupe.",
   "account_suspended_title": "Compte suspendu",
-  "account_suspended_message": "Ce compte a été suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez {email}."
+  "account_suspended_message": "Ce compte a été suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez {email}.",
+  "bf_summary_saved_offline": "Vous êtes hors ligne. L'addition est enregistrée sur ce téléphone et se synchronisera au retour de la connexion."
 }

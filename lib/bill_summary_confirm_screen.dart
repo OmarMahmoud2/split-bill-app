@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +19,7 @@ import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
 import 'package:split_bill_app/services/notification_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/offline_write.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/bill_details/bill_breakdown_card.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
@@ -378,10 +380,14 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
 
   Future<Map<String, String>?> _hostPaymentMethods(String uid) async {
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final ref = FirebaseFirestore.instance.collection('users').doc(uid);
+      DocumentSnapshot<Map<String, dynamic>> doc;
+      try {
+        doc = await ref.get().timeout(const Duration(seconds: 4));
+      } catch (_) {
+        // Offline or slow: the cached copy is good enough here.
+        doc = await ref.get(const GetOptions(source: Source.cache));
+      }
       final data = doc.data();
       if (data == null) return null;
       final custom = data['customPaymentMethods'];
@@ -424,6 +430,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
 
     String billId;
     Map<String, dynamic> billData;
+    var queued = false;
     try {
       if (_testing) {
         billData = _buildBillData(c, 'host', 'Host');
@@ -434,11 +441,24 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
         billData = _buildBillData(c, user.uid, user.displayName);
         final methods = await _hostPaymentMethods(user.uid);
         if (methods != null) billData['paymentMethods'] = methods;
-        final ref = await FirebaseFirestore.instance
-            .collection('bills')
-            .add(billData);
+        // `.doc()` + `set()` instead of `.add()`: the id is known up front
+        // and, offline, the write queues on the device instead of hanging.
+        final ref = FirebaseFirestore.instance.collection('bills').doc();
         billId = ref.id;
-        await _cleanupResumed();
+        final outcome = await commitOrQueue(
+          ref.set(billData),
+          onLateError: (e) {
+            if (kDebugMode) debugPrint('queued bill write failed: $e');
+            if (!mounted) return;
+            AppToast.show(
+              context,
+              message: 'bf_summary_save_failed'.tr(),
+              type: AppToastType.error,
+            );
+          },
+        );
+        queued = outcome == WriteOutcome.queued;
+        unawaited(_cleanupResumed());
         _notifyAppUsers(c, billId, user.uid);
       }
     } catch (e) {
@@ -458,6 +478,13 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     if (!mounted) return;
     // 2.0 has no interstitial ads: saving goes straight to the success screen.
     _showSuccess(billId, billData);
+    if (queued) {
+      AppToast.show(
+        context,
+        message: 'bf_summary_saved_offline'.tr(),
+        type: AppToastType.info,
+      );
+    }
   }
 
   Future<void> _cleanupResumed() async {
@@ -534,7 +561,11 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     final hasOthers = targets.any((t) => !t.isHost);
     navigator.pushAndRemoveUntil(
       PageRouteBuilder<void>(
-        transitionDuration: AppMotion.slow,
+        transitionDuration: AppMotion.durationFor(context, AppMotion.slow),
+        reverseTransitionDuration: AppMotion.durationFor(
+          context,
+          AppMotion.medium,
+        ),
         pageBuilder: (ctx, _, _) => SuccessScreen(
           title: 'bf_share_title'.tr(),
           message: 'bf_summary_success_message'.tr(

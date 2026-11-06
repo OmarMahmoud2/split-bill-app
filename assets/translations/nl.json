@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "Het aandeel van {name} is weer onbetaald.",
   "bf_bill_marked_unpaid_payment_kept": "{name} is als onbetaald gemarkeerd. De geregistreerde betaling blijft in het groepsboek staan.",
   "account_suspended_title": "Account geblokkeerd",
-  "account_suspended_message": "Dit account is geblokkeerd. Denk je dat dit een vergissing is, neem dan contact op via {email}."
+  "account_suspended_message": "Dit account is geblokkeerd. Denk je dat dit een vergissing is, neem dan contact op via {email}.",
+  "bf_summary_saved_offline": "Je bent offline. De rekening is op deze telefoon opgeslagen en wordt gesynchroniseerd zodra je weer online bent."
 }

@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "Udział {name} jest znowu nieopłacony.",
   "bf_bill_marked_unpaid_payment_kept": "{name} oznaczono jako nieopłacone. Zapisana płatność pozostaje w rozliczeniu grupy.",
   "account_suspended_title": "Konto zawieszone",
-  "account_suspended_message": "To konto zostało zawieszone. Jeśli uważasz, że to pomyłka, napisz na {email}."
+  "account_suspended_message": "To konto zostało zawieszone. Jeśli uważasz, że to pomyłka, napisz na {email}.",
+  "bf_summary_saved_offline": "Brak połączenia. Rachunek zapisano na tym telefonie i zsynchronizuje się po powrocie online."
 }

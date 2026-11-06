@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "عاد نصيب {name} إلى غير مدفوع.",
   "bf_bill_marked_unpaid_payment_kept": "تم تعيين {name} كغير مدفوع. يبقى الدفع المسجل في دفتر المجموعة.",
   "account_suspended_title": "تم تعليق الحساب",
-  "account_suspended_message": "تم تعليق هذا الحساب. إذا كنت تعتقد أن هذا خطأ، تواصل مع {email}."
+  "account_suspended_message": "تم تعليق هذا الحساب. إذا كنت تعتقد أن هذا خطأ، تواصل مع {email}.",
+  "bf_summary_saved_offline": "أنت غير متصل. تم حفظ الفاتورة على هاتفك وستتم مزامنتها عند عودة الاتصال."
 }

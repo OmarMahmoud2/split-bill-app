@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "{name} کا حصہ دوبارہ ادا نہیں شدہ ہے۔",
   "bf_bill_marked_unpaid_payment_kept": "{name} کو ادا نہیں شدہ نشان زد کیا گیا۔ درج شدہ ادائیگی گروپ کے کھاتے میں رہے گی۔",
   "account_suspended_title": "اکاؤنٹ معطل ہے",
-  "account_suspended_message": "یہ اکاؤنٹ معطل کر دیا گیا ہے۔ اگر آپ کو لگتا ہے کہ یہ غلطی ہے تو {email} سے رابطہ کریں۔"
+  "account_suspended_message": "یہ اکاؤنٹ معطل کر دیا گیا ہے۔ اگر آپ کو لگتا ہے کہ یہ غلطی ہے تو {email} سے رابطہ کریں۔",
+  "bf_summary_saved_offline": "آپ آف لائن ہیں۔ بل اس فون پر محفوظ ہو گیا ہے اور آن لائن ہوتے ہی سنک ہو جائے گا۔"
 }

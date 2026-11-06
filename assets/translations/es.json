@@ -2134,5 +2134,6 @@
   "bf_bill_proof_rejected": "La parte de {name} vuelve a estar sin pagar.",
   "bf_bill_marked_unpaid_payment_kept": "{name} marcado como sin pagar. El pago registrado permanece en el libro del grupo.",
   "account_suspended_title": "Cuenta suspendida",
-  "account_suspended_message": "Esta cuenta ha sido suspendida. Si crees que es un error, escribe a {email}."
+  "account_suspended_message": "Esta cuenta ha sido suspendida. Si crees que es un error, escribe a {email}.",
+  "bf_summary_saved_offline": "Sin conexión. La cuenta se guardó en este teléfono y se sincronizará al volver a conectarte."
 }
