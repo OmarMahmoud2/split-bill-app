@@ -9,14 +9,12 @@ import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/paywall/paywall_plans.dart';
-import 'package:split_bill_app/widgets/paywall/paywall_text.dart';
-import 'package:split_bill_app/widgets/settings/v3_settings.dart';
-import 'package:split_bill_app/widgets/subscription_legal_disclosure.dart';
+import 'package:split_bill_app/widgets/paywall/paywall_body.dart';
 
 /// RevenueCat entitlement that unlocks Pro (same as RevenueCatService).
 const String _proEntitlement = 'premium';
 
-/// The v3 Pro paywall ("Split everything, without limits").
+/// The Pro paywall ("Every bill, no limits").
 ///
 /// Honest and short: five perks, Yearly / Monthly / Lifetime with the
 /// store-localized prices, a CTA that says exactly what happens, and the
@@ -70,17 +68,12 @@ class _PremiumModalState extends State<PremiumModal> {
   List<PaywallPlan> _plans = const [];
   PaywallPlan? _selected;
 
-  static const _perks = [
-    'pw_perk_scans',
-    'pw_perk_voice',
-    'pw_perk_export',
-    'pw_perk_no_ads',
-  ];
-
   @override
   void initState() {
     super.initState();
-    if (!widget._preview) AnalyticsService.instance.paywallView(widget.placement);
+    if (!widget._preview) {
+      AnalyticsService.instance.paywallView(widget.placement);
+    }
     _load();
   }
 
@@ -201,218 +194,22 @@ class _PremiumModalState extends State<PremiumModal> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     return Scaffold(
-      backgroundColor: p.canvas,
+      backgroundColor: context.palette.canvas,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      20,
-                      12,
-                      20,
-                      0,
-                    ),
-                    child: Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: V3IconButton.close(
-                        context,
-                        onPressed: () => Navigator.of(context).pop(false),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(24, 4, 24, 0),
-                    child: Semantics(
-                      header: true,
-                      child: Text(
-                        'pw_title'.tr(),
-                        style: AppTypography.displaySmall.copyWith(
-                          color: p.textPrimary,
-                          fontSize: 32,
-                          height: 1.1,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      24,
-                      18,
-                      24,
-                      0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (final perk in _perks)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ExcludeSemantics(
-                                  child: Icon(
-                                    Icons.check_rounded,
-                                    size: 20,
-                                    color: p.accent,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    perk.tr(),
-                                    style: AppTypography.bodyLarge.copyWith(
-                                      color: p.textPrimary,
-                                      fontSize: 15,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 0),
-                    child: _buildPlans(context),
-                  ),
-                  const Spacer(),
-                  const SizedBox(height: 20),
-                  if (_selected != null)
-                    Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        20,
-                        0,
-                        20,
-                        16,
-                      ),
-                      child: _buildBottom(context, _selected!),
-                    ),
-                ],
-              ),
-            ),
-          ],
+        child: PaywallBody(
+          loading: _loading,
+          failed: _failed,
+          plans: _plans,
+          selected: _selected,
+          busy: _busy,
+          onSelected: (plan) => setState(() => _selected = plan),
+          onPurchase: _purchase,
+          onRestore: _restore,
+          onRetry: _load,
+          onClose: () => Navigator.of(context).pop(false),
         ),
       ),
-    );
-  }
-
-  Widget _buildPlans(BuildContext context) {
-    if (_loading) {
-      return SkeletonShimmer(
-        child: Column(
-          children: [
-            for (var i = 0; i < 3; i++)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: Skeleton(
-                  height: 64,
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                ),
-              ),
-          ],
-        ),
-      );
-    }
-    if (_failed) {
-      return ErrorState.inline(
-        title: 'pricing_unavailable'.tr(),
-        message: 'pw_pricing_unavailable_message'.tr(),
-        onRetry: _load,
-      );
-    }
-    final p = context.palette;
-    return Semantics(
-      label: 'pw_plan_group'.tr(),
-      explicitChildNodes: true,
-      child: Column(
-        children: [
-          for (final plan in _plans)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: V3RadioTile(
-                key: ValueKey('paywall-plan-${plan.kind.name}'),
-                radius: 16,
-                selected: identical(plan, _selected),
-                onTap: () => setState(() => _selected = plan),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            plan.nameKey.tr(),
-                            style: AppTypography.labelLarge.copyWith(
-                              color: p.textPrimary,
-                            ),
-                          ),
-                          Text(
-                            paywallText(plan.subtitle),
-                            style: AppTypography.bodySmall.copyWith(
-                              color: p.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      paywallText(plan.trailingPrice),
-                      style: AppTypography.amount.copyWith(
-                        color: p.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottom(BuildContext context, PaywallPlan plan) {
-    final p = context.palette;
-    final label = paywallText(plan.cta);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        FilledButton(
-          key: const ValueKey('paywall-cta'),
-          onPressed: _busy ? null : _purchase,
-          style: FilledButton.styleFrom(
-            backgroundColor: p.accent,
-            foregroundColor: p.onAccent,
-            minimumSize: const Size.fromHeight(54),
-          ),
-          child: _busy
-              ? SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.4,
-                    color: p.onAccent,
-                    semanticsLabel: 'feedback_loading'.tr(),
-                  ),
-                )
-              : AnimatedSwitcher(
-                  duration: AppMotion.durationFor(context, AppMotion.fast),
-                  child: Text(label, key: ValueKey(label)),
-                ),
-        ),
-        const SizedBox(height: 10),
-        SubscriptionLegalDisclosure.plan(plan: plan, onRestore: _restore),
-      ],
     );
   }
 }

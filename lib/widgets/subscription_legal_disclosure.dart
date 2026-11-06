@@ -81,12 +81,12 @@ class SubscriptionLegalDisclosure extends StatelessWidget {
           children: [
             _LegalLink(
               label: 'pw_link_terms'.tr(),
-              onTap: () => _open(context, AppLinks.termsOfUseUrl),
+              onTap: () => openLink(context, AppLinks.termsOfUseUrl),
             ),
             _Dot(style: style),
             _LegalLink(
               label: 'pw_link_privacy'.tr(),
-              onTap: () => _open(context, AppLinks.privacyPolicyUrl),
+              onTap: () => openLink(context, AppLinks.privacyPolicyUrl),
             ),
             if (onRestore != null) ...[
               _Dot(style: style),
@@ -102,7 +102,7 @@ class SubscriptionLegalDisclosure extends StatelessWidget {
     );
   }
 
-  static Future<void> _open(BuildContext context, String url) async {
+  static Future<void> openLink(BuildContext context, String url) async {
     var opened = false;
     try {
       opened = await launchUrl(
