@@ -14,6 +14,12 @@ import 'package:split_bill_app/services/notification_payload.dart';
 import 'package:split_bill_app/services/guest_session.dart';
 import 'dart:async';
 
+/// Logs only in debug builds: uids, payloads and response bodies must not
+/// reach release device logs.
+void _debugLog(String message) {
+  if (kDebugMode) debugPrint(message);
+}
+
 class NotificationService with WidgetsBindingObserver {
   /// Taps on notifications this app showed itself while in the foreground
   /// (system-shown pushes arrive through FirebaseMessaging.onMessageOpenedApp).
@@ -98,7 +104,7 @@ class NotificationService with WidgetsBindingObserver {
     }
 
     if (!_isGranted(settings)) {
-      debugPrint('User declined or has not accepted permission');
+      _debugLog('User declined or has not accepted permission');
       // Keep the stored profile (timezone, notificationsEnabled=false) current.
       unawaited(syncTokenForCurrentUser(force: true));
       return;
@@ -162,7 +168,7 @@ class NotificationService with WidgetsBindingObserver {
         await Future.delayed(const Duration(seconds: 1));
       }
       if (apnsToken == null) {
-        debugPrint("Warning: APNS token not received (Simulator?)");
+        _debugLog("Warning: APNS token not received (Simulator?)");
       }
     }
 
@@ -182,7 +188,7 @@ class NotificationService with WidgetsBindingObserver {
     try {
       await syncTokenForCurrentUser(force: true);
     } catch (e) {
-      debugPrint("Error getting FCM token: $e");
+      _debugLog("Error getting FCM token: $e");
     }
 
     // 4. Listen for Token Refreshes
@@ -243,7 +249,7 @@ class NotificationService with WidgetsBindingObserver {
       _lastSyncedToken = token;
       _lastSyncedTimezone = timezone;
     } catch (e) {
-      debugPrint("Error syncing FCM token: $e");
+      _debugLog("Error syncing FCM token: $e");
     } finally {
       _isSyncingToken = false;
     }
@@ -318,7 +324,7 @@ class NotificationService with WidgetsBindingObserver {
         }, SetOptions(merge: true));
       }
     } catch (e) {
-      debugPrint("Error clearing FCM token: $e");
+      _debugLog("Error clearing FCM token: $e");
     } finally {
       _lastSyncedUid = null;
       _lastSyncedToken = null;
@@ -424,9 +430,9 @@ class NotificationService with WidgetsBindingObserver {
             'read': false,
             'data': data,
           });
-      debugPrint("✅ Notification saved to history for UID: $targetUid");
+      _debugLog("✅ Notification saved to history for UID: $targetUid");
     } catch (e) {
-      debugPrint("❌ Error saving notification history: $e");
+      _debugLog("❌ Error saving notification history: $e");
     }
 
     // 2. SEND PUSH (Via Secure Backend)
@@ -436,9 +442,9 @@ class NotificationService with WidgetsBindingObserver {
       fcmData['click_action'] = 'FLUTTER_NOTIFICATION_CLICK';
       if (resolvedBillId != null) fcmData['billId'] = resolvedBillId;
 
-      debugPrint("--- SENDING PUSH NOTIFICATION ---");
-      debugPrint("Target UID: $targetUid");
-      debugPrint("Payload: $fcmData");
+      _debugLog("--- SENDING PUSH NOTIFICATION ---");
+      _debugLog("Target UID: $targetUid");
+      _debugLog("Payload: $fcmData");
 
       final response = await http.post(
         BackendConfig.notificationUri,
@@ -456,14 +462,14 @@ class NotificationService with WidgetsBindingObserver {
         }),
       );
 
-      debugPrint("Backend Response: ${response.statusCode} - ${response.body}");
+      _debugLog("Backend Response: ${response.statusCode} - ${response.body}");
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        debugPrint("❌ Notification backend rejected the request.");
+        _debugLog("❌ Notification backend rejected the request.");
         return false;
       }
       return true;
     } catch (e) {
-      debugPrint("❌ Error calling notification backend: $e");
+      _debugLog("❌ Error calling notification backend: $e");
       return false;
     }
   }
