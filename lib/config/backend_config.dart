@@ -27,6 +27,17 @@ class BackendConfig {
   static Uri get premiumSyncUri =>
       Uri.parse('$baseUrl/api/split-bill/premium/sync/');
 
+  /// Marks one participant's payment on a bill (web guests and members).
+  static Uri guestPaymentUri(String billId) => Uri.parse(
+    '$baseUrl/api/split-bill/bills/${Uri.encodeComponent(billId)}/guest-payment/',
+  );
+
+  /// Admin-only: disables or re-enables a user's Firebase Auth account and
+  /// sets the Firestore suspension flags.
+  static Uri adminDisableUserUri(String uid) => Uri.parse(
+    '$baseUrl/api/split-bill/admin/users/${Uri.encodeComponent(uid)}/disable',
+  );
+
   /// Admin-only AI usage aggregation (proposed endpoint, see
   /// `AdminAiUsageService`).
   static Uri adminAiUsageUri({int days = 7}) =>

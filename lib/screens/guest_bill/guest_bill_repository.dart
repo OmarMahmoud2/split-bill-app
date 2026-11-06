@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
+import '../../config/backend_config.dart';
 import '../../services/guest_session.dart';
 // Only needed after a payment; keep it out of the first web download.
 import '../../services/notification_service.dart' deferred as notifications;
@@ -17,6 +19,16 @@ class GuestProof {
 
   /// `data:image/jpeg;base64,...`, the shape hosts already read.
   final String dataUrl;
+}
+
+/// The backend refused the payment update (HTTP [statusCode]).
+class GuestPaymentRejected implements Exception {
+  const GuestPaymentRejected(this.statusCode);
+
+  final int statusCode;
+
+  @override
+  String toString() => 'GuestPaymentRejected($statusCode)';
 }
 
 /// The screenshot would not fit in the bill document.
@@ -75,10 +87,17 @@ abstract class GuestBillRepository {
 const int maxProofDataUrlLength = 700 * 1024;
 
 class FirestoreGuestBillRepository implements GuestBillRepository {
-  FirestoreGuestBillRepository({FirebaseFirestore? firestore})
-    : _firestore = firestore;
+  FirestoreGuestBillRepository({
+    FirebaseFirestore? firestore,
+    http.Client? httpClient,
+    Future<String?> Function()? idToken,
+  }) : _firestore = firestore,
+       _http = httpClient,
+       _idToken = idToken;
 
   final FirebaseFirestore? _firestore;
+  final http.Client? _http;
+  final Future<String?> Function()? _idToken;
   FirebaseFirestore get _db => _firestore ?? FirebaseFirestore.instance;
 
   static const _timeout = Duration(seconds: 12);
@@ -93,32 +112,46 @@ class FirestoreGuestBillRepository implements GuestBillRepository {
         .map((s) => s.exists ? s.data() : null);
   }
 
-  /// Stage A rule-compatible write: only `participants` changes, same list
-  /// length (firestore.rules paymentOnlyBillUpdate).
+  /// Guests never write the bill document (rules deny it). The backend
+  /// validates the participant, the status and the proof, then updates the
+  /// one entry (POST .../guest-payment/).
   @override
   Future<void> submitPayment({
     required String billId,
     required String participantId,
     String? proofDataUrl,
   }) async {
-    final billRef = _db.collection('bills').doc(billId);
-    await _db.runTransaction<void>((transaction) async {
-      final snapshot = await transaction.get(billRef);
-      if (!snapshot.exists) throw StateError('bill_not_found');
-      final data = snapshot.data()!;
-      final participants = (data['participants'] as List<dynamic>? ?? const [])
-          .map((p) => Map<String, dynamic>.from(p as Map))
-          .toList();
-      final index = participants.indexWhere((p) => p['id'] == participantId);
-      if (index == -1) throw StateError('participant_not_found');
-      participants[index] = {
-        ...participants[index],
-        'paymentProof': proofDataUrl,
-        'status': 'REVIEW',
-        'paymentTime': Timestamp.now(),
-      };
-      transaction.update(billRef, {'participants': participants});
-    });
+    final String? token;
+    if (_idToken != null) {
+      token = await _idToken();
+    } else {
+      final user = await GuestSession.ensureSignedIn().timeout(_timeout);
+      token = await user?.getIdToken().timeout(_timeout);
+    }
+    if (token == null || token.isEmpty) throw StateError('not_signed_in');
+
+    final client = _http ?? http.Client();
+    try {
+      final response = await client
+          .post(
+            BackendConfig.guestPaymentUri(billId),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode({
+              'participantId': participantId,
+              'status': 'REVIEW',
+              if (proofDataUrl != null) 'proofImage': proofDataUrl,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw GuestPaymentRejected(response.statusCode);
+      }
+    } finally {
+      if (_http == null) client.close();
+    }
   }
 
   @override
