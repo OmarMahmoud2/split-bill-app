@@ -163,7 +163,9 @@ class FirebaseStartupErrorApp extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Please refresh the page. If this keeps happening, contact support.',
+                      kIsWeb
+                          ? 'Please refresh the page. If this keeps happening, contact support.'
+                          : 'Check your connection, then close and reopen the app. If this keeps happening, contact support.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -246,6 +248,8 @@ class _MyAppState extends State<MyApp> {
 
     // 3. LISTEN TO FIREBASE NOTIFICATIONS (Important!)
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
+    // Foreground pushes are shown by the app itself; route their taps too.
+    NotificationService().localTaps.listen(_routeNotificationData);
 
     // 4. CHECK INITIAL NOTIFICATION (Terminated state)
     RemoteMessage? initialMessage = await FirebaseMessaging.instance
@@ -255,8 +259,10 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void _handleNotificationTap(RemoteMessage message) {
-    final data = message.data;
+  void _handleNotificationTap(RemoteMessage message) =>
+      _routeNotificationData(message.data);
+
+  void _routeNotificationData(Map<String, dynamic> data) {
     switch (notificationTapTarget(data)) {
       case NotificationTapTarget.bill:
         _handleBillNavigation(data['billId'] as String, uid: data['uid']);

@@ -15,6 +15,12 @@ import 'package:split_bill_app/services/guest_session.dart';
 import 'dart:async';
 
 class NotificationService with WidgetsBindingObserver {
+  /// Taps on notifications this app showed itself while in the foreground
+  /// (system-shown pushes arrive through FirebaseMessaging.onMessageOpenedApp).
+  static final StreamController<Map<String, dynamic>> _localTaps =
+      StreamController<Map<String, dynamic>>.broadcast();
+  Stream<Map<String, dynamic>> get localTaps => _localTaps.stream;
+
   NotificationService._internal();
 
   static final NotificationService _instance = NotificationService._internal();
@@ -64,7 +70,13 @@ class NotificationService with WidgetsBindingObserver {
       android: androidSettings,
       iOS: iosSettings,
     );
-    await _localNotifications.initialize(initSettings);
+    await _localNotifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (response) {
+        final data = decodeLocalPayload(response.payload);
+        if (data != null) _localTaps.add(data);
+      },
+    );
 
     // Create Android Notification Channel explicitly
     if (!kIsWeb && Platform.isAndroid) {
@@ -318,6 +330,7 @@ class NotificationService with WidgetsBindingObserver {
       message.hashCode,
       message.notification!.title,
       message.notification!.body,
+      payload: jsonEncode(message.data),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'split_bill_channel',
@@ -453,5 +466,16 @@ class NotificationService with WidgetsBindingObserver {
       debugPrint("❌ Error calling notification backend: $e");
       return false;
     }
+  }
+}
+
+/// Payload of a locally shown notification back to the FCM data map.
+Map<String, dynamic>? decodeLocalPayload(String? payload) {
+  if (payload == null || payload.isEmpty) return null;
+  try {
+    final decoded = jsonDecode(payload);
+    return decoded is Map<String, dynamic> ? decoded : null;
+  } catch (_) {
+    return null;
   }
 }

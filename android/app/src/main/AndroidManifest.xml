@@ -29,8 +29,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="splitbillapp-ffc39.web.app" />
-                <data android:scheme="http" android:host="splitbillapp-ffc39.web.app" />
+                <data android:scheme="https" android:host="splitbillapp-ffc39.web.app" android:pathPrefix="/bill" />
+                <data android:scheme="http" android:host="splitbillapp-ffc39.web.app" android:pathPrefix="/bill" />
             </intent-filter>
             <!-- Home-screen widget taps (home_widget HomeWidgetLaunchIntent). -->
             <intent-filter>
@@ -78,6 +78,10 @@
         <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
         android:value="ca-app-pub-8581075015023620~7651102100"/>
+        <!-- Background FCM pushes use the app's own channel (heads-up, sound). -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="split_bill_channel" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
