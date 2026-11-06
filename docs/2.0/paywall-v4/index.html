@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evens Pro paywall</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root { --bg:#E8EEEB; --ink:#16201D; --muted:#5E6A65; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); font:15px/1.5 Inter, system-ui, sans-serif; color:var(--ink); }
+.board { display:flex; flex-wrap:wrap; gap:40px; justify-content:center; padding:32px 16px 60px; }
+.col { display:flex; flex-direction:column; align-items:center; gap:12px; }
+.cap { font:600 14px Inter; color:var(--muted); }
+
+/* phone */
+.phone { width:390px; height:844px; border-radius:48px; overflow:hidden; position:relative; box-shadow:0 0 0 10px #16201D, 0 40px 70px rgba(22,32,29,.18); }
+.app { --canvas:#F7F7F5; --paper:#FFFFFF; --text:#111312; --sub:#5F6360; --hair:#E7E6E1; --teal:#0F766E; --teal-ink:#FFFFFF; --stub:#FFFFFF; --sel:#111312;
+  height:100%; background:var(--canvas); color:var(--text); display:flex; flex-direction:column; padding:54px 22px 26px; }
+.app.dark { --canvas:#0E0F0E; --paper:#F4F6F5; --text:#F0F2F1; --sub:#9AA3A0; --hair:#2B2F2D; --teal:#34C5B0; --teal-ink:#0E0F0E; --stub:#171918; --sel:#34C5B0; }
+.top { display:flex; justify-content:flex-end; }
+.x { width:40px; height:40px; border-radius:50%; border:1px solid var(--hair); background:transparent; color:var(--text); font-size:18px; }
+h1 { font:800 34px/1.02 'Inter Tight', sans-serif; letter-spacing:-.03em; margin:6px 0 18px; }
+
+/* receipt of perks */
+.receipt { filter:drop-shadow(0 1px 0 rgba(22,32,29,.06)) drop-shadow(0 10px 18px rgba(22,32,29,.07)); background:var(--paper); color:#2B3330; padding:18px 20px 22px; font:400 14px/1.85 'IBM Plex Mono', monospace; position:relative; transform-origin:top; }
+.receipt::after { content:""; position:absolute; left:0; right:0; bottom:-8px; height:8px; background:
+  linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0/12px 8px repeat-x,
+  linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0/12px 8px repeat-x; }
+.app.dark .receipt::after { background:
+  linear-gradient(135deg, #F4F6F5 50%, transparent 50%) 0 0/12px 8px repeat-x,
+  linear-gradient(-135deg, #F4F6F5 50%, transparent 50%) 0 0/12px 8px repeat-x; }
+.rhead { display:flex; justify-content:space-between; color:#75807B; font-size:12.5px; margin-bottom:6px; }
+.line { display:flex; gap:8px; align-items:baseline; opacity:0; transform:translateY(4px); transition:opacity .25s, transform .3s; }
+.line .lead { flex:1; border-bottom:1.5px dotted #C6CECA; transform:translateY(-4px); }
+.line b { font-weight:500; color:#0F766E; }
+.on .line { opacity:1; transform:none; }
+.free { margin-top:10px; padding-top:10px; border-top:1.5px dashed #C6CECA; color:#75807B; font-size:12.5px; }
+
+/* plan stubs */
+.plans { display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:8px; margin-top:26px; }
+.stub { position:relative; background:var(--stub); border:1.5px solid var(--hair); border-radius:16px; padding:16px 10px 12px; text-align:center; cursor:pointer; transition:transform .25s cubic-bezier(.2,.8,.2,1), border-color .2s, box-shadow .25s; color:var(--text); font:inherit; }
+.stub .n { font:600 13px Inter; color:var(--sub); }
+.stub .p { font:800 22px/1.1 'Inter Tight', sans-serif; letter-spacing:-.02em; margin:6px 0 2px; }
+.stub .per { font-size:12px; color:var(--sub); }
+.stub.sel { border-color:var(--sel); border-width:2px; transform:translateY(-4px); box-shadow:0 10px 22px rgba(17,19,18,.08); }
+.badge { position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--teal); color:var(--teal-ink); font:600 11.5px Inter; padding:3px 9px; border-radius:20px; white-space:nowrap; }
+.stub:focus-visible { outline:2px solid var(--teal); outline-offset:3px; }
+
+.today { display:flex; justify-content:space-between; align-items:baseline; margin:22px 2px 0; font-size:14.5px; }
+.today .t { color:var(--sub); }
+.today .v { font:500 15px 'IBM Plex Mono', monospace; }
+.spacer { flex:1; }
+.cta { height:56px; border:0; border-radius:16px; background:var(--teal); color:var(--teal-ink); font:700 17px Inter; width:100%; }
+.legal { font-size:11.5px; line-height:1.5; color:var(--sub); text-align:center; margin:12px 4px 10px; }
+.links { display:flex; justify-content:center; gap:22px; font-size:13px; font-weight:600; }
+.links a { color:var(--text); }
+.ctrl { display:flex; gap:10px; }
+.ctrl button { font:600 13px Inter; padding:8px 14px; border-radius:10px; border:1.5px solid var(--ink); background:transparent; cursor:pointer; }
+@media (prefers-reduced-motion: reduce) { .line, .stub, .receipt { transition:none; } }
+</style>
+</head>
+<body>
+<div class="board">
+  <div class="col"><div class="cap">Light · yearly selected</div><div class="phone"><div class="app" data-plan="yearly"></div></div></div>
+  <div class="col"><div class="cap">Dark · yearly selected</div><div class="phone"><div class="app dark" data-plan="yearly"></div></div></div>
+  <div class="col"><div class="cap">Light · lifetime selected</div><div class="phone"><div class="app" data-plan="lifetime"></div></div></div>
+</div>
+<div class="ctrl" style="justify-content:center"><button id="replay">Replay entrance</button></div>
+
+<template id="tpl">
+  <div class="top"><button class="x" aria-label="Close">×</button></div>
+  <h1>Every bill, no limits</h1>
+  <div class="receipt">
+    <div class="rhead"><span>EVENS PRO</span><span>what you get</span></div>
+    <div class="line"><span>AI receipt scans</span><span class="lead"></span><b>unlimited</b></div>
+    <div class="line"><span>Voice assigning</span><span class="lead"></span><b>unlimited</b></div>
+    <div class="line"><span>Recurring bills</span><span class="lead"></span><b>included</b></div>
+    <div class="line"><span>PDF and CSV export</span><span class="lead"></span><b>included</b></div>
+    <div class="line"><span>Ads</span><span class="lead"></span><b>none</b></div>
+    <div class="free">Free stays free: unlimited bills, groups and guest links, 5 scans a month.</div>
+  </div>
+  <div class="plans" role="radiogroup" aria-label="Plan">
+    <button class="stub" role="radio" data-k="monthly"><div class="n">Monthly</div><div class="p">$2.99</div><div class="per">a month</div></button>
+    <button class="stub" role="radio" data-k="yearly"><span class="badge">7 days free</span><div class="n">Yearly</div><div class="p">$24.99</div><div class="per">$2.08 a month</div></button>
+    <button class="stub" role="radio" data-k="lifetime"><div class="n">Lifetime</div><div class="p">$59.99</div><div class="per">once</div></button>
+  </div>
+  <div class="today"><span class="t"></span><span class="v"></span></div>
+  <div class="spacer"></div>
+  <button class="cta"></button>
+  <div class="legal"></div>
+  <div class="links"><a href="#">Restore</a><a href="#">Terms</a><a href="#">Privacy</a></div>
+</template>
+
+<script>
+const fmt = d => d.toLocaleDateString('en', { day:'numeric', month:'short' });
+const trialEnd = fmt(new Date(Date.now() + 7*864e5));
+const copy = {
+  monthly:  { t:'Due today', v:'$2.99', cta:'Continue with Monthly', legal:'Renews every month at $2.99 until you cancel in your App Store settings, at least 24 hours before renewal.' },
+  yearly:   { t:'Due today', v:'$0.00', cta:'Start 7-day free trial', legal:`Free until ${trialEnd}, then $24.99 a year. Cancel before ${trialEnd} in your App Store settings and you won't be charged.` },
+  lifetime: { t:'Due today', v:'$59.99', cta:'Get Lifetime', legal:'One payment, no renewal. Fair use applies to AI.' },
+};
+function mount(app) {
+  app.append(document.getElementById('tpl').content.cloneNode(true));
+  const set = k => {
+    app.dataset.plan = k;
+    app.querySelectorAll('.stub').forEach(s => { const on = s.dataset.k === k; s.classList.toggle('sel', on); s.setAttribute('aria-checked', on); });
+    const c = copy[k];
+    app.querySelector('.today .t').textContent = k === 'yearly' ? `Due today, then $24.99 on ${trialEnd}` : c.t;
+    app.querySelector('.today .v').textContent = c.v;
+    app.querySelector('.cta').textContent = c.cta;
+    app.querySelector('.legal').textContent = c.legal;
+  };
+  app.querySelectorAll('.stub').forEach(s => s.addEventListener('click', () => set(s.dataset.k)));
+  set(app.dataset.plan);
+}
+function enter(app) {
+  const r = app.querySelector('.receipt'); r.classList.remove('on');
+  r.animate([{ clipPath:'inset(0 0 100% 0)' }, { clipPath:'inset(0 0 0 0)' }], { duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 700, easing:'steps(14)' })
+   .finished.then(() => {
+     r.querySelectorAll('.line').forEach((l, i) => l.style.transitionDelay = `${i*70}ms`);
+     r.classList.add('on');
+   });
+}
+document.querySelectorAll('.app').forEach(a => { mount(a); enter(a); });
+document.getElementById('replay').onclick = () => document.querySelectorAll('.app').forEach(enter);
+</script>
+</body>
+</html>
