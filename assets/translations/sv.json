@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "Betald",
   "guest3_show_all": "Visa alla {count} poster",
   "guest3_show_less": "Visa färre",
-  "guest3_amount_due": "Belopp att betala"
+  "guest3_amount_due": "Belopp att betala",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "Min QR-kod",
+  "hx_month_share": "Din andel",
+  "hx_bills_n": "Notor: {count}",
+  "hx_activity_empty": "Notor och betalningar visas här.",
+  "hx_activity_load_failed": "Kunde inte läsa in aktivitet. Försök igen."
 }

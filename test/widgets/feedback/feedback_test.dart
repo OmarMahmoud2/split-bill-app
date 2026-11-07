@@ -19,7 +19,7 @@ Widget _app(Widget home, {bool reduceMotion = false, bool dark = false}) =>
 String _plain(String s) => s.replaceAll(RegExp('[\u2066\u2069]'), '');
 
 Finder _textPlain(String value) => find.byWidgetPredicate(
-  (w) => w is Text && w.data != null && _plain(w.data!) == value,
+  (w) => w is Text && _plain(w.data ?? w.textSpan?.toPlainText() ?? '') == value,
 );
 
 final _confetti = find.byWidgetPredicate(

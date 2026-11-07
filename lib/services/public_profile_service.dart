@@ -25,7 +25,7 @@ class PublicProfileService {
 
       await _db.collection('publicProfiles').doc(user.uid).set({
         'displayName': data['displayName'] ?? user.displayName,
-        'photoUrl': data['photoUrl'] ?? user.photoURL,
+        'photoUrl': data['photoUrl'],
         'customPaymentMethods': data['customPaymentMethods'] ?? const [],
         'updatedAt': FieldValue.serverTimestamp(),
       });

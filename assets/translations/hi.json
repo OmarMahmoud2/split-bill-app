@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "भुगतान हो गया",
   "guest3_show_all": "सभी {count} आइटम दिखाएँ",
   "guest3_show_less": "कम दिखाएँ",
-  "guest3_amount_due": "देय राशि"
+  "guest3_amount_due": "देय राशि",
+  "hx_qa_iou": "उधार",
+  "hx_qr_tooltip": "मेरा QR कोड",
+  "hx_month_share": "आपका हिस्सा",
+  "hx_bills_n": "बिल: {count}",
+  "hx_activity_empty": "बिल और भुगतान यहाँ दिखेंगे।",
+  "hx_activity_load_failed": "गतिविधि लोड नहीं हो सकी। फिर कोशिश करें।"
 }

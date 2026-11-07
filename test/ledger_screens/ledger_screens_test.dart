@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/services/my_photo.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/home/floating_tab_bar.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +29,7 @@ import '../data/fixtures.dart';
 import 'fake_repo.dart';
 
 Finder textPlain(String value) =>
-    find.byWidgetPredicate((w) => w is Text && w.data != null && plainText(w.data!) == value);
+    find.byWidgetPredicate((w) => w is Text && plainText(w.data ?? w.textSpan?.toPlainText() ?? '') == value);
 
 final trip = LedgerGroup(
   id: 'g1',
@@ -433,7 +437,111 @@ void main() {
     });
   });
 
+  group('Home polish', () {
+    testWidgets('one Settle entry; quick actions are Scan, Expense, IOU', (tester) async {
+      repo = tripRepo();
+      LedgerRepository.instance = repo;
+      var iou = 0;
+      final actions = HomeActions(
+        onNew: () {},
+        onQuickIou: () => iou++,
+        onStartGroup: () {},
+        onOpenGroups: () {},
+        onOpenActivity: () {},
+        onOpenProfile: () {},
+        onOpenNotifications: () {},
+      );
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: actions, onRetry: () {})));
+      await tester.pumpAndSettle();
+      expect(find.text('settle_up_title'), findsOneWidget);
+      expect(find.text('home_qa_settle'), findsNothing);
+      expect(find.text('hx_qa_iou'), findsOneWidget);
+      await tester.tap(find.text('hx_qa_iou'));
+      expect(iou, 1);
+    });
+
+    testWidgets('QR button opens my code', (tester) async {
+      repo = tripRepo();
+      LedgerRepository.instance = repo;
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('hx_qr_tooltip'));
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsOneWidget);
+    });
+
+    testWidgets('my avatar uses the Evens profile photo, never the sign-in photo', (tester) async {
+      const auth = 'https://lh3.googleusercontent.com/n.png';
+      const mine = 'data:image/jpeg;base64,AAAA';
+      LedgerMe.debugOverride = const LedgerMe(uid: 'me', name: 'Omar Test', photoUrl: auth);
+      addTearDown(() => MyPhoto.set(null));
+      expect(MyPhoto.chosen(auth), isNull);
+      MyPhoto.set(auth);
+      expect(MyPhoto.notifier.value, isNull);
+      MyPhoto.set(mine);
+      repo = tripRepo();
+      LedgerRepository.instance = repo;
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
+      await tester.pumpAndSettle();
+      final urls = tester.widgetList<PalAvatar>(find.byType(PalAvatar)).map((a) => a.photoUrl).toList();
+      expect(urls, contains(mine));
+      expect(urls, isNot(contains(auth)));
+    });
+
+    testWidgets('nav pill slides to the tapped tab', (tester) async {
+      var index = 0;
+      await tester.pumpWidget(testApp(StatefulBuilder(
+        builder: (context, setState) => Scaffold(
+          bottomNavigationBar: FloatingTabBar(
+            index: index,
+            onSelect: (i) => setState(() => index = i),
+            onNew: () {},
+            onScan: () {},
+            newLabel: 'new',
+            scanHint: 'scan',
+            tabs: [
+              for (final l in ['A', 'B', 'C', 'D']) TabSpec(AppIcons.home, AppIcons.homeFill, l),
+            ],
+          ),
+        ),
+      )));
+      await tester.pumpAndSettle();
+      final start = tester.getTopLeft(find.byKey(const ValueKey('nav_indicator'))).dx;
+      await tester.tap(find.text('D'));
+      await tester.pumpAndSettle();
+      final end = tester.getTopLeft(find.byKey(const ValueKey('nav_indicator'))).dx;
+      expect(end, greaterThan(start + 100));
+    });
+  });
+
   group('Activity', () {
+    testWidgets('month headers with a summary and a card for this month', (tester) async {
+      final now = DateTime.now();
+      repo = FakeLedgerRepository(activityPages: [
+        ActivityPage([
+          activityFromBill(bill('b1', 'sara', {'sara': 1200, 'me': 1200}, date: now), 'me'),
+          activityFromBill(bill('b2', 'sara', {'sara': 800, 'me': 800}, date: now.subtract(const Duration(days: 45))), 'me'),
+        ], const ActivityCursor()),
+        const ActivityPage([], null),
+      ]);
+      LedgerRepository.instance = repo;
+      await tester.pumpWidget(testApp(const ActivityScreen(embedded: true)));
+      await tester.pumpAndSettle();
+      // One header per month, each with a bill count.
+      expect(find.textContaining('hx_bills_n'), findsNWidgets(2));
+      expect(find.textContaining('hx_month_share \$12.00'), findsOneWidget);
+    });
+
+    test('summarizeMonth counts bills and sums my share', () {
+      final items = [
+        activityFromBill(bill('b1', 'sara', {'sara': 1200, 'me': 1200}), 'me'),
+        activityFromBill(bill('b2', 'sara', {'sara': 800, 'me': 800}), 'me'),
+      ];
+      final m = summarizeMonth(items, me: 'me', currency: 'USD');
+      expect(m.billCount, 2);
+      expect(m.shareMinor, 2000);
+    });
+
     testWidgets('groups items by day and loads the next page', (tester) async {
       final now = DateTime.now();
       repo = FakeLedgerRepository(activityPages: [

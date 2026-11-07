@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -236,191 +237,199 @@ class BillShareScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final others = _others;
-    return Scaffold(
-      backgroundColor: p.canvas,
-      body: AdaptiveBody.form(
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsetsDirectional.fromSTEB(20, 40, 20, 16),
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(
-                          color: p.accentSoft,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          AppIcons.successFill,
-                          color: p.accent,
-                          size: 36,
-                        ),
-                      ),
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AdaptiveBody.form(
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      20,
+                      40,
+                      20,
+                      16,
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'bf_share_title'.tr(),
-                      textAlign: TextAlign.center,
-                      style: AppTypography.headlineMedium.copyWith(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: p.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'bf_share_subtitle'.tr(),
-                      textAlign: TextAlign.center,
-                      style: AppTypography.bodyMedium.copyWith(
-                        fontSize: 15,
-                        color: p.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ShareOptionTile(
-                            key: const ValueKey('share_tile_message'),
-                            glyph: AppIcons.messageDuo,
-                            label: 'bf_share_tile_message'.tr(),
-                            onTap: () => _openGroupMessage(context),
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: p.accentSoft,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            AppIcons.successFill,
+                            color: p.accent,
+                            size: 36,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ShareOptionTile(
-                            key: const ValueKey('share_tile_copy'),
-                            glyph: AppIcons.linkDuo,
-                            label: 'bf_share_copy_link'.tr(),
-                            onTap: () =>
-                                _copy(context, personalBillUrl(billId)),
-                          ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'bf_share_title'.tr(),
+                        textAlign: TextAlign.center,
+                        style: AppTypography.headlineMedium.copyWith(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          color: p.textPrimary,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ShareOptionTile(
-                            key: const ValueKey('share_qr_card'),
-                            glyph: AppIcons.qrDuo,
-                            label: 'bf_share_tile_qr'.tr(),
-                            onTap: () => _showQr(context),
-                          ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'bf_share_subtitle'.tr(),
+                        textAlign: TextAlign.center,
+                        style: AppTypography.bodyMedium.copyWith(
+                          fontSize: 15,
+                          color: p.textSecondary,
                         ),
-                      ],
-                    ),
-                    if (others.isNotEmpty) ...[
+                      ),
                       const SizedBox(height: 22),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                          start: 4,
-                          bottom: 10,
-                        ),
-                        child: Row(
-                          children: [
-                            AppDuoIcon(
-                              AppIcons.sendDuo,
-                              size: 20,
-                              color: p.accent,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ShareOptionTile(
+                              key: const ValueKey('share_tile_message'),
+                              glyph: AppIcons.messageDuo,
+                              label: 'bf_share_tile_message'.tr(),
+                              onTap: () => _openGroupMessage(context),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'bf_share_tile_each'.tr(),
-                                style: AppTypography.titleMedium.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  color: p.textPrimary,
-                                ),
-                              ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ShareOptionTile(
+                              key: const ValueKey('share_tile_copy'),
+                              glyph: AppIcons.linkDuo,
+                              label: 'bf_share_copy_link'.tr(),
+                              onTap: () =>
+                                  _copy(context, personalBillUrl(billId)),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ShareOptionTile(
+                              key: const ValueKey('share_qr_card'),
+                              glyph: AppIcons.qrDuo,
+                              label: 'bf_share_tile_qr'.tr(),
+                              onTap: () => _showQr(context),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                    if (others.isNotEmpty)
-                      Container(
-                        decoration: BoxDecoration(
-                          color: p.surface,
-                          borderRadius: AppRadii.cardRadius,
-                          border: Border.all(color: p.hairline),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Column(
-                          children: [
-                            for (var i = 0; i < others.length; i++)
-                              StaggeredEntrance(
-                                index: i,
-                                child: ShareTargetRow(
-                                  key: ValueKey('share_row_${others[i].id}'),
-                                  target: others[i],
-                                  currency: currency,
-                                  first: i == 0,
-                                  onSend: () => _send(context, others[i]),
-                                  onMessage: () => _message(context, others[i]),
-                                  onCopy: () => _copy(
-                                    context,
-                                    personalBillUrl(
-                                      billId,
-                                      participantId: others[i].id,
-                                    ),
+                      if (others.isNotEmpty) ...[
+                        const SizedBox(height: 22),
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(
+                            start: 4,
+                            bottom: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              AppDuoIcon(
+                                AppIcons.sendDuo,
+                                size: 20,
+                                color: p.accent,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'bf_share_tile_each'.tr(),
+                                  style: AppTypography.titleMedium.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: p.textPrimary,
                                   ),
                                 ),
                               ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                  ],
+                      ],
+                      if (others.isNotEmpty)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: p.surface,
+                            borderRadius: AppRadii.cardRadius,
+                            border: Border.all(color: p.hairline),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            children: [
+                              for (var i = 0; i < others.length; i++)
+                                StaggeredEntrance(
+                                  index: i,
+                                  child: ShareTargetRow(
+                                    key: ValueKey('share_row_${others[i].id}'),
+                                    target: others[i],
+                                    currency: currency,
+                                    first: i == 0,
+                                    onSend: () => _send(context, others[i]),
+                                    onMessage: () =>
+                                        _message(context, others[i]),
+                                    onCopy: () => _copy(
+                                      context,
+                                      personalBillUrl(
+                                        billId,
+                                        participantId: others[i].id,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (others.isNotEmpty)
-                      AssignPillButton(
-                        key: const ValueKey('share_all'),
-                        label: 'bf_share_all'.tr(),
-                        onPressed: () => _share(
-                          context,
-                          groupShareText(
-                            targets: targets,
-                            billId: billId,
-                            currency: currency,
-                            store: storeName,
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (others.isNotEmpty)
+                        AssignPillButton(
+                          key: const ValueKey('share_all'),
+                          label: 'bf_share_all'.tr(),
+                          onPressed: () => _share(
+                            context,
+                            groupShareText(
+                              targets: targets,
+                              billId: billId,
+                              currency: currency,
+                              store: storeName,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        height: 48,
+                        child: TextButton(
+                          key: const ValueKey('share_done'),
+                          onPressed:
+                              onDone ??
+                              () => Navigator.of(
+                                context,
+                              ).popUntil((route) => route.isFirst),
+                          style: TextButton.styleFrom(
+                            foregroundColor: p.textPrimary,
+                          ),
+                          child: Text(
+                            'bf_share_done'.tr(),
+                            style: AppTypography.labelLarge.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    const SizedBox(height: 6),
-                    SizedBox(
-                      height: 48,
-                      child: TextButton(
-                        key: const ValueKey('share_done'),
-                        onPressed:
-                            onDone ??
-                            () => Navigator.of(
-                              context,
-                            ).popUntil((route) => route.isFirst),
-                        style: TextButton.styleFrom(
-                          foregroundColor: p.textPrimary,
-                        ),
-                        child: Text(
-                          'bf_share_done'.tr(),
-                          style: AppTypography.labelLarge.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

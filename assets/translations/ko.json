@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "결제 완료",
   "guest3_show_all": "{count}개 항목 모두 보기",
   "guest3_show_less": "간단히 보기",
-  "guest3_amount_due": "결제할 금액"
+  "guest3_amount_due": "결제할 금액",
+  "hx_qa_iou": "차용증",
+  "hx_qr_tooltip": "내 QR 코드",
+  "hx_month_share": "내 부담금",
+  "hx_bills_n": "청구서: {count}건",
+  "hx_activity_empty": "청구서와 결제가 여기에 표시돼요.",
+  "hx_activity_load_failed": "활동을 불러오지 못했어요. 다시 시도해 주세요."
 }

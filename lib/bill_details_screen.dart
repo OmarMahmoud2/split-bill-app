@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
@@ -812,57 +813,58 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    return Scaffold(
-      backgroundColor: p.canvas,
-      body: AdaptiveBody(
-        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          stream: _stream,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              final error = snapshot.error!;
-              void retry() => setState(_subscribe);
-              return SafeArea(
-                child: Column(
-                  children: [
-                    const BillDetailsHeader(),
-                    Expanded(
-                      child: isOfflineError(error)
-                          ? ErrorState.offline(onRetry: retry)
-                          : ErrorState(
-                              title: 'bf_bill_load_error_title'.tr(),
-                              message: billErrorKey(error).tr(),
-                              onRetry: retry,
-                            ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            if (!snapshot.hasData) return const BillLoadingSkeleton();
-            final doc = snapshot.data!;
-            _trackOffline(doc.metadata.isFromCache);
-            final data = doc.data();
-            if (!doc.exists || data == null) {
-              return SafeArea(
-                child: Column(
-                  children: [
-                    const BillDetailsHeader(),
-                    Expanded(
-                      child: ErrorState(
-                        icon: AppIcons.receipt,
-                        title: 'bf_bill_not_found_title'.tr(),
-                        message: 'bf_bill_not_found_message'.tr(),
-                        retryLabel: 'bf_bill_go_back'.tr(),
-                        onRetry: () => Navigator.of(context).maybePop(),
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AdaptiveBody(
+          child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            stream: _stream,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                final error = snapshot.error!;
+                void retry() => setState(_subscribe);
+                return SafeArea(
+                  child: Column(
+                    children: [
+                      const BillDetailsHeader(),
+                      Expanded(
+                        child: isOfflineError(error)
+                            ? ErrorState.offline(onRetry: retry)
+                            : ErrorState(
+                                title: 'bf_bill_load_error_title'.tr(),
+                                message: billErrorKey(error).tr(),
+                                onRetry: retry,
+                              ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return _buildBill(context, data);
-          },
+                    ],
+                  ),
+                );
+              }
+              if (!snapshot.hasData) return const BillLoadingSkeleton();
+              final doc = snapshot.data!;
+              _trackOffline(doc.metadata.isFromCache);
+              final data = doc.data();
+              if (!doc.exists || data == null) {
+                return SafeArea(
+                  child: Column(
+                    children: [
+                      const BillDetailsHeader(),
+                      Expanded(
+                        child: ErrorState(
+                          icon: AppIcons.receipt,
+                          title: 'bf_bill_not_found_title'.tr(),
+                          message: 'bf_bill_not_found_message'.tr(),
+                          retryLabel: 'bf_bill_go_back'.tr(),
+                          onRetry: () => Navigator.of(context).maybePop(),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return _buildBill(context, data);
+            },
+          ),
         ),
       ),
     );

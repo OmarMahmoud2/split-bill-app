@@ -43,8 +43,6 @@ class UserPreferencesService {
           (user.displayName?.trim().isNotEmpty ?? false))
         'displayName': user.displayName,
       if (!data.containsKey('email') && user.email != null) 'email': user.email,
-      if ((data['photoUrl'] as String?)?.trim().isEmpty ?? true)
-        'photoUrl': user.photoURL,
       if (!data.containsKey('localeCode'))
         'localeCode': localeCode ?? defaultLocaleCode,
       if (!data.containsKey('currencyCode'))

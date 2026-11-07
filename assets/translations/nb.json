@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "Betalt",
   "guest3_show_all": "Vis alle {count} varer",
   "guest3_show_less": "Vis færre",
-  "guest3_amount_due": "Skyldig beløp"
+  "guest3_amount_due": "Skyldig beløp",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "Min QR-kode",
+  "hx_month_share": "Din andel",
+  "hx_bills_n": "Regninger: {count}",
+  "hx_activity_empty": "Regninger og betalinger vises her.",
+  "hx_activity_load_failed": "Kunne ikke laste aktivitet. Prøv igjen."
 }

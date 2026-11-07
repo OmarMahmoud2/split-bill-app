@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "Đã thanh toán",
   "guest3_show_all": "Xem cả {count} mục",
   "guest3_show_less": "Thu gọn",
-  "guest3_amount_due": "Số tiền cần trả"
+  "guest3_amount_due": "Số tiền cần trả",
+  "hx_qa_iou": "Nợ",
+  "hx_qr_tooltip": "Mã QR của tôi",
+  "hx_month_share": "Phần của bạn",
+  "hx_bills_n": "Hóa đơn: {count}",
+  "hx_activity_empty": "Hóa đơn và khoản thanh toán sẽ hiện ở đây.",
+  "hx_activity_load_failed": "Không tải được hoạt động. Thử lại nhé."
 }

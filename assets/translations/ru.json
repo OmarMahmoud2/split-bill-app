@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "Оплачено",
   "guest3_show_all": "Показать все позиции ({count})",
   "guest3_show_less": "Свернуть",
-  "guest3_amount_due": "К оплате"
+  "guest3_amount_due": "К оплате",
+  "hx_qa_iou": "Долг",
+  "hx_qr_tooltip": "Мой QR-код",
+  "hx_month_share": "Ваша доля",
+  "hx_bills_n": "Счета: {count}",
+  "hx_activity_empty": "Здесь появятся счета и платежи.",
+  "hx_activity_load_failed": "Не удалось загрузить активность. Повторите попытку."
 }

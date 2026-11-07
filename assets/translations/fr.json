@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "Payé",
   "guest3_show_all": "Afficher les {count} articles",
   "guest3_show_less": "Afficher moins",
-  "guest3_amount_due": "Montant dû"
+  "guest3_amount_due": "Montant dû",
+  "hx_qa_iou": "Dette",
+  "hx_qr_tooltip": "Mon code QR",
+  "hx_month_share": "Ta part",
+  "hx_bills_n": "Notes : {count}",
+  "hx_activity_empty": "Les notes et paiements apparaissent ici.",
+  "hx_activity_load_failed": "Impossible de charger l'activité. Réessaie."
 }

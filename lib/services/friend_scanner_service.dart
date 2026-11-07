@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,7 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
         final user = FirebaseAuth.instance.currentUser;
         _myUid = user?.uid;
         _myName ??= user?.displayName;
-        _myPhotoUrl ??= user?.photoURL;
+        _myPhotoUrl ??= MyPhoto.notifier.value;
       } catch (_) {
         // Firebase not ready: the "Your code" card is hidden.
       }
@@ -136,9 +137,7 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
       child: Theme(
         data: AppTheme.darkTheme,
         child: ErrorState(
-          icon: denied
-              ? AppIcons.cameraOff
-              : AppIcons.videoOff,
+          icon: denied ? AppIcons.cameraOff : AppIcons.videoOff,
           title: denied
               ? 'bf_assign_camera_denied_title'.tr()
               : 'bf_assign_camera_error_title'.tr(),

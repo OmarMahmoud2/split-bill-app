@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -20,7 +21,7 @@ class GroupService {
         'id': user.uid,
         'name': user.displayName ?? "Me",
         'phoneNumber': user.phoneNumber,
-        'photoUrl': user.photoURL,
+        'photoUrl': MyPhoto.notifier.value,
         'isGuest': false,
       });
     }

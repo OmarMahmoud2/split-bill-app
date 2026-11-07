@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "已付款",
   "guest3_show_all": "显示全部 {count} 项",
   "guest3_show_less": "收起",
-  "guest3_amount_due": "应付金额"
+  "guest3_amount_due": "应付金额",
+  "hx_qa_iou": "欠款",
+  "hx_qr_tooltip": "我的二维码",
+  "hx_month_share": "你的份额",
+  "hx_bills_n": "账单：{count}",
+  "hx_activity_empty": "账单和付款会显示在这里。",
+  "hx_activity_load_failed": "无法加载动态，请重试。"
 }

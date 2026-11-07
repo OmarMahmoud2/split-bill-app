@@ -8,6 +8,7 @@ import 'package:easy_localization/easy_localization.dart'
     show StringTranslateExtension;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 /// A round avatar: the photo when there is one, else the person's pal.
@@ -116,21 +117,26 @@ class LedgerCard extends StatelessWidget {
       borderRadius: AppRadii.cardRadius,
       side: BorderSide(color: borderColor ?? p.border, width: borderWidth),
     );
-    Widget content = Padding(padding: padding, child: child);
+    final content = Padding(padding: padding, child: child);
+    Widget card = DecoratedBox(
+      decoration: ShapeDecoration(shape: shape, shadows: p.softShadow),
+      child: Material(
+        color: color ?? p.surface,
+        shape: shape,
+        clipBehavior: Clip.antiAlias,
+        child: content,
+      ),
+    );
+    // Tappable cards press in (0.97) with a light haptic.
     if (onTap != null) {
-      content = InkWell(onTap: onTap, customBorder: shape, child: content);
+      card = Pressable(haptic: true, onTap: onTap, child: card);
     }
     return Padding(
       padding: margin,
       child: Semantics(
         button: onTap != null,
         label: semanticsLabel,
-        child: Material(
-          color: color ?? p.surface,
-          shape: shape,
-          clipBehavior: Clip.antiAlias,
-          child: content,
-        ),
+        child: card,
       ),
     );
   }

@@ -2352,5 +2352,11 @@
   "yx_ob_paid": "Betaald",
   "guest3_show_all": "Alle {count} items tonen",
   "guest3_show_less": "Minder tonen",
-  "guest3_amount_due": "Te betalen"
+  "guest3_amount_due": "Te betalen",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "Mijn QR-code",
+  "hx_month_share": "Jouw deel",
+  "hx_bills_n": "Rekeningen: {count}",
+  "hx_activity_empty": "Rekeningen en betalingen verschijnen hier.",
+  "hx_activity_load_failed": "Activiteit laden mislukt. Probeer het opnieuw."
 }
