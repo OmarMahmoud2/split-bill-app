@@ -2213,5 +2213,16 @@
   "home_good_evening": "Goedenavond",
   "home_your_people": "Jouw mensen",
   "home_recent_bills": "Recente rekeningen",
-  "home_paid_progress": "{paid} van {total} betaald"
+  "home_paid_progress": "{paid} van {total} betaald",
+  "guest2_split_with_you": "{host} heeft {store} met je gedeeld",
+  "guest2_total_amount": "{amount} totaal",
+  "guest2_you_owe": "{name}, je bent {host} geld schuldig",
+  "guest2_pill_unpaid": "Nog niet betaald",
+  "guest2_pill_sent": "Verstuurd · wacht op {host}",
+  "guest2_pill_paid": "Betaald · verrekend",
+  "guest2_pay_with": "Betaal {host} met",
+  "guest2_paid_amount": "Ik heb {amount} betaald",
+  "guest2_paid_helper": "{host} krijgt een melding en bevestigt. Geen account nodig.",
+  "guest2_see_bill": "Bekijk de hele rekening",
+  "guest2_service_tax": "Service {service}% + btw {tax}%"
 }

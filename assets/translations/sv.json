@@ -2213,5 +2213,16 @@
   "home_good_evening": "God kväll",
   "home_your_people": "Dina personer",
   "home_recent_bills": "Senaste notor",
-  "home_paid_progress": "{paid} av {total} har betalat"
+  "home_paid_progress": "{paid} av {total} har betalat",
+  "guest2_split_with_you": "{host} delade {store} med dig",
+  "guest2_total_amount": "{amount} totalt",
+  "guest2_you_owe": "{name}, du är skyldig {host}",
+  "guest2_pill_unpaid": "Inte betalt än",
+  "guest2_pill_sent": "Skickat · väntar på {host}",
+  "guest2_pill_paid": "Betalt · klart",
+  "guest2_pay_with": "Betala {host} med",
+  "guest2_paid_amount": "Jag har betalat {amount}",
+  "guest2_paid_helper": "{host} får en avisering och bekräftar. Inget konto behövs.",
+  "guest2_see_bill": "Se hela notan",
+  "guest2_service_tax": "Service {service}% + moms {tax}%"
 }

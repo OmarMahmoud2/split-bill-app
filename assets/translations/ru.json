@@ -2213,5 +2213,16 @@
   "home_good_evening": "Добрый вечер",
   "home_your_people": "Ваши люди",
   "home_recent_bills": "Недавние счета",
-  "home_paid_progress": "Оплатили {paid} из {total}"
+  "home_paid_progress": "Оплатили {paid} из {total}",
+  "guest2_split_with_you": "{host} разделил(а) {store} с вами",
+  "guest2_total_amount": "Итого {amount}",
+  "guest2_you_owe": "{name}, вы должны {host}",
+  "guest2_pill_unpaid": "Ещё не оплачено",
+  "guest2_pill_sent": "Отправлено · ждём {host}",
+  "guest2_pill_paid": "Оплачено · рассчитались",
+  "guest2_pay_with": "Оплатить {host} через",
+  "guest2_paid_amount": "Я оплатил(а) {amount}",
+  "guest2_paid_helper": "{host} получит уведомление и подтвердит. Аккаунт не нужен.",
+  "guest2_see_bill": "Весь счёт",
+  "guest2_service_tax": "Обслуживание {service}% + налог {tax}%"
 }

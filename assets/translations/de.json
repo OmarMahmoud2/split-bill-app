@@ -2213,5 +2213,16 @@
   "home_good_evening": "Guten Abend",
   "home_your_people": "Deine Leute",
   "home_recent_bills": "Letzte Rechnungen",
-  "home_paid_progress": "{paid} von {total} bezahlt"
+  "home_paid_progress": "{paid} von {total} bezahlt",
+  "guest2_split_with_you": "{host} hat {store} mit dir geteilt",
+  "guest2_total_amount": "{amount} gesamt",
+  "guest2_you_owe": "{name}, du schuldest {host}",
+  "guest2_pill_unpaid": "Noch nicht bezahlt",
+  "guest2_pill_sent": "Gesendet · wartet auf {host}",
+  "guest2_pill_paid": "Bezahlt · beglichen",
+  "guest2_pay_with": "{host} bezahlen mit",
+  "guest2_paid_amount": "Ich habe {amount} bezahlt",
+  "guest2_paid_helper": "{host} bekommt eine Benachrichtigung und bestätigt. Kein Konto nötig.",
+  "guest2_see_bill": "Ganze Rechnung ansehen",
+  "guest2_service_tax": "Service {service}% + Steuer {tax}%"
 }

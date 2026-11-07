@@ -2213,5 +2213,16 @@
   "home_good_evening": "Good evening",
   "home_your_people": "Your people",
   "home_recent_bills": "Recent bills",
-  "home_paid_progress": "{paid} of {total} paid"
+  "home_paid_progress": "{paid} of {total} paid",
+  "guest2_split_with_you": "{host} split {store} with you",
+  "guest2_total_amount": "{amount} total",
+  "guest2_you_owe": "{name}, you owe {host}",
+  "guest2_pill_unpaid": "Not paid yet",
+  "guest2_pill_sent": "Sent · waiting for {host}",
+  "guest2_pill_paid": "Paid · settled",
+  "guest2_pay_with": "Pay {host} with",
+  "guest2_paid_amount": "I've paid {amount}",
+  "guest2_paid_helper": "{host} gets a notification and confirms. No account needed.",
+  "guest2_see_bill": "See the whole bill",
+  "guest2_service_tax": "Service {service}% + tax {tax}%"
 }

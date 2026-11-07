@@ -5,8 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:split_bill_app/guest_bill_screen.dart';
 import 'package:split_bill_app/payments/payments.dart';
+import 'package:split_bill_app/screens/guest_bill/widgets/guest_share.dart';
 import 'package:split_bill_app/screens/guest_bill/guest_bill_repository.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 
 import 'guest_bill_model_test.dart' show seaBreeze;
@@ -128,7 +130,7 @@ void main() {
     await pumpGuest(tester);
     await emit(tester, seaBreeze());
 
-    expect(find.text('Sea Breeze Grill'), findsOneWidget);
+    expect(find.text('guest2_split_with_you'), findsOneWidget);
     expect(find.text('Sara'), findsOneWidget);
     expect(find.text('Ali'), findsOneWidget);
     // The host is not offered as a name.
@@ -136,15 +138,12 @@ void main() {
 
     await tester.tap(find.text('Mona'));
     await tester.pumpAndSettle();
-    expect(find.text('guest_hi_share_of'), findsOneWidget);
+    expect(find.text('guest2_you_owe'), findsOneWidget);
+    expect(find.text('guest2_pill_unpaid'), findsOneWidget);
     expect(find.text('Caesar salad'), findsOneWidget);
     expect(find.text('guest_item_shared'), findsOneWidget);
-    expect(find.text('guest_tax_rate'), findsOneWidget);
-    expect(find.text('guest_see_receipt'), findsOneWidget);
-
-    await tester.tap(find.text('guest_pay_host'));
-    await tester.pumpAndSettle();
-    expect(find.text('guest_pay_host_amount'), findsOneWidget);
+    expect(find.text('guest2_see_bill'), findsOneWidget);
+    expect(find.text('guest2_pay_with'), findsOneWidget);
     expect(find.text('InstaPay'), findsOneWidget);
     expect(find.text('guest_add_screenshot'), findsOneWidget);
 
@@ -156,7 +155,7 @@ void main() {
     AppToast.hide();
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('i_ve_paid'));
+    await tester.tap(find.text('guest2_paid_amount'));
     await tester.pumpAndSettle();
     expect(repo.submissions, [('mona', null)]);
     expect(repo.notices.single.hostId, 'omar');
@@ -189,31 +188,27 @@ void main() {
     );
     await pumpGuest(tester, participant: 'mona');
     await emit(tester, seaBreeze());
-    await tester.tap(find.text('guest_pay_host'));
-    await tester.pumpAndSettle();
     await tester.tap(find.text('guest_add_screenshot'));
     await tester.pumpAndSettle();
     expect(find.text('guest_screenshot_added'), findsWidgets);
-    await tester.tap(find.text('i_ve_paid'));
+    await tester.tap(find.text('guest2_paid_amount'));
     await tester.pumpAndSettle();
     expect(repo.submissions, [('mona', 'data:image/jpeg;base64,AAAA')]);
     expect(repo.notices.single.withProof, isTrue);
   });
 
-  testWidgets('a failed payment keeps the guest on the pay step', (
+  testWidgets('a failed payment keeps the guest on the page', (
     tester,
   ) async {
     repo.failSubmit = true;
     await pumpGuest(tester, participant: 'mona');
     await emit(tester, seaBreeze());
-    await tester.tap(find.text('guest_pay_host'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('i_ve_paid'));
+    await tester.tap(find.text('guest2_paid_amount'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('guest_submit_error'), findsOneWidget);
     expect(find.byType(SuccessScreen), findsNothing);
-    expect(find.text('i_ve_paid'), findsOneWidget);
+    expect(find.text('guest2_paid_amount'), findsOneWidget);
     AppToast.hide();
     await tester.pumpAndSettle();
   });
@@ -224,7 +219,7 @@ void main() {
     await pumpGuest(tester, participant: 'mona');
     await emit(tester, seaBreeze());
     expect(find.text('guest_which_one'), findsNothing);
-    expect(find.text('guest_hi_share_of'), findsOneWidget);
+    expect(find.text('guest2_you_owe'), findsOneWidget);
 
     await tester.tap(find.text('guest_not_you'));
     await tester.pumpAndSettle();
@@ -277,20 +272,28 @@ void main() {
     expect(find.text('guest_which_one'), findsOneWidget);
   });
 
-  testWidgets('desktop: two columns with the table and the pay card', (
-    tester,
-  ) async {
+  testWidgets('desktop: one centred card of at most 480px', (tester) async {
     await pumpGuest(tester, participant: 'mona', size: const Size(1280, 980));
     await emit(tester, seaBreeze());
-    expect(find.text('guest_hi_share_is'), findsOneWidget);
-    expect(find.text('guest_what_you_had'), findsOneWidget);
-    expect(find.text('guest_rate_of'), findsNWidgets(2));
-    expect(find.text('guest_total'), findsOneWidget);
-    expect(find.text('guest_pay_host'), findsOneWidget);
-    expect(find.text('guest_choose_screenshot'), findsOneWidget);
-    expect(find.text('i_ve_paid'), findsOneWidget);
+    expect(find.text('guest2_you_owe'), findsOneWidget);
+    expect(find.text('guest2_paid_amount'), findsOneWidget);
     expect(find.text('guest_get_app'), findsOneWidget);
+    expect(tester.getSize(find.byType(GuestShareCard)).width, lessThan(480));
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('guest chips render pal avatars, not initials', (tester) async {
+    await pumpGuest(tester);
+    await emit(tester, seaBreeze());
+    expect(find.byType(PalAvatar), findsWidgets);
+    // Host line + one chip per guest, each a pal.
+    final guests = 3;
+    expect(
+      find.byType(PalAvatar).evaluate().length,
+      greaterThanOrEqualTo(guests),
+    );
+    expect(find.text('S'), findsNothing);
+    expect(find.text('M'), findsNothing);
   });
 
   testWidgets('RTL and dark mode lay out without overflow', (tester) async {
@@ -302,7 +305,6 @@ void main() {
     );
     await emit(tester, seaBreeze());
     expect(tester.takeException(), isNull);
-    await tester.tap(find.text('guest_pay_host'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });

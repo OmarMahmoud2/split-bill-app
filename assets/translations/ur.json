@@ -2213,5 +2213,16 @@
   "home_good_evening": "شام بخیر",
   "home_your_people": "آپ کے لوگ",
   "home_recent_bills": "حالیہ بل",
-  "home_paid_progress": "{total} میں سے {paid} نے ادا کیا"
+  "home_paid_progress": "{total} میں سے {paid} نے ادا کیا",
+  "guest2_split_with_you": "{host} نے {store} آپ کے ساتھ تقسیم کیا",
+  "guest2_total_amount": "کل {amount}",
+  "guest2_you_owe": "{name}، آپ پر {host} کا بقایا ہے",
+  "guest2_pill_unpaid": "ابھی ادا نہیں ہوا",
+  "guest2_pill_sent": "بھیج دیا · {host} کی تصدیق کا انتظار",
+  "guest2_pill_paid": "ادا ہو گیا · حساب برابر",
+  "guest2_pay_with": "{host} کو ادائیگی کریں",
+  "guest2_paid_amount": "میں نے {amount} ادا کر دیے",
+  "guest2_paid_helper": "{host} کو اطلاع ملتی ہے اور وہ تصدیق کرتے ہیں۔ اکاؤنٹ کی ضرورت نہیں۔",
+  "guest2_see_bill": "پورا بل دیکھیں",
+  "guest2_service_tax": "سروس {service}% + ٹیکس {tax}%"
 }

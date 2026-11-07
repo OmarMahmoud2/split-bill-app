@@ -2213,5 +2213,16 @@
   "home_good_evening": "مساء الخير",
   "home_your_people": "أصدقاؤك",
   "home_recent_bills": "الفواتير الأخيرة",
-  "home_paid_progress": "{paid} من {total} دفعوا"
+  "home_paid_progress": "{paid} من {total} دفعوا",
+  "guest2_split_with_you": "{host} قسّم {store} معك",
+  "guest2_total_amount": "الإجمالي {amount}",
+  "guest2_you_owe": "{name}، أنت مدين لـ {host}",
+  "guest2_pill_unpaid": "لم يُدفع بعد",
+  "guest2_pill_sent": "أُرسل · بانتظار {host}",
+  "guest2_pill_paid": "تم الدفع · تمت التسوية",
+  "guest2_pay_with": "ادفع لـ {host} عبر",
+  "guest2_paid_amount": "دفعت {amount}",
+  "guest2_paid_helper": "يصل إشعار إلى {host} ويؤكد الدفع. لا حاجة لحساب.",
+  "guest2_see_bill": "عرض الفاتورة كاملة",
+  "guest2_service_tax": "خدمة {service}% + ضريبة {tax}%"
 }

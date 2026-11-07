@@ -2213,5 +2213,16 @@
   "home_good_evening": "İyi akşamlar",
   "home_your_people": "Kişilerin",
   "home_recent_bills": "Son hesaplar",
-  "home_paid_progress": "{total} kişiden {paid} öğdü"
+  "home_paid_progress": "{total} kişiden {paid} öğdü",
+  "guest2_split_with_you": "{host}, {store} hesabını seninle böldü",
+  "guest2_total_amount": "Toplam {amount}",
+  "guest2_you_owe": "{name}, {host} kişisine borcun var",
+  "guest2_pill_unpaid": "Henüz ödenmedi",
+  "guest2_pill_sent": "Gönderildi · {host} bekleniyor",
+  "guest2_pill_paid": "Ödendi · kapandı",
+  "guest2_pay_with": "{host} kişisine şununla öde",
+  "guest2_paid_amount": "{amount} ödedim",
+  "guest2_paid_helper": "{host} bildirim alır ve onaylar. Hesap gerekmez.",
+  "guest2_see_bill": "Tüm hesabı gör",
+  "guest2_service_tax": "Servis %{service} + vergi %{tax}"
 }

@@ -2213,5 +2213,16 @@
   "home_good_evening": "こんばんは",
   "home_your_people": "あなたの仲間",
   "home_recent_bills": "最近の請求",
-  "home_paid_progress": "{total}人中{paid}人が支払い済み"
+  "home_paid_progress": "{total}人中{paid}人が支払い済み",
+  "guest2_split_with_you": "{host}さんが{store}をあなたと割り勘にしました",
+  "guest2_total_amount": "合計 {amount}",
+  "guest2_you_owe": "{name}さん、{host}さんへの支払い",
+  "guest2_pill_unpaid": "未払い",
+  "guest2_pill_sent": "送信済み · {host}さんの確認待ち",
+  "guest2_pill_paid": "支払い済み · 精算完了",
+  "guest2_pay_with": "{host}さんへの支払い方法",
+  "guest2_paid_amount": "{amount}を支払いました",
+  "guest2_paid_helper": "{host}さんに通知が届き、確認されます。アカウントは不要です。",
+  "guest2_see_bill": "明細をすべて見る",
+  "guest2_service_tax": "サービス料 {service}% + 税 {tax}%"
 }

@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 import '../guest_locale.dart';
 
@@ -21,10 +22,15 @@ class GuestBrand extends StatelessWidget {
     final p = context.palette;
     return Semantics(
       header: true,
-      child: Text(
-        'Evens',
+      child: Text.rich(
+        TextSpan(
+          text: 'evens',
+          children: [TextSpan(text: '.', style: TextStyle(color: p.primary))],
+        ),
         style: AppTypography.headlineMedium.copyWith(
-          fontSize: large ? 20 : 18,
+          fontSize: large ? 22 : 20,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.4,
           color: p.textPrimary,
         ),
       ),
@@ -75,7 +81,7 @@ class GuestPill extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: 6)],
-        Text(label),
+        Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
       ],
     );
     return Semantics(
@@ -202,8 +208,8 @@ class GuestStoreButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     ButtonStyle style() => FilledButton.styleFrom(
-      backgroundColor: onInk ? p.onInverseSurface : p.inverseSurface,
-      foregroundColor: onInk ? p.inverseSurface : p.onInverseSurface,
+      backgroundColor: onInk ? p.onHero : p.hero,
+      foregroundColor: onInk ? p.hero : p.onHero,
       minimumSize: const Size(44, 46),
       textStyle: AppTypography.labelLarge.copyWith(fontSize: 15),
     );
@@ -240,8 +246,9 @@ class GuestGetAppCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: p.inverseSurface,
+        color: p.hero,
         borderRadius: AppRadii.cardRadius,
+        border: Border.all(color: p.heroLine),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -250,22 +257,22 @@ class GuestGetAppCard extends StatelessWidget {
             'guest_get_app_title'.tr(),
             style: AppTypography.titleMedium.copyWith(
               fontSize: 16,
-              color: p.onInverseSurface,
+              color: p.onHero,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             'guest_get_app_body'.tr(),
             style: AppTypography.bodyMedium.copyWith(
-              color: p.onInverseSurface.withValues(alpha: 0.78),
+              color: p.onHero.withValues(alpha: 0.78),
             ),
           ),
           const SizedBox(height: 12),
           if (store != null)
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: p.onInverseSurface,
-                foregroundColor: p.inverseSurface,
+                backgroundColor: p.onHero,
+                foregroundColor: p.hero,
                 minimumSize: const Size(44, 46),
               ),
               onPressed: () => openStore(store),
@@ -289,7 +296,6 @@ class GuestGetAppPill extends StatelessWidget {
     if (store != null) {
       return GuestPill(
         label: 'guest_get_app'.tr(),
-        filled: true,
         onPressed: () => openStore(store),
       );
     }
@@ -308,7 +314,6 @@ class GuestGetAppPill extends StatelessWidget {
       ],
       builder: (context, controller, _) => GuestPill(
         label: 'guest_get_app'.tr(),
-        filled: true,
         onPressed: () =>
             controller.isOpen ? controller.close() : controller.open(),
       ),
@@ -316,35 +321,30 @@ class GuestGetAppPill extends StatelessWidget {
   }
 }
 
-/// Initial in a tinted circle.
+/// The person's pal (never initials), optionally with a ring.
 class GuestAvatar extends StatelessWidget {
-  const GuestAvatar({super.key, required this.id, required this.initial});
+  const GuestAvatar({
+    super.key,
+    required this.id,
+    required this.name,
+    this.size = 40,
+    this.ringColor,
+  });
 
   final String id;
-  final String initial;
+  final String name;
+  final double size;
+  final Color? ringColor;
 
   @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return ExcludeSemantics(
-      child: Container(
-        width: 40,
-        height: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: p.avatarTintFor(id),
-          shape: BoxShape.circle,
-        ),
-        child: Text(
-          initial,
-          style: AppTypography.labelLarge.copyWith(
-            fontSize: 14,
-            color: p.textPrimary,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: PalAvatar(
+      seed: id.isEmpty ? name.toLowerCase() : id,
+      name: name,
+      size: size,
+      ringColor: ringColor,
+    ),
+  );
 }
 
 /// A hairline card (v3: 1px border, 20px radius, no shadow).
@@ -369,8 +369,17 @@ class GuestCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: p.surface,
-        borderRadius: AppRadii.cardRadius,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: borderColor ?? p.border),
+        boxShadow: p.isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: p.shadow.withValues(alpha: 0.06),
+                  offset: const Offset(0, 10),
+                  blurRadius: 24,
+                ),
+              ],
       ),
       child: child,
     );

@@ -13,9 +13,34 @@
 library;
 
 import '../../bill_flow/participant_payment.dart';
+import '../../payments/country_methods.dart';
+import '../../payments/legacy_payment_adapter.dart';
 import '../../domain/item_split.dart';
 import '../../domain/money.dart';
 import '../../domain/split_methods.dart';
+
+/// Currency for old bills that never saved one. The app falls back to the
+/// signed-in user's currency; the web has no user, so ask the host's data:
+/// the country of their payment methods (InstaPay -> EGP), then the
+/// browser's country, then USD.
+String inferGuestCurrency(List<String> methodNames, {String? countryCode}) {
+  String? currencyOf(String? cc) {
+    if (cc == null) return null;
+    for (final e in currencyHomeCountry.entries) {
+      if (e.value == cc.toUpperCase()) return e.key;
+    }
+    return null;
+  }
+
+  for (final name in methodNames) {
+    final countries = adaptLegacyPaymentMethod(name, 'x').type.countries;
+    if (countries.length == 1) {
+      final c = currencyOf(countries.first);
+      if (c != null) return c;
+    }
+  }
+  return currencyOf(countryCode) ?? 'USD';
+}
 
 // ---------------------------------------------------------------------------
 // Links
@@ -196,13 +221,27 @@ class GuestBill {
     this.billStatus,
   });
 
-  factory GuestBill.fromMap(String id, Map<String, dynamic> data) {
+  factory GuestBill.fromMap(
+    String id,
+    Map<String, dynamic> data, {
+    String? countryCode,
+  }) {
+    final stored = (data['currency'] ??
+            data['currencyCode'] ??
+            data['currency_code'] ??
+            '')
+        .toString();
     final currency = normalizeCurrency(
-      (data['currency'] ??
-              data['currencyCode'] ??
-              data['currency_code'] ??
-              'USD')
-          .toString(),
+      stored.trim().isNotEmpty
+          ? stored
+          : inferGuestCurrency(
+              data['paymentMethods'] is Map
+                  ? (data['paymentMethods'] as Map).keys
+                        .map((k) => k.toString())
+                        .toList()
+                  : const [],
+              countryCode: countryCode,
+            ),
     );
     final participants = <GuestParticipant>[];
     for (final raw in (data['participants'] as List?) ?? const []) {

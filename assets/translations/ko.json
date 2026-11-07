@@ -2213,5 +2213,16 @@
   "home_good_evening": "좋은 저녁이에요",
   "home_your_people": "내 사람들",
   "home_recent_bills": "최근 청구서",
-  "home_paid_progress": "{total}명 중 {paid}명 결제"
+  "home_paid_progress": "{total}명 중 {paid}명 결제",
+  "guest2_split_with_you": "{host}님이 {store}을(를) 함께 나눴어요",
+  "guest2_total_amount": "총 {amount}",
+  "guest2_you_owe": "{name}님, {host}님에게 보낼 금액",
+  "guest2_pill_unpaid": "아직 결제 전",
+  "guest2_pill_sent": "보냄 · {host}님 확인 대기 중",
+  "guest2_pill_paid": "결제 완료 · 정산됨",
+  "guest2_pay_with": "{host}님에게 결제 방법",
+  "guest2_paid_amount": "{amount} 결제했어요",
+  "guest2_paid_helper": "{host}님에게 알림이 가고 확인해 줘요. 계정은 필요 없어요.",
+  "guest2_see_bill": "전체 영수증 보기",
+  "guest2_service_tax": "서비스 {service}% + 세금 {tax}%"
 }

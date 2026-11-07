@@ -2213,5 +2213,16 @@
   "home_good_evening": "शुभ संध्या",
   "home_your_people": "आपके लोग",
   "home_recent_bills": "हाल के बिल",
-  "home_paid_progress": "{total} में से {paid} ने भुगतान किया"
+  "home_paid_progress": "{total} में से {paid} ने भुगतान किया",
+  "guest2_split_with_you": "{host} ने {store} आपके साथ बाँटा",
+  "guest2_total_amount": "कुल {amount}",
+  "guest2_you_owe": "{name}, आप पर {host} का बकाया है",
+  "guest2_pill_unpaid": "अभी भुगतान नहीं हुआ",
+  "guest2_pill_sent": "भेजा गया · {host} की पुष्टि का इंतज़ार",
+  "guest2_pill_paid": "भुगतान हुआ · हिसाब बराबर",
+  "guest2_pay_with": "{host} को भुगतान करें",
+  "guest2_paid_amount": "मैंने {amount} चुका दिए",
+  "guest2_paid_helper": "{host} को सूचना मिलती है और वे पुष्टि करते हैं। खाते की ज़रूरत नहीं।",
+  "guest2_see_bill": "पूरा बिल देखें",
+  "guest2_service_tax": "सर्विस {service}% + कर {tax}%"
 }

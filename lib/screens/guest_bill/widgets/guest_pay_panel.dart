@@ -167,182 +167,159 @@ class _GuestPayMethodsState extends State<GuestPayMethods> {
         style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
       );
     }
+    final index = _selected.clamp(0, options.length - 1);
+    final selected = options[index];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (var i = 0; i < options.length; i++) ...[
-          if (i > 0) SizedBox(height: widget.compact ? 12 : 8),
-          _MethodRow(
-            option: options[i],
-            selected: !widget.compact && i == _selected,
-            compact: widget.compact,
-            copied: _copied == i,
-            qrOpen: _qrOpen == i,
-            onRun: () => _run(i),
-            onToggleQr: options[i].qrPayload == null
-                ? null
-                : () => setState(() => _qrOpen = _qrOpen == i ? null : i),
+        Semantics(
+          header: true,
+          child: Text(
+            'guest2_pay_with'.tr(
+              namedArgs: {'host': guestHostName(widget.bill)},
+            ),
+            style: AppTypography.labelLarge.copyWith(
+              fontSize: 13,
+              color: p.textSecondary,
+            ),
           ),
+        ),
+        const SizedBox(height: 8),
+        LayoutBuilder(
+          builder: (context, c) {
+            final cols = options.length >= 3 ? 3 : options.length;
+            final w = (c.maxWidth - 8 * (cols - 1)) / cols;
+            return Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (var i = 0; i < options.length; i++)
+                  SizedBox(
+                    width: w,
+                    child: _MethodTile(
+                      option: options[i],
+                      selected: i == index,
+                      copied: _copied == i,
+                      onRun: () => _run(i),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+        if (!selected.opens) ...[
+          const SizedBox(height: 8),
+          Text(
+            selected.method.value,
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.center,
+            style: AppTypography.bodySmall.copyWith(
+              fontSize: 13,
+              color: p.textSecondary,
+            ),
+          ),
+        ],
+        if (selected.qrPayload != null) ...[
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: p.textPrimary,
+                minimumSize: const Size(44, 44),
+              ),
+              onPressed: () =>
+                  setState(() => _qrOpen = _qrOpen == index ? null : index),
+              icon: Icon(_qrOpen == index ? AppIcons.close : AppIcons.qr),
+              label: Text(
+                _qrOpen == index
+                    ? 'guest_hide_qr'.tr()
+                    : 'guest_show_qr'.tr(),
+              ),
+            ),
+          ),
+          if (_qrOpen == index)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: _QrPanel(option: selected),
+            ),
         ],
       ],
     );
   }
 }
 
-class _MethodRow extends StatelessWidget {
-  const _MethodRow({
+/// A "Pay Omar with" tile: name + "Copy" / "Open".
+class _MethodTile extends StatelessWidget {
+  const _MethodTile({
     required this.option,
     required this.selected,
-    required this.compact,
     required this.copied,
-    required this.qrOpen,
     required this.onRun,
-    required this.onToggleQr,
   });
 
   final GuestPayOption option;
   final bool selected;
-  final bool compact;
   final bool copied;
-  final bool qrOpen;
   final VoidCallback onRun;
-  final VoidCallback? onToggleQr;
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
     final method = option.method;
-    final subtitle = option.prefills
-        ? 'guest_opens_with'.tr(
-            namedArgs: {
-              'amount': guestAmount(
-                option.request.amount!.minor,
-                option.request.amount!.currency,
-              ),
-            },
-          )
-        : method.value;
     final ctaLabel = option.opens
         ? 'guest_open'.tr()
         : (copied ? 'guest_copied'.tr() : 'guest_copy'.tr());
-
-    final ButtonStyle ctaStyle = compact
-        ? OutlinedButton.styleFrom(
-            minimumSize: const Size(64, 44),
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            side: BorderSide(color: p.borderStrong),
-            backgroundColor: copied ? p.primary : p.surface,
-            foregroundColor: copied ? p.onPrimary : p.textPrimary,
-            textStyle: AppTypography.labelLarge.copyWith(fontSize: 14),
-          )
-        : FilledButton.styleFrom(
-            minimumSize: const Size(64, 44),
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            backgroundColor: copied ? p.primary : p.inverseSurface,
-            foregroundColor: copied ? p.onPrimary : p.onInverseSurface,
-            textStyle: AppTypography.labelLarge.copyWith(fontSize: 13),
-          );
-
-    final cta = Semantics(
+    return Semantics(
       label: '$ctaLabel ${method.label}',
       button: true,
+      selected: selected,
       excludeSemantics: true,
-      child: compact
-          ? OutlinedButton(
-              onPressed: onRun,
-              style: ctaStyle,
-              child: Text(ctaLabel),
-            )
-          : FilledButton(
-              onPressed: onRun,
-              style: ctaStyle,
-              child: Text(ctaLabel),
-            ),
-    );
-
-    final row = Row(
-      children: [
-        ExcludeSemantics(
-          child: Container(
-            width: compact ? 36 : 32,
-            height: compact ? 36 : 32,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: p.surfaceVariant,
-              borderRadius: BorderRadius.circular(compact ? 9 : 8),
-            ),
-            child: Text(
-              method.type.initials,
-              style: AppTypography.labelSmall.copyWith(
-                fontSize: compact ? 11 : 10,
-                fontWeight: FontWeight.w700,
-                color: p.textPrimary,
+      child: Material(
+        color: selected ? p.primarySoft : p.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: selected
+              ? BorderSide(color: p.primary, width: 2)
+              : BorderSide(color: p.border),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onRun,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 64),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    method.label,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelLarge.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: p.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    ctaLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodySmall.copyWith(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: copied ? p.primary : p.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                method.label,
-                style: AppTypography.titleSmall.copyWith(
-                  fontSize: 15,
-                  color: p.textPrimary,
-                ),
-              ),
-              Text(
-                subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textDirection: option.prefills ? null : TextDirection.ltr,
-                style: AppTypography.bodySmall.copyWith(
-                  fontSize: compact ? 14 : 13,
-                  color: p.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (onToggleQr != null) ...[
-          IconButton(
-            tooltip: qrOpen ? 'guest_hide_qr'.tr() : 'guest_show_qr'.tr(),
-            onPressed: onToggleQr,
-            icon: Icon(
-              qrOpen ? AppIcons.close : AppIcons.qr,
-              color: p.textPrimary,
-            ),
-          ),
-          const SizedBox(width: 4),
-        ],
-        cta,
-      ],
-    );
-
-    final body = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        row,
-        AnimatedSize(
-          duration: AppMotion.durationFor(context, AppMotion.medium),
-          curve: AppMotion.standard,
-          child: qrOpen && option.qrPayload != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: _QrPanel(option: option),
-                )
-              : const SizedBox(width: double.infinity),
-        ),
-      ],
-    );
-
-    if (compact) return body;
-    return GuestCard(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      borderColor: selected ? p.textPrimary : null,
-      child: body,
+      ),
     );
   }
 }
@@ -515,8 +492,10 @@ class GuestPaidButton extends StatelessWidget {
     super.key,
     required this.sending,
     required this.onPressed,
+    this.amount,
   });
 
+  final String? amount;
   final bool sending;
   final VoidCallback onPressed;
 
@@ -526,7 +505,7 @@ class GuestPaidButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: FilledButton(
-        style: FilledButton.styleFrom(minimumSize: const Size(64, 54)),
+        style: FilledButton.styleFrom(minimumSize: const Size(64, 56)),
         onPressed: sending ? null : onPressed,
         child: sending
             ? Row(
@@ -544,7 +523,11 @@ class GuestPaidButton extends StatelessWidget {
                   Text('guest_sending'.tr()),
                 ],
               )
-            : Text('i_ve_paid'.tr()),
+            : Text(
+                amount == null
+                    ? 'i_ve_paid'.tr()
+                    : 'guest2_paid_amount'.tr(namedArgs: {'amount': amount!}),
+              ),
       ),
     );
   }

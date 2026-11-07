@@ -2213,5 +2213,16 @@
   "home_good_evening": "God kveld",
   "home_your_people": "Folkene dine",
   "home_recent_bills": "Siste regninger",
-  "home_paid_progress": "{paid} av {total} har betalt"
+  "home_paid_progress": "{paid} av {total} har betalt",
+  "guest2_split_with_you": "{host} delte {store} med deg",
+  "guest2_total_amount": "{amount} totalt",
+  "guest2_you_owe": "{name}, du skylder {host}",
+  "guest2_pill_unpaid": "Ikke betalt ennå",
+  "guest2_pill_sent": "Sendt · venter på {host}",
+  "guest2_pill_paid": "Betalt · oppgjort",
+  "guest2_pay_with": "Betal {host} med",
+  "guest2_paid_amount": "Jeg har betalt {amount}",
+  "guest2_paid_helper": "{host} får et varsel og bekrefter. Ingen konto nødvendig.",
+  "guest2_see_bill": "Se hele regningen",
+  "guest2_service_tax": "Service {service}% + avgift {tax}%"
 }
