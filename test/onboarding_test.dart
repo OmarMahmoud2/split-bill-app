@@ -185,7 +185,7 @@ void main() {
       await tester.enterText(custom, 'sdgx');
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
-      expect(find.text('SDGX'), findsNWidgets(2));
+      expect(find.text('SDGX'), findsOneWidget);
       expect(find.byType(CurrencySelectionSheet), findsNothing);
       expect(tester.takeException(), isNull);
     },

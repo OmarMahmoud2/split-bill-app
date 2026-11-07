@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
+import 'package:split_bill_app/new_onboarding_screen.dart' show flagForCurrency;
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
@@ -68,6 +69,18 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
           _error = 'onboarding_save_error'.tr();
         });
       }
+    }
+  }
+
+  String _localizedName(CurrencyOption o) {
+    try {
+      final n = NumberFormat.currency(
+        locale: context.locale.languageCode,
+        name: o.code,
+      ).currencyName;
+      return n == null || n.isEmpty || n == o.code ? o.name : n;
+    } catch (_) {
+      return o.name;
     }
   }
 
@@ -158,19 +171,9 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
                           color: selected ? p.surface : p.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: Text(
-                              option.symbol,
-                              style: AppTypography.amount.copyWith(
-                                color: p.accent,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
+                        child: Text(
+                          flagForCurrency(option.code),
+                          style: const TextStyle(fontSize: 24),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -186,7 +189,7 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
                               ),
                             ),
                             Text(
-                              option.name,
+                              '${option.symbol} · ${_localizedName(option)}',
                               style: AppTypography.bodySmall.copyWith(
                                 color: p.textSecondary,
                               ),
@@ -194,7 +197,19 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
                           ],
                         ),
                       ),
-                      if (selected) Icon(AppIcons.successFill, color: p.accent),
+                      selected
+                          ? Icon(AppIcons.successFill, color: p.accent)
+                          : Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: p.borderStrong,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ),

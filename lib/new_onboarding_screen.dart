@@ -1,5 +1,7 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
+import 'dart:ui' as ui;
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,17 +9,42 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/auth_wrapper.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
+import 'package:split_bill_app/payment_settings_screen.dart' show countryFlag;
+import 'package:split_bill_app/payments/payments.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
+
+/// Currency for an ISO region ("EG" -> EGP); euro-area regions give EUR.
+/// Null when the region isn't known.
+String? currencyForRegion(String? region) {
+  final cc = region?.toUpperCase();
+  if (cc == null) return null;
+  for (final e in currencyHomeCountry.entries) {
+    if (e.value == cc) return e.key;
+  }
+  return sepaEurCountries.contains(cc) ? 'EUR' : null;
+}
+
+/// Flag for a currency's home country, or a globe.
+String flagForCurrency(String code) {
+  final cc = currencyHomeCountry[code];
+  return cc == null ? '\u{1F310}' : countryFlag(cc);
+}
+
+const _popularCurrencies = ['USD', 'EUR', 'GBP', 'SAR', 'AED', 'EGP', 'INR'];
 
 /// v3 onboarding: scan, split, settle, then the default currency.
 /// Persists `onboarding_complete(_v2)` and the chosen currency.
 class NewOnboardingScreen extends StatefulWidget {
-  const NewOnboardingScreen({super.key});
+  const NewOnboardingScreen({super.key, this.debugLocaleTag});
+
+  /// Overrides the device locale used to suggest a currency.
+  final String? debugLocaleTag;
 
   @override
   State<NewOnboardingScreen> createState() => _NewOnboardingScreenState();
@@ -43,6 +70,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
   bool _loadedDefaults = false;
   bool _completing = false;
   String _currency = 'USD';
+  String? _suggested;
 
   @override
   void didChangeDependencies() {
@@ -50,6 +78,13 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     if (_loadedDefaults) return;
     _loadedDefaults = true;
     _currency = context.read<AppSettingsProvider>().currencyCode;
+    final region = detectPaymentCountry(
+      localeTag:
+          widget.debugLocaleTag ??
+          ui.PlatformDispatcher.instance.locale.toLanguageTag(),
+    );
+    _suggested = currencyForRegion(region);
+    if (_suggested != null) _currency = _suggested!;
   }
 
   @override
@@ -174,10 +209,14 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                                   ),
                                 )
                               : Text(
-                                  (_page == _pageCount - 1
-                                          ? 'get_started'
-                                          : 'common_continue')
-                                      .tr(),
+                                  _page == _pageCount - 1
+                                      ? 'yx_cur_continue'.tr(
+                                          namedArgs: {
+                                            'currency':
+                                                '${findCurrencyOption(_currency).symbol} $_currency',
+                                          },
+                                        )
+                                      : 'common_continue'.tr(),
                                 ),
                         ),
                       ),
@@ -192,44 +231,80 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     );
   }
 
+  double _delta(int index) {
+    final pos = _controller.hasClients && _controller.position.haveDimensions
+        ? (_controller.page ?? _page.toDouble())
+        : _page.toDouble();
+    return (index - pos).clamp(-1.0, 1.0);
+  }
+
   Widget _buildPage(int index) {
     final p = context.palette;
-    return SingleChildScrollView(
-      key: ValueKey('onboarding-page-$index'),
-      padding: const EdgeInsetsDirectional.fromSTEB(24, 32, 24, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          StaggeredEntrance(
-            child: switch (index) {
-              0 => _ReceiptPreview(),
-              1 => const _SplitPreview(),
-              2 => _settlePreview(),
-              _ => _buildCurrencyCard(),
-            },
-          ),
-          const SizedBox(height: 36),
-          Semantics(
-            header: true,
-            child: Text(
-              _titles[index].tr(),
-              style: AppTypography.displaySmall.copyWith(
-                color: p.textPrimary,
-                fontSize: 34,
-                height: 1.1,
+    final reduce = AppMotion.reduceMotion(context);
+    final rtl = Directionality.of(context) == ui.TextDirection.rtl ? -1.0 : 1.0;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final d = reduce ? 0.0 : _delta(index);
+        return SingleChildScrollView(
+          key: ValueKey('onboarding-page-$index'),
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 32, 24, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Opacity(
+                opacity: 1 - d.abs() * 0.6,
+                child: Transform.translate(
+                  offset: Offset(d * 90 * rtl, 0),
+                  child: Transform.scale(
+                    scale: 1 - d.abs() * 0.06,
+                    child: StaggeredEntrance(
+                      child: switch (index) {
+                        0 => _ReceiptPreview(),
+                        1 => const _SplitPreview(),
+                        2 => _settlePreview(),
+                        _ => _buildCurrencyStep(),
+                      },
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 36),
+              Transform.translate(
+                offset: Offset(d * 30 * rtl, 0),
+                child: Opacity(
+                  opacity: 1 - d.abs(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          _titles[index].tr(),
+                          style: AppTypography.displaySmall.copyWith(
+                            color: p.textPrimary,
+                            fontSize: 34,
+                            height: 1.1,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _bodies[index].tr(),
+                        style: AppTypography.bodyLarge.copyWith(
+                          color: p.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            _bodies[index].tr(),
-            style: AppTypography.bodyLarge.copyWith(
-              color: p.textSecondary,
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -271,6 +346,10 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
       ),
       child: Column(
         children: [
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: const _PaidBadge(),
+          ),
           row('Sara', 3024, paid: true),
           row('Omar', 3024),
           const SizedBox(height: 10),
@@ -291,80 +370,191 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     );
   }
 
-  Widget _buildCurrencyCard() {
+  void _pick(String code) {
+    if (_completing) return;
+    AppHaptics.selection();
+    setState(() => _currency = code);
+  }
+
+  Widget _buildCurrencyStep() {
     final p = context.palette;
-    final currency = findCurrencyOption(_currency);
-    return Material(
-      color: p.surface,
-      shape: AppRadii.cardShape(p.hairline),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        key: const ValueKey('onboarding-currency'),
-        onTap: _completing
-            ? null
-            : () => CurrencySelectionSheet.show(
-                context: context,
-                selectedCode: _currency,
-                onSelected: (code) {
-                  AppHaptics.selection();
-                  setState(() => _currency = code);
-                },
-              ),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: p.accentSoft,
-                  borderRadius: AppRadii.rowRadius,
+    final lang = context.locale.languageCode;
+    String nameOf(String code) {
+      final fallback = findCurrencyOption(code).name;
+      try {
+        final n = NumberFormat.currency(locale: lang, name: code).currencyName;
+        return n == null || n.isEmpty || n == code ? fallback : n;
+      } catch (_) {
+        return fallback;
+      }
+    }
+
+    Widget ring(bool on) => Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: on ? p.accent : Colors.transparent,
+        border: Border.all(color: on ? p.accent : p.borderStrong, width: 1.5),
+      ),
+      child: on ? Icon(AppIcons.check, size: 14, color: p.onAccent) : null,
+    );
+
+    final suggested = _suggested;
+    final inPopular = _popularCurrencies.contains(_currency);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (suggested != null) ...[
+          Text(
+            'yx_cur_suggested'.tr(),
+            style: AppTypography.labelLarge.copyWith(color: p.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Pressable(
+            key: const ValueKey('onboarding-suggested'),
+            haptic: true,
+            onTap: () => _pick(suggested),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _currency == suggested ? p.accentSoft : p.surface,
+                borderRadius: AppRadii.cardRadius,
+                border: Border.all(
+                  color: _currency == suggested ? p.accent : p.hairline,
+                  width: _currency == suggested ? 1.5 : 1,
                 ),
-                child: FittedBox(
-                  child: Text(
-                    currency.symbol,
-                    style: AppTypography.titleLarge.copyWith(
-                      color: p.onAccentSoft,
+                boxShadow: p.softShadow,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    flagForCurrency(suggested),
+                    style: const TextStyle(fontSize: 34),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${findCurrencyOption(suggested).symbol} $suggested',
+                          style: AppTypography.amountLarge.copyWith(
+                            color: p.textPrimary,
+                            fontSize: 24,
+                          ),
+                        ),
+                        Text(
+                          nameOf(suggested),
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: p.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  ring(_currency == suggested),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+        Text(
+          'yx_cur_popular'.tr(),
+          style: AppTypography.labelLarge.copyWith(color: p.textSecondary),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final code in _popularCurrencies)
+              Pressable(
+                key: ValueKey('onboarding-pop-$code'),
+                onTap: () => _pick(code),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: _currency == code ? p.accentSoft : p.surface,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: _currency == code ? p.accent : p.hairline,
+                      width: _currency == code ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(flagForCurrency(code)),
+                      const SizedBox(width: 6),
+                      Text(
+                        code,
+                        style: AppTypography.titleSmall.copyWith(
+                          color: p.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+        ),
+        const SizedBox(height: 14),
+        Material(
+          color: p.surface,
+          shape: AppRadii.cardShape(p.hairline),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            key: const ValueKey('onboarding-currency'),
+            onTap: _completing
+                ? null
+                : () => CurrencySelectionSheet.show(
+                    context: context,
+                    selectedCode: _currency,
+                    onSelected: (code) {
+                      AppHaptics.selection();
+                      setState(() => _currency = code);
+                    },
+                  ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 56),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
                   children: [
-                    Text(
-                      currency.code,
-                      style: AppTypography.amountLarge.copyWith(
-                        color: p.textPrimary,
-                        fontSize: 26,
+                    Icon(AppIcons.search, color: p.accent, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'yx_cur_all'.tr(
+                          namedArgs: {
+                            'n': '${supportedCurrencyOptions.length}',
+                          },
+                        ),
+                        style: AppTypography.titleSmall.copyWith(
+                          color: p.textPrimary,
+                        ),
                       ),
                     ),
-                    Text(
-                      currency.name,
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: p.textSecondary,
+                    if (!inPopular && _currency != suggested)
+                      Text(
+                        _currency,
+                        key: const ValueKey('onboarding-custom-selected'),
+                        style: AppTypography.titleSmall.copyWith(
+                          color: p.accent,
+                        ),
                       ),
-                    ),
+                    Icon(AppIcons.chevronRight, color: p.textTertiary),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  'choose_currency'.tr(),
-                  textAlign: TextAlign.end,
-                  style: AppTypography.titleSmall.copyWith(color: p.accent),
-                ),
-              ),
-              Icon(AppIcons.chevronRight, color: p.accent),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -387,12 +577,12 @@ class _ProgressDashes extends StatelessWidget {
           for (var i = 0; i < count; i++)
             AnimatedContainer(
               duration: AppMotion.durationFor(context, AppMotion.medium),
-              width: i == current ? 24 : 12,
-              height: 4,
+              width: i == current ? 22 : 8,
+              height: 8,
               margin: const EdgeInsetsDirectional.only(end: 6),
               decoration: BoxDecoration(
                 color: i == current ? p.accent : p.borderStrong,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
         ],
@@ -501,10 +691,60 @@ class _SplitPreview extends StatelessWidget {
       ),
       child: Column(
         children: [
+          Row(
+            children: [
+              for (final n in const ['Ali', 'Sara', 'Omar'])
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 6),
+                  child: V3Avatar(name: n, size: 40),
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
           row('acct_onb_item_burger'.tr(), const ['Ali']),
           row('acct_onb_item_fries'.tr(), const ['Ali', 'Sara', 'Omar']),
           row('acct_onb_item_fish'.tr(), const ['Sara']),
         ],
+      ),
+    );
+  }
+}
+
+/// "Paid" pill that pops in once the page is shown.
+class _PaidBadge extends StatelessWidget {
+  const _PaidBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final reduce = AppMotion.reduceMotion(context);
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: reduce ? 1 : 0, end: 1),
+      duration: reduce ? Duration.zero : const Duration(milliseconds: 800),
+      curve: Curves.elasticOut,
+      builder: (context, t, child) =>
+          Transform.scale(scale: t.clamp(0.0, 1.3), child: child),
+      child: Container(
+        key: const ValueKey('onboarding-paid'),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: p.accentSoft,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(AppIcons.check, size: 14, color: p.accent),
+            const SizedBox(width: 4),
+            Text(
+              'yx_ob_paid'.tr(),
+              style: AppTypography.labelLarge.copyWith(
+                color: p.onAccentSoft,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
