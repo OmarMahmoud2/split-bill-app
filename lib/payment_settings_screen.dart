@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/payment_method_mark.dart';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -316,7 +317,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                 for (var i = 0; i < _methods.length; i++)
                   SettingsRow(
                     key: ValueKey('pm3-row-$i'),
-                    leading: PaymentMethodLogo(type: _methods[i].type),
+                    leading: PaymentMethodMark(type: _methods[i].type),
                     title: _methods[i].label,
                     subtitle: _methods[i].value,
                     trailing: i == 0 ? SoftChip('pm3_default'.tr()) : null,
@@ -400,58 +401,6 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
   }
 }
 
-/// Registry logo, or initials on the brand color.
-class PaymentMethodLogo extends StatelessWidget {
-  const PaymentMethodLogo({super.key, required this.type, this.size = 36});
-
-  final PaymentMethodType type;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final brand = Color(type.brandColor);
-    // Brand tile ink: white or near-black, whichever reads on the brand.
-    final ink = ThemeData.estimateBrightnessForColor(brand) == Brightness.dark
-        ? Colors.white
-        : Colors.black87;
-    final initials = Container(
-      width: size,
-      height: size,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [brand, Color.lerp(brand, Colors.black, 0.22)!],
-        ),
-      ),
-      child: Text(
-        type.initials,
-        maxLines: 1,
-        style: AppTypography.labelSmall.copyWith(
-          color: ink,
-          fontSize: size * 0.33,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-    return ExcludeSemantics(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(size * 0.28),
-        child: type.logoAsset == null
-            ? initials
-            : Image.asset(
-                type.logoAsset!,
-                width: size,
-                height: size,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => initials,
-              ),
-      ),
-    );
-  }
-}
-
 class _AddTile extends StatelessWidget {
   const _AddTile({super.key, required this.type, required this.onTap});
 
@@ -494,7 +443,7 @@ class _AddTile extends StatelessWidget {
                           ),
                           child: Icon(AppIcons.add, color: p.textPrimary),
                         )
-                      : PaymentMethodLogo(type: type, size: 32),
+                      : PaymentMethodMark(type: type, size: 32),
                   const SizedBox(height: 6),
                   Text(
                     name,
@@ -609,7 +558,7 @@ class _MethodEditorState extends State<_MethodEditor> {
       children: [
         Row(
           children: [
-            PaymentMethodLogo(type: widget.type, size: 40),
+            PaymentMethodMark(type: widget.type, size: 40),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

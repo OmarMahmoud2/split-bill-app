@@ -8,6 +8,7 @@ import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/payments/payments.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/payment_method_mark.dart';
 
 import '../guest_bill_model.dart';
 import '../guest_bill_repository.dart';
@@ -286,12 +287,14 @@ class _MethodTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           onTap: onRun,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 64),
+            constraints: const BoxConstraints(minHeight: 88),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  PaymentMethodMark(type: method.type, size: 28),
+                  const SizedBox(height: 4),
                   Text(
                     method.label,
                     maxLines: 2,

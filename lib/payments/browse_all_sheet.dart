@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/payment_method_mark.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/countries.dart' as phone;
 import 'package:split_bill_app/payment_settings_screen.dart';
@@ -171,7 +172,7 @@ class _BrowseBodyState extends State<_BrowseBody> {
                       for (final t in g.methods)
                         ListTile(
                           key: ValueKey('pm-browse-${g.label}-${t.id}'),
-                          leading: PaymentMethodLogo(type: t),
+                          leading: PaymentMethodMark(type: t),
                           title: Text(t.displayName),
                           onTap: () {
                             AppHaptics.light();

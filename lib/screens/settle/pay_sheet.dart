@@ -2,6 +2,7 @@
 /// filled in where the app supports it (payments registry + launcher).
 library;
 
+import 'package:split_bill_app/widgets/payment_method_mark.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/ledger_repository.dart';
@@ -307,7 +308,6 @@ class _MethodTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final logo = method.type.logoAsset;
     return Semantics(
       selected: selected,
       button: true,
@@ -320,20 +320,7 @@ class _MethodTile extends StatelessWidget {
         child: ExcludeSemantics(
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: AppRadii.chipRadius,
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: logo != null
-                      ? Image.asset(
-                          logo,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => _initials(p),
-                        )
-                      : _initials(p),
-                ),
-              ),
+              PaymentMethodMark(type: method.type, size: 34),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -367,17 +354,4 @@ class _MethodTile extends StatelessWidget {
       ),
     );
   }
-
-  Widget _initials(AppPalette p) => ColoredBox(
-    color: p.surfaceVariant,
-    child: Center(
-      child: Text(
-        method.type.initials,
-        style: AppTypography.labelSmall.copyWith(
-          color: p.textPrimary,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    ),
-  );
 }

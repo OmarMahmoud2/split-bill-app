@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/payment_method_mark.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/payments/payments.dart';
@@ -187,22 +188,7 @@ class _PayMethodRow extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: p.surfaceVariant,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  entry.initials,
-                  style: AppTypography.labelSmall.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: p.textPrimary,
-                  ),
-                ),
-              ),
+              PaymentMethodMark(type: entry.type),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(

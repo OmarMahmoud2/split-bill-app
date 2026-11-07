@@ -12,6 +12,7 @@ import 'package:split_bill_app/widgets/bill_details/participant_bill_view.dart';
 import 'package:split_bill_app/widgets/bill_details/participant_tile.dart';
 import 'package:split_bill_app/widgets/bill_details/pay_methods_list.dart';
 import 'package:split_bill_app/widgets/bill_details/proof_card.dart';
+import 'package:split_bill_app/widgets/payment_method_mark.dart';
 
 import 'fixtures.dart';
 
@@ -209,7 +210,7 @@ void main() {
       expect(find.text('Apple Cash'), findsOneWidget);
       expect(find.text('bd2_apple_cash_hint'), findsOneWidget);
       expect(find.text('bf_bill_pay_open'), findsNWidgets(entries.length));
-      expect(find.text('PP'), findsOneWidget);
+      expect(find.byType(PaymentMethodMark), findsNWidgets(entries.length));
 
       await tester.tap(find.text('bf_bill_pay_open').at(1));
       expect(opened, ['paypal']);

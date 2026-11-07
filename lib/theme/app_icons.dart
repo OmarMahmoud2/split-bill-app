@@ -455,6 +455,34 @@ class AppIcons {
     fontPackage: _pkg,
     matchTextDirection: true,
   ); // wallet
+  static const AppDuoGlyph bankDuo = AppDuoGlyph(
+    IconData(
+      0xe0b5,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+    IconData(
+      0xe0b4,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+  );
+  static const AppDuoGlyph cashDuo = AppDuoGlyph(
+    IconData(
+      0xe589,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+    IconData(
+      0xe588,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+  );
   static const AppDuoGlyph walletDuo = AppDuoGlyph(
     IconData(
       0xe68b,
