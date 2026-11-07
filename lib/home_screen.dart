@@ -1,3 +1,4 @@
+import 'dart:ui' show ImageFilter;
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
@@ -148,6 +149,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ];
     return Scaffold(
       backgroundColor: p.background,
+      // Content scrolls behind the frosted nav; each tab pads its list by
+      // MediaQuery bottom padding, which here includes the bar's height.
+      extendBody: true,
       body: IndexedStack(index: _tab, children: pages),
       bottomNavigationBar: _TabBar(
         index: _tab,
@@ -166,8 +170,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 /// 68 high, hairline and soft shadow, with a raised mint "+" in the middle.
 /// Tap opens the new-bill sheet; long-press starts a receipt scan.
 ///
-/// The body ends above the bar (no `extendBody`), so nothing scrolls under
-/// it; that is also why the pill is a plain translucent surface, not a blur.
+/// The body extends behind the bar (`extendBody`), so the pill is frosted:
+/// a backdrop blur under a translucent surface.
 class _TabBar extends StatelessWidget {
   const _TabBar({
     required this.index,
@@ -250,39 +254,50 @@ class _TabBar extends StatelessWidget {
                 bottom: 0,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: p.surface.withValues(alpha: 0.96),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: p.border),
                     boxShadow: p.softShadow,
                   ),
-                  child: Row(
-                    children: [
-                      item(
-                        0,
-                        AppIcons.home,
-                        AppIcons.homeFill,
-                        'home_tab_home'.tr(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: p.surface.withValues(alpha: 0.78),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: p.border),
+                        ),
+                        child: Row(
+                          children: [
+                            item(
+                              0,
+                              AppIcons.home,
+                              AppIcons.homeFill,
+                              'home_tab_home'.tr(),
+                            ),
+                            item(
+                              1,
+                              AppIcons.activity,
+                              AppIcons.activityFill,
+                              'activity_title'.tr(),
+                            ),
+                            const Spacer(),
+                            item(
+                              2,
+                              AppIcons.groups,
+                              AppIcons.groupsFill,
+                              'groups'.tr(),
+                            ),
+                            item(
+                              3,
+                              AppIcons.you,
+                              AppIcons.youFill,
+                              'home_tab_you'.tr(),
+                            ),
+                          ],
+                        ),
                       ),
-                      item(
-                        1,
-                        AppIcons.activity,
-                        AppIcons.activityFill,
-                        'activity_title'.tr(),
-                      ),
-                      const Spacer(),
-                      item(
-                        2,
-                        AppIcons.groups,
-                        AppIcons.groupsFill,
-                        'groups'.tr(),
-                      ),
-                      item(
-                        3,
-                        AppIcons.you,
-                        AppIcons.youFill,
-                        'home_tab_you'.tr(),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -305,7 +320,6 @@ class _TabBar extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: p.accent,
                           borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: p.background, width: 4),
                           boxShadow: p.softShadow,
                         ),
                         child: Icon(AppIcons.add, color: p.onMint, size: 28),

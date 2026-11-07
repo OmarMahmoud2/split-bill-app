@@ -135,7 +135,7 @@ class HomeDashboard extends StatelessWidget {
                 ],
               );
             return ListView(
-              padding: const EdgeInsets.only(bottom: 120),
+              padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 16),
               children: [
                 header,
                 StaggeredEntrance(

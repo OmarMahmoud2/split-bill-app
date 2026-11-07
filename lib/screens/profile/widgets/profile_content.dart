@@ -113,7 +113,7 @@ class ProfileContent extends StatelessWidget {
     );
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: 140),
+      padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 24),
       children: [
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
@@ -193,14 +193,14 @@ class ProfileContent extends StatelessWidget {
                                         data.planLabel ?? 'prof_plan_pro'.tr(),
                                   },
                                 ),
-                                bg: p.inverseSurface,
+                                bg: p.hero,
                                 fg: p.gold,
                                 star: true,
                               )
                             : _Pill(
                                 key: const ValueKey('profile-go-pro'),
                                 label: 'prof_go_pro'.tr(),
-                                bg: p.inverseSurface,
+                                bg: p.hero,
                                 fg: p.gold,
                                 star: true,
                                 onTap: () {
@@ -218,14 +218,18 @@ class ProfileContent extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
-          child: Row(
-            children: [
-              _Stat('${data.billsSplit}', 'you_stat_bills'.tr()),
-              const SizedBox(width: 10),
-              _Stat('${data.peopleCount}', 'you_stat_people'.tr()),
-              const SizedBox(width: 10),
-              _Stat('${data.settledThisYear}', 'you_stat_settled'.tr()),
-            ],
+          // Equal-height tiles even when one label wraps.
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _Stat('${data.billsSplit}', 'you_stat_bills'.tr()),
+                const SizedBox(width: 10),
+                _Stat('${data.peopleCount}', 'you_stat_people'.tr()),
+                const SizedBox(width: 10),
+                _Stat('${data.settledThisYear}', 'you_stat_settled'.tr()),
+              ],
+            ),
           ),
         ),
         Padding(

@@ -318,7 +318,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
         child: ListView(
           controller: _scroll,
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 120),
+          padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 16),
           children: [
             for (final (day, items) in days) ...[
               OverlineLabel(_dayLabel(context, day)),

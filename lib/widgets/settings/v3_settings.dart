@@ -261,7 +261,10 @@ class SettingsRow extends StatelessWidget {
                 ),
                 if (value != null && value!.isNotEmpty) ...[
                   const SizedBox(width: 8),
-                  Flexible(
+                  // Capped, not Flexible: a Flexible value takes half the
+                  // row and wraps short labels.
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 140),
                     child: Text(
                       value!,
                       maxLines: 1,
