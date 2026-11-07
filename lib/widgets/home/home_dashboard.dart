@@ -8,19 +8,18 @@ import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/activity.dart';
-import 'package:split_bill_app/data/insights.dart';
 import 'package:split_bill_app/data/ledger_math.dart';
 import 'package:split_bill_app/data/ledger_repository.dart';
 import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/groups_screen.dart';
 import 'package:split_bill_app/screens/friends/friend_detail_screen.dart';
 import 'package:split_bill_app/screens/friends/people_screen.dart';
-import 'package:split_bill_app/screens/insights/insights_screen.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/home/new_sheet.dart';
+import 'package:split_bill_app/widgets/home/qr_dialog.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
 import 'package:split_bill_app/widgets/motion/motion.dart';
 
@@ -94,11 +93,10 @@ class HomeDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final me = LedgerMe.current();
     if (me == null) return ErrorState(title: 'please_log_in_2'.tr());
     return Material(
-      color: p.background,
+      color: Colors.transparent,
       child: AdaptiveBody(
         child: SafeArea(
           bottom: false,
@@ -172,14 +170,6 @@ class HomeDashboard extends StatelessWidget {
                       state: s,
                       me: me.uid,
                       onAll: actions.onOpenActivity,
-                    ),
-                  ),
-                  StaggeredEntrance(
-                    index: 5,
-                    child: _InsightsTeaser(
-                      state: s,
-                      me: me.uid,
-                      stream: stream,
                     ),
                   ),
                   ?footer,
@@ -275,6 +265,13 @@ class _Header extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
+          RoundIconButton(
+            icon: AppIcons.qr,
+            tooltip: 'hx_qr_tooltip'.tr(),
+            onPressed: () =>
+                QrDialog.show(context, me.name, MyPhoto.notifier.value, me.uid),
+          ),
+          const SizedBox(width: 8),
           StreamBuilder<bool>(
             stream: unread,
             builder: (context, snap) {
@@ -322,14 +319,22 @@ class _Hero extends StatelessWidget {
         : 'home_all_square'.tr();
     final others = summary.currencies.where((c) => c != currency).toList()
       ..sort();
-    final muted = p.onHero.withValues(alpha: 0.7);
+    // Theme-aware: a light premium card in light mode, the raised navy with
+    // a mint glow in dark mode.
+    final dark = p.isDark;
+    final fg = dark ? p.onHero : p.textPrimary;
+    final muted = dark ? p.onHero.withValues(alpha: 0.7) : p.textSecondary;
+    const countUp = Duration(milliseconds: 650);
 
     Widget tile(Color dot, String text, int minor) => Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: p.onHero.withValues(alpha: 0.08),
+          color: dark
+              ? p.onHero.withValues(alpha: 0.08)
+              : p.surface.withValues(alpha: 0.72),
           borderRadius: AppRadii.rowRadius,
+          border: dark ? null : Border.all(color: p.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,7 +377,10 @@ class _Hero extends StatelessWidget {
                       currency: currency,
                       tone: MoneyTone.neutral,
                       size: MoneySize.row,
-                      style: TextStyle(color: p.onHero, fontSize: 17),
+                      style: TextStyle(color: fg, fontSize: 17),
+                      animate: true,
+                      duration: countUp,
+                      curve: Curves.easeOutCubic,
                     ),
                   ),
                 ),
@@ -383,110 +391,160 @@ class _Hero extends StatelessWidget {
       ),
     );
 
-    return Container(
-      margin: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: p.hero,
-        borderRadius: AppRadii.heroRadius,
-        border: Border.all(color: p.heroLine),
-        boxShadow: p.heroShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: AppTypography.bodyMedium.copyWith(
-              color: muted,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 4),
-          // LTR + scaleDown so long amounts (and Arabic digits) shrink, never clip.
-          SizedBox(
-            width: double.infinity,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: AlignmentDirectional.centerStart,
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: MoneyText(
-                    minor: value,
-                    currency: currency,
-                    sign: value == 0 ? MoneySign.none : MoneySign.always,
-                    tone: MoneyTone.neutral,
-                    size: MoneySize.hero,
-                    style: TextStyle(
-                      fontSize: 48,
-                      color: p.onHero,
-                      letterSpacing: -1,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    animate: true,
-                    semanticsLabel:
-                        '$label ${moneyLabel(context, value, currency)}',
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (others.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                'home_other_currencies'.tr(
-                  namedArgs: {
-                    'list': [
-                      for (final c in others)
-                        if ((net[c] ?? 0) != 0)
-                          moneyLabel(
-                            context,
-                            net[c]!,
-                            c,
-                            sign: MoneySign.always,
-                          ),
-                    ].join(', '),
-                  },
-                ),
-                style: AppTypography.bodySmall.copyWith(color: muted),
-              ),
-            ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              tile(p.owed, 'home_owed_to_you'.tr(), owed),
-              const SizedBox(width: 10),
-              tile(p.coral, 'home_you_owe'.tr(), owe),
+    Widget orb(Color c, double size) => IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              c.withValues(alpha: dark ? 0.2 : 0.22),
+              c.withValues(alpha: 0),
             ],
           ),
-          const SizedBox(height: 14),
-          // No bulk "Remind N people" action exists (nudges are per person, once a week), so only Settle up.
-          Pressable(
-            haptic: true,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => PeopleScreen(state: stream)),
-            ),
-            child: Container(
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: p.onHero,
-                borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+
+    return Container(
+      margin: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+      decoration: BoxDecoration(
+        color: dark ? p.hero : null,
+        gradient: dark
+            ? null
+            : LinearGradient(
+                begin: AlignmentDirectional.topStart,
+                end: AlignmentDirectional.bottomEnd,
+                colors: [p.accentSoft, p.surface, p.skySoft],
+                stops: const [0, 0.55, 1],
               ),
-              child: Text(
-                'settle_up_title'.tr(),
-                style: AppTypography.labelLarge.copyWith(
-                  color: p.hero,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                ),
+        borderRadius: AppRadii.heroRadius,
+        border: Border.all(color: dark ? p.heroLine : p.border),
+        boxShadow: dark ? p.heroShadow : p.softShadow,
+      ),
+      child: ClipRRect(
+        borderRadius: AppRadii.heroRadius,
+        child: Stack(
+          children: [
+            PositionedDirectional(
+              top: -70,
+              end: -60,
+              child: orb(dark ? p.accent : p.coral, 220),
+            ),
+            if (!dark)
+              PositionedDirectional(
+                bottom: -80,
+                start: -60,
+                child: orb(p.accent, 220),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: muted,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // LTR + scaleDown so long amounts (and Arabic digits) shrink, never clip.
+                  SizedBox(
+                    width: double.infinity,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: MoneyText(
+                            minor: value,
+                            currency: currency,
+                            sign: value == 0
+                                ? MoneySign.none
+                                : MoneySign.always,
+                            tone: MoneyTone.neutral,
+                            size: MoneySize.hero,
+                            style: TextStyle(
+                              fontSize: 48,
+                              color: fg,
+                              letterSpacing: -1,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            animate: true,
+                            duration: countUp,
+                            curve: Curves.easeOutCubic,
+                            semanticsLabel:
+                                '$label ${moneyLabel(context, value, currency)}',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (others.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'home_other_currencies'.tr(
+                          namedArgs: {
+                            'list': [
+                              for (final c in others)
+                                if ((net[c] ?? 0) != 0)
+                                  moneyLabel(
+                                    context,
+                                    net[c]!,
+                                    c,
+                                    sign: MoneySign.always,
+                                  ),
+                            ].join(', '),
+                          },
+                        ),
+                        style: AppTypography.bodySmall.copyWith(color: muted),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      tile(p.owed, 'home_owed_to_you'.tr(), owed),
+                      const SizedBox(width: 10),
+                      tile(p.coral, 'home_you_owe'.tr(), owe),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  // The one Settle entry on Home. Ink in light, mint in dark.
+                  Pressable(
+                    haptic: true,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PeopleScreen(state: stream),
+                      ),
+                    ),
+                    child: Container(
+                      height: 48,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: dark ? p.accent : p.hero,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        'settle_up_title'.tr(),
+                        style: AppTypography.labelLarge.copyWith(
+                          color: dark ? p.onMint : p.onHero,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -511,13 +569,7 @@ class _QuickActions extends StatelessWidget {
         'home_qa_expense'.tr(),
         () => BillEntryPoints.manual(context),
       ),
-      (
-        AppIcons.swap,
-        'home_qa_settle'.tr(),
-        () => Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const PeopleScreen())),
-      ),
+      (AppIcons.iou, 'hx_qa_iou'.tr(), actions.onQuickIou),
     ];
     final p = context.palette;
     return Padding(
@@ -528,10 +580,7 @@ class _QuickActions extends StatelessWidget {
             if (i > 0) const SizedBox(width: 10),
             Expanded(
               child: LedgerCard(
-                onTap: () {
-                  AppHaptics.light();
-                  t.$3();
-                },
+                onTap: t.$3,
                 semanticsLabel: t.$2,
                 child: SizedBox(
                   height: 84,
@@ -682,8 +731,8 @@ class _People extends StatelessWidget {
                   : person.name;
               return Semantics(
                 button: true,
-                child: InkWell(
-                  borderRadius: AppRadii.rowRadius,
+                child: Pressable(
+                  haptic: true,
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => FriendDetailScreen(
@@ -1013,61 +1062,6 @@ class BillTile extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InsightsTeaser extends StatelessWidget {
-  const _InsightsTeaser({
-    required this.state,
-    required this.me,
-    required this.stream,
-  });
-  final HomeLedgerState state;
-  final String me;
-  final Stream<HomeLedgerState> stream;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final now = DateTime.now();
-    final i = computeInsights(
-      me: me,
-      month: now,
-      currency: preferredCurrency(context),
-      bills: state.recentBills,
-    );
-    if (i.billCount == 0) return const SizedBox.shrink();
-    final month = DateFormat.MMMM(localeTag(context)).format(now);
-    return LedgerCard(
-      margin: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      onTap: () => Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => InsightsScreen(state: stream))),
-      child: Row(
-        children: [
-          Icon(AppIcons.insights, color: p.accent),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'home_insights_teaser'.tr(
-                namedArgs: {
-                  'month': month,
-                  'amount': moneyLabel(context, i.totalMinor, i.currency),
-                },
-              ),
-              style: AppTypography.bodyMedium.copyWith(color: p.textPrimary),
-            ),
-          ),
-          Icon(
-            Directionality.of(context) == TextDirection.rtl
-                ? AppIcons.chevronLeft
-                : AppIcons.chevronRight,
-            color: p.textTertiary,
           ),
         ],
       ),
