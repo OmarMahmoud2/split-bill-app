@@ -58,8 +58,9 @@ Future<void> _post(
             body: jsonEncode(body),
           )
           .timeout(const Duration(seconds: 20));
-      if (r.statusCode >= 300 && kDebugMode)
+      if (r.statusCode >= 300 && kDebugMode) {
         debugPrint('added push ${r.statusCode}');
+      }
     } finally {
       if (client == null) c.close();
     }
@@ -77,8 +78,14 @@ Future<void> notifyBillAdded({
   http.Client? client,
   Future<String?> Function()? idToken,
 }) async {
-  if (newlyAddedMembers(before: before, after: after, selfUid: selfUid).isEmpty)
+  final added = newlyAddedMembers(
+    before: before,
+    after: after,
+    selfUid: selfUid,
+  );
+  if (added.isEmpty) {
     return;
+  }
   await _post(
     BackendConfig.billAddedUri,
     {'billId': billId},
