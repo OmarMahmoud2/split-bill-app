@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:ui' as ui;
 
@@ -5,7 +6,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/auth_wrapper.dart' show AuthFlow;
-import 'package:intl_phone_field/country_picker_dialog.dart' show PickerDialogStyle;
+import 'package:intl_phone_field/country_picker_dialog.dart'
+    show PickerDialogStyle;
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:split_bill_app/services/permission_flow.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
@@ -220,137 +222,134 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     final canPop = Navigator.of(context).canPop();
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 24),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - 36,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (canPop)
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              padding: const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 36,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (canPop)
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: V3IconButton.back(context),
+                        ),
+                      const SizedBox(height: 16),
                       Align(
                         alignment: AlignmentDirectional.centerStart,
-                        child: V3IconButton.back(context),
-                      ),
-                    const SizedBox(height: 16),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(
-                          color: p.accentSoft,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Icon(
-                          AppIcons.phone,
-                          size: 30,
-                          color: p.onAccentSoft,
+                        child: Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: p.accentSoft,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Icon(
+                            AppIcons.phone,
+                            size: 30,
+                            color: p.onAccentSoft,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Semantics(
-                      header: true,
-                      child: Text(
-                        'acct_phone_title'.tr(),
-                        style: AppTypography.displaySmall.copyWith(
-                          color: p.textPrimary,
-                          fontSize: 30,
-                          height: 1.15,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'acct_phone_body'.tr(),
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: p.textSecondary,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 26),
-                    V3FieldLabel('acct_phone_label'.tr()),
-                    // Phone numbers are always entered left to right.
-                    ShakeOnError(
-                      controller: _shake,
-                      child: Directionality(
-                        textDirection: ui.TextDirection.ltr,
-                        child: IntlPhoneField(
-                          key: _fieldKey,
-                          style: AppTypography.titleLarge.copyWith(
+                      const SizedBox(height: 20),
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          'acct_phone_title'.tr(),
+                          style: AppTypography.displaySmall.copyWith(
                             color: p.textPrimary,
-                            fontSize: 20,
+                            fontSize: 30,
+                            height: 1.15,
                           ),
-                          dropdownTextStyle: AppTypography.titleLarge.copyWith(
-                            color: p.textPrimary,
-                            fontSize: 18,
-                          ),
-                          flagsButtonPadding: const EdgeInsetsDirectional.only(
-                            start: 14,
-                          ),
-                          pickerDialogStyle: PickerDialogStyle(
-                            backgroundColor: p.surface,
-                            countryCodeStyle: AppTypography.bodyMedium.copyWith(
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'acct_phone_body'.tr(),
+                        style: AppTypography.bodyLarge.copyWith(
+                          color: p.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 26),
+                      V3FieldLabel('acct_phone_label'.tr()),
+                      // Phone numbers are always entered left to right.
+                      ShakeOnError(
+                        controller: _shake,
+                        child: Directionality(
+                          textDirection: ui.TextDirection.ltr,
+                          child: IntlPhoneField(
+                            key: _fieldKey,
+                            style: AppTypography.titleLarge.copyWith(
+                              color: p.textPrimary,
+                              fontSize: 20,
+                            ),
+                            dropdownTextStyle: AppTypography.titleLarge
+                                .copyWith(color: p.textPrimary, fontSize: 18),
+                            flagsButtonPadding:
+                                const EdgeInsetsDirectional.only(start: 14),
+                            pickerDialogStyle: PickerDialogStyle(
+                              backgroundColor: p.surface,
+                              countryCodeStyle: AppTypography.bodyMedium
+                                  .copyWith(color: p.textSecondary),
+                              countryNameStyle: AppTypography.bodyLarge
+                                  .copyWith(color: p.textPrimary),
+                            ),
+                            dropdownIcon: Icon(
+                              AppIcons.chevronDown,
+                              size: 18,
                               color: p.textSecondary,
                             ),
-                            countryNameStyle: AppTypography.bodyLarge.copyWith(
-                              color: p.textPrimary,
+                            initialCountryCode: _isoCode,
+                            disableLengthCheck: false,
+                            invalidNumberMessage:
+                                'please_enter_a_valid_phone_number'.tr(),
+                            decoration: InputDecoration(
+                              hintText: '10 1234 5678',
+                              counterText: '',
                             ),
+                            onChanged: (phone) => setState(() {
+                              _fullPhoneNumber = phone.completeNumber;
+                              _isoCode = phone.countryISOCode;
+                            }),
+                            onCountryChanged: (country) =>
+                                setState(() => _isoCode = country.code),
                           ),
-                          dropdownIcon: Icon(
-                            AppIcons.chevronDown,
-                            size: 18,
-                            color: p.textSecondary,
-                          ),
-                          initialCountryCode: _isoCode,
-                          disableLengthCheck: false,
-                          invalidNumberMessage:
-                              'please_enter_a_valid_phone_number'.tr(),
-                          decoration: InputDecoration(
-                            hintText: '10 1234 5678',
-                            counterText: '',
-                          ),
-                          onChanged: (phone) => setState(() {
-                            _fullPhoneNumber = phone.completeNumber;
-                            _isoCode = phone.countryISOCode;
-                          }),
-                          onCountryChanged: (country) =>
-                              setState(() => _isoCode = country.code),
                         ),
                       ),
-                    ),
-                    const Spacer(),
-                    const SizedBox(height: 24),
-                    FilledButton(
-                      key: const ValueKey('phone-save'),
-                      onPressed: _isLoading ? null : _savePhone,
-                      child: _isLoading
-                          ? SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: p.onInverseSurface,
-                              ),
-                            )
-                          : Text('acct_phone_save'.tr()),
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton(
-                      key: const ValueKey('phone-not-now'),
-                      onPressed: _isLoading ? null : _skip,
-                      style: TextButton.styleFrom(
-                        foregroundColor: p.textPrimary,
+                      const Spacer(),
+                      const SizedBox(height: 24),
+                      FilledButton(
+                        key: const ValueKey('phone-save'),
+                        onPressed: _isLoading ? null : _savePhone,
+                        child: _isLoading
+                            ? SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: p.onInverseSurface,
+                                ),
+                              )
+                            : Text('acct_phone_save'.tr()),
                       ),
-                      child: Text('acct_not_now'.tr()),
-                    ),
-                  ],
+                      const SizedBox(height: 10),
+                      TextButton(
+                        key: const ValueKey('phone-not-now'),
+                        onPressed: _isLoading ? null : _skip,
+                        style: TextButton.styleFrom(
+                          foregroundColor: p.textPrimary,
+                        ),
+                        child: Text('acct_not_now'.tr()),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

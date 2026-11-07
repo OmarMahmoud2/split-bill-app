@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -655,156 +656,159 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
 
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 12, 0),
-              child: Row(
-                children: [
-                  _CircleIconButton(
-                    icon: AppIcons.back,
-                    tooltip: 'back'.tr(),
-                    onPressed: () => Navigator.of(context).maybePop(),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Text(
-                      'bf_assign_title'.tr(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.titleLarge.copyWith(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: p.textPrimary,
-                      ),
-                    ),
-                  ),
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      'bf_assign_progress'.tr(
-                        namedArgs: {
-                          'done': '${progress.assigned}',
-                          'total': '${progress.total}',
-                        },
-                      ),
-                      style: AppTypography.titleMedium.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: p.textSecondary,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: 'bf_assign_split_another_way'.tr(),
-                    onPressed: () => _splitAnotherWay(draft),
-                    icon: Icon(AppIcons.filter, color: p.textPrimary),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
-              child: PersonTotalsStrip(
-                participants: participants,
-                totals: computation.totals,
-                currency: currency,
-                highlightedIds: activeIds,
-                onPersonTap: (person) {
-                  if (active == null) {
-                    _showRemoveParticipantDialog(person);
-                  } else {
-                    _onFaceTap(draft, active, person['id'].toString());
-                  }
-                },
-                onPersonLongPress: _showRemoveParticipantDialog,
-                onAddPeople: _openAddPeople,
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scroll,
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: AdaptiveBody(
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 12, 0),
+                child: Row(
                   children: [
-                    if (draft.items.isEmpty)
-                      EmptyState(
-                        icon: AppIcons.receipt,
-                        title: 'bf_assign_no_items'.tr(),
-                        compact: true,
-                      )
-                    else
-                      Material(
-                        color: p.surface,
-                        shape: AppRadii.cardShape(p.border),
-                        clipBehavior: Clip.antiAlias,
-                        child: Column(
-                          children: [
-                            for (var i = 0; i < draft.items.length; i++)
-                              KeyedSubtree(
-                                key: _rowKeys[i],
-                                child: StaggeredEntrance(
-                                  index: i,
-                                  child: AssignItemRow(
-                                    item: draft.items[i],
-                                    state: draft.assignmentOf(i),
-                                    participants: participants,
-                                    currency: currency,
-                                    active: active == i,
-                                    showTopBorder: i > 0,
-                                    onTap: () => _activate(i),
-                                    onLongPress: () =>
-                                        draft.items[i].quantity > 1
-                                        ? _showUnitsSheet(
-                                            i,
-                                            draft.items[i].name,
-                                            draft.items[i].quantity,
-                                          )
-                                        : _showSimpleAssignSheet(
-                                            i,
-                                            draft.items[i].name,
-                                          ),
-                                    onFaceTap: (id) => _onFaceTap(draft, i, id),
-                                    onEveryone: participants.length > 1
-                                        ? () => _assignEveryone(i)
-                                        : null,
-                                    onAdjustUnits: draft.items[i].quantity > 1
-                                        ? () => _showUnitsSheet(
-                                            i,
-                                            draft.items[i].name,
-                                            draft.items[i].quantity,
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                          ],
+                    _CircleIconButton(
+                      icon: AppIcons.back,
+                      tooltip: 'back'.tr(),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        'bf_assign_title'.tr(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.titleLarge.copyWith(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: p.textPrimary,
                         ),
                       ),
-                    const SizedBox(height: AppSpacing.md),
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () => _splitAnotherWay(draft),
-                        icon: const Icon(AppIcons.split, size: 18),
-                        label: Text('bf_assign_split_another_way'.tr()),
-                        style: TextButton.styleFrom(
-                          foregroundColor: p.primaryStrong,
-                          minimumSize: const Size(44, 44),
-                          textStyle: AppTypography.labelLarge.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                    ),
+                    Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        'bf_assign_progress'.tr(
+                          namedArgs: {
+                            'done': '${progress.assigned}',
+                            'total': '${progress.total}',
+                          },
+                        ),
+                        style: AppTypography.titleMedium.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: p.textSecondary,
                         ),
                       ),
+                    ),
+                    IconButton(
+                      tooltip: 'bf_assign_split_another_way'.tr(),
+                      onPressed: () => _splitAnotherWay(draft),
+                      icon: Icon(AppIcons.filter, color: p.textPrimary),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
+                child: PersonTotalsStrip(
+                  participants: participants,
+                  totals: computation.totals,
+                  currency: currency,
+                  highlightedIds: activeIds,
+                  onPersonTap: (person) {
+                    if (active == null) {
+                      _showRemoveParticipantDialog(person);
+                    } else {
+                      _onFaceTap(draft, active, person['id'].toString());
+                    }
+                  },
+                  onPersonLongPress: _showRemoveParticipantDialog,
+                  onAddPeople: _openAddPeople,
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: _scroll,
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (draft.items.isEmpty)
+                        EmptyState(
+                          icon: AppIcons.receipt,
+                          title: 'bf_assign_no_items'.tr(),
+                          compact: true,
+                        )
+                      else
+                        Material(
+                          color: p.surface,
+                          shape: AppRadii.cardShape(p.border),
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            children: [
+                              for (var i = 0; i < draft.items.length; i++)
+                                KeyedSubtree(
+                                  key: _rowKeys[i],
+                                  child: StaggeredEntrance(
+                                    index: i,
+                                    child: AssignItemRow(
+                                      item: draft.items[i],
+                                      state: draft.assignmentOf(i),
+                                      participants: participants,
+                                      currency: currency,
+                                      active: active == i,
+                                      showTopBorder: i > 0,
+                                      onTap: () => _activate(i),
+                                      onLongPress: () =>
+                                          draft.items[i].quantity > 1
+                                          ? _showUnitsSheet(
+                                              i,
+                                              draft.items[i].name,
+                                              draft.items[i].quantity,
+                                            )
+                                          : _showSimpleAssignSheet(
+                                              i,
+                                              draft.items[i].name,
+                                            ),
+                                      onFaceTap: (id) =>
+                                          _onFaceTap(draft, i, id),
+                                      onEveryone: participants.length > 1
+                                          ? () => _assignEveryone(i)
+                                          : null,
+                                      onAdjustUnits: draft.items[i].quantity > 1
+                                          ? () => _showUnitsSheet(
+                                              i,
+                                              draft.items[i].name,
+                                              draft.items[i].quantity,
+                                            )
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: AppSpacing.md),
+                      Center(
+                        child: TextButton.icon(
+                          onPressed: () => _splitAnotherWay(draft),
+                          icon: const Icon(AppIcons.split, size: 18),
+                          label: Text('bf_assign_split_another_way'.tr()),
+                          style: TextButton.styleFrom(
+                            foregroundColor: p.primaryStrong,
+                            minimumSize: const Size(44, 44),
+                            textStyle: AppTypography.labelLarge.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(

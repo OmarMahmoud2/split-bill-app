@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
@@ -101,47 +102,54 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final p = context.palette;
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: StreamBuilder<Map<String, dynamic>?>(
-          stream: _stream,
-          builder: (context, snapshot) {
-            Widget body;
-            if (snapshot.hasError) {
-              body = ErrorState.inline(
-                onRetry: () => setState(() => _stream = _makeStream()),
-              );
-            } else if (snapshot.connectionState == ConnectionState.waiting &&
-                !snapshot.hasData) {
-              body = const _LoadingCard();
-            } else {
-              final data = snapshot.data;
-              body = RevenueCatService.isUserActivePremium(data)
-                  ? _ProStatus(data: data!, onManage: _manage)
-                  : _FreeStatus(points: (data?['points'] as num?)?.toInt());
-            }
-            return ListView(
-              padding: const EdgeInsets.only(bottom: 32),
-              children: [
-                V3TopBar(
-                  title: 'pw_subscription_title'.tr(),
-                  leading: V3IconButton.back(context),
-                ),
-                const SizedBox(height: 18),
-                body,
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 0),
-                  child: OutlinedButton(
-                    key: const ValueKey('subscription-restore'),
-                    onPressed: _busy ? null : _restore,
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(54),
-                    ),
-                    child: Text('pw_restore_purchases'.tr()),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: StreamBuilder<Map<String, dynamic>?>(
+            stream: _stream,
+            builder: (context, snapshot) {
+              Widget body;
+              if (snapshot.hasError) {
+                body = ErrorState.inline(
+                  onRetry: () => setState(() => _stream = _makeStream()),
+                );
+              } else if (snapshot.connectionState == ConnectionState.waiting &&
+                  !snapshot.hasData) {
+                body = const _LoadingCard();
+              } else {
+                final data = snapshot.data;
+                body = RevenueCatService.isUserActivePremium(data)
+                    ? _ProStatus(data: data!, onManage: _manage)
+                    : _FreeStatus(points: (data?['points'] as num?)?.toInt());
+              }
+              return ListView(
+                padding: const EdgeInsets.only(bottom: 32),
+                children: [
+                  V3TopBar(
+                    title: 'pw_subscription_title'.tr(),
+                    leading: V3IconButton.back(context),
                   ),
-                ),
-              ],
-            );
-          },
+                  const SizedBox(height: 18),
+                  body,
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      20,
+                      10,
+                      20,
+                      0,
+                    ),
+                    child: OutlinedButton(
+                      key: const ValueKey('subscription-restore'),
+                      onPressed: _busy ? null : _restore,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(54),
+                      ),
+                      child: Text('pw_restore_purchases'.tr()),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

@@ -3,6 +3,7 @@
 /// registry -> launcher), records cash, or nudges.
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/ledger_math.dart';
@@ -192,32 +193,34 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
     final me = _me;
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: me == null
-            ? ErrorState(title: 'please_log_in_2'.tr())
-            : StreamBuilder<Object?>(
-                stream: _stream,
-                builder: (context, snap) {
-                  if (snap.hasError) {
-                    return Column(
-                      children: [
-                        LedgerTopBar(title: 'settle_up_title'.tr()),
-                        Expanded(
-                          child: ErrorState(
-                            message: 'settle_load_failed'.tr(),
-                            onRetry: () => setState(() {
-                              _stream = null;
-                              didChangeDependencies();
-                            }),
+      body: AdaptiveBody(
+        child: SafeArea(
+          child: me == null
+              ? ErrorState(title: 'please_log_in_2'.tr())
+              : StreamBuilder<Object?>(
+                  stream: _stream,
+                  builder: (context, snap) {
+                    if (snap.hasError) {
+                      return Column(
+                        children: [
+                          LedgerTopBar(title: 'settle_up_title'.tr()),
+                          Expanded(
+                            child: ErrorState(
+                              message: 'settle_load_failed'.tr(),
+                              onRetry: () => setState(() {
+                                _stream = null;
+                                didChangeDependencies();
+                              }),
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  }
-                  if (!snap.hasData) return _skeleton();
-                  return _content(context, snap.data, me);
-                },
-              ),
+                        ],
+                      );
+                    }
+                    if (!snap.hasData) return _skeleton();
+                    return _content(context, snap.data, me);
+                  },
+                ),
+        ),
       ),
     );
   }
@@ -225,17 +228,20 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
   Widget _skeleton() => Column(
     children: [
       LedgerTopBar(title: 'settle_up_title'.tr()),
-      const Padding(
-        padding: EdgeInsets.all(20),
-        child: SkeletonShimmer(
-          child: Column(
-            children: [
-              SkeletonCard(),
-              SizedBox(height: 10),
-              SkeletonCard(),
-              SizedBox(height: 10),
-              SkeletonCard(),
-            ],
+      const Expanded(
+        child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.all(20),
+          child: SkeletonShimmer(
+            child: Column(
+              children: [
+                SkeletonCard(),
+                SizedBox(height: 10),
+                SkeletonCard(),
+                SizedBox(height: 10),
+                SkeletonCard(),
+              ],
+            ),
           ),
         ),
       ),

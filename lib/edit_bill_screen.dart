@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -445,20 +446,22 @@ class _EditBillScreenState extends State<EditBillScreen> {
       },
       child: Scaffold(
         backgroundColor: p.background,
-        body: SafeArea(
-          child: ListenableBuilder(
-            listenable: _c,
-            builder: (context, _) => Column(
-              children: [
-                EditBillHeader(
-                  title: 'bf_edit_title'.tr(),
-                  onLeading: _cancel,
-                  actionLabel: 'bf_edit_save'.tr(),
-                  onAction: _saving || _deleting ? null : _save,
-                  busy: _saving,
-                ),
-                Expanded(child: _body(context)),
-              ],
+        body: AdaptiveBody(
+          child: SafeArea(
+            child: ListenableBuilder(
+              listenable: _c,
+              builder: (context, _) => Column(
+                children: [
+                  EditBillHeader(
+                    title: 'bf_edit_title'.tr(),
+                    onLeading: _cancel,
+                    actionLabel: 'bf_edit_save'.tr(),
+                    onAction: _saving || _deleting ? null : _save,
+                    busy: _saving,
+                  ),
+                  Expanded(child: _body(context)),
+                ],
+              ),
             ),
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -528,37 +529,39 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
     final canSave = _groups != null && _groups!.isNotEmpty;
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: Column(
-          children: [
-            V3TopBar(
-              leading: V3IconButton.close(context),
-              title: 'rec_title'.tr(),
-              trailing: const ProBadge(),
-            ),
-            Expanded(child: body),
-            if (canSave)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    key: const ValueKey('rec-save'),
-                    onPressed: _saving ? null : _save,
-                    child: _saving
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: p.onInverseSurface,
-                            ),
-                          )
-                        : Text('rec_save'.tr()),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            children: [
+              V3TopBar(
+                leading: V3IconButton.close(context),
+                title: 'rec_title'.tr(),
+                trailing: const ProBadge(),
+              ),
+              Expanded(child: body),
+              if (canSave)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      key: const ValueKey('rec-save'),
+                      onPressed: _saving ? null : _save,
+                      child: _saving
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: p.onInverseSurface,
+                              ),
+                            )
+                          : Text('rec_save'.tr()),
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

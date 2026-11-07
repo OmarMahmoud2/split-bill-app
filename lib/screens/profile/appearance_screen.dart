@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,54 +38,56 @@ class AppearanceScreen extends StatelessWidget {
     final current = settings.locale.languageCode;
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.only(bottom: 40),
-          children: [
-            V3TopBar(
-              title: 'prof_appearance'.tr(),
-              leading: V3IconButton.back(context),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
-              child: Row(
-                children: [
-                  for (final mode in const [
-                    ThemeMode.system,
-                    ThemeMode.light,
-                    ThemeMode.dark,
-                  ]) ...[
-                    if (mode != ThemeMode.system) const SizedBox(width: 10),
-                    Expanded(
-                      child: _ThemeOption(
-                        mode: mode,
-                        selected: settings.themeMode == mode,
-                        onTap: () {
-                          AppHaptics.selection();
-                          settings.updateThemeMode(mode);
-                        },
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 40),
+            children: [
+              V3TopBar(
+                title: 'prof_appearance'.tr(),
+                leading: V3IconButton.back(context),
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
+                child: Row(
+                  children: [
+                    for (final mode in const [
+                      ThemeMode.system,
+                      ThemeMode.light,
+                      ThemeMode.dark,
+                    ]) ...[
+                      if (mode != ThemeMode.system) const SizedBox(width: 10),
+                      Expanded(
+                        child: _ThemeOption(
+                          mode: mode,
+                          selected: settings.themeMode == mode,
+                          onTap: () {
+                            AppHaptics.selection();
+                            settings.updateThemeMode(mode);
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ],
+                ),
+              ),
+              SettingsSectionLabel(
+                'prof_language_count'.tr(
+                  namedArgs: {'count': '${supportedLocaleOptions.length}'},
+                ),
+              ),
+              SettingsCard(
+                children: [
+                  for (final option in supportedLocaleOptions)
+                    _LanguageRow(
+                      option: option,
+                      selected: option.code == current,
+                      onTap: () => applyLocaleOption(context, option),
+                    ),
                 ],
               ),
-            ),
-            SettingsSectionLabel(
-              'prof_language_count'.tr(
-                namedArgs: {'count': '${supportedLocaleOptions.length}'},
-              ),
-            ),
-            SettingsCard(
-              children: [
-                for (final option in supportedLocaleOptions)
-                  _LanguageRow(
-                    option: option,
-                    selected: option.code == current,
-                    onTap: () => applyLocaleOption(context, option),
-                  ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

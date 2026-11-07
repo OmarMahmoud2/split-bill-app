@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
@@ -125,63 +126,67 @@ class PermissionExplainerScaffold extends StatelessWidget {
     final p = context.palette;
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 24),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - 48,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 520),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 24),
-                              // Illustration tile: soft mint panel behind it.
-                              child: Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: p.accentSoft.withValues(alpha: 0.5),
-                                  borderRadius: BorderRadius.circular(28),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 48,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 24,
                                 ),
-                                child: illustration,
+                                // Illustration tile: soft mint panel behind it.
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: p.accentSoft.withValues(alpha: 0.5),
+                                    borderRadius: BorderRadius.circular(28),
+                                  ),
+                                  child: illustration,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            title,
-                            style: AppTypography.displaySmall.copyWith(
-                              color: p.textPrimary,
-                              fontSize: 30,
-                              height: 1.15,
+                          Semantics(
+                            header: true,
+                            child: Text(
+                              title,
+                              style: AppTypography.displaySmall.copyWith(
+                                color: p.textPrimary,
+                                fontSize: 30,
+                                height: 1.15,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          body,
-                          style: AppTypography.bodyLarge.copyWith(
-                            color: p.textSecondary,
-                            height: 1.5,
+                          const SizedBox(height: 8),
+                          Text(
+                            body,
+                            style: AppTypography.bodyLarge.copyWith(
+                              color: p.textSecondary,
+                              height: 1.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 26),
-                        primary,
-                        if (secondary != null) ...[
-                          const SizedBox(height: 10),
-                          secondary!,
+                          const SizedBox(height: 26),
+                          primary,
+                          if (secondary != null) ...[
+                            const SizedBox(height: 10),
+                            secondary!,
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
@@ -18,21 +19,23 @@ class BillLinkErrorScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.palette.background,
       appBar: AppBar(),
-      body: SafeArea(
-        child: notFound
-            ? ErrorState(
-                icon: AppIcons.receipt,
-                title: 'bf_bill_not_found_title'.tr(),
-                message: message ?? 'bf_bill_not_found_message'.tr(),
-                retryLabel: 'bf_bill_go_back'.tr(),
-                onRetry: () => Navigator.of(context).maybePop(),
-              )
-            : ErrorState(
-                title: 'bf_bill_load_error_title'.tr(),
-                message: message,
-                retryLabel: 'bf_bill_go_back'.tr(),
-                onRetry: () => Navigator.of(context).maybePop(),
-              ),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: notFound
+              ? ErrorState(
+                  icon: AppIcons.receipt,
+                  title: 'bf_bill_not_found_title'.tr(),
+                  message: message ?? 'bf_bill_not_found_message'.tr(),
+                  retryLabel: 'bf_bill_go_back'.tr(),
+                  onRetry: () => Navigator.of(context).maybePop(),
+                )
+              : ErrorState(
+                  title: 'bf_bill_load_error_title'.tr(),
+                  message: message,
+                  retryLabel: 'bf_bill_go_back'.tr(),
+                  onRetry: () => Navigator.of(context).maybePop(),
+                ),
+        ),
       ),
     );
   }

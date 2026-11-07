@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -104,78 +105,85 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
       value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
       child: Scaffold(
         backgroundColor: p.canvas,
-        body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(24, 8, 12, 0),
-                    child: Row(
-                      children: [
-                        if (_page > 0) ...[
-                          KeyedSubtree(
-                            key: const ValueKey('onboarding-back'),
-                            child: V3IconButton.back(
-                              context,
-                              onPressed: _completing ? null : _back,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                        ],
-                        _ProgressDashes(count: _pageCount, current: _page),
-                        const Spacer(),
-                        TextButton(
-                          key: const ValueKey('onboarding-skip'),
-                          onPressed: _completing ? null : _complete,
-                          style: TextButton.styleFrom(
-                            foregroundColor: p.textSecondary,
-                          ),
-                          child: Text('skip'.tr()),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: PageView.builder(
-                      controller: _controller,
-                      itemCount: _pageCount,
-                      onPageChanged: (value) => setState(() => _page = value),
-                      itemBuilder: (context, index) => _buildPage(index),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      24,
-                      12,
-                      24,
-                      20,
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        key: const ValueKey('onboarding-next'),
-                        onPressed: _completing ? null : _next,
-                        child: _completing
-                            ? SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: p.onInverseSurface,
-                                ),
-                              )
-                            : Text(
-                                (_page == _pageCount - 1
-                                        ? 'get_started'
-                                        : 'common_continue')
-                                    .tr(),
+        body: AdaptiveBody.form(
+          child: SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        24,
+                        8,
+                        12,
+                        0,
+                      ),
+                      child: Row(
+                        children: [
+                          if (_page > 0) ...[
+                            KeyedSubtree(
+                              key: const ValueKey('onboarding-back'),
+                              child: V3IconButton.back(
+                                context,
+                                onPressed: _completing ? null : _back,
                               ),
+                            ),
+                            const SizedBox(width: 12),
+                          ],
+                          _ProgressDashes(count: _pageCount, current: _page),
+                          const Spacer(),
+                          TextButton(
+                            key: const ValueKey('onboarding-skip'),
+                            onPressed: _completing ? null : _complete,
+                            style: TextButton.styleFrom(
+                              foregroundColor: p.textSecondary,
+                            ),
+                            child: Text('skip'.tr()),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: PageView.builder(
+                        controller: _controller,
+                        itemCount: _pageCount,
+                        onPageChanged: (value) => setState(() => _page = value),
+                        itemBuilder: (context, index) => _buildPage(index),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        24,
+                        12,
+                        24,
+                        20,
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          key: const ValueKey('onboarding-next'),
+                          onPressed: _completing ? null : _next,
+                          child: _completing
+                              ? SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: p.onInverseSurface,
+                                  ),
+                                )
+                              : Text(
+                                  (_page == _pageCount - 1
+                                          ? 'get_started'
+                                          : 'common_continue')
+                                      .tr(),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

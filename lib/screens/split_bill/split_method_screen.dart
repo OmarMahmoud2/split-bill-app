@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -222,118 +223,123 @@ class _SplitMethodScreenState extends State<SplitMethodScreen> {
 
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
-              child: Row(
-                children: [
-                  _RoundIconButton(
-                    icon: AppIcons.back,
-                    label: 'bf_split_back'.tr(),
-                    onTap: () => Navigator.of(context).maybePop(),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'bf_split_title'.tr(),
-                      style: AppTypography.titleMedium.copyWith(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: p.textPrimary,
-                      ),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
+                child: Row(
+                  children: [
+                    _RoundIconButton(
+                      icon: AppIcons.back,
+                      label: 'bf_split_back'.tr(),
+                      onTap: () => Navigator.of(context).maybePop(),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
-              child: SplitMethodSegments(value: method, onChanged: _setMethod),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
-              child: Text(
-                'bf_split_caption_${method.wireName}'.tr(),
-                style: AppTypography.bodyMedium.copyWith(
-                  color: p.textSecondary,
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 16),
-                children: [
-                  if (method != SplitMethod.items)
-                    Container(
-                      decoration: BoxDecoration(
-                        color: p.surface,
-                        borderRadius: AppRadii.cardRadius,
-                        border: Border.all(color: p.hairline),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Column(
-                        children: [
-                          for (var i = 0; i < _ids.length; i++)
-                            _MethodRow(
-                              key: ValueKey('split_row_${_ids[i]}'),
-                              first: i == 0,
-                              participant: _participant(_ids[i]),
-                              name: _nameOf(_ids[i]),
-                              method: method,
-                              amountMinor: c.shareOf(_ids[i]),
-                              currency: _draft.currency,
-                              shares: (_draft.shares[_ids[i]] ?? 1).round(),
-                              exactController: _exact[_ids[i]]!,
-                              percentController: _percent[_ids[i]]!,
-                              onExact: (t) => _onExact(_ids[i], t),
-                              onPercent: (t) => _onPercent(_ids[i], t),
-                              onShares: (d) => _stepShares(_ids[i], d),
-                            ),
-                        ],
-                      ),
-                    ),
-                  if (method != SplitMethod.items) ...[
-                    const SizedBox(height: 12),
-                    Semantics(
-                      liveRegion: true,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: noteOk ? p.accentSoft : p.oweSoft,
-                          borderRadius: AppRadii.rowRadius,
-                        ),
-                        child: Text(
-                          noteKey.tr(namedArgs: noteArgs),
-                          style: AppTypography.bodySmall.copyWith(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: noteOk ? p.onAccentSoft : p.oweInk,
-                          ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'bf_split_title'.tr(),
+                        style: AppTypography.titleMedium.copyWith(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: p.textPrimary,
                         ),
                       ),
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
-              child: AssignPillButton(
-                key: const ValueKey('split_method_confirm'),
-                label: method == SplitMethod.items
-                    ? 'bf_split_assign_by_item'.tr()
-                    : 'bf_split_review_totals'.tr(),
-                muted: !noteOk,
-                onPressed: () => _confirm(c),
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
+                child: SplitMethodSegments(
+                  value: method,
+                  onChanged: _setMethod,
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
+                child: Text(
+                  'bf_split_caption_${method.wireName}'.tr(),
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: p.textSecondary,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 16),
+                  children: [
+                    if (method != SplitMethod.items)
+                      Container(
+                        decoration: BoxDecoration(
+                          color: p.surface,
+                          borderRadius: AppRadii.cardRadius,
+                          border: Border.all(color: p.hairline),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          children: [
+                            for (var i = 0; i < _ids.length; i++)
+                              _MethodRow(
+                                key: ValueKey('split_row_${_ids[i]}'),
+                                first: i == 0,
+                                participant: _participant(_ids[i]),
+                                name: _nameOf(_ids[i]),
+                                method: method,
+                                amountMinor: c.shareOf(_ids[i]),
+                                currency: _draft.currency,
+                                shares: (_draft.shares[_ids[i]] ?? 1).round(),
+                                exactController: _exact[_ids[i]]!,
+                                percentController: _percent[_ids[i]]!,
+                                onExact: (t) => _onExact(_ids[i], t),
+                                onPercent: (t) => _onPercent(_ids[i], t),
+                                onShares: (d) => _stepShares(_ids[i], d),
+                              ),
+                          ],
+                        ),
+                      ),
+                    if (method != SplitMethod.items) ...[
+                      const SizedBox(height: 12),
+                      Semantics(
+                        liveRegion: true,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: noteOk ? p.accentSoft : p.oweSoft,
+                            borderRadius: AppRadii.rowRadius,
+                          ),
+                          child: Text(
+                            noteKey.tr(namedArgs: noteArgs),
+                            style: AppTypography.bodySmall.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: noteOk ? p.onAccentSoft : p.oweInk,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+                child: AssignPillButton(
+                  key: const ValueKey('split_method_confirm'),
+                  label: method == SplitMethod.items
+                      ? 'bf_split_assign_by_item'.tr()
+                      : 'bf_split_review_totals'.tr(),
+                  muted: !noteOk,
+                  onPressed: () => _confirm(c),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -162,7 +163,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       }
 
       if (mounted) {
-        AppToast.show(context, message: 'all_notifications_cleared'.tr(), type: AppToastType.success);
+        AppToast.show(
+          context,
+          message: 'all_notifications_cleared'.tr(),
+          type: AppToastType.success,
+        );
       }
     }
   }
@@ -178,105 +183,136 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            LedgerTopBar(
-              title: 'notifications'.tr(),
-              actions: [
-                TextButton(
-                  onPressed: () async {
-                    try {
-                      await NotificationService().markAllAsRead();
-                      AppHaptics.selection();
-                    } catch (_) {
-                      if (context.mounted) {
-                        AppToast.show(context, message: 'notifications_action_failed'.tr(), type: AppToastType.error);
+      body: AdaptiveBody(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              LedgerTopBar(
+                title: 'notifications'.tr(),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      try {
+                        await NotificationService().markAllAsRead();
+                        AppHaptics.selection();
+                      } catch (_) {
+                        if (context.mounted) {
+                          AppToast.show(
+                            context,
+                            message: 'notifications_action_failed'.tr(),
+                            type: AppToastType.error,
+                          );
+                        }
                       }
-                    }
-                  },
-                  style: TextButton.styleFrom(foregroundColor: p.accent),
-                  child: Text('mark_all_read'.tr()),
-                ),
-                PopupMenuButton<String>(
-                  tooltip: 'groups_more'.tr(),
-                  icon: Icon(AppIcons.more, color: p.textPrimary),
-                  onSelected: (_) => _clearAll(),
-                  itemBuilder: (_) => [
-                    PopupMenuItem(value: 'clear', child: Text('clear_all'.tr())),
-                  ],
-                ),
-              ],
-            ),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user!.uid)
-                    .collection('notifications')
-                    .orderBy('date', descending: true)
-                    .limit(100)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return ErrorState(
-                      message: 'notifications_load_failed'.tr(),
-                      onRetry: () => setState(() {}),
-                    );
-                  }
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: SkeletonShimmer(
-                        child: Column(children: [SkeletonCard(), SizedBox(height: 10), SkeletonCard(), SizedBox(height: 10), SkeletonCard()]),
+                    },
+                    style: TextButton.styleFrom(foregroundColor: p.accent),
+                    child: Text('mark_all_read'.tr()),
+                  ),
+                  PopupMenuButton<String>(
+                    tooltip: 'groups_more'.tr(),
+                    icon: Icon(AppIcons.more, color: p.textPrimary),
+                    onSelected: (_) => _clearAll(),
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: 'clear',
+                        child: Text('clear_all'.tr()),
                       ),
-                    );
-                  }
-                  final docs = snapshot.data?.docs ?? const [];
-                  if (docs.isEmpty) {
-                    return EmptyState(
-                      icon: AppIcons.bell,
-                      title: 'no_notifications'.tr(),
-                      message: 'your_history_is_clean_for_now_any_alerts_will_appear_here'.tr(),
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: docs.length,
-                    padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 24),
-                    itemBuilder: (context, index) {
-                      final doc = docs[index];
-                      final data = doc.data() as Map<String, dynamic>;
-                      final copy = _localizedNotificationCopy(data);
-                      final read = data['read'] == true;
-                      final ts = data['date'] as Timestamp?;
-                      final when = ts != null ? _formatTimestamp(ts) : 'unknown_time'.tr();
-                      final payload = data['data'] as Map<String, dynamic>?;
-                      final isReminder = payload?['type'] == 'nudge' ||
-                          (data['titleKey'] as String?)?.startsWith('nudge_') == true;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: StaggeredEntrance(
-                          index: index,
-                          child: NotificationCard(
-                            title: copy.title,
-                            body: copy.body,
-                            when: when,
-                            read: read,
-                            reminder: isReminder,
-                            senderId: payload?['senderId']?.toString(),
-                            senderName: payload?['senderName']?.toString(),
-                            senderPhotoUrl: payload?['senderPhotoUrl']?.toString(),
-                            onTap: () => _open(doc.id, payload),
+                    ],
+                  ),
+                ],
+              ),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(user!.uid)
+                      .collection('notifications')
+                      .orderBy('date', descending: true)
+                      .limit(100)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return ErrorState(
+                        message: 'notifications_load_failed'.tr(),
+                        onRetry: () => setState(() {}),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: SkeletonShimmer(
+                          child: Column(
+                            children: [
+                              SkeletonCard(),
+                              SizedBox(height: 10),
+                              SkeletonCard(),
+                              SizedBox(height: 10),
+                              SkeletonCard(),
+                            ],
                           ),
                         ),
                       );
-                    },
-                  );
-                },
+                    }
+                    final docs = snapshot.data?.docs ?? const [];
+                    if (docs.isEmpty) {
+                      return EmptyState(
+                        icon: AppIcons.bell,
+                        title: 'no_notifications'.tr(),
+                        message:
+                            'your_history_is_clean_for_now_any_alerts_will_appear_here'
+                                .tr(),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: docs.length,
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        20,
+                        16,
+                        20,
+                        24,
+                      ),
+                      itemBuilder: (context, index) {
+                        final doc = docs[index];
+                        final data = doc.data() as Map<String, dynamic>;
+                        final copy = _localizedNotificationCopy(data);
+                        final read = data['read'] == true;
+                        final ts = data['date'] as Timestamp?;
+                        final when = ts != null
+                            ? _formatTimestamp(ts)
+                            : 'unknown_time'.tr();
+                        final payload = data['data'] as Map<String, dynamic>?;
+                        final isReminder =
+                            payload?['type'] == 'nudge' ||
+                            (data['titleKey'] as String?)?.startsWith(
+                                  'nudge_',
+                                ) ==
+                                true;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: StaggeredEntrance(
+                            index: index,
+                            child: NotificationCard(
+                              title: copy.title,
+                              body: copy.body,
+                              when: when,
+                              read: read,
+                              reminder: isReminder,
+                              senderId: payload?['senderId']?.toString(),
+                              senderName: payload?['senderName']?.toString(),
+                              senderPhotoUrl: payload?['senderPhotoUrl']
+                                  ?.toString(),
+                              onTap: () => _open(doc.id, payload),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -287,14 +323,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final billId = payload?['billId']?.toString();
     if (billId == null) return;
     try {
-      final billDoc = await FirebaseFirestore.instance.collection('bills').doc(billId).get();
+      final billDoc = await FirebaseFirestore.instance
+          .collection('bills')
+          .doc(billId)
+          .get();
       if (!mounted) return;
       if (!billDoc.exists) {
-        AppToast.show(context, message: 'notifications_bill_gone'.tr(), type: AppToastType.info);
+        AppToast.show(
+          context,
+          message: 'notifications_bill_gone'.tr(),
+          type: AppToastType.info,
+        );
         return;
       }
       final billData = billDoc.data()!;
-      final amIHost = billData['hostId'] == FirebaseAuth.instance.currentUser?.uid;
+      final amIHost =
+          billData['hostId'] == FirebaseAuth.instance.currentUser?.uid;
       final billName = billData['storeName'] ?? 'bill'.tr();
       Navigator.push(
         context,
@@ -306,7 +350,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       );
     } catch (_) {
       if (mounted) {
-        AppToast.show(context, message: 'notifications_open_failed'.tr(), type: AppToastType.error);
+        AppToast.show(
+          context,
+          message: 'notifications_open_failed'.tr(),
+          type: AppToastType.error,
+        );
       }
     }
   }
@@ -361,14 +409,26 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final dot = read ? null : (reminder ? p.coral : p.accent);
-    final hasPerson = (senderName ?? '').isNotEmpty || (senderId ?? '').isNotEmpty;
+    final hasPerson =
+        (senderName ?? '').isNotEmpty || (senderId ?? '').isNotEmpty;
     final leading = hasPerson
-        ? LedgerAvatar(id: senderId ?? '', name: senderName ?? '', photoUrl: senderPhotoUrl)
+        ? LedgerAvatar(
+            id: senderId ?? '',
+            name: senderName ?? '',
+            photoUrl: senderPhotoUrl,
+          )
         : Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: reminder ? p.coralSoft : p.accentSoft, borderRadius: AppRadii.rowRadius),
-            child: Icon(AppIcons.bell, size: 20, color: reminder ? p.coral : p.accent),
+            decoration: BoxDecoration(
+              color: reminder ? p.coralSoft : p.accentSoft,
+              borderRadius: AppRadii.rowRadius,
+            ),
+            child: Icon(
+              AppIcons.bell,
+              size: 20,
+              color: reminder ? p.coral : p.accent,
+            ),
           );
     return Semantics(
       label: read ? null : 'notifications_unread'.tr(),
@@ -385,13 +445,33 @@ class NotificationCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: read ? FontWeight.w500 : FontWeight.w700)),
+                  Text(
+                    title,
+                    style: AppTypography.titleSmall.copyWith(
+                      color: p.textPrimary,
+                      fontSize: 15,
+                      fontWeight: read ? FontWeight.w500 : FontWeight.w700,
+                    ),
+                  ),
                   if (body.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(body, style: AppTypography.bodySmall.copyWith(color: p.textSecondary, fontSize: 13, height: 1.4)),
+                    Text(
+                      body,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: p.textSecondary,
+                        fontSize: 13,
+                        height: 1.4,
+                      ),
+                    ),
                   ],
                   const SizedBox(height: 4),
-                  Text(when, style: AppTypography.caption.copyWith(color: p.textSecondary, fontSize: 12)),
+                  Text(
+                    when,
+                    style: AppTypography.caption.copyWith(
+                      color: p.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),

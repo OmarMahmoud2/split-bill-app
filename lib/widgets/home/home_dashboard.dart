@@ -2,6 +2,8 @@
 /// recent activity, and the first-day empty state.
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/activity.dart';
@@ -96,88 +98,94 @@ class HomeDashboard extends StatelessWidget {
     if (me == null) return ErrorState(title: 'please_log_in_2'.tr());
     return Material(
       color: p.background,
-      child: SafeArea(
-        bottom: false,
-        child: StreamBuilder<HomeLedgerState>(
-          stream: stream,
-          builder: (context, snap) {
-            final header = _Header(me: me, unread: unread, actions: actions);
-            if (snap.hasError) {
-              return Column(
-                children: [
-                  header,
-                  Expanded(
-                    child: ErrorState(
-                      message: 'home_load_failed'.tr(),
-                      onRetry: onRetry,
+      child: AdaptiveBody(
+        child: SafeArea(
+          bottom: false,
+          child: StreamBuilder<HomeLedgerState>(
+            stream: stream,
+            builder: (context, snap) {
+              final header = _Header(me: me, unread: unread, actions: actions);
+              if (snap.hasError) {
+                return Column(
+                  children: [
+                    header,
+                    Expanded(
+                      child: ErrorState(
+                        message: 'home_load_failed'.tr(),
+                        onRetry: onRetry,
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }
-            if (!snap.hasData)
-              return Column(
+                  ],
+                );
+              }
+              if (!snap.hasData)
+                return Column(
+                  children: [
+                    header,
+                    const Expanded(child: _HomeSkeleton()),
+                  ],
+                );
+              final s = snap.data!;
+              final empty =
+                  s.groups.isEmpty &&
+                  s.recentBills.where((b) => !b.isDraft).isEmpty &&
+                  s.directPayments.isEmpty;
+              if (empty)
+                return Column(
+                  children: [
+                    header,
+                    Expanded(child: _FirstDay(actions: actions)),
+                  ],
+                );
+              return ListView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.paddingOf(context).bottom + 16,
+                ),
                 children: [
                   header,
-                  const Expanded(child: _HomeSkeleton()),
-                ],
-              );
-            final s = snap.data!;
-            final empty =
-                s.groups.isEmpty &&
-                s.recentBills.where((b) => !b.isDraft).isEmpty &&
-                s.directPayments.isEmpty;
-            if (empty)
-              return Column(
-                children: [
-                  header,
-                  Expanded(child: _FirstDay(actions: actions)),
-                ],
-              );
-            return ListView(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.paddingOf(context).bottom + 16,
-              ),
-              children: [
-                header,
-                StaggeredEntrance(
-                  index: 0,
-                  child: _Hero(summary: s.summary, stream: stream),
-                ),
-                StaggeredEntrance(
-                  index: 1,
-                  child: _QuickActions(actions: actions, state: s),
-                ),
-                if (s.summary.open.isNotEmpty)
                   StaggeredEntrance(
-                    index: 2,
-                    child: _People(state: s, stream: stream),
+                    index: 0,
+                    child: _Hero(summary: s.summary, stream: stream),
                   ),
-                if (s.groups.any((g) => !g.archived))
                   StaggeredEntrance(
-                    index: 3,
-                    child: _Groups(
+                    index: 1,
+                    child: _QuickActions(actions: actions, state: s),
+                  ),
+                  if (s.summary.open.isNotEmpty)
+                    StaggeredEntrance(
+                      index: 2,
+                      child: _People(state: s, stream: stream),
+                    ),
+                  if (s.groups.any((g) => !g.archived))
+                    StaggeredEntrance(
+                      index: 3,
+                      child: _Groups(
+                        state: s,
+                        me: me.uid,
+                        onAll: actions.onOpenGroups,
+                      ),
+                    ),
+                  StaggeredEntrance(
+                    index: 4,
+                    child: _Recent(
                       state: s,
                       me: me.uid,
-                      onAll: actions.onOpenGroups,
+                      onAll: actions.onOpenActivity,
                     ),
                   ),
-                StaggeredEntrance(
-                  index: 4,
-                  child: _Recent(
-                    state: s,
-                    me: me.uid,
-                    onAll: actions.onOpenActivity,
+                  StaggeredEntrance(
+                    index: 5,
+                    child: _InsightsTeaser(
+                      state: s,
+                      me: me.uid,
+                      stream: stream,
+                    ),
                   ),
-                ),
-                StaggeredEntrance(
-                  index: 5,
-                  child: _InsightsTeaser(state: s, me: me.uid, stream: stream),
-                ),
-                ?footer,
-              ],
-            );
-          },
+                  ?footer,
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -1138,7 +1146,8 @@ class _HomeSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const SkeletonShimmer(
-    child: Padding(
+    child: SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
       padding: EdgeInsetsDirectional.fromSTEB(20, 22, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

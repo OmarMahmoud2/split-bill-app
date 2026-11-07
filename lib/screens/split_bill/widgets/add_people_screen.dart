@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -292,188 +293,190 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
 
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 20, 0),
-              child: Row(
-                children: [
-                  IconButton(
-                    tooltip: 'back'.tr(),
-                    onPressed: () => Navigator.of(context).maybePop(),
-                    icon: Icon(AppIcons.back, color: p.textPrimary),
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      'bf_assign_who_was_there'.tr(),
-                      style: AppTypography.headlineLarge.copyWith(
-                        fontSize: 24,
-                        color: p.textPrimary,
-                      ),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 20, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      tooltip: 'back'.tr(),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                      icon: Icon(AppIcons.back, color: p.textPrimary),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 20),
-                children: [
-                  AppTextField(
-                    key: const ValueKey('bf_assign_people_search'),
-                    controller: _search,
-                    onChanged: (_) => setState(() {}),
-                    textInputAction: TextInputAction.search,
-                    hint: 'bf_assign_search_hint'.tr(),
-                    prefix: Icon(AppIcons.search, color: p.textSecondary),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  PersonGrid(
-                    children: [
-                      for (final person in _selected)
-                        PersonTile(
-                          key: ValueKey('bf_assign_selected_${_id(person)}'),
-                          person: person,
-                          selected: true,
-                          isYou: person['isHost'] == true,
-                          onTap: person['isHost'] == true
-                              ? null
-                              : () => _toggle(person),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        'bf_assign_who_was_there'.tr(),
+                        style: AppTypography.headlineLarge.copyWith(
+                          fontSize: 24,
+                          color: p.textPrimary,
                         ),
-                      GuestTile(onTap: _addGuest),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (widget.onScanQr != null) ...[
-                        Expanded(
-                          child: AddSourceCard(
-                            icon: AppIcons.qr,
-                            label: 'scan_qr'.tr(),
-                            onTap: () => _runSource(widget.onScanQr),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                      ],
-                      if (widget.onPickContacts != null) ...[
-                        Expanded(
-                          child: AddSourceCard(
-                            icon: AppIcons.contacts,
-                            label: 'contacts'.tr(),
-                            onTap: () => _runSource(widget.onPickContacts),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                      ],
-                    ],
-                  ),
-                  if (_busy) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    const SkeletonShimmer(
-                      child: Column(
-                        children: [SkeletonListTile(), SkeletonListTile()],
                       ),
                     ),
                   ],
-                  if (query.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: AppSpacing.md),
-                      child: _AddQueryAsGuest(
-                        name: query,
-                        onTap: () => _addGuest(query),
-                      ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 20),
+                  children: [
+                    AppTextField(
+                      key: const ValueKey('bf_assign_people_search'),
+                      controller: _search,
+                      onChanged: (_) => setState(() {}),
+                      textInputAction: TextInputAction.search,
+                      hint: 'bf_assign_search_hint'.tr(),
+                      prefix: Icon(AppIcons.search, color: p.textSecondary),
                     ),
-                  for (final section in sections)
-                    if (section.people.any((m) => !_isSelected(_id(m)))) ...[
-                      Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                          0,
-                          20,
-                          0,
-                          10,
+                    const SizedBox(height: AppSpacing.md),
+                    PersonGrid(
+                      children: [
+                        for (final person in _selected)
+                          PersonTile(
+                            key: ValueKey('bf_assign_selected_${_id(person)}'),
+                            person: person,
+                            selected: true,
+                            isYou: person['isHost'] == true,
+                            onTap: person['isHost'] == true
+                                ? null
+                                : () => _toggle(person),
+                          ),
+                        GuestTile(onTap: _addGuest),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (widget.onScanQr != null) ...[
+                          Expanded(
+                            child: AddSourceCard(
+                              icon: AppIcons.qr,
+                              label: 'scan_qr'.tr(),
+                              onTap: () => _runSource(widget.onScanQr),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                        ],
+                        if (widget.onPickContacts != null) ...[
+                          Expanded(
+                            child: AddSourceCard(
+                              icon: AppIcons.contacts,
+                              label: 'contacts'.tr(),
+                              onTap: () => _runSource(widget.onPickContacts),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                        ],
+                      ],
+                    ),
+                    if (_busy) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      const SkeletonShimmer(
+                        child: Column(
+                          children: [SkeletonListTile(), SkeletonListTile()],
                         ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                section.title,
-                                style: AppTypography.titleSmall.copyWith(
-                                  color: p.textPrimary,
-                                  fontWeight: FontWeight.w700,
+                      ),
+                    ],
+                    if (query.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.md),
+                        child: _AddQueryAsGuest(
+                          name: query,
+                          onTap: () => _addGuest(query),
+                        ),
+                      ),
+                    for (final section in sections)
+                      if (section.people.any((m) => !_isSelected(_id(m)))) ...[
+                        Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                            0,
+                            20,
+                            0,
+                            10,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  section.title,
+                                  style: AppTypography.titleSmall.copyWith(
+                                    color: p.textPrimary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
-                            ),
-                            _UseGroupChip(
-                              onTap: () => _addPeople([
-                                for (final m in section.people)
-                                  if (!_isSelected(_id(m))) m,
-                              ]),
-                            ),
+                              _UseGroupChip(
+                                onTap: () => _addPeople([
+                                  for (final m in section.people)
+                                    if (!_isSelected(_id(m))) m,
+                                ]),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PersonGrid(
+                          children: [
+                            for (final m in section.people)
+                              if (!_isSelected(_id(m)))
+                                PersonTile(
+                                  key: ValueKey(
+                                    'bf_assign_person_row_${m['id']}',
+                                  ),
+                                  person: m,
+                                  selected: false,
+                                  onTap: () => _toggle(m),
+                                ),
+                          ],
+                        ),
+                      ],
+                    if (widget.groups != null &&
+                        _groups == null &&
+                        !_groupsFailed) ...[
+                      const SizedBox(height: AppSpacing.xl),
+                      const SkeletonShimmer(
+                        child: Column(
+                          children: [
+                            SkeletonListTile(),
+                            SkeletonListTile(),
+                            SkeletonListTile(),
                           ],
                         ),
                       ),
-                      PersonGrid(
-                        children: [
-                          for (final m in section.people)
-                            if (!_isSelected(_id(m)))
-                              PersonTile(
-                                key: ValueKey(
-                                  'bf_assign_person_row_${m['id']}',
-                                ),
-                                person: m,
-                                selected: false,
-                                onTap: () => _toggle(m),
-                              ),
-                        ],
+                    ],
+                    if (_groupsFailed) ...[
+                      const SizedBox(height: AppSpacing.xl),
+                      ErrorState.inline(
+                        title: 'bf_assign_groups_error_title'.tr(),
+                        message: 'bf_assign_groups_error_message'.tr(),
+                        onRetry: () {
+                          setState(() => _groupsFailed = false);
+                          _listen();
+                        },
                       ),
                     ],
-                  if (widget.groups != null &&
-                      _groups == null &&
-                      !_groupsFailed) ...[
-                    const SizedBox(height: AppSpacing.xl),
-                    const SkeletonShimmer(
-                      child: Column(
-                        children: [
-                          SkeletonListTile(),
-                          SkeletonListTile(),
-                          SkeletonListTile(),
-                        ],
-                      ),
-                    ),
                   ],
-                  if (_groupsFailed) ...[
-                    const SizedBox(height: AppSpacing.xl),
-                    ErrorState.inline(
-                      title: 'bf_assign_groups_error_title'.tr(),
-                      message: 'bf_assign_groups_error_message'.tr(),
-                      onRetry: () {
-                        setState(() => _groupsFailed = false);
-                        _listen();
-                      },
-                    ),
-                  ],
-                ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
-              child: AssignPillButton(
-                key: const ValueKey('bf_assign_people_continue'),
-                label: pluralText('bf_continue_people', _selected.length),
-                onPressed: () {
-                  AppHaptics.light();
-                  Navigator.of(
-                    context,
-                  ).pop(List<Map<String, dynamic>>.of(_selected));
-                },
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
+                child: AssignPillButton(
+                  key: const ValueKey('bf_assign_people_continue'),
+                  label: pluralText('bf_continue_people', _selected.length),
+                  onPressed: () {
+                    AppHaptics.light();
+                    Navigator.of(
+                      context,
+                    ).pop(List<Map<String, dynamic>>.of(_selected));
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

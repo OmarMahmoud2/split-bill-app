@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
@@ -196,18 +197,20 @@ class _PremiumModalState extends State<PremiumModal> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.palette.canvas,
-      body: SafeArea(
-        child: PaywallBody(
-          loading: _loading,
-          failed: _failed,
-          plans: _plans,
-          selected: _selected,
-          busy: _busy,
-          onSelected: (plan) => setState(() => _selected = plan),
-          onPurchase: _purchase,
-          onRestore: _restore,
-          onRetry: _load,
-          onClose: () => Navigator.of(context).pop(false),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: PaywallBody(
+            loading: _loading,
+            failed: _failed,
+            plans: _plans,
+            selected: _selected,
+            busy: _busy,
+            onSelected: (plan) => setState(() => _selected = plan),
+            onPurchase: _purchase,
+            onRestore: _restore,
+            onRetry: _load,
+            onClose: () => Navigator.of(context).pop(false),
+          ),
         ),
       ),
     );

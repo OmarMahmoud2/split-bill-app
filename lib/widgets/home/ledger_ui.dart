@@ -2,6 +2,8 @@
 /// (v3 "Quiet ledger": hairline cards, tinted initials, pill buttons).
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+
 import 'package:easy_localization/easy_localization.dart'
     show StringTranslateExtension;
 import 'package:flutter/material.dart';
@@ -474,6 +476,7 @@ Future<T?> showLedgerSheet<T>(
     shape: const RoundedRectangleBorder(borderRadius: AppRadii.sheetRadius),
     clipBehavior: Clip.antiAlias,
     constraints: BoxConstraints(
+      maxWidth: AdaptiveWidth.form,
       maxHeight: MediaQuery.sizeOf(context).height * 0.85,
     ),
     sheetAnimationStyle: AnimationStyle(
