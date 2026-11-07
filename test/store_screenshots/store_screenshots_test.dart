@@ -25,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/bill_summary_confirm_screen.dart';
 import 'package:split_bill_app/data/ledger_repository.dart';
@@ -91,10 +92,30 @@ const profiles = <Profile>[
 
 /// Rough "USD to local" factor so the demo prices look natural.
 const _factor = <String, num>{
-  'USD': 1, 'CAD': 1.4, 'GBP': 0.8, 'AUD': 1.5, 'EUR': 0.9, 'SEK': 10,
-  'DKK': 7, 'NOK': 10, 'MXN': 18, 'BRL': 5, 'PLN': 4, 'RUB': 90, 'TRY': 40,
-  'SAR': 3.75, 'EGP': 50, 'INR': 85, 'PKR': 280, 'IDR': 16000, 'JPY': 150,
-  'KRW': 1400, 'THB': 35, 'VND': 25000, 'CNY': 7, 'TWD': 30,
+  'USD': 1,
+  'CAD': 1.4,
+  'GBP': 0.8,
+  'AUD': 1.5,
+  'EUR': 0.9,
+  'SEK': 10,
+  'DKK': 7,
+  'NOK': 10,
+  'MXN': 18,
+  'BRL': 5,
+  'PLN': 4,
+  'RUB': 90,
+  'TRY': 40,
+  'SAR': 3.75,
+  'EGP': 50,
+  'INR': 85,
+  'PKR': 280,
+  'IDR': 16000,
+  'JPY': 150,
+  'KRW': 1400,
+  'THB': 35,
+  'VND': 25000,
+  'CNY': 7,
+  'TWD': 30,
 };
 
 /// Local-currency amount (major units) for a USD-ish [usd], rounded to a
@@ -110,7 +131,8 @@ double _local(String cur, double usd) {
 
 int _minor(String cur, double usd) => toMinorUnits(_local(cur, usd), cur);
 
-double _round(String cur, double v) => fromMinorUnits(toMinorUnits(v, cur), cur);
+double _round(String cur, double v) =>
+    fromMinorUnits(toMinorUnits(v, cur), cur);
 
 // ----------------------------------------------------------------- fonts
 
@@ -120,7 +142,9 @@ Future<void> _font(String family, List<String> files) async {
   for (final f in files) {
     if (!File(f).existsSync()) continue;
     any = true;
-    loader.addFont(Future.value(ByteData.sublistView(File(f).readAsBytesSync())));
+    loader.addFont(
+      Future.value(ByteData.sublistView(File(f).readAsBytesSync())),
+    );
   }
   if (any) await loader.load();
 }
@@ -129,8 +153,14 @@ const _sys = '/System/Library/Fonts';
 const _sup = '/System/Library/Fonts/Supplemental';
 
 const _fallbackFamilies = [
-  'StoreSans', 'StoreArabic', 'StoreJa', 'StoreHans', 'StoreKo', 'StoreThai',
-  'StoreDeva', 'StoreUnicode',
+  'StoreSans',
+  'StoreArabic',
+  'StoreJa',
+  'StoreHans',
+  'StoreKo',
+  'StoreThai',
+  'StoreDeva',
+  'StoreUnicode',
 ];
 
 /// System font that replaces Inter/Plus Jakarta for a script, so even text
@@ -140,7 +170,10 @@ List<String>? _scriptFont(Profile p) => switch (p.lang) {
   'ar' => ['$_sup/Tahoma.ttf', '$_sup/Tahoma Bold.ttf'],
   'ur' => ['$_sup/Arial Unicode.ttf'],
   'ja' => ['$_sys/ヒラギノ角ゴシック W4.ttc', '$_sys/ヒラギノ角ゴシック W6.ttc'],
-  'zh' when p.key == 'zh-Hant' => ['$_sys/STHeiti Light.ttc', '$_sys/STHeiti Medium.ttc'],
+  'zh' when p.key == 'zh-Hant' => [
+    '$_sys/STHeiti Light.ttc',
+    '$_sys/STHeiti Medium.ttc',
+  ],
   'zh' => ['$_sys/Hiragino Sans GB.ttc'],
   'ko' => ['$_sys/AppleSDGothicNeo.ttc'],
   'th' => ['$_sup/Tahoma.ttf', '$_sup/Tahoma Bold.ttf'],
@@ -162,12 +195,15 @@ Future<void> _loadFonts(Profile first) async {
 Future<void> _loadLatin() async {
   const inter = 'assets/fonts/Inter';
   await _font('Inter', [
-    '$inter/Inter-Regular.ttf', '$inter/Inter-Medium.ttf',
-    '$inter/Inter-SemiBold.ttf', '$inter/Inter-Bold.ttf',
+    '$inter/Inter-Regular.ttf',
+    '$inter/Inter-Medium.ttf',
+    '$inter/Inter-SemiBold.ttf',
+    '$inter/Inter-Bold.ttf',
   ]);
   const jak = 'assets/fonts/PlusJakartaSans';
   await _font('PlusJakartaSans', [
-    '$jak/PlusJakartaSans-SemiBold.ttf', '$jak/PlusJakartaSans-Bold.ttf',
+    '$jak/PlusJakartaSans-SemiBold.ttf',
+    '$jak/PlusJakartaSans-Bold.ttf',
     '$jak/PlusJakartaSans-ExtraBold.ttf',
   ]);
 }
@@ -178,8 +214,9 @@ Future<void> _loadCommon() async {
     'assets/fonts/IBMPlexMono/IBMPlexMono-Medium.ttf',
   ]);
   // Phosphor icon fonts straight from the package.
-  final cfg = jsonDecode(File('.dart_tool/package_config.json').readAsStringSync())
-      as Map<String, dynamic>;
+  final cfg =
+      jsonDecode(File('.dart_tool/package_config.json').readAsStringSync())
+          as Map<String, dynamic>;
   final pkg = (cfg['packages'] as List).cast<Map>().firstWhere(
     (p) => p['name'] == 'phosphor_flutter',
   );
@@ -188,13 +225,19 @@ Future<void> _loadCommon() async {
       ? rootUri.toFilePath()
       : Directory('.dart_tool').absolute.uri.resolveUri(rootUri).toFilePath();
   for (final e in {
-    'PhosphorRegular': 'Phosphor.ttf', 'PhosphorFill': 'Phosphor-Fill.ttf',
-    'PhosphorDuotone': 'Phosphor-Duotone.ttf', 'PhosphorBold': 'Phosphor-Bold.ttf',
-    'PhosphorLight': 'Phosphor-Light.ttf', 'PhosphorThin': 'Phosphor-Thin.ttf',
+    'PhosphorRegular': 'Phosphor.ttf',
+    'PhosphorFill': 'Phosphor-Fill.ttf',
+    'PhosphorDuotone': 'Phosphor-Duotone.ttf',
+    'PhosphorBold': 'Phosphor-Bold.ttf',
+    'PhosphorLight': 'Phosphor-Light.ttf',
+    'PhosphorThin': 'Phosphor-Thin.ttf',
   }.entries) {
-    await _font('packages/phosphor_flutter/${e.key}', ['$root/lib/fonts/${e.value}']);
+    await _font('packages/phosphor_flutter/${e.key}', [
+      '$root/lib/fonts/${e.value}',
+    ]);
   }
-  final flutterRoot = Platform.environment['FLUTTER_ROOT'] ??
+  final flutterRoot =
+      Platform.environment['FLUTTER_ROOT'] ??
       File(Platform.resolvedExecutable).parent.parent.parent.parent.path;
   await _font('MaterialIcons', [
     '$flutterRoot/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
@@ -228,16 +271,26 @@ ButtonStyle? _btn(ButtonStyle? b, List<String> fb) {
   final t = b?.textStyle?.resolve(const {});
   return t == null
       ? b
-      : b!.copyWith(textStyle: WidgetStatePropertyAll(t.copyWith(fontFamilyFallback: fb)));
+      : b!.copyWith(
+          textStyle: WidgetStatePropertyAll(t.copyWith(fontFamilyFallback: fb)),
+        );
 }
 
 ThemeData _withFallback(ThemeData t, List<String> fb) => t.copyWith(
   textTheme: t.textTheme.apply(fontFamilyFallback: fb),
   primaryTextTheme: t.primaryTextTheme.apply(fontFamilyFallback: fb),
-  filledButtonTheme: FilledButtonThemeData(style: _btn(t.filledButtonTheme.style, fb)),
-  outlinedButtonTheme: OutlinedButtonThemeData(style: _btn(t.outlinedButtonTheme.style, fb)),
-  textButtonTheme: TextButtonThemeData(style: _btn(t.textButtonTheme.style, fb)),
-  elevatedButtonTheme: ElevatedButtonThemeData(style: _btn(t.elevatedButtonTheme.style, fb)),
+  filledButtonTheme: FilledButtonThemeData(
+    style: _btn(t.filledButtonTheme.style, fb),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: _btn(t.outlinedButtonTheme.style, fb),
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: _btn(t.textButtonTheme.style, fb),
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: _btn(t.elevatedButtonTheme.style, fb),
+  ),
 );
 
 // ------------------------------------------------------------ translations
@@ -247,8 +300,9 @@ class _Translations extends AssetLoader {
   @override
   Future<Map<String, dynamic>> load(String path, Locale locale) async =>
       jsonDecode(
-            File('assets/translations/${locale.languageCode}.json')
-                .readAsStringSync(),
+            File(
+              'assets/translations/${locale.languageCode}.json',
+            ).readAsStringSync(),
           )
           as Map<String, dynamic>;
 }
@@ -256,7 +310,12 @@ class _Translations extends AssetLoader {
 // ------------------------------------------------------------- demo data
 
 const _names = {
-  'maya': 'Maya', 'leo': 'Leo', 'sara': 'Sara', 'omar': 'Omar', 'yuki': 'Yuki', 'ana': 'Ana',
+  'maya': 'Maya',
+  'leo': 'Leo',
+  'sara': 'Sara',
+  'omar': 'Omar',
+  'yuki': 'Yuki',
+  'ana': 'Ana',
 };
 const _ids = ['maya', 'leo', 'sara', 'omar', 'yuki', 'ana'];
 const _store = 'Dinner at Lumen';
@@ -264,10 +323,24 @@ const _store = 'Dinner at Lumen';
 /// Item (name, usd, assignees). ar/ja/zh get local item names.
 List<(String, double, List<String>)> _items(String lang) {
   final n = switch (lang) {
-    'ar' => ['بوراتا', 'سباغيتي بالمحار', 'بيتزا مارغريتا', 'باستا الكمأة', 'تيراميسو', 'مياه غازية'],
+    'ar' => [
+      'بوراتا',
+      'سباغيتي بالمحار',
+      'بيتزا مارغريتا',
+      'باستا الكمأة',
+      'تيراميسو',
+      'مياه غازية',
+    ],
     'ja' => ['ブッラータ', 'ボンゴレ', 'マルゲリータ', 'トリュフパスタ', 'ティラミス', '炭酸水'],
     'zh' => ['布拉塔奶酪', '蛤蜊意面', '玛格丽特披萨', '松露意面', '提拉米苏', '气泡水'],
-    _ => ['Burrata', 'Spaghetti vongole', 'Margherita pizza', 'Truffle pasta', 'Tiramisu', 'Sparkling water'],
+    _ => [
+      'Burrata',
+      'Spaghetti vongole',
+      'Margherita pizza',
+      'Truffle pasta',
+      'Tiramisu',
+      'Sparkling water',
+    ],
   };
   return [
     (n[0], 14, ['maya', 'ana']),
@@ -288,7 +361,8 @@ Map<String, dynamic> _receipt(Profile p) {
     'storeName': _store,
     'currency_code': cur,
     'items': [
-      for (final i in items) {'name': i.$1, 'price': _local(cur, i.$2), 'qty': 1},
+      for (final i in items)
+        {'name': i.$1, 'price': _local(cur, i.$2), 'qty': 1},
     ],
     'tax': _round(cur, sub * 0.08),
     'service_charge': _round(cur, sub * 0.10),
@@ -322,7 +396,12 @@ String _transcript(String lang) => switch (lang) {
 
 List<Map<String, dynamic>> _people() => [
   for (final id in _ids)
-    {'id': id, 'name': _names[id], 'isHost': id == 'maya', 'isGuest': id == 'leo'},
+    {
+      'id': id,
+      'name': _names[id],
+      'isHost': id == 'maya',
+      'isGuest': id == 'leo',
+    },
 ];
 
 // ------------------------------------------------------------- harness
@@ -385,7 +464,8 @@ class _Shot {
 
   Future<void> save(String name) async {
     await tester.runAsync(() async {
-      final b = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final b =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
       final img = await b.toImage(pixelRatio: 3);
       final data = await img.toByteData(format: ui.ImageByteFormat.png);
       final f = File('build/store_raw/${p.key}/$name.png');
@@ -411,7 +491,9 @@ void main() {
     setupFirebaseCoreMocks();
     await Firebase.initializeApp();
     await EasyLocalization.ensureInitialized();
-    final sel = profiles.where((p) => only.isEmpty || only.contains(p.key)).toList();
+    final sel = profiles
+        .where((p) => only.isEmpty || only.contains(p.key))
+        .toList();
     await _loadFonts(sel.first);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(SystemChannels.platform, (_) async => null);
@@ -424,7 +506,10 @@ void main() {
       tester.view.physicalSize = const Size(_w * 3, _h * 3);
       tester.view.devicePixelRatio = 3;
       tester.view.padding = const FakeViewPadding(top: 62 * 3, bottom: 34 * 3);
-      tester.view.viewPadding = const FakeViewPadding(top: 62 * 3, bottom: 34 * 3);
+      tester.view.viewPadding = const FakeViewPadding(
+        top: 62 * 3,
+        bottom: 34 * 3,
+      );
       addTearDown(tester.view.reset);
       LedgerMe.debugOverride = const LedgerMe(uid: 'maya', name: 'Maya');
       addTearDown(() => LedgerMe.debugOverride = null);
@@ -432,8 +517,10 @@ void main() {
       final s = _Shot(tester, p);
       final cur = p.currency;
       final receipt = _receipt(p);
-      String fmt(num v) => fromMinorUnits(toMinorUnits(v.toDouble(), cur), cur)
-          .toStringAsFixed(currencyDecimals(cur));
+      String fmt(num v) => fromMinorUnits(
+        toMinorUnits(v.toDouble(), cur),
+        cur,
+      ).toStringAsFixed(currencyDecimals(cur));
 
       // 1 scan review
       final owned = <TextEditingController>[];
@@ -442,6 +529,7 @@ void main() {
         owned.add(x);
         return x;
       }
+
       await s.pump(
         Scaffold(
           body: ReceiptResultView(
@@ -473,7 +561,9 @@ void main() {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () {},
-                  child: Builder(builder: (_) => Text('bf_scan_review_cta'.tr())),
+                  child: Builder(
+                    builder: (_) => Text('bf_scan_review_cta'.tr()),
+                  ),
                 ),
               ),
             ),
@@ -485,7 +575,30 @@ void main() {
       // 2 assign + voice overlay
       final engine = FakeSpeechEngine(
         ids: [
-          for (final l in ['en', 'ar', 'ur', 'hi', 'ja', 'ko', 'th', 'vi', 'zh', 'de', 'fr', 'es', 'it', 'nl', 'pt', 'pl', 'ru', 'tr', 'sv', 'da', 'nb', 'id'])
+          for (final l in [
+            'en',
+            'ar',
+            'ur',
+            'hi',
+            'ja',
+            'ko',
+            'th',
+            'vi',
+            'zh',
+            'de',
+            'fr',
+            'es',
+            'it',
+            'nl',
+            'pt',
+            'pl',
+            'ru',
+            'tr',
+            'sv',
+            'da',
+            'nb',
+            'id',
+          ])
             '${l}_XX',
         ],
       );
@@ -495,7 +608,9 @@ void main() {
           initialParticipants: [
             for (final id in _ids)
               {
-                'type': id == 'maya' ? 'host' : (id == 'leo' ? 'guest' : 'friend'),
+                'type': id == 'maya'
+                    ? 'host'
+                    : (id == 'leo' ? 'guest' : 'friend'),
                 'data': {'id': id, 'name': _names[id]},
               },
           ],
@@ -585,14 +700,19 @@ void main() {
       // callout strings (translations are loaded by now)
       // Strings for the callouts that tool/store/frame_screenshots.py draws.
       final money = NumberFormat.simpleCurrency(
-        locale: p.lang, name: cur, decimalDigits: currencyDecimals(cur));
+        locale: p.lang,
+        name: cur,
+        decimalDigits: currencyDecimals(cur),
+      );
       // intl has no Arabic riyal symbol; direction marks are re-added when drawn.
       String m(int minor) => money
           .format(fromMinorUnits(minor, cur))
           .replaceAll('Riyal', 'ر.س')
           .replaceAll(RegExp('[‎‏]'), '');
       final gb = _guestBill(p);
-      final leo = (gb['participants'] as List).firstWhere((x) => x['id'] == 'leo') as Map;
+      final leo =
+          (gb['participants'] as List).firstWhere((x) => x['id'] == 'leo')
+              as Map;
       final meta = <String, String>{
         // Same sum the scan screen shows (rounded per line), not the per-person total.
         'total': m(
@@ -604,36 +724,48 @@ void main() {
         ),
         'total_label': 'receipt_total'.tr(),
         'transcript': _transcript(p.lang),
-        'owe': 'fx_you_owe'.tr(namedArgs: {'amount': m(leo['shareMinor'] as int)}),
+        'owe': 'fx_you_owe'.tr(
+          namedArgs: {'amount': m(leo['shareMinor'] as int)},
+        ),
         'leo': '${_names['leo']}  ${m(leo['shareMinor'] as int)}',
         'settle': 'settle_n_payments_settle'.tr(namedArgs: {'count': '5'}),
-        'paid': '${'status_paid'.tr()}  ${m(_minor(cur, 24) + _minor(cur, 20))}',
+        'paid':
+            '${'status_paid'.tr()}  ${m(_minor(cur, 24) + _minor(cur, 20))}',
         'name': 'Yuki',
       };
 
       // 6 home (light) and 7 home (dark)
       final homeRepo = _homeRepo(p);
       LedgerRepository.instance = homeRepo;
-      Widget home() => HomeDashboard(
-        stream: watchHomeLedger(homeRepo, 'maya', fallbackCurrency: cur),
-        actions: HomeActions(
-          onNew: () {}, onQuickIou: () {}, onStartGroup: () {},
-          onOpenGroups: () {}, onOpenActivity: () {}, onOpenProfile: () {},
-          onOpenNotifications: () {},
+      // The app paints the orb background in HomeScreen, behind the
+      // (transparent) dashboard: render it here too, or the page is black.
+      Widget home() => AppBackground(
+        child: HomeDashboard(
+          stream: watchHomeLedger(homeRepo, 'maya', fallbackCurrency: cur),
+          actions: HomeActions(
+            onNew: () {},
+            onQuickIou: () {},
+            onStartGroup: () {},
+            onOpenGroups: () {},
+            onOpenActivity: () {},
+            onOpenProfile: () {},
+            onOpenNotifications: () {},
+          ),
+          onRetry: () {},
         ),
-        onRetry: () {},
       );
       await s.pump(home());
       await s.save('6-home');
       meta['owed_label'] = 'home_owed_overall'.tr();
       meta['owed'] = tester
           .widgetList<Text>(find.byType(Text))
-          .map((t) => t.data ?? '')
+          .map((t) => t.data ?? t.textSpan?.toPlainText() ?? '')
           .firstWhere((t) => t.startsWith('+'), orElse: () => '');
       await s.pump(home(), dark: true);
       await s.save('7-home-dark');
-      File('build/store_raw/${p.key}/meta.json')
-          .writeAsStringSync(jsonEncode(meta));
+      File(
+        'build/store_raw/${p.key}/meta.json',
+      ).writeAsStringSync(jsonEncode(meta));
       for (final o in owned) {
         o.dispose();
       }
@@ -743,10 +875,33 @@ FakeLedgerRepository _settleRepo(Profile p) {
     groups: [g],
     groupBills: {
       'g1': [
-        _bill(p, 'b1', 'Dinner at Lumen', 'maya', {'maya': 20, 'leo': 31, 'sara': 28, 'omar': 22, 'yuki': 24, 'ana': 18}, groupId: 'g1'),
-        _bill(p, 'b2', 'Tram passes', 'leo', {'maya': 12, 'leo': 12, 'sara': 12, 'omar': 12, 'yuki': 12, 'ana': 12}, groupId: 'g1'),
-        _bill(p, 'b3', 'Pastéis de nata', 'sara', {'maya': 8, 'sara': 8, 'yuki': 8}, groupId: 'g1'),
-        _bill(p, 'b4', 'Rooftop drinks', 'omar', {'leo': 26, 'omar': 26, 'yuki': 26, 'sara': 26}, groupId: 'g1'),
+        _bill(p, 'b1', 'Dinner at Lumen', 'maya', {
+          'maya': 20,
+          'leo': 31,
+          'sara': 28,
+          'omar': 22,
+          'yuki': 24,
+          'ana': 18,
+        }, groupId: 'g1'),
+        _bill(p, 'b2', 'Tram passes', 'leo', {
+          'maya': 12,
+          'leo': 12,
+          'sara': 12,
+          'omar': 12,
+          'yuki': 12,
+          'ana': 12,
+        }, groupId: 'g1'),
+        _bill(p, 'b3', 'Pastéis de nata', 'sara', {
+          'maya': 8,
+          'sara': 8,
+          'yuki': 8,
+        }, groupId: 'g1'),
+        _bill(p, 'b4', 'Rooftop drinks', 'omar', {
+          'leo': 26,
+          'omar': 26,
+          'yuki': 26,
+          'sara': 26,
+        }, groupId: 'g1'),
       ],
     },
   );
@@ -765,14 +920,53 @@ FakeLedgerRepository _homeRepo(Profile p) {
     groups: [g],
     groupBills: {
       'g1': [
-        _bill(p, 'b1', 'Dinner at Lumen', 'maya', {'maya': 20, 'leo': 31, 'sara': 28, 'omar': 22, 'yuki': 24, 'ana': 18}, groupId: 'g1', paid: {'sara'}),
-        _bill(p, 'b2', 'Tram passes', 'leo', {'maya': 12, 'leo': 12, 'sara': 12}, groupId: 'g1'),
+        _bill(
+          p,
+          'b1',
+          'Dinner at Lumen',
+          'maya',
+          {
+            'maya': 20,
+            'leo': 31,
+            'sara': 28,
+            'omar': 22,
+            'yuki': 24,
+            'ana': 18,
+          },
+          groupId: 'g1',
+          paid: {'sara'},
+        ),
+        _bill(p, 'b2', 'Tram passes', 'leo', {
+          'maya': 12,
+          'leo': 12,
+          'sara': 12,
+        }, groupId: 'g1'),
       ],
     },
     recentBills: [
-      _bill(p, 'r1', 'Brunch at Fig & Olive', 'maya', {'maya': 18, 'ana': 22, 'yuki': 20}, date: DateTime(2026, 11, 3), paid: {'ana'}),
-      _bill(p, 'r2', 'Cinema night', 'omar', {'maya': 11, 'omar': 11, 'leo': 11}, date: DateTime(2026, 11, 1)),
-      _bill(p, 'r3', 'Groceries', 'maya', {'maya': 30, 'sara': 30}, date: DateTime(2026, 10, 28), paid: {'sara'}),
+      _bill(
+        p,
+        'r1',
+        'Brunch at Fig & Olive',
+        'maya',
+        {'maya': 18, 'ana': 22, 'yuki': 20},
+        date: DateTime(2026, 11, 3),
+        paid: {'ana'},
+      ),
+      _bill(p, 'r2', 'Cinema night', 'omar', {
+        'maya': 11,
+        'omar': 11,
+        'leo': 11,
+      }, date: DateTime(2026, 11, 1)),
+      _bill(
+        p,
+        'r3',
+        'Groceries',
+        'maya',
+        {'maya': 30, 'sara': 30},
+        date: DateTime(2026, 10, 28),
+        paid: {'sara'},
+      ),
     ],
   );
 }
