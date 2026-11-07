@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Mở Tin nhắn để gửi bằng Apple Cash",
   "bd2_iou_explainer_short": "IOU là ghi chú rằng ai đó nợ bạn, không cần hóa đơn.",
   "bd2_iou_explainer_title": "IOU là gì?",
-  "bd2_iou_explainer_body": "Ghi chú rằng ai đó nợ bạn, không cần hóa đơn. Cho Ali mượn 50.000đ đi taxi? Thêm IOU và Evens sẽ theo dõi cho đến khi bạn ấy trả lại."
+  "bd2_iou_explainer_body": "Ghi chú rằng ai đó nợ bạn, không cần hóa đơn. Cho Ali mượn 50.000đ đi taxi? Thêm IOU và Evens sẽ theo dõi cho đến khi bạn ấy trả lại.",
+  "bd2_paid_count": "{paid}/{total} người đã trả"
 }

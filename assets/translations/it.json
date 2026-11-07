@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Apre Messaggi per inviare con Apple Cash",
   "bd2_iou_explainer_short": "Un IOU è una nota che qualcuno ti deve dei soldi, senza un conto.",
   "bd2_iou_explainer_title": "Cos'è un IOU?",
-  "bd2_iou_explainer_body": "Una nota che qualcuno ti deve dei soldi, senza un conto. Hai prestato 20 € ad Ali per un taxi? Aggiungi un IOU e Evens tiene il conto finché non ti restituisce i soldi."
+  "bd2_iou_explainer_body": "Una nota che qualcuno ti deve dei soldi, senza un conto. Hai prestato 20 € ad Ali per un taxi? Aggiungi un IOU e Evens tiene il conto finché non ti restituisce i soldi.",
+  "bd2_paid_count": "{paid} su {total} hanno pagato"
 }

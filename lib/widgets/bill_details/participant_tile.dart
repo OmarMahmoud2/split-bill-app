@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
 
@@ -71,33 +71,14 @@ class BillAvatar extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final image = ImageUtils.getAvatarImage(photoUrl);
-    return ExcludeSemantics(
-      child: Container(
-        width: size,
-        height: size,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: p.avatarTintFor(tintKey ?? name),
-          image: image == null
-              ? null
-              : DecorationImage(image: image, fit: BoxFit.cover),
-        ),
-        child: image == null
-            ? Text(
-                initialsOf(name),
-                style: AppTypography.labelMedium.copyWith(
-                  color: p.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              )
-            : null,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: PalAvatar(
+      seed: tintKey ?? name.toLowerCase(),
+      name: name,
+      photoUrl: photoUrl,
+      size: size,
+    ),
+  );
 }
 
 /// One participant row in the host's bill card: avatar, name, share and

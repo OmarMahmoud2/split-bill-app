@@ -53,7 +53,7 @@ class BillBreakdownCard extends StatelessWidget {
           muted: !isItemLine(line),
         ),
       if (showTotal) ...[
-        Divider(height: AppSpacing.lg, thickness: 1, color: p.borderSubtle),
+        Divider(height: AppSpacing.xl, thickness: 1.5, color: p.hairline),
         Row(
           children: [
             Expanded(

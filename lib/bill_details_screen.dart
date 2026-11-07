@@ -845,8 +845,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     final summary = collectionSummary(reader, hostId: hostId);
     final now = DateTime.now();
 
-    final meta = <String>[
-      _storeName(bill),
+    final metaNoStore = <String>[
       if (dateFromAny(bill['date']) case final date?)
         formatBillDate(context, date),
       if (bill['groupName']?.toString().trim().isNotEmpty == true)
@@ -871,7 +870,17 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     final children = <Widget>[
       entrance(
         BillSummaryWidget(
-          metaLine: meta,
+          title: _storeName(bill),
+          paidByName: reader.participants
+              .where((x) => x['id']?.toString() == hostId)
+              .firstOrNull?['name']
+              ?.toString(),
+          paidByPhotoUrl: reader.participants
+              .where((x) => x['id']?.toString() == hostId)
+              .firstOrNull?['photoUrl']
+              ?.toString(),
+          paidById: hostId,
+          metaLine: metaNoStore,
           totalMinor: reader.totalMinor,
           currency: currency,
           summary: summary,

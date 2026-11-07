@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Åbner Beskeder for at sende med Apple Cash",
   "bd2_iou_explainer_short": "En IOU er en note om, at nogen skylder dig penge, uden en regning.",
   "bd2_iou_explainer_title": "Hvad er en IOU?",
-  "bd2_iou_explainer_body": "En note om, at nogen skylder dig penge, uden en regning. Lånt Ali 200 kr. til en taxa? Tilføj en IOU, så holder Evens styr på det, til han betaler dig tilbage."
+  "bd2_iou_explainer_body": "En note om, at nogen skylder dig penge, uden en regning. Lånt Ali 200 kr. til en taxa? Tilføj en IOU, så holder Evens styr på det, til han betaler dig tilbage.",
+  "bd2_paid_count": "{paid} af {total} har betalt"
 }

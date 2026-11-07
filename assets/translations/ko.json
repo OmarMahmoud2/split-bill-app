@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Apple Cash로 보내기 위해 메시지를 엽니다",
   "bd2_iou_explainer_short": "IOU는 청구서 없이 누군가에게 받을 돈이 있다고 적어 두는 메모예요.",
   "bd2_iou_explainer_title": "IOU가 뭔가요?",
-  "bd2_iou_explainer_body": "청구서 없이 누군가에게 받을 돈이 있다고 적어 두는 메모예요. 알리에게 택시비 2만 원을 빌려줬나요? IOU를 추가하면 갚을 때까지 Evens가 기록해요."
+  "bd2_iou_explainer_body": "청구서 없이 누군가에게 받을 돈이 있다고 적어 두는 메모예요. 알리에게 택시비 2만 원을 빌려줬나요? IOU를 추가하면 갚을 때까지 Evens가 기록해요.",
+  "bd2_paid_count": "{total}명 중 {paid}명 결제"
 }

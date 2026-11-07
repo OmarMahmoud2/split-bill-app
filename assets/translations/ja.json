@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "メッセージを開いてApple Cashで送金します",
   "bd2_iou_explainer_short": "IOUは、請求書なしで誰かがあなたに借りていることを記録するメモです。",
   "bd2_iou_explainer_title": "IOUとは？",
-  "bd2_iou_explainer_body": "請求書なしで誰かがあなたに借りていることを記録するメモです。アリにタクシー代2,000円を貸した？IOUを追加すれば、返してもらうまでEvensが記録します。"
+  "bd2_iou_explainer_body": "請求書なしで誰かがあなたに借りていることを記録するメモです。アリにタクシー代2,000円を貸した？IOUを追加すれば、返してもらうまでEvensが記録します。",
+  "bd2_paid_count": "{total}人中{paid}人が支払い済み"
 }

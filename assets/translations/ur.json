@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Apple Cash سے بھیجنے کے لیے Messages کھلتا ہے",
   "bd2_iou_explainer_short": "IOU ایک نوٹ ہے کہ کسی کے ذمے آپ کی رقم ہے، بغیر بل کے۔",
   "bd2_iou_explainer_title": "IOU کیا ہے؟",
-  "bd2_iou_explainer_body": "ایک نوٹ کہ کسی کے ذمے آپ کی رقم ہے، بغیر بل کے۔ علی کو ٹیکسی کے لیے ۲۰۰ روپے دیے؟ IOU شامل کریں اور Evens واپسی تک حساب رکھے گا۔"
+  "bd2_iou_explainer_body": "ایک نوٹ کہ کسی کے ذمے آپ کی رقم ہے، بغیر بل کے۔ علی کو ٹیکسی کے لیے ۲۰۰ روپے دیے؟ IOU شامل کریں اور Evens واپسی تک حساب رکھے گا۔",
+  "bd2_paid_count": "{total} میں سے {paid} نے ادا کیا"
 }

@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Otwiera Wiadomości, aby wysłać przez Apple Cash",
   "bd2_iou_explainer_short": "IOU to notatka, że ktoś jest ci winien pieniądze, bez rachunku.",
   "bd2_iou_explainer_title": "Czym jest IOU?",
-  "bd2_iou_explainer_body": "Notatka, że ktoś jest ci winien pieniądze, bez rachunku. Pożyczyłeś Alemu 20 zł na taksówkę? Dodaj IOU, a Evens będzie to śledzić, dopóki nie odda."
+  "bd2_iou_explainer_body": "Notatka, że ktoś jest ci winien pieniądze, bez rachunku. Pożyczyłeś Alemu 20 zł na taksówkę? Dodaj IOU, a Evens będzie to śledzić, dopóki nie odda.",
+  "bd2_paid_count": "{paid} z {total} zapłaciło"
 }

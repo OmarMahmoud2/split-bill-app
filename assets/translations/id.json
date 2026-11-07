@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Membuka Pesan untuk mengirim dengan Apple Cash",
   "bd2_iou_explainer_short": "IOU adalah catatan bahwa seseorang berutang padamu, tanpa tagihan.",
   "bd2_iou_explainer_title": "Apa itu IOU?",
-  "bd2_iou_explainer_body": "Catatan bahwa seseorang berutang padamu, tanpa tagihan. Meminjamkan Ali Rp50.000 untuk taksi? Tambahkan IOU dan Evens mencatatnya sampai dia membayar."
+  "bd2_iou_explainer_body": "Catatan bahwa seseorang berutang padamu, tanpa tagihan. Meminjamkan Ali Rp50.000 untuk taksi? Tambahkan IOU dan Evens mencatatnya sampai dia membayar.",
+  "bd2_paid_count": "{paid} dari {total} sudah bayar"
 }

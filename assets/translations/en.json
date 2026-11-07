@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Opens Messages to send with Apple Cash",
   "bd2_iou_explainer_short": "An IOU is a note that someone owes you, without a bill.",
   "bd2_iou_explainer_title": "What's an IOU?",
-  "bd2_iou_explainer_body": "A note that someone owes you, without a bill. Lent Ali E£200 for a taxi? Add an IOU and Evens keeps track until he pays you back."
+  "bd2_iou_explainer_body": "A note that someone owes you, without a bill. Lent Ali E£200 for a taxi? Add an IOU and Evens keeps track until he pays you back.",
+  "bd2_paid_count": "{paid} of {total} paid"
 }

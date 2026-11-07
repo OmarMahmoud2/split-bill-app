@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Opent Berichten om te sturen met Apple Cash",
   "bd2_iou_explainer_short": "Een IOU is een notitie dat iemand je geld schuldig is, zonder rekening.",
   "bd2_iou_explainer_title": "Wat is een IOU?",
-  "bd2_iou_explainer_body": "Een notitie dat iemand je geld schuldig is, zonder rekening. Ali €20 geleend voor een taxi? Voeg een IOU toe en Evens houdt het bij tot hij je terugbetaalt."
+  "bd2_iou_explainer_body": "Een notitie dat iemand je geld schuldig is, zonder rekening. Ali €20 geleend voor een taxi? Voeg een IOU toe en Evens houdt het bij tot hij je terugbetaalt.",
+  "bd2_paid_count": "{paid} van {total} betaald"
 }

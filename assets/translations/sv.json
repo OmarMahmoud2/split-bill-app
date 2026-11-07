@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "Öppnar Meddelanden för att skicka med Apple Cash",
   "bd2_iou_explainer_short": "En IOU är en anteckning om att någon är skyldig dig pengar, utan kvitto.",
   "bd2_iou_explainer_title": "Vad är en IOU?",
-  "bd2_iou_explainer_body": "En anteckning om att någon är skyldig dig pengar, utan kvitto. Lånat ut 200 kr till Ali för en taxi? Lägg till en IOU så håller Evens koll tills han betalar tillbaka."
+  "bd2_iou_explainer_body": "En anteckning om att någon är skyldig dig pengar, utan kvitto. Lånat ut 200 kr till Ali för en taxi? Lägg till en IOU så håller Evens koll tills han betalar tillbaka.",
+  "bd2_paid_count": "{paid} av {total} har betalat"
 }

@@ -2201,5 +2201,6 @@
   "bd2_apple_cash_hint": "打开信息，用 Apple Cash 发送",
   "bd2_iou_explainer_short": "IOU 是一张欠条，记录别人欠你钱，无需账单。",
   "bd2_iou_explainer_title": "什么是 IOU？",
-  "bd2_iou_explainer_body": "一张欠条，记录别人欠你钱，无需账单。借给阿里 20 元打车？添加一条 IOU，Evens 会帮你记着，直到他还钱。"
+  "bd2_iou_explainer_body": "一张欠条，记录别人欠你钱，无需账单。借给阿里 20 元打车？添加一条 IOU，Evens 会帮你记着，直到他还钱。",
+  "bd2_paid_count": "{total} 人中 {paid} 人已付款"
 }
