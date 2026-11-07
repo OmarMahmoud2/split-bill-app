@@ -7,6 +7,7 @@ import 'package:split_bill_app/screens/scan_receipt/amount_input.dart';
 import 'package:split_bill_app/screens/scan_receipt/widgets/scan_top_bar.dart';
 import 'package:split_bill_app/split_bill_screen.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
@@ -484,50 +485,46 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
           children: [
             Expanded(
               flex: 3,
-              child: TextField(
+              child: AppTextField(
                 controller: _itemController,
                 focusNode: _itemFocusNode,
+                label: 'receipt_item'.tr(),
+                errorText: _itemError,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'receipt_item'.tr(),
-                  errorText: _itemError,
-                ),
                 onSubmitted: (_) => _qtyFocusNode.requestFocus(),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             SizedBox(
               width: 64,
-              child: TextField(
+              child: AppTextField(
                 controller: _qtyController,
                 focusNode: _qtyFocusNode,
+                label: 'receipt_qty'.tr(),
+                errorText: _qtyError,
+                money: true,
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'receipt_qty'.tr(),
-                  errorText: _qtyError,
-                ),
                 onSubmitted: (_) => _priceFocusNode.requestFocus(),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               flex: 2,
-              child: TextField(
+              child: AppTextField(
                 controller: _priceController,
                 focusNode: _priceFocusNode,
+                label: 'receipt_price'.tr(),
+                hint: minorToInputText(0, currencyCode),
+                errorText: _priceError,
+                money: true,
                 keyboardType: TextInputType.numberWithOptions(
                   decimal: decimals > 0,
                 ),
                 textAlign: TextAlign.end,
                 textInputAction: TextInputAction.done,
-                decoration: InputDecoration(
-                  labelText: 'receipt_price'.tr(),
-                  hintText: minorToInputText(0, currencyCode),
-                  errorText: _priceError,
-                ),
                 onSubmitted: (_) => _addItem(),
               ),
             ),

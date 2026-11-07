@@ -148,14 +148,14 @@ class _NewSheetState extends State<NewSheet> {
                 StaggeredEntrance(
                   index: i,
                   child: Padding(
-                    padding: EdgeInsets.only(top: i == 0 ? 16 : 8),
+                    padding: EdgeInsetsDirectional.only(top: i == 0 ? 16 : 8),
                     child: LedgerCard(
                       onTap: () {
                         AppHaptics.light();
                         o.onTap();
                       },
                       semanticsLabel: '${o.title}. ${o.subtitle}',
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 14, vertical: 12),
                       child: ExcludeSemantics(
                         child: Row(
                           children: [
@@ -210,7 +210,7 @@ class _MethodTile extends StatelessWidget {
         option.onTap();
       },
       semanticsLabel: '${option.title}. $costText',
-      padding: const EdgeInsets.fromLTRB(10, 14, 10, 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(10, 14, 10, 12),
       child: ExcludeSemantics(
         child: Column(
           children: [
