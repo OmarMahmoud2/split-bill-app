@@ -339,9 +339,9 @@ class AppPalette extends ThemeExtension<AppPalette> {
     textStrong: AppColors.inkLight,
     textMedium: AppColors.inkMediumLight, 
     textSecondary: AppColors.mutedLight, // #5B6478
-    textTertiary: AppColors.tertiaryLight, // #6B7489
+    textTertiary: AppColors.tertiaryLight, // #5F687D
     textDisabled: AppColors.disabledLight,
-    primary: AppColors.tealLight, // #0E7C72
+    primary: AppColors.tealLight, // #0B7268
     primaryStrong: AppColors.tealStrongLight,
     primarySoft: AppColors.tealSoftLight, // #E3F7F3
     onPrimary: Color(0xFFFFFFFF),

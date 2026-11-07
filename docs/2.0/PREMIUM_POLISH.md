@@ -17,13 +17,13 @@ field and small widget must look and feel premium. Nothing generic, no tan.
 | strong outline (ghost buttons) | #D4DAE6 | #2E3D5C |
 | ink (text) | #0E1526 | #E8EDF7 |
 | muted text / icons | #5B6478 | #9AA4B8 |
-| hint (still ≥4.5:1) | #6B7489 | #8A94A8 |
-| mint accent = owed to you, selection, links, focus | #0E7C72 | #34D7C0 |
+| hint (≥4.5:1 on every fill) | #5F687D | #8A94A8 |
+| mint accent = owed to you, selection, links, focus | #0B7268 | #34D7C0 |
 | mint soft fill / text on it | #E3F7F3 / #0A5F57 | rgba(52,215,192,.14) / #34D7C0 |
 | on-mint | #FFFFFF | #06231F |
 | coral = you owe (amount text uses the darker one) | #E8664A (text #C2452D) | #FF8A70 |
 | coral soft fill / text | #FFECE6 / #A8381F | rgba(255,138,112,.14) / #FF8A70 |
-| sky = waiting / pending confirmation | #3B6FE0 | #7AA2FF |
+| sky = waiting / pending confirmation | #3463D1 | #7AA2FF |
 | error (errors and destructive only) | #C62828 | #FF6B6B |
 | premium gold | #FFD36B on ink | same |
 | hero card (balance) | #0E1526 with shadow 0 16 32 rgba(14,21,38,.22) | #1A2438 + 1px #2A3854 inner line |

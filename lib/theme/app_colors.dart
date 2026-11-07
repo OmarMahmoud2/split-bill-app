@@ -24,9 +24,9 @@ class AppColors {
   static const Color inkLight = Color(0xFF0E1526);
   static const Color inkMediumLight = Color(0xFF2E364A);
   static const Color mutedLight = Color(0xFF5B6478);
-  static const Color tertiaryLight = Color(0xFF6B7489);
+  static const Color tertiaryLight = Color(0xFF5F687D);
   static const Color disabledLight = Color(0xFFA6AEBF);
-  static const Color tealLight = Color(0xFF0E7C72);
+  static const Color tealLight = Color(0xFF0B7268);
   static const Color tealStrongLight = Color(0xFF0A5F57);
   static const Color tealSoftLight = Color(0xFFE3F7F3);
   static const Color tealInkLight = Color(0xFF0A5F57);
@@ -34,7 +34,7 @@ class AppColors {
   static const Color coralTextLight = Color(0xFFC2452D);
   static const Color coralSoftLight = Color(0xFFFFECE6);
   static const Color coralInkLight = Color(0xFFA8381F);
-  static const Color skyLight = Color(0xFF3B6FE0);
+  static const Color skyLight = Color(0xFF3463D1);
   static const Color skySoftLight = Color(0xFFE6EDFD);
   static const Color errorRedLight = Color(0xFFC62828);
   static const Color errorStrongLight = Color(0xFF9F1F1F);
