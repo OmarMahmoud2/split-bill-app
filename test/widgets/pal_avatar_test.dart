@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/services/my_photo.dart';
+import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 Widget _wrap(Widget child) => MaterialApp(
@@ -61,5 +63,25 @@ void main() {
         (PalAvatar.pairIndex('user$i'), PalAvatar.hairVariant('user$i')),
     };
     expect(looks.length, greaterThan(12));
+  });
+
+  testWidgets('the signed-in user ignores a photo stored on a bill', (
+    tester,
+  ) async {
+    LedgerMe.debugOverride = const LedgerMe(uid: 'me', name: 'Omar');
+    MyPhoto.notifier.value = null;
+    addTearDown(() => LedgerMe.debugOverride = null);
+    await tester.pumpWidget(
+      _wrap(
+        const PalAvatar(
+          seed: 'me',
+          name: 'Omar',
+          photoUrl: 'https://lh3.googleusercontent.com/a/default-n',
+        ),
+      ),
+    );
+    // No chosen photo: the pal is drawn, the bill's Google photo is not.
+    expect(find.byType(Image), findsNothing);
+    expect(find.byType(CustomPaint), findsWidgets);
   });
 }

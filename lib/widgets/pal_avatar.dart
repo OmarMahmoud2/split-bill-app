@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/home/ledger_session.dart';
 
 /// Every person gets a "pal": the photo when there is one, else a friendly
 /// face drawn from a stable seed (docs/2.0/PREMIUM_POLISH.md, "Pal avatars").
@@ -66,6 +69,30 @@ class PalAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The signed-in user always shows their chosen Evens photo (or their pal),
+    // never a photo copied into an old bill or group (e.g. a Google default).
+    final me = _currentUid();
+    if (me != null && me.isNotEmpty && seed == me) {
+      return ValueListenableBuilder<String?>(
+        valueListenable: MyPhoto.notifier,
+        builder: (context, mine, _) => _build(context, mine),
+      );
+    }
+    return _build(context, photoUrl);
+  }
+
+  /// Cheap and side-effect free (no Firebase in tests, no loads in build).
+  static String? _currentUid() {
+    final o = LedgerMe.debugOverride;
+    if (o != null) return o.uid;
+    try {
+      return FirebaseAuth.instance.currentUser?.uid;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Widget _build(BuildContext context, String? photoUrl) {
     final key = _effectiveSeed;
     final pal = CustomPaint(
       size: Size.square(size),
