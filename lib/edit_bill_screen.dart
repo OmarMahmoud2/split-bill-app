@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
 import 'package:split_bill_app/services/added_push.dart';
@@ -21,7 +22,6 @@ import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/multi_contact_picker.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 /// Where the edit screen writes. Firestore by default; tests pass a fake.
 abstract class EditBillStore {
@@ -312,18 +312,21 @@ class _EditBillScreenState extends State<EditBillScreen> {
 
   Future<void> _showAddPeople() async {
     String? choice;
-    await PremiumBottomSheet.show<void>(
-      context: context,
-      child: Builder(
-        builder: (sheetContext) => AddMembersSheet(
-          onScanQR: () {
-            choice = 'qr';
-            Navigator.of(sheetContext).pop();
-          },
-          onPickContacts: () {
-            choice = 'contacts';
-            Navigator.of(sheetContext).pop();
-          },
+    await showLedgerSheet<void>(
+      context,
+      builder: (_) => SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+        child: Builder(
+          builder: (sheetContext) => AddMembersSheet(
+            onScanQR: () {
+              choice = 'qr';
+              Navigator.of(sheetContext).pop();
+            },
+            onPickContacts: () {
+              choice = 'contacts';
+              Navigator.of(sheetContext).pop();
+            },
+          ),
         ),
       ),
     );
@@ -656,11 +659,7 @@ class _TapField extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(
-                  AppIcons.chevronDown,
-                  size: 20,
-                  color: p.textSecondary,
-                ),
+                Icon(AppIcons.chevronDown, size: 20, color: p.textSecondary),
               ],
             ),
           ),
@@ -714,11 +713,7 @@ class _SummaryRow extends StatelessWidget {
             ),
             if (onTap != null) ...[
               const SizedBox(width: 4),
-              Icon(
-                AppIcons.chevronRight,
-                size: 20,
-                color: p.textTertiary,
-              ),
+              Icon(AppIcons.chevronRight, size: 20, color: p.textTertiary),
             ] else
               const SizedBox(width: 4),
           ],

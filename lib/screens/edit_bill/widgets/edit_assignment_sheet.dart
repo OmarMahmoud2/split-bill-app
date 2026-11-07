@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
 import 'package:split_bill_app/screens/edit_bill/widgets/participant_list.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 /// Signature of a confirmed assignment: [units] is non-empty for a per-unit
 /// assignment (quantity > 1), otherwise [people] share the line equally.
@@ -40,16 +40,18 @@ class EditAssignmentSheet extends StatefulWidget {
     Map<String, int> currentUnits = const {},
     required AssignmentConfirm onConfirm,
   }) {
-    return PremiumBottomSheet.show<void>(
-      context: context,
-      isScrollable: true,
-      child: EditAssignmentSheet(
-        itemName: itemName,
-        quantity: quantity,
-        participants: participants,
-        currentPeople: currentPeople,
-        currentUnits: currentUnits,
-        onConfirm: onConfirm,
+    return showLedgerSheet<void>(
+      context,
+      builder: (_) => SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+        child: EditAssignmentSheet(
+          itemName: itemName,
+          quantity: quantity,
+          participants: participants,
+          currentPeople: currentPeople,
+          currentUnits: currentUnits,
+          onConfirm: onConfirm,
+        ),
       ),
     );
   }

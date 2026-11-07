@@ -157,11 +157,7 @@ class _ItemRow extends StatelessWidget {
                     Row(
                       children: [
                         if (problem) ...[
-                          Icon(
-                            AppIcons.error,
-                            size: 14,
-                            color: p.owe,
-                          ),
+                          Icon(AppIcons.error, size: 14, color: p.owe),
                           const SizedBox(width: 4),
                         ],
                         Flexible(
@@ -188,11 +184,7 @@ class _ItemRow extends StatelessWidget {
               IconButton(
                 onPressed: onEdit,
                 tooltip: 'bf_edit_edit_item'.tr(),
-                icon: Icon(
-                  AppIcons.edit,
-                  size: 20,
-                  color: p.textSecondary,
-                ),
+                icon: Icon(AppIcons.edit, size: 20, color: p.textSecondary),
               ),
             ],
           ),

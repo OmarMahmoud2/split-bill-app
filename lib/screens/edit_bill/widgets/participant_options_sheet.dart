@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:split_bill_app/widgets/feedback/app_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
 import 'package:split_bill_app/screens/edit_bill/widgets/participant_list.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 /// Actions for one person on the bill: mark paid / not paid, remove.
 /// The host (who paid the bill) cannot be removed.
@@ -31,14 +31,17 @@ class ParticipantOptionsSheet extends StatelessWidget {
     required bool canRemove,
     required VoidCallback onTogglePaid,
     required VoidCallback onRemove,
-  }) => PremiumBottomSheet.show<void>(
-    context: context,
-    child: ParticipantOptionsSheet(
-      participant: participant,
-      isPaid: isPaid,
-      canRemove: canRemove,
-      onTogglePaid: onTogglePaid,
-      onRemove: onRemove,
+  }) => showLedgerSheet<void>(
+    context,
+    builder: (_) => SingleChildScrollView(
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+      child: ParticipantOptionsSheet(
+        participant: participant,
+        isPaid: isPaid,
+        canRemove: canRemove,
+        onTogglePaid: onTogglePaid,
+        onRemove: onRemove,
+      ),
     ),
   );
 
@@ -123,10 +126,7 @@ class ParticipantOptionsSheet extends StatelessWidget {
             if (canRemove)
               ListTile(
                 minTileHeight: 56,
-                leading: Icon(
-                  AppIcons.personRemove,
-                  color: p.textPrimary,
-                ),
+                leading: Icon(AppIcons.personRemove, color: p.textPrimary),
                 title: Text(
                   'bf_edit_remove_person'.tr(),
                   style: AppTypography.titleMedium.copyWith(

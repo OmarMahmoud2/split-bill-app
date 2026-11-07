@@ -185,10 +185,7 @@ class _EditSplitScreenState extends State<EditSplitScreen> {
                             ? const _SmallSpinner()
                             : TextButton.icon(
                                 onPressed: _addPeople,
-                                icon: const Icon(
-                                  AppIcons.personAdd,
-                                  size: 18,
-                                ),
+                                icon: const Icon(AppIcons.personAdd, size: 18),
                                 label: Text('bf_edit_add_people'.tr()),
                               ),
                       ),
@@ -294,11 +291,7 @@ class EditIssuesBanner extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 1),
-                    child: Icon(
-                      AppIcons.error,
-                      size: 16,
-                      color: p.oweInk,
-                    ),
+                    child: Icon(AppIcons.error, size: 16, color: p.oweInk),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
@@ -346,7 +339,7 @@ class _SectionHeader extends StatelessWidget {
             child: Semantics(
               header: true,
               child: Text(
-                label.toUpperCase(),
+                label,
                 style: AppTypography.titleSmall.copyWith(
                   color: p.textSecondary,
                 ),
@@ -404,7 +397,7 @@ class _MethodPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'bf_edit_section_split'.tr().toUpperCase(),
+          'bf_edit_section_split'.tr(),
           style: AppTypography.titleSmall.copyWith(color: p.textSecondary),
         ),
         const SizedBox(height: AppSpacing.sm),

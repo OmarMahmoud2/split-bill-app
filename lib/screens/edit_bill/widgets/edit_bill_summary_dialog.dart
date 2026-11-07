@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 /// Confirmed charges, all in minor units of the bill currency.
 typedef ChargesConfirm =
@@ -52,18 +52,20 @@ class EditBillSummaryDialog extends StatefulWidget {
     required int deliveryMinor,
     required int discountMinor,
     required ChargesConfirm onConfirm,
-  }) => PremiumBottomSheet.show<void>(
-    context: context,
-    isScrollable: true,
-    child: EditBillSummaryDialog(
-      currency: currency,
-      subtotalMinor: subtotalMinor,
-      taxMinor: taxMinor,
-      serviceMinor: serviceMinor,
-      tipMinor: tipMinor,
-      deliveryMinor: deliveryMinor,
-      discountMinor: discountMinor,
-      onConfirm: onConfirm,
+  }) => showLedgerSheet<void>(
+    context,
+    builder: (_) => SingleChildScrollView(
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+      child: EditBillSummaryDialog(
+        currency: currency,
+        subtotalMinor: subtotalMinor,
+        taxMinor: taxMinor,
+        serviceMinor: serviceMinor,
+        tipMinor: tipMinor,
+        deliveryMinor: deliveryMinor,
+        discountMinor: discountMinor,
+        onConfirm: onConfirm,
+      ),
     ),
   );
 

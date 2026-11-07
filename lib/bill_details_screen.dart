@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -35,7 +36,6 @@ import 'package:split_bill_app/widgets/bill_details/details_modals.dart';
 import 'package:split_bill_app/widgets/bill_details/participant_tile.dart';
 import 'package:split_bill_app/widgets/bill_details/proof_card.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 import 'services/notification_service.dart';
 
@@ -566,55 +566,58 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
 
   void _showMore(Map<String, dynamic> bill) {
     AppHaptics.selection();
-    PremiumBottomSheet.show(
-      context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _SheetAction(
-            icon: AppIcons.edit,
-            label: 'bf_bill_action_edit'.tr(),
-            onTap: () {
-              Navigator.of(context).pop();
-              _edit(bill);
-            },
-          ),
-          _SheetAction(
-            icon: AppIcons.receipt,
-            label: 'bf_bill_action_full_bill'.tr(),
-            onTap: () {
-              Navigator.of(context).pop();
-              BillDetailsModals.showFullBillDetails(context, bill);
-            },
-          ),
-          _SheetAction(
-            icon: AppIcons.share,
-            label: 'bf_bill_action_share_table'.tr(),
-            onTap: () {
-              Navigator.of(context).pop();
-              _shareTable(bill);
-            },
-          ),
-          if (!kIsWeb)
+    showLedgerSheet(
+      context,
+      builder: (_) => SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
             _SheetAction(
-              icon: AppIcons.receipt,
-              label: 'bd2_share_pdf'.tr(),
+              icon: AppIcons.edit,
+              label: 'bf_bill_action_edit'.tr(),
               onTap: () {
                 Navigator.of(context).pop();
-                _sharePdf(bill);
+                _edit(bill);
               },
             ),
-          _SheetAction(
-            icon: AppIcons.delete,
-            label: 'bf_bill_action_delete'.tr(),
-            destructive: true,
-            onTap: () {
-              Navigator.of(context).pop();
-              _delete();
-            },
-          ),
-        ],
+            _SheetAction(
+              icon: AppIcons.receipt,
+              label: 'bf_bill_action_full_bill'.tr(),
+              onTap: () {
+                Navigator.of(context).pop();
+                BillDetailsModals.showFullBillDetails(context, bill);
+              },
+            ),
+            _SheetAction(
+              icon: AppIcons.share,
+              label: 'bf_bill_action_share_table'.tr(),
+              onTap: () {
+                Navigator.of(context).pop();
+                _shareTable(bill);
+              },
+            ),
+            if (!kIsWeb)
+              _SheetAction(
+                icon: AppIcons.receipt,
+                label: 'bd2_share_pdf'.tr(),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _sharePdf(bill);
+                },
+              ),
+            _SheetAction(
+              icon: AppIcons.delete,
+              label: 'bf_bill_action_delete'.tr(),
+              destructive: true,
+              onTap: () {
+                Navigator.of(context).pop();
+                _delete();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -629,88 +632,91 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     final name = participant['name']?.toString() ?? '';
     final proof = decodeProofImage(participant['paymentProof']);
     final p = context.palette;
-    PremiumBottomSheet.show(
-      context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              BillAvatar(
-                name: name,
-                photoUrl: participant['photoUrl']?.toString(),
-                tintKey: participant['id']?.toString(),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Text(
-                  name,
-                  style: AppTypography.titleLarge.copyWith(
-                    color: p.textPrimary,
+    showLedgerSheet(
+      context,
+      builder: (_) => SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                BillAvatar(
+                  name: name,
+                  photoUrl: participant['photoUrl']?.toString(),
+                  tintKey: participant['id']?.toString(),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Text(
+                    name,
+                    style: AppTypography.titleLarge.copyWith(
+                      color: p.textPrimary,
+                    ),
                   ),
                 ),
-              ),
-              PayStatusPill(status: status, hasProof: proof != null),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Flexible(
-            child: SingleChildScrollView(
-              child: BillBreakdownCard(
-                breakdown: reader.breakdownFor(
-                  participant['id']?.toString() ?? '',
+                PayStatusPill(status: status, hasProof: proof != null),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Flexible(
+              child: SingleChildScrollView(
+                child: BillBreakdownCard(
+                  breakdown: reader.breakdownFor(
+                    participant['id']?.toString() ?? '',
+                  ),
+                  currency: reader.currency,
                 ),
-                currency: reader.currency,
               ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (status != PayStatus.paid)
+            const SizedBox(height: AppSpacing.md),
+            if (status != PayStatus.paid)
+              _SheetAction(
+                icon: AppIcons.success,
+                label: 'bf_bill_action_mark_paid'.tr(),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _setPaid(participant, paid: true, bill: bill);
+                },
+              )
+            else
+              _SheetAction(
+                icon: AppIcons.undo,
+                label: 'bf_bill_action_mark_unpaid'.tr(),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _setPaid(participant, paid: false, bill: bill);
+                },
+              ),
+            if (proof != null)
+              _SheetAction(
+                icon: AppIcons.gallery,
+                label: 'bf_bill_action_view_proof'.tr(),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _viewProof(participant, proof, bill);
+                },
+              ),
+            if (status != PayStatus.paid && !isGuestParticipant(participant))
+              _SheetAction(
+                icon: AppIcons.bell,
+                label: 'bf_bill_action_remind'.tr(),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _remind(participant, bill);
+                },
+              ),
             _SheetAction(
-              icon: AppIcons.success,
-              label: 'bf_bill_action_mark_paid'.tr(),
+              icon: AppIcons.link,
+              label: 'bf_bill_action_share_person'.tr(),
               onTap: () {
                 Navigator.of(context).pop();
-                _setPaid(participant, paid: true, bill: bill);
-              },
-            )
-          else
-            _SheetAction(
-              icon: AppIcons.undo,
-              label: 'bf_bill_action_mark_unpaid'.tr(),
-              onTap: () {
-                Navigator.of(context).pop();
-                _setPaid(participant, paid: false, bill: bill);
+                _sharePerson(participant, bill);
               },
             ),
-          if (proof != null)
-            _SheetAction(
-              icon: AppIcons.gallery,
-              label: 'bf_bill_action_view_proof'.tr(),
-              onTap: () {
-                Navigator.of(context).pop();
-                _viewProof(participant, proof, bill);
-              },
-            ),
-          if (status != PayStatus.paid && !isGuestParticipant(participant))
-            _SheetAction(
-              icon: AppIcons.bell,
-              label: 'bf_bill_action_remind'.tr(),
-              onTap: () {
-                Navigator.of(context).pop();
-                _remind(participant, bill);
-              },
-            ),
-          _SheetAction(
-            icon: AppIcons.link,
-            label: 'bf_bill_action_share_person'.tr(),
-            onTap: () {
-              Navigator.of(context).pop();
-              _sharePerson(participant, bill);
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

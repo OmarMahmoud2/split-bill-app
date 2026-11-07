@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/bill_flow/bill_calculator.dart';
 import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 /// Add or edit one item: name, unit price and quantity (with a live line
 /// total). Editing also offers "Remove item".
@@ -28,14 +28,16 @@ class EditItemSheet extends StatefulWidget {
     required ValueChanged<DraftItem> onSave,
     DraftItem? initial,
     VoidCallback? onRemove,
-  }) => PremiumBottomSheet.show<void>(
-    context: context,
-    isScrollable: true,
-    child: EditItemSheet(
-      currency: currency,
-      initial: initial,
-      onSave: onSave,
-      onRemove: onRemove,
+  }) => showLedgerSheet<void>(
+    context,
+    builder: (_) => SingleChildScrollView(
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+      child: EditItemSheet(
+        currency: currency,
+        initial: initial,
+        onSave: onSave,
+        onRemove: onRemove,
+      ),
     ),
   );
 
