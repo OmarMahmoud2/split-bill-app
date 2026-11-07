@@ -13,7 +13,10 @@ import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/widgets/premium_modal.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
@@ -319,9 +322,17 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
         ),
         for (final entry in group.members.entries)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
               children: [
+                PalAvatar(
+                  seed: entry.value.isEmpty
+                      ? entry.key
+                      : entry.value.trim().toLowerCase(),
+                  name: entry.value,
+                  size: 32,
+                ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     entry.value.isEmpty ? 'rec_member'.tr() : entry.value,
@@ -368,18 +379,15 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
       body = ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
         children: [
-          V3FieldLabel('rec_name'.tr()),
-          TextField(
+          AppTextField(
             key: const ValueKey('rec-name'),
             controller: _name,
+            label: 'rec_name'.tr(),
+            hint: 'rec_name_hint'.tr(),
+            errorText: _errors['rec_error_name'],
             textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.next,
             maxLength: 60,
-            decoration: InputDecoration(
-              hintText: 'rec_name_hint'.tr(),
-              errorText: _errors['rec_error_name'],
-              counterText: '',
-            ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -389,32 +397,42 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    V3FieldLabel('rec_amount'.tr()),
-                    TextField(
+                    AppTextField(
                       key: const ValueKey('rec-amount'),
                       controller: _amount,
+                      label: 'rec_amount'.tr(),
+                      money: true,
+                      errorText: _errors['rec_error_amount'],
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
                       ],
-                      style: AppTypography.amount.copyWith(
-                        color: p.textPrimary,
-                      ),
-                      decoration: InputDecoration(
-                        errorText: _errors['rec_error_amount'],
-                        prefixIcon: TextButton(
-                          onPressed: () => CurrencySelectionSheet.show(
-                            context: context,
-                            selectedCode: _currency,
-                            onSelected: (code) =>
-                                setState(() => _currency = code),
+                      prefix: Pressable(
+                        onTap: () => CurrencySelectionSheet.show(
+                          context: context,
+                          selectedCode: _currency,
+                          onSelected: (code) =>
+                              setState(() => _currency = code),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: p.accentSoft,
+                            borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
                             _currency,
                             semanticsLabel: 'rec_currency_a11y'.tr(
                               namedArgs: {'currency': _currency},
+                            ),
+                            style: AppTypography.labelLarge.copyWith(
+                              color: p.onAccentSoft,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -494,11 +512,7 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
                           ),
                         ),
                       ),
-                      Icon(
-                        AppIcons.calendar,
-                        size: 18,
-                        color: p.textSecondary,
-                      ),
+                      Icon(AppIcons.calendar, size: 18, color: p.textSecondary),
                     ],
                   ),
                 ),

@@ -4,8 +4,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
-import 'package:split_bill_app/theme/app_icons.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 
 /// The same searchable currency picker used during setup and in Settings.
 class CurrencySelectionSheet extends StatefulWidget {
@@ -22,10 +24,10 @@ class CurrencySelectionSheet extends StatefulWidget {
     required BuildContext context,
     required String selectedCode,
     required FutureOr<void> Function(String code) onSelected,
-  }) => PremiumBottomSheet.show<void>(
-    context: context,
-    isScrollable: true,
-    child: CurrencySelectionSheet(
+  }) => showLedgerSheet<void>(
+    context,
+    title: 'choose_currency'.tr(),
+    builder: (_) => CurrencySelectionSheet(
       selectedCode: selectedCode,
       onSelected: onSelected,
     ),
@@ -71,8 +73,7 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final p = context.palette;
     final query = _search.text.trim().toLowerCase();
     final options = supportedCurrencyOptions.where(
       (option) =>
@@ -80,105 +81,128 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
               .toLowerCase()
               .contains(query),
     );
-    final decoration = InputDecoration(
-      filled: true,
-      fillColor: colors.surfaceContainerHighest.withValues(alpha: 0.45),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-    );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'choose_currency'.tr(),
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w800,
+    return SingleChildScrollView(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AppTextField(
+            key: const ValueKey('currency-search'),
+            controller: _search,
+            hint: 'settings_search_currency'.tr(),
+            textInputAction: TextInputAction.search,
+            onChanged: (_) => setState(() {}),
+            prefix: Icon(AppIcons.search, color: p.accent, size: 20),
           ),
-        ),
-        const SizedBox(height: 20),
-        TextField(
-          key: const ValueKey('currency-search'),
-          controller: _search,
-          onChanged: (_) => setState(() {}),
-          decoration: decoration.copyWith(
-            prefixIcon: const Icon(AppIcons.search),
-            hintText: 'settings_search_currency'.tr(),
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          key: const ValueKey('currency-custom'),
-          controller: _custom,
-          textCapitalization: TextCapitalization.characters,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp('[A-Za-z]')),
-            LengthLimitingTextInputFormatter(6),
-          ],
-          onSubmitted: _select,
-          onChanged: (_) {
-            if (_error != null) setState(() => _error = null);
-          },
-          decoration: decoration.copyWith(
-            labelText: 'settings_custom_currency'.tr(),
-            hintText: 'settings_custom_currency_hint'.tr(),
+          const SizedBox(height: 12),
+          AppTextField(
+            key: const ValueKey('currency-custom'),
+            controller: _custom,
+            label: 'settings_custom_currency'.tr(),
+            hint: 'settings_custom_currency_hint'.tr(),
             errorText: _error,
-            suffixIcon: IconButton(
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp('[A-Za-z]')),
+              LengthLimitingTextInputFormatter(6),
+            ],
+            onSubmitted: _select,
+            onChanged: (_) {
+              if (_error != null) setState(() => _error = null);
+            },
+            suffix: IconButton(
               tooltip: 'save_changes'.tr(),
+              visualDensity: VisualDensity.compact,
               onPressed: _saving ? null : () => _select(_custom.text),
-              icon: const Icon(AppIcons.successFill),
+              icon: Icon(AppIcons.successFill, color: p.accent),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        if (_saving) const LinearProgressIndicator(),
-        if (options.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text('no_matches_found'.tr(), textAlign: TextAlign.center),
-          ),
-        ...options.map((option) {
-          final selected = option.code == widget.selectedCode;
-          return ListTile(
-            key: ValueKey('currency-${option.code}'),
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              width: 48,
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    option.symbol,
-                    style: TextStyle(
-                      color: colors.primary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+          const SizedBox(height: 16),
+          if (_saving) const LinearProgressIndicator(),
+          if (options.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                'no_matches_found'.tr(),
+                textAlign: TextAlign.center,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: p.textSecondary,
                 ),
               ),
             ),
-            title: Text(
-              option.code,
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
-            subtitle: Text(option.name),
-            trailing: selected
-                ? Icon(AppIcons.successFill, color: colors.primary)
-                : null,
-            onTap: _saving ? null : () => _select(option.code),
-          );
-        }),
-      ],
+          ...options.map((option) {
+            final selected = option.code == widget.selectedCode;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Pressable(
+                key: ValueKey('currency-${option.code}'),
+                onTap: _saving ? null : () => _select(option.code),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: selected ? p.accentSoft : p.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: selected ? p.accent : p.border,
+                      width: selected ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: selected ? p.surface : p.surfaceVariant,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Text(
+                              option.symbol,
+                              style: AppTypography.amount.copyWith(
+                                color: p.accent,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              option.code,
+                              style: AppTypography.titleMedium.copyWith(
+                                color: p.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              option.name,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: p.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (selected) Icon(AppIcons.successFill, color: p.accent),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 }
