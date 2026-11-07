@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} ติดคุณ {amount}",
   "bd2_you_sent_waiting": "คุณส่ง {amount} · รอ {name} ยืนยัน",
   "bd2_you_paid_title": "บันทึกการชำระเงินแล้ว",
-  "bd2_you_paid_body": "คุณจ่าย {name} {amount} แล้ว"
+  "bd2_you_paid_body": "คุณจ่าย {name} {amount} แล้ว",
+  "home_good_morning": "อรุณสวัสดิ์",
+  "home_good_afternoon": "สวัสดีตอนบ่าย",
+  "home_good_evening": "สวัสดีตอนเย็น",
+  "home_your_people": "คนของคุณ",
+  "home_recent_bills": "บิลล่าสุด",
+  "home_paid_progress": "จ่ายแล้ว {paid} จาก {total}"
 }

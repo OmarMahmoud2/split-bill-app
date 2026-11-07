@@ -366,25 +366,55 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             children: [
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Semantics(
-                      header: true,
-                      child: Text(
-                        group.name,
-                        style: AppTypography.headlineLarge.copyWith(
-                          color: p.textPrimary,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: p.accentSoft,
+                        borderRadius: AppRadii.cardRadius,
+                      ),
+                      child: Icon(
+                        group.type == GroupType.trip ? AppIcons.trip : AppIcons.groups,
+                        color: p.accent,
+                        size: 28,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: p.textSecondary,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Semantics(
+                            header: true,
+                            child: Text(
+                              group.name,
+                              style: AppTypography.headlineLarge.copyWith(
+                                color: p.textPrimary,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w800,
+                                height: 1.15,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            subtitle,
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: p.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          AvatarStack(
+                            people: [
+                              for (final m in group.members)
+                                (m.id, m.name, m.photoUrl),
+                            ],
+                            max: 5,
+                          ),
+                        ],
                       ),
                     ),
                   ],

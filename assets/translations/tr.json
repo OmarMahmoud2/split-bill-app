@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} sana {amount} borçlu",
   "bd2_you_sent_waiting": "{amount} gönderdin · {name} onayı bekleniyor",
   "bd2_you_paid_title": "Ödeme kaydedildi",
-  "bd2_you_paid_body": "{name} kişisine {amount} ödedin."
+  "bd2_you_paid_body": "{name} kişisine {amount} ödedin.",
+  "home_good_morning": "Günaydın",
+  "home_good_afternoon": "İyi öğlenler",
+  "home_good_evening": "İyi akşamlar",
+  "home_your_people": "Kişilerin",
+  "home_recent_bills": "Son hesaplar",
+  "home_paid_progress": "{total} kişiden {paid} öğdü"
 }

@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} کے ذمے آپ کے {amount} ہیں",
   "bd2_you_sent_waiting": "آپ نے {amount} بھیجے · {name} کا انتظار",
   "bd2_you_paid_title": "ادائیگی درج ہو گئی",
-  "bd2_you_paid_body": "آپ نے {name} کو {amount} ادا کیے۔"
+  "bd2_you_paid_body": "آپ نے {name} کو {amount} ادا کیے۔",
+  "home_good_morning": "صبح بخیر",
+  "home_good_afternoon": "سہ پہر بخیر",
+  "home_good_evening": "شام بخیر",
+  "home_your_people": "آپ کے لوگ",
+  "home_recent_bills": "حالیہ بل",
+  "home_paid_progress": "{total} میں سے {paid} نے ادا کیا"
 }

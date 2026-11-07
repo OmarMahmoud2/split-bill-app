@@ -79,6 +79,9 @@ void main() {
   group('Home', () {
     for (final dark in [false, true]) {
       testWidgets('net balance, settle with and groups (${dark ? 'dark' : 'light'})', (tester) async {
+        tester.view.physicalSize = const Size(800, 2400);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
         repo = tripRepo();
         LedgerRepository.instance = repo;
         final stream = watchHomeLedger(repo, 'me');
@@ -89,7 +92,7 @@ void main() {
         expect(find.text('home_owed_overall'), findsOneWidget);
         expect(find.text('Sara'), findsWidgets);
         expect(find.text('MONA'), findsOneWidget);
-        expect(textPlain('−\$24.00'), findsOneWidget);
+        expect(textPlain('−\$24.00'), findsWidgets);
         expect(find.text('Dahab trip'), findsWidgets);
         expect(tester.takeException(), isNull);
       });
@@ -113,6 +116,41 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(textPlain('+\$36.00'), findsOneWidget);
+    });
+
+    testWidgets('hero says all square when nothing is open', (tester) async {
+      repo = FakeLedgerRepository(recentBills: [bill('l1', 'me', {'me': 1000, 'mona': 1000}, paid: {'mona'})]);
+      LedgerRepository.instance = repo;
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
+      await tester.pumpAndSettle();
+      expect(find.text('home_all_square'), findsOneWidget);
+      expect(find.text('settle_up_title'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('hero says you owe overall', (tester) async {
+      repo = FakeLedgerRepository(recentBills: [bill('l1', 'mona', {'mona': 1000, 'me': 2400})]);
+      LedgerRepository.instance = repo;
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
+      await tester.pumpAndSettle();
+      expect(find.text('home_owe_overall'), findsOneWidget);
+      expect(textPlain('−\$24.00'), findsWidgets);
+    });
+
+    testWidgets('hero amount never clips in RTL on a narrow screen', (tester) async {
+      tester.view.physicalSize = const Size(320 * 3, 800 * 3);
+      tester.view.devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+      repo = FakeLedgerRepository(recentBills: [bill('l1', 'me', {'me': 100, 'mona': 987654321})]);
+      LedgerRepository.instance = repo;
+      await tester.pumpWidget(
+        testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {}), direction: TextDirection.rtl),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final rect = tester.getRect(textPlain('+\$9,876,543.21').first);
+      expect(rect.left, greaterThanOrEqualTo(0));
+      expect(rect.right, lessThanOrEqualTo(320));
     });
 
     test('recentActivity merges bills and payments, newest first', () {

@@ -169,7 +169,7 @@ void main() {
       expect(money.style!.color, AppPalette.light.owed);
       expect(find.text('Sea Breeze Grill'), findsOneWidget);
       expect(find.text('4'), findsOneWidget);
-      expect(find.text('NOV'), findsOneWidget);
+      expect(find.text('Nov'), findsOneWidget);
       expect(find.textContaining('bf_bills_people'), findsOneWidget);
       await tester.tap(find.byType(BillListRow));
       expect(tapped, isTrue);

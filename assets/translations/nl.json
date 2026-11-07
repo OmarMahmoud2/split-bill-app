@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} is jou {amount} schuldig",
   "bd2_you_sent_waiting": "Je stuurde {amount} · wacht op {name}",
   "bd2_you_paid_title": "Betaling vastgelegd",
-  "bd2_you_paid_body": "Je betaalde {name} {amount}."
+  "bd2_you_paid_body": "Je betaalde {name} {amount}.",
+  "home_good_morning": "Goedemorgen",
+  "home_good_afternoon": "Goedemiddag",
+  "home_good_evening": "Goedenavond",
+  "home_your_people": "Jouw mensen",
+  "home_recent_bills": "Recente rekeningen",
+  "home_paid_progress": "{paid} van {total} betaald"
 }

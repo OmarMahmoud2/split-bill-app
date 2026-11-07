@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name}님이 {amount} 보내야 해요",
   "bd2_you_sent_waiting": "{amount} 보냄 · {name}님 확인 대기 중",
   "bd2_you_paid_title": "결제가 기록됐어요",
-  "bd2_you_paid_body": "{name}님에게 {amount}을(를) 보냈어요."
+  "bd2_you_paid_body": "{name}님에게 {amount}을(를) 보냈어요.",
+  "home_good_morning": "좋은 아침이에요",
+  "home_good_afternoon": "좋은 오후예요",
+  "home_good_evening": "좋은 저녁이에요",
+  "home_your_people": "내 사람들",
+  "home_recent_bills": "최근 청구서",
+  "home_paid_progress": "{total}명 중 {paid}명 결제"
 }

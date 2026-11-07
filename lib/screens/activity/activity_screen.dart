@@ -126,20 +126,52 @@ class ActivityRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              MoneyText(
-                minor: item.signedMinor,
-                currency: item.currency,
-                tone: tone,
-                size: MoneySize.small,
-                sign: item.tone == ActivityTone.neutral
-                    ? MoneySign.none
-                    : MoneySign.always,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  MoneyText(
+                    minor: item.signedMinor,
+                    currency: item.currency,
+                    tone: tone,
+                    size: MoneySize.small,
+                    sign: item.tone == ActivityTone.neutral
+                        ? MoneySign.none
+                        : MoneySign.always,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 4),
+                  _StatusPill(item: item),
+                ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Waiting (sky), Settled, Owed to you (mint) or You owe (coral).
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.item});
+  final ActivityItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final (String label, Color bg, Color fg) = switch (item.kind) {
+      ActivityKind.payment => ('groups_settled'.tr(), p.surfaceVariant, p.textSecondary),
+      ActivityKind.iou => ('bf_bill_status_waiting'.tr(), p.skySoft, p.sky),
+      ActivityKind.billAdded => switch (item.tone) {
+        ActivityTone.owed => ('home_owed_to_you'.tr(), p.accentSoft, p.onAccentSoft),
+        ActivityTone.owe => ('home_you_owe'.tr(), p.coralSoft, p.owe),
+        ActivityTone.neutral => ('groups_settled'.tr(), p.surfaceVariant, p.textSecondary),
+      },
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(color: bg, borderRadius: AppRadii.fullRadius),
+      child: Text(label, maxLines: 1, style: AppTypography.caption.copyWith(color: fg, fontSize: 11, fontWeight: FontWeight.w600)),
     );
   }
 }

@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name}があなたに{amount}を支払う",
   "bd2_you_sent_waiting": "{amount}を送信 · {name}の確認待ち",
   "bd2_you_paid_title": "支払いを記録しました",
-  "bd2_you_paid_body": "{name}に{amount}を支払いました。"
+  "bd2_you_paid_body": "{name}に{amount}を支払いました。",
+  "home_good_morning": "おはようございます",
+  "home_good_afternoon": "こんにちは",
+  "home_good_evening": "こんばんは",
+  "home_your_people": "あなたの仲間",
+  "home_recent_bills": "最近の請求",
+  "home_paid_progress": "{total}人中{paid}人が支払い済み"
 }

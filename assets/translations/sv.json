@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} är skyldig dig {amount}",
   "bd2_you_sent_waiting": "Du skickade {amount} · väntar på {name}",
   "bd2_you_paid_title": "Betalning registrerad",
-  "bd2_you_paid_body": "Du betalade {name} {amount}."
+  "bd2_you_paid_body": "Du betalade {name} {amount}.",
+  "home_good_morning": "God morgon",
+  "home_good_afternoon": "God eftermiddag",
+  "home_good_evening": "God kväll",
+  "home_your_people": "Dina personer",
+  "home_recent_bills": "Senaste notor",
+  "home_paid_progress": "{paid} av {total} har betalat"
 }

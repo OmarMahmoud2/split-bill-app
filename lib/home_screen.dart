@@ -35,7 +35,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _tab = 0;
-  static const _tabNames = ['home', 'groups', 'activity', 'you'];
+  static const _tabNames = ['home', 'activity', 'groups', 'you'];
   Stream<HomeLedgerState>? _ledger;
   Stream<bool>? _unread;
   StreamSubscription<HomeLedgerState>? _publish;
@@ -128,8 +128,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       onNew: _openNew,
       onQuickIou: _quickIou,
       onStartGroup: _startGroup,
-      onOpenGroups: () => _select(1),
-      onOpenActivity: () => _select(2),
+      onOpenGroups: () => _select(2),
+      onOpenActivity: () => _select(1),
       onOpenProfile: () => _select(3),
       onOpenNotifications: () => Navigator.of(
         context,
@@ -142,8 +142,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         actions: actions,
         onRetry: () => setState(_connect),
       ),
-      GroupsScreen(state: _ledger, embedded: true),
       const ActivityScreen(embedded: true),
+      GroupsScreen(state: _ledger, embedded: true),
       const ProfileScreen(),
     ];
     return Scaffold(
@@ -265,16 +265,16 @@ class _TabBar extends StatelessWidget {
                       ),
                       item(
                         1,
-                        AppIcons.groups,
-                        AppIcons.groupsFill,
-                        'groups'.tr(),
+                        AppIcons.activity,
+                        AppIcons.activityFill,
+                        'activity_title'.tr(),
                       ),
                       const Spacer(),
                       item(
                         2,
-                        AppIcons.activity,
-                        AppIcons.activityFill,
-                        'activity_title'.tr(),
+                        AppIcons.groups,
+                        AppIcons.groupsFill,
+                        'groups'.tr(),
                       ),
                       item(
                         3,

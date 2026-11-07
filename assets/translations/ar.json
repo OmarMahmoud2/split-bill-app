@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} مدين لك بمبلغ {amount}",
   "bd2_you_sent_waiting": "أرسلت {amount} · بانتظار {name}",
   "bd2_you_paid_title": "تم تسجيل الدفعة",
-  "bd2_you_paid_body": "دفعت {amount} إلى {name}."
+  "bd2_you_paid_body": "دفعت {amount} إلى {name}.",
+  "home_good_morning": "صباح الخير",
+  "home_good_afternoon": "مساء الخير",
+  "home_good_evening": "مساء الخير",
+  "home_your_people": "أصدقاؤك",
+  "home_recent_bills": "الفواتير الأخيرة",
+  "home_paid_progress": "{paid} من {total} دفعوا"
 }

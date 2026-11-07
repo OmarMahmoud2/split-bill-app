@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} पर आपका {amount} बकाया है",
   "bd2_you_sent_waiting": "आपने {amount} भेजे · {name} की पुष्टि का इंतज़ार",
   "bd2_you_paid_title": "भुगतान दर्ज हुआ",
-  "bd2_you_paid_body": "आपने {name} को {amount} चुकाए।"
+  "bd2_you_paid_body": "आपने {name} को {amount} चुकाए।",
+  "home_good_morning": "सुप्रभात",
+  "home_good_afternoon": "नमस्कार",
+  "home_good_evening": "शुभ संध्या",
+  "home_your_people": "आपके लोग",
+  "home_recent_bills": "हाल के बिल",
+  "home_paid_progress": "{total} में से {paid} ने भुगतान किया"
 }

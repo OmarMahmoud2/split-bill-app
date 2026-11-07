@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} 欠你 {amount}",
   "bd2_you_sent_waiting": "你已发送 {amount} · 等待 {name} 确认",
   "bd2_you_paid_title": "已记录付款",
-  "bd2_you_paid_body": "你已向 {name} 支付 {amount}。"
+  "bd2_you_paid_body": "你已向 {name} 支付 {amount}。",
+  "home_good_morning": "早上好",
+  "home_good_afternoon": "下午好",
+  "home_good_evening": "晚上好",
+  "home_your_people": "你的朋友",
+  "home_recent_bills": "最近账单",
+  "home_paid_progress": "{total}人中{paid}人已付"
 }

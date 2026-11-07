@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} nợ bạn {amount}",
   "bd2_you_sent_waiting": "Bạn đã gửi {amount} · chờ {name} xác nhận",
   "bd2_you_paid_title": "Đã ghi nhận thanh toán",
-  "bd2_you_paid_body": "Bạn đã trả {name} {amount}."
+  "bd2_you_paid_body": "Bạn đã trả {name} {amount}.",
+  "home_good_morning": "Chào buổi sáng",
+  "home_good_afternoon": "Chào buổi chiều",
+  "home_good_evening": "Chào buổi tối",
+  "home_your_people": "Mọi người của bạn",
+  "home_recent_bills": "Hóa đơn gần đây",
+  "home_paid_progress": "{paid}/{total} đã trả"
 }

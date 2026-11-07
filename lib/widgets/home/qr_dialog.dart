@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 /// "Your code": the current user's QR so a friend can add them to a bill.
 class QrDialog {
@@ -38,7 +38,6 @@ class _QrDialogBody extends StatelessWidget {
     // The code always sits on a light card with ink modules so any camera
     // can read it, in light and dark mode.
     const qrPalette = AppPalette.light;
-    final avatar = ImageUtils.getAvatarImage(photoUrl);
     return Dialog(
       backgroundColor: p.surface,
       surfaceTintColor: Colors.transparent,
@@ -53,20 +52,11 @@ class _QrDialogBody extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ExcludeSemantics(
-              child: CircleAvatar(
-                radius: 32,
-                backgroundColor: p.avatarTintFor(name),
-                backgroundImage: avatar,
-                child: avatar == null
-                    ? Text(
-                        name.trim().isEmpty
-                            ? '?'
-                            : name.trim().substring(0, 1).toUpperCase(),
-                        style: AppTypography.headlineMedium.copyWith(
-                          color: p.textPrimary,
-                        ),
-                      )
-                    : null,
+              child: PalAvatar(
+                seed: name.trim().toLowerCase(),
+                name: name,
+                photoUrl: photoUrl,
+                size: 64,
               ),
             ),
             const SizedBox(height: AppSpacing.md),

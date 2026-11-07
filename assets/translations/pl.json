@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} wisi ci {amount}",
   "bd2_you_sent_waiting": "Wysłano {amount} · czekamy na {name}",
   "bd2_you_paid_title": "Płatność zapisana",
-  "bd2_you_paid_body": "Zapłacono {name} {amount}."
+  "bd2_you_paid_body": "Zapłacono {name} {amount}.",
+  "home_good_morning": "Dzień dobry",
+  "home_good_afternoon": "Dzień dobry",
+  "home_good_evening": "Dobry wieczór",
+  "home_your_people": "Twoi ludzie",
+  "home_recent_bills": "Ostatnie rachunki",
+  "home_paid_progress": "{paid} z {total} zapłaciło"
 }

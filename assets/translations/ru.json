@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} должен вам {amount}",
   "bd2_you_sent_waiting": "Вы отправили {amount} · ждём {name}",
   "bd2_you_paid_title": "Платёж записан",
-  "bd2_you_paid_body": "Вы заплатили {name} {amount}."
+  "bd2_you_paid_body": "Вы заплатили {name} {amount}.",
+  "home_good_morning": "Доброе утро",
+  "home_good_afternoon": "Добрый день",
+  "home_good_evening": "Добрый вечер",
+  "home_your_people": "Ваши люди",
+  "home_recent_bills": "Недавние счета",
+  "home_paid_progress": "Оплатили {paid} из {total}"
 }

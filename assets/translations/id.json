@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} berutang {amount} padamu",
   "bd2_you_sent_waiting": "Kamu mengirim {amount} · menunggu {name}",
   "bd2_you_paid_title": "Pembayaran dicatat",
-  "bd2_you_paid_body": "Kamu membayar {amount} ke {name}."
+  "bd2_you_paid_body": "Kamu membayar {amount} ke {name}.",
+  "home_good_morning": "Selamat pagi",
+  "home_good_afternoon": "Selamat siang",
+  "home_good_evening": "Selamat malam",
+  "home_your_people": "Teman-temanmu",
+  "home_recent_bills": "Tagihan terbaru",
+  "home_paid_progress": "{paid} dari {total} sudah bayar"
 }

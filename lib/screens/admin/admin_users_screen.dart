@@ -396,7 +396,7 @@ class AdminUserTile extends StatelessWidget {
     final Widget? badge = d['suspended'] == true
         ? ProBadge(label: 'adm3_suspended_badge'.tr())
         : d['isAdmin'] == true
-        ? ProBadge(label: 'admin'.tr().toUpperCase())
+        ? ProBadge(label: 'admin'.tr())
         : adminIsPro(d)
         ? const ProBadge()
         : null;

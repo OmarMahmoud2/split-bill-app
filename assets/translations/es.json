@@ -2207,5 +2207,11 @@
   "bd2_owes_you_name": "{name} te debe {amount}",
   "bd2_you_sent_waiting": "Enviaste {amount} · esperando a {name}",
   "bd2_you_paid_title": "Pago registrado",
-  "bd2_you_paid_body": "Pagaste {amount} a {name}."
+  "bd2_you_paid_body": "Pagaste {amount} a {name}.",
+  "home_good_morning": "Buenos días",
+  "home_good_afternoon": "Buenas tardes",
+  "home_good_evening": "Buenas noches",
+  "home_your_people": "Tu gente",
+  "home_recent_bills": "Cuentas recientes",
+  "home_paid_progress": "{paid} de {total} pagaron"
 }
