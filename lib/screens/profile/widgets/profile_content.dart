@@ -142,7 +142,7 @@ class ProfileContent extends StatelessWidget {
                         id: PalAvatar.currentUid(),
                         name: data.name,
                         photoUrl: data.photoUrl,
-                        size: 76,
+                        size: 64,
                       ),
                       PositionedDirectional(
                         end: -4,
@@ -193,6 +193,18 @@ class ProfileContent extends StatelessWidget {
                             color: p.textSecondary,
                           ),
                         ),
+                        // Stats as one quiet line (was three tall tiles).
+                        Text(
+                          '${data.billsSplit} ${'you_stat_bills'.tr().toLowerCase()} · '
+                          '${data.peopleCount} ${'you_stat_people'.tr().toLowerCase()} · '
+                          '${data.settledThisYear} ${'you_stat_settled'.tr().toLowerCase()}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: p.textTertiary,
+                            fontFeatures: AppTypography.tabularFigures,
+                          ),
+                        ),
                         const SizedBox(height: 6),
                         data.isPro
                             ? _Pill(
@@ -217,22 +229,6 @@ class ProfileContent extends StatelessWidget {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
-          // Equal-height tiles even when one label wraps.
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _Stat('${data.billsSplit}', 'you_stat_bills'.tr()),
-                const SizedBox(width: 10),
-                _Stat('${data.peopleCount}', 'you_stat_people'.tr()),
-                const SizedBox(width: 10),
-                _Stat('${data.settledThisYear}', 'you_stat_settled'.tr()),
-              ],
-            ),
-          ),
-        ),
         ProCard(
           isPro: data.isPro,
           planLabel: data.planLabel,
@@ -240,7 +236,6 @@ class ProfileContent extends StatelessWidget {
             data.isPro ? ProfileAction.subscription : ProfileAction.goPro,
           ),
         ),
-        IouCard(onAdd: _tap(ProfileAction.addIou)),
         group('prof_section_account'.tr(), [
           SettingsRow(
             key: const ValueKey('profile-edit'),
@@ -255,22 +250,6 @@ class ProfileContent extends StatelessWidget {
             value: data.isPro ? 'prof_plan_pro'.tr() : 'prof_plan_free'.tr(),
             onTap: _tap(ProfileAction.subscription),
           ),
-          if (data.showGroups)
-            SettingsRow(
-              key: const ValueKey('profile-groups'),
-              leading: tile(AppIcons.groups, p.skySoft, p.sky),
-              title: 'prof_my_groups'.tr(),
-              onTap: _tap(ProfileAction.groups),
-            ),
-          SettingsRow(
-            key: const ValueKey('profile-logout'),
-            leading: tile(AppIcons.logout, p.raised, p.textPrimary),
-            title: 'yx_logout'.tr(),
-            showChevron: false,
-            onTap: _tap(ProfileAction.logout),
-          ),
-        ]),
-        group('you_group_money'.tr(), [
           SettingsRow(
             key: const ValueKey('profile-payment-methods'),
             leading: tile(AppIcons.wallet, p.accentSoft, p.accent),
@@ -317,11 +296,42 @@ class ProfileContent extends StatelessWidget {
             value: data.hapticsEnabled,
             onChanged: onHapticsChanged,
           ),
+        ]),
+        group('prof_section_pro_tools'.tr(), [
+          SettingsRow(
+            key: const ValueKey('profile-export'),
+            leading: tile(AppIcons.export, p.raised, p.textPrimary),
+            title: 'prof_export'.tr(),
+            trailing: data.isPro ? null : const ProBadge(),
+            onTap: _tap(ProfileAction.export),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-recurring'),
+            leading: tile(AppIcons.refresh, p.accentSoft, p.accent),
+            title: 'prof_recurring'.tr(),
+            trailing: data.isPro ? null : const ProBadge(),
+            onTap: _tap(ProfileAction.recurring),
+          ),
+          if (!data.isPro)
+            SettingsRow(
+              key: const ValueKey('profile-watch-ad'),
+              leading: tile(AppIcons.play, p.skySoft, p.sky),
+              title: 'prof_watch_ad'.tr(),
+              onTap: _tap(ProfileAction.watchAd),
+            ),
+        ]),
+        group('prof_help_contact'.tr(), [
           SettingsRow(
             key: const ValueKey('profile-help'),
             leading: tile(AppIcons.help, p.raised, p.textPrimary),
             title: 'prof_help_contact'.tr(),
             onTap: _tap(ProfileAction.help),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-privacy'),
+            leading: tile(AppIcons.lock, p.raised, p.textPrimary),
+            title: 'prof_privacy_data'.tr(),
+            onTap: _tap(ProfileAction.privacyAndData),
           ),
           SettingsRow(
             leading: tile(AppIcons.share, p.raised, p.textPrimary),
@@ -332,40 +342,6 @@ class ProfileContent extends StatelessWidget {
             leading: tile(AppIcons.heart, p.coralSoft, p.coralText),
             title: 'prof_rate_app'.tr(),
             onTap: _tap(ProfileAction.rateApp),
-          ),
-        ]),
-        group('prof_section_pro_tools'.tr(), [
-          SettingsRow(
-            key: const ValueKey('profile-export'),
-            leading: tile(AppIcons.export, p.raised, p.textPrimary),
-            title: 'prof_export'.tr(),
-            subtitle: 'prof_export_sub'.tr(),
-            trailing: data.isPro ? null : const ProBadge(),
-            onTap: _tap(ProfileAction.export),
-          ),
-          SettingsRow(
-            key: const ValueKey('profile-recurring'),
-            leading: tile(AppIcons.refresh, p.accentSoft, p.accent),
-            title: 'prof_recurring'.tr(),
-            subtitle: 'prof_recurring_sub'.tr(),
-            trailing: data.isPro ? null : const ProBadge(),
-            onTap: _tap(ProfileAction.recurring),
-          ),
-          if (!data.isPro)
-            SettingsRow(
-              key: const ValueKey('profile-watch-ad'),
-              leading: tile(AppIcons.play, p.skySoft, p.sky),
-              title: 'prof_watch_ad'.tr(),
-              subtitle: 'prof_watch_ad_sub'.tr(),
-              onTap: _tap(ProfileAction.watchAd),
-            ),
-        ]),
-        group('you_group_data'.tr(), [
-          SettingsRow(
-            key: const ValueKey('profile-privacy'),
-            leading: tile(AppIcons.lock, p.raised, p.textPrimary),
-            title: 'prof_privacy_data'.tr(),
-            onTap: _tap(ProfileAction.privacyAndData),
           ),
         ]),
         if (data.isAdmin)
@@ -388,6 +364,18 @@ class ProfileContent extends StatelessWidget {
               onTap: _tap(ProfileAction.seedTransactions),
             ),
           ]),
+        const SizedBox(height: 20),
+        SettingsCard(
+          children: [
+            SettingsRow(
+              key: const ValueKey('profile-logout'),
+              leading: tile(AppIcons.logout, p.raised, p.textPrimary),
+              title: 'yx_logout'.tr(),
+              showChevron: false,
+              onTap: _tap(ProfileAction.logout),
+            ),
+          ],
+        ),
         DangerZoneCard(onDelete: _tap(ProfileAction.deleteAccount)),
         const SizedBox(height: 32),
         EvensFooter(onOpen: onOpenLink ?? (_) {}),
@@ -434,45 +422,6 @@ class _Pill extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat(this.value, this.label);
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: p.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: p.hairline),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              value,
-              style: AppTypography.titleLarge.copyWith(
-                color: p.textPrimary,
-                fontWeight: FontWeight.w800,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
-            ),
-            Text(
-              label,
-              style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
-            ),
-          ],
-        ),
       ),
     );
   }

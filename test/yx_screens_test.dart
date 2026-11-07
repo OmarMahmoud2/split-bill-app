@@ -131,8 +131,11 @@ void main() {
       200,
     );
     await tester.tap(find.byKey(const ValueKey('profile-logout')));
-    await tester.scrollUntilVisible(find.text('Danger zone'), 300);
-    await tester.tap(find.byKey(const ValueKey('profile-delete-account')));
+    final delete = find.byKey(const ValueKey('profile-delete-account'));
+    await tester.scrollUntilVisible(delete, 300);
+    await tester.ensureVisible(delete);
+    await tester.pumpAndSettle();
+    await tester.tap(delete);
     expect(actions.last, ProfileAction.deleteAccount);
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(

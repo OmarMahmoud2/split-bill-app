@@ -245,7 +245,7 @@ void main() {
   });
 
   group('You page extras', () {
-    testWidgets('Pro shows the badge, free shows Go Pro; avatar and IOU tap', (
+    testWidgets('Pro shows the badge, free shows Go Pro; avatar tap, no IOU card', (
       tester,
     ) async {
       final actions = <ProfileAction>[];
@@ -260,8 +260,9 @@ void main() {
         ),
       );
       await tester.tap(find.byKey(const ValueKey('profile-photo')));
-      await tester.tap(find.byKey(const ValueKey('profile-add-iou')));
-      expect(actions, [ProfileAction.changePhoto, ProfileAction.addIou]);
+      // IOU lives in Home's quick actions now, not on the You page.
+      expect(find.byKey(const ValueKey('profile-add-iou')), findsNothing);
+      expect(actions, [ProfileAction.changePhoto]);
     });
 
     testWidgets('Pro user sees the Pro badge, not Go Pro', (tester) async {
