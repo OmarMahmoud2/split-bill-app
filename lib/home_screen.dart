@@ -152,7 +152,35 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       // Content scrolls behind the frosted nav; each tab pads its list by
       // MediaQuery bottom padding, which here includes the bar's height.
       extendBody: true,
-      body: IndexedStack(index: _tab, children: pages),
+      body: Stack(
+        children: [
+          IndexedStack(index: _tab, children: pages),
+          // Soft fade under the status bar so scrolled content never sits
+          // hard against the clock.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: MediaQuery.paddingOf(context).top + 8,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      p.background,
+                      p.background.withValues(alpha: 0.85),
+                      p.background.withValues(alpha: 0),
+                    ],
+                    stops: const [0, 0.7, 1],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: _TabBar(
         index: _tab,
         onSelect: _select,

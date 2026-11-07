@@ -135,7 +135,9 @@ class HomeDashboard extends StatelessWidget {
                 ],
               );
             return ListView(
-              padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 16),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.paddingOf(context).bottom + 16,
+              ),
               children: [
                 header,
                 StaggeredEntrance(
@@ -341,15 +343,26 @@ class _Hero extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: AlignmentDirectional.centerStart,
-              child: MoneyText(
-                minor: minor,
-                currency: currency,
-                tone: MoneyTone.neutral,
-                size: MoneySize.row,
-                style: TextStyle(color: p.onHero, fontSize: 17),
+            SizedBox(
+              width: double.infinity,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerStart,
+                // Amounts read left to right, as in the hero; in RTL the bidi
+                // reordering otherwise clipped the last digit ("E£0.0").
+                child: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: MoneyText(
+                      minor: minor,
+                      currency: currency,
+                      tone: MoneyTone.neutral,
+                      size: MoneySize.row,
+                      style: TextStyle(color: p.onHero, fontSize: 17),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

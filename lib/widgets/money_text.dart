@@ -170,8 +170,10 @@ class _MoneyTextState extends State<MoneyText> {
     ).copyWith(color: color).merge(widget.style);
 
     Widget text(String value) => Text(
-      // Isolate as LTR so "+$12.00" never reorders inside RTL rows.
-      '\u2066$value\u2069',
+      // An LTR paragraph so "+$12.00" never reorders inside RTL rows. (Bidi
+      // isolate marks measured one glyph short in RTL and clipped "E£0.00".)
+      value,
+      textDirection: TextDirection.ltr,
       style: style,
       textAlign: widget.textAlign,
       maxLines: 1,
