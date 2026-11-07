@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 class ParticipantsReferenceList extends StatelessWidget {
   final List<Map<String, dynamic>>? participants;
 
   const ParticipantsReferenceList({super.key, required this.participants});
-
-  ImageProvider? _getAvatarImage(String? url) {
-    return ImageUtils.getAvatarImage(url);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,20 +74,11 @@ class ParticipantsReferenceList extends StatelessWidget {
                           width: 2,
                         ),
                       ),
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: palette.surfaceVariant,
-                        backgroundImage: _getAvatarImage(photoUrl),
-                        child: (photoUrl == null || photoUrl.isEmpty)
-                            ? Text(
-                                name.isEmpty ? '?' : name[0].toUpperCase(),
-                                style: TextStyle(
-                                  color: palette.textPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              )
-                            : null,
+                      child: PalAvatar(
+                        seed: '$name'.trim().toLowerCase(),
+                        name: '$name',
+                        photoUrl: photoUrl as String?,
+                        size: 48,
                       ),
                     ),
                     const SizedBox(height: 8),

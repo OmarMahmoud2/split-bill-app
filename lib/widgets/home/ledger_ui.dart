@@ -4,9 +4,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
-/// A round avatar: the photo when there is one, else a tinted initial.
+/// A round avatar: the photo when there is one, else the person's pal.
 class LedgerAvatar extends StatelessWidget {
   const LedgerAvatar({
     super.key,
@@ -23,53 +23,30 @@ class LedgerAvatar extends StatelessWidget {
   final double size;
   final bool selected;
 
-  static String initialOf(String name) {
-    final t = name.trim();
-    if (t.isEmpty) return '?';
-    return String.fromCharCode(t.runes.first).toUpperCase();
-  }
+  /// Pal seed: the id, else the lowercased name.
+  static String seedOf(String id, String name) =>
+      id.isEmpty ? name.trim().toLowerCase() : id;
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    final image = photoUrl == null ? null : ImageUtils.getAvatarImage(photoUrl);
-    Widget avatar = Container(
-      width: size,
-      height: size,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: p.avatarTintFor(id.isEmpty ? name : id),
-        image: image == null ? null : DecorationImage(image: image, fit: BoxFit.cover),
-      ),
-      child: image != null
-          ? null
-          : Text(
-              initialOf(name),
-              style: AppTypography.labelLarge.copyWith(
-                color: p.textPrimary,
-                fontSize: size * 0.36,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+    return PalAvatar(
+      seed: seedOf(id, name),
+      name: name,
+      photoUrl: photoUrl,
+      size: size,
+      ringColor: selected ? context.palette.accent : null,
     );
-    if (selected) {
-      avatar = Container(
-        padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: p.textPrimary, width: 2),
-        ),
-        child: avatar,
-      );
-    }
-    return ExcludeSemantics(child: avatar);
   }
 }
 
-/// Overlapping avatars (group cards).
+/// Overlapping avatars (group cards): -6 overlap, surface-coloured ring.
 class AvatarStack extends StatelessWidget {
-  const AvatarStack({super.key, required this.people, this.size = 28, this.max = 4});
+  const AvatarStack({
+    super.key,
+    required this.people,
+    this.size = 28,
+    this.max = 4,
+  });
 
   /// (id, name, photoUrl)
   final List<(String, String, String?)> people;
@@ -80,24 +57,23 @@ class AvatarStack extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final shown = people.take(max).toList();
-    final overlap = size * 0.22;
+    const ring = PalAvatar.ringWidth;
+    final item = size + ring * 2;
+    final step = item - 6;
     return SizedBox(
-      height: size + 4,
-      width: shown.isEmpty ? 0 : (size - overlap) * (shown.length - 1) + size + 4,
+      height: item,
+      width: shown.isEmpty ? 0 : step * (shown.length - 1) + item,
       child: Stack(
         children: [
           for (var i = 0; i < shown.length; i++)
             PositionedDirectional(
-              start: i * (size - overlap),
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(shape: BoxShape.circle, color: p.surface),
-                child: LedgerAvatar(
-                  id: shown[i].$1,
-                  name: shown[i].$2,
-                  photoUrl: shown[i].$3,
-                  size: size,
-                ),
+              start: i * step,
+              child: PalAvatar(
+                seed: LedgerAvatar.seedOf(shown[i].$1, shown[i].$2),
+                name: shown[i].$2,
+                photoUrl: shown[i].$3,
+                size: size,
+                ringColor: p.surface,
               ),
             ),
         ],
@@ -138,11 +114,7 @@ class LedgerCard extends StatelessWidget {
     );
     Widget content = Padding(padding: padding, child: child);
     if (onTap != null) {
-      content = InkWell(
-        onTap: onTap,
-        customBorder: shape,
-        child: content,
-      );
+      content = InkWell(onTap: onTap, customBorder: shape, child: content);
     }
     return Padding(
       padding: margin,
@@ -228,7 +200,11 @@ class SectionHeader extends StatelessWidget {
 
 /// Muted, upper-case label above a section ("TODAY", "ACROSS 2 GROUPS").
 class OverlineLabel extends StatelessWidget {
-  const OverlineLabel(this.text, {super.key, this.padding = const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 8)});
+  const OverlineLabel(
+    this.text, {
+    super.key,
+    this.padding = const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 8),
+  });
   final String text;
   final EdgeInsetsGeometry padding;
 
@@ -294,7 +270,10 @@ class RoundIconButton extends StatelessWidget {
                       child: Container(
                         width: 8,
                         height: 8,
-                        decoration: BoxDecoration(color: p.owe, shape: BoxShape.circle),
+                        decoration: BoxDecoration(
+                          color: p.owe,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
                 ],
@@ -412,7 +391,10 @@ class LedgerSegmented<T> extends StatelessWidget {
     final p = context.palette;
     return Container(
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: p.surfaceVariant, borderRadius: AppRadii.rowRadius),
+      decoration: BoxDecoration(
+        color: p.surfaceVariant,
+        borderRadius: AppRadii.rowRadius,
+      ),
       child: Row(
         children: [
           for (final (value, label) in segments)
@@ -432,7 +414,9 @@ class LedgerSegmented<T> extends StatelessWidget {
                     height: 38,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: value == selected ? p.surface : p.surfaceVariant.withValues(alpha: 0),
+                      color: value == selected
+                          ? p.surface
+                          : p.surfaceVariant.withValues(alpha: 0),
                       borderRadius: BorderRadius.circular(9),
                     ),
                     child: Text(
@@ -440,7 +424,9 @@ class LedgerSegmented<T> extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.labelLarge.copyWith(
-                        color: value == selected ? p.textPrimary : p.textSecondary,
+                        color: value == selected
+                            ? p.textPrimary
+                            : p.textSecondary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -456,7 +442,10 @@ class LedgerSegmented<T> extends StatelessWidget {
 }
 
 /// Opens a v3 bottom sheet: 28 radius, drag handle, safe-area padding.
-Future<T?> showLedgerSheet<T>(BuildContext context, {required WidgetBuilder builder}) {
+Future<T?> showLedgerSheet<T>(
+  BuildContext context, {
+  required WidgetBuilder builder,
+}) {
   final p = context.palette;
   return showModalBottomSheet<T>(
     context: context,

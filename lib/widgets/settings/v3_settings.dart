@@ -9,6 +9,7 @@ library;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 /// Round 44 pt icon button with a hairline (back, close).
 class V3IconButton extends StatelessWidget {
@@ -544,34 +545,26 @@ class V3FieldLabel extends StatelessWidget {
   }
 }
 
-/// Initial-letter avatar on a stable tint, or a network photo.
+/// The person's pal (or photo). Keyed by lowercased name unless [id] is set.
 class V3Avatar extends StatelessWidget {
-  const V3Avatar({super.key, required this.name, this.photoUrl, this.size = 64});
+  const V3Avatar({
+    super.key,
+    required this.name,
+    this.photoUrl,
+    this.size = 64,
+    this.id,
+  });
 
   final String name;
   final String? photoUrl;
   final double size;
+  final String? id;
 
   @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final initial = name.trim().isEmpty
-        ? '?'
-        : name.trim().characters.first.toUpperCase();
-    final url = photoUrl?.trim() ?? '';
-    return ExcludeSemantics(
-      child: CircleAvatar(
-        radius: size / 2,
-        backgroundColor: p.avatarTintFor(name),
-        foregroundImage: url.isEmpty ? null : NetworkImage(url),
-        child: Text(
-          initial,
-          style: AppTypography.titleLarge.copyWith(
-            color: p.textPrimary,
-            fontSize: size * 0.37,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => PalAvatar(
+    seed: (id == null || id!.isEmpty) ? name.trim().toLowerCase() : id!,
+    name: name,
+    photoUrl: photoUrl,
+    size: size,
+  );
 }

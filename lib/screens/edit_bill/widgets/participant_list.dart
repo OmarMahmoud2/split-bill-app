@@ -2,11 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
 
-/// Round avatar: the photo when there is one, else the initial on a
-/// stable tint.
+/// Round avatar: the photo when there is one, else the person's pal.
 class EditAvatar extends StatelessWidget {
   const EditAvatar({
     super.key,
@@ -22,36 +21,12 @@ class EditAvatar extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final image = ImageUtils.getAvatarImage(photoUrl);
-    final initial = name.trim().isEmpty
-        ? '?'
-        : name.trim().characters.first.toUpperCase();
-    return ExcludeSemantics(
-      child: Container(
-        width: size,
-        height: size,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: p.avatarTintFor(id.isEmpty ? name : id),
-          image: image == null
-              ? null
-              : DecorationImage(image: image, fit: BoxFit.cover),
-        ),
-        child: image == null
-            ? Text(
-                initial,
-                style: AppTypography.labelSmall.copyWith(
-                  color: p.textPrimary,
-                  fontSize: size * 0.36,
-                ),
-              )
-            : null,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => PalAvatar(
+    seed: id.isEmpty ? name.trim().toLowerCase() : id,
+    name: name,
+    photoUrl: photoUrl,
+    size: size,
+  );
 }
 
 /// A hairline card, the v3 container for grouped rows.

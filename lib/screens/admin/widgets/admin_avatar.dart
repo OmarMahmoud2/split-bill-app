@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
-/// Initial on a stable tint, or the user's photo (URL or base64).
+/// The user's pal, or their photo (URL or base64).
 class AdminAvatar extends StatelessWidget {
   const AdminAvatar({
     super.key,
@@ -16,25 +15,10 @@ class AdminAvatar extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final image = ImageUtils.getAvatarImage(photoUrl);
-    final initial = name.trim().isEmpty
-        ? '?'
-        : name.trim().characters.first.toUpperCase();
-    return ExcludeSemantics(
-      child: CircleAvatar(
-        radius: size / 2,
-        backgroundColor: p.avatarTintFor(name),
-        foregroundImage: image,
-        child: Text(
-          initial,
-          style: AppTypography.titleMedium.copyWith(
-            color: p.textPrimary,
-            fontSize: size * 0.38,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => PalAvatar(
+    seed: name.trim().toLowerCase(),
+    name: name,
+    photoUrl: photoUrl,
+    size: size,
+  );
 }

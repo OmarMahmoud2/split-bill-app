@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/screens/profile/widgets/version_info.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
 /// Every tap target on the "You" screen.
@@ -296,17 +295,8 @@ class _ProfileAvatar extends StatelessWidget {
   final String? photoUrl;
 
   @override
-  Widget build(BuildContext context) {
-    final image = ImageUtils.getAvatarImage(photoUrl);
-    if (image == null) return V3Avatar(name: name, size: 64);
-    return ExcludeSemantics(
-      child: CircleAvatar(
-        radius: 32,
-        backgroundColor: context.palette.avatarTintFor(name),
-        foregroundImage: image,
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      V3Avatar(name: name, photoUrl: photoUrl, size: 64);
 }
 
 class _GoProCard extends StatelessWidget {

@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:split_bill_app/services/profile_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
@@ -135,12 +134,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final name = _nameController.text;
-    final existingPhoto = ImageUtils.getAvatarImage(
-      widget.currentData['photoUrl'] as String?,
-    );
-    final ImageProvider? photo = _newImage != null
-        ? FileImage(_newImage!)
-        : existingPhoto;
 
     return Scaffold(
       backgroundColor: p.canvas,
@@ -184,12 +177,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       excludeSemantics: true,
                       child: GestureDetector(
                         onTap: _saving ? null : _pickImage,
-                        child: photo == null
-                            ? V3Avatar(name: name, size: 88)
-                            : CircleAvatar(
-                                radius: 44,
-                                backgroundColor: p.avatarTintFor(name),
-                                foregroundImage: photo,
+                        child: _newImage != null
+                            ? ClipOval(
+                                child: Image.file(
+                                  _newImage!,
+                                  width: 88,
+                                  height: 88,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : V3Avatar(
+                                name: name,
+                                size: 88,
+                                photoUrl:
+                                    widget.currentData['photoUrl'] as String?,
                               ),
                       ),
                     ),

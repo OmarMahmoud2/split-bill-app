@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/services/contact_service.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
@@ -179,16 +180,11 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                       if (!hasPhone) return const SizedBox.shrink();
 
                       return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: isSelected
-                              ? p.accent
-                              : p.borderSubtle,
-                          child: isSelected
-                              ? Icon(Icons.check, color: p.onAccent)
-                              : Text(
-                                  displayName.isNotEmpty ? displayName[0] : "?",
-                                  style: TextStyle(color: p.textSecondary),
-                                ),
+                        leading: PalAvatar(
+                          seed: displayName.trim().toLowerCase(),
+                          name: displayName,
+                          size: 40,
+                          ringColor: isSelected ? p.accent : null,
                         ),
                         title: Text(
                           displayName,
