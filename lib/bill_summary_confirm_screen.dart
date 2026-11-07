@@ -18,7 +18,7 @@ import 'package:split_bill_app/screens/split_bill/bill_share_screen.dart';
 import 'package:split_bill_app/screens/split_bill/split_method_screen.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
-import 'package:split_bill_app/services/notification_service.dart';
+import 'package:split_bill_app/services/added_push.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/offline_write.dart';
 import 'package:split_bill_app/utils/money_format.dart';
@@ -118,7 +118,6 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   late BillDraft _draft;
   bool _isCreating = false;
   String? _expandedId;
-  late final NotificationService _notificationService = NotificationService();
 
   bool get _testing => widget.debugSave != null;
 
@@ -461,7 +460,14 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
         );
         queued = outcome == WriteOutcome.queued;
         unawaited(_cleanupResumed());
-        _notifyAppUsers(c, billId, user.uid);
+        unawaited(
+          notifyBillAdded(
+            billId: billId,
+            selfUid: user.uid,
+            before: const [],
+            after: (billData['participants_uids'] as List?) ?? const [],
+          ),
+        );
       }
     } catch (e) {
       if (kDebugMode) debugPrint('save bill: $e');
@@ -514,35 +520,6 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
       } catch (e) {
         if (kDebugMode) debugPrint('delete resumed image: $e');
       }
-    }
-  }
-
-  void _notifyAppUsers(BillComputation c, String billId, String hostUid) {
-    for (final p in widget.participants) {
-      final id = (p['id'] ?? '').toString();
-      if (p['isGuest'] == true || id == hostUid || id.isEmpty) continue;
-      final amount = formatMoneyMinor(c.shareOf(id), _draft.currency);
-      _notificationService
-          .sendNotification(
-            targetUid: id,
-            title: 'split_bill_notification_title'.tr(
-              namedArgs: {'store': _storeName},
-            ),
-            body: 'split_bill_notification_body'.tr(
-              namedArgs: {'amount': amount},
-            ),
-            historyTitleKey: 'split_bill_notification_title',
-            historyBodyKey: 'split_bill_notification_body',
-            historyTitleArgs: {'store': _storeName},
-            historyBodyArgs: {'amount': amount},
-            data: {'type': 'new_bill', 'uid': id, 'billId': billId},
-          )
-          .then<void>(
-            (_) {},
-            onError: (Object e) {
-              if (kDebugMode) debugPrint('notify $id: $e');
-            },
-          );
     }
   }
 

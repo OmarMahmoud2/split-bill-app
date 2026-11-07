@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
+import 'package:split_bill_app/services/added_push.dart';
 import 'package:split_bill_app/screens/edit_bill/edit_split_screen.dart';
 import 'package:split_bill_app/screens/edit_bill/history_format.dart';
 import 'package:split_bill_app/screens/edit_bill/widgets/edit_bill_header.dart';
@@ -177,6 +180,18 @@ class _EditBillScreenState extends State<EditBillScreen> {
     try {
       final update = _c.buildUpdate(now: DateTime.now(), byName: _displayName);
       await _store.update(widget.billId, update);
+      final me = _uid;
+      // widget.store is only injected by tests: no network call then.
+      if (me != null && widget.store == null) {
+        unawaited(
+          notifyBillAdded(
+            billId: widget.billId,
+            selfUid: me,
+            before: (widget.billData['participants_uids'] as List?) ?? const [],
+            after: (update['participants_uids'] as List?) ?? const [],
+          ),
+        );
+      }
       if (!mounted) return;
       AppToast.show(
         context,

@@ -1,10 +1,13 @@
 /// Quick IOU: "Ali owes me 20, no bill needed".
 library;
 
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:split_bill_app/data/ledger_repository.dart';
+import 'package:split_bill_app/services/added_push.dart';
 import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/domain/money.dart';
 import 'package:split_bill_app/screens/groups/member_picker.dart';
@@ -96,7 +99,10 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
       createdBy: me.uid,
     );
     try {
-      await LedgerRepository.instance.recordPayment(iou);
+      final paymentId = await LedgerRepository.instance.recordPayment(iou);
+      if (paymentId.isNotEmpty) {
+        unawaited(notifyIouAdded(paymentId: paymentId, groupId: iou.groupId));
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() => _saving = false);
