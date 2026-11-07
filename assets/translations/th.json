@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "สแกนหนึ่งครั้งใช้ {count} แต้ม",
   "bf_scan_cost_points_many": "สแกนหนึ่งครั้งใช้ {count} แต้ม",
   "bf_scan_cost_points_other": "สแกนหนึ่งครั้งใช้ {count} แต้ม",
-  "bf_scan_cost_pro": "Pro: สแกนได้ไม่จำกัด"
+  "bf_scan_cost_pro": "Pro: สแกนได้ไม่จำกัด",
+  "fr_tagline": "หารกัน จ่ายกัน เจ๊ากัน",
+  "fr_pay_now": "จ่ายเลย"
 }

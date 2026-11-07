@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "スキャン1回で{count}ポイント",
   "bf_scan_cost_points_many": "スキャン1回で{count}ポイント",
   "bf_scan_cost_points_other": "スキャン1回で{count}ポイント",
-  "bf_scan_cost_pro": "Pro: スキャン無制限"
+  "bf_scan_cost_pro": "Pro: スキャン無制限",
+  "fr_tagline": "割り勘して、精算して、貸し借りなしに。",
+  "fr_pay_now": "今すぐ支払う"
 }

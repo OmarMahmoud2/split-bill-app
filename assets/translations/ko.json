@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "스캔 1회에 {count}포인트",
   "bf_scan_cost_points_many": "스캔 1회에 {count}포인트",
   "bf_scan_cost_points_other": "스캔 1회에 {count}포인트",
-  "bf_scan_cost_pro": "Pro: 스캔 무제한"
+  "bf_scan_cost_pro": "Pro: 스캔 무제한",
+  "fr_tagline": "나누고, 정산하고, 깔끔하게 끝.",
+  "fr_pay_now": "지금 결제"
 }

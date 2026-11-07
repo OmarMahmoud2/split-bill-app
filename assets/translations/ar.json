@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "المسح يكلّف {count} نقاط",
   "bf_scan_cost_points_many": "المسح يكلّف {count} نقطة",
   "bf_scan_cost_points_other": "المسح يكلّف {count} نقطة",
-  "bf_scan_cost_pro": "برو: مسح بلا حدود"
+  "bf_scan_cost_pro": "برو: مسح بلا حدود",
+  "fr_tagline": "قسّمها. سوّها. ابقوا متعادلين.",
+  "fr_pay_now": "ادفع الآن"
 }

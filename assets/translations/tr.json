@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Bir tarama {count} puan",
   "bf_scan_cost_points_many": "Bir tarama {count} puan",
   "bf_scan_cost_points_other": "Bir tarama {count} puan",
-  "bf_scan_cost_pro": "Pro: sınırsız tarama"
+  "bf_scan_cost_pro": "Pro: sınırsız tarama",
+  "fr_tagline": "Böl. Öde. Hesap denk kalsın.",
+  "fr_pay_now": "Şimdi öde"
 }

@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "A scan costs {count} points",
   "bf_scan_cost_points_many": "A scan costs {count} points",
   "bf_scan_cost_points_other": "A scan costs {count} points",
-  "bf_scan_cost_pro": "Pro: unlimited scans"
+  "bf_scan_cost_pro": "Pro: unlimited scans",
+  "fr_tagline": "Split it. Settle it. Stay even.",
+  "fr_pay_now": "Pay now"
 }

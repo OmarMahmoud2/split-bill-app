@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Uma digitalização custa {count} pontos",
   "bf_scan_cost_points_many": "Uma digitalização custa {count} pontos",
   "bf_scan_cost_points_other": "Uma digitalização custa {count} pontos",
-  "bf_scan_cost_pro": "Pro: digitalizações ilimitadas"
+  "bf_scan_cost_pro": "Pro: digitalizações ilimitadas",
+  "fr_tagline": "Divida. Acerte. Fique em paz.",
+  "fr_pay_now": "Pagar agora"
 }

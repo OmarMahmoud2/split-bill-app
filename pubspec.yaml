@@ -122,7 +122,7 @@ flutter_launcher_icons:
   web:
     generate: true
     image_path: "assets/brand/evens_icon_1024.png"
-    background_color: "#F7F7F5"
+    background_color: "#F5F7FB"
     theme_color: "#0F766E"
   image_path: "assets/brand/evens_icon_1024.png"
   adaptive_icon_background: "#0F766E"
@@ -132,17 +132,17 @@ flutter_launcher_icons:
 
 # Splash Screen Configuration
 flutter_native_splash:
-  color: "#F7F7F5"
+  color: "#F5F7FB"
   image: assets/brand/evens_splash_light.png
   branding: assets/brand/evens_wordmark_light.png
-  color_dark: "#0E0F0E"
+  color_dark: "#0A0F1C"
   image_dark: assets/brand/evens_splash_dark.png
   branding_dark: assets/brand/evens_wordmark_dark.png
   android: true
   ios: true
   web: false # the guest web page has its own v3 skeleton splash in web/index.html
   android_12:
-    color: "#F7F7F5"
+    color: "#F5F7FB"
     image: assets/brand/evens_splash_android12_light.png
-    color_dark: "#0E0F0E"
+    color_dark: "#0A0F1C"
     image_dark: assets/brand/evens_splash_android12_dark.png

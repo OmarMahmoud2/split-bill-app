@@ -1,5 +1,5 @@
-import 'dart:math' as math;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
 
@@ -97,9 +97,10 @@ class _EvensMarkPainter extends CustomPainter {
       old.lineColor != lineColor;
 }
 
-/// Cold-start intro shown over the app while it loads: the halves part a
-/// little and settle back level, the line draws, the wordmark appears, then
-/// everything fades into [child]. Skipped under Reduce Motion.
+/// Cold-start intro shown over the app while it loads: the two halves part a
+/// little and settle level (the "stay even" idea), the line draws, the
+/// wordmark and tagline appear, then everything fades into [child]. One
+/// controller, ~1.1 s in total. Skipped under Reduce Motion.
 class BrandIntro extends StatefulWidget {
   const BrandIntro({
     super.key,
@@ -121,7 +122,7 @@ class _BrandIntroState extends State<BrandIntro>
     with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: widget.duration + AppMotion.medium,
+    duration: widget.duration,
   );
   bool _visible = !BrandIntro.played;
   bool _hapticDone = false;
@@ -130,12 +131,11 @@ class _BrandIntroState extends State<BrandIntro>
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_visible || _c.isAnimating || _c.isCompleted) return;
+    BrandIntro.played = true;
     if (AppMotion.reduceMotion(context)) {
-      BrandIntro.played = true;
       _visible = false;
       return;
     }
-    BrandIntro.played = true;
     _c.addListener(_maybeHaptic);
     _c.forward().whenComplete(() {
       if (mounted) setState(() => _visible = false);
@@ -143,20 +143,20 @@ class _BrandIntroState extends State<BrandIntro>
   }
 
   void _maybeHaptic() {
-    if (!_hapticDone && _c.value >= _settleAt) {
+    if (!_hapticDone && _c.value >= _at(560)) {
       _hapticDone = true;
       AppHaptics.light();
     }
   }
 
   double get _total => _c.duration!.inMilliseconds.toDouble();
-  double get _settleAt => 520 / _total;
+  double _at(double ms) => ms / 1100;
 
+  /// Progress 0..1 of the window [startMs, endMs], scaled to the duration.
   double _interval(double startMs, double endMs, Curve curve) {
-    final t = ((_c.value * _total - startMs) / (endMs - startMs)).clamp(
-      0.0,
-      1.0,
-    );
+    final k = _total / 1100;
+    final t = ((_c.value * _total - startMs * k) / ((endMs - startMs) * k))
+        .clamp(0.0, 1.0);
     return curve.transform(t);
   }
 
@@ -177,18 +177,19 @@ class _BrandIntroState extends State<BrandIntro>
       children: [
         widget.child,
         if (_visible)
-          AnimatedBuilder(
-            animation: _c,
-            builder: (context, _) {
-              // Part (0–260 ms) then settle level (260–520 ms).
-              final out = _interval(0, 260, Curves.easeOut);
-              final back = _interval(260, 520, AppMotion.emphasizedDecelerate);
-              final split = 0.08 * out * (1 - back);
-              final line = _interval(380, 760, AppMotion.emphasizedDecelerate);
-              final word = _interval(620, 900, Curves.easeOut);
-              final fade = 1 - _interval(_total - 250, _total, Curves.easeIn);
-              return IgnorePointer(
-                child: Opacity(
+          IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _c,
+              builder: (context, _) {
+                // Part (0-300 ms), settle level (300-600 ms).
+                final out = _interval(0, 300, Curves.easeOut);
+                final back = _interval(300, 600, AppMotion.emphasizedDecelerate);
+                final split = 0.1 * out * (1 - back);
+                final line = _interval(200, 600, AppMotion.emphasizedDecelerate);
+                final word = _interval(450, 750, Curves.easeOut);
+                final tag = _interval(620, 880, Curves.easeOut);
+                final fade = 1 - _interval(850, 1100, Curves.easeIn);
+                return Opacity(
                   opacity: fade,
                   child: ColoredBox(
                     color: p.background,
@@ -196,7 +197,27 @@ class _BrandIntroState extends State<BrandIntro>
                       alignment: Alignment.center,
                       children: [
                         // Native splash also lays out on line: keep the mark centred.
-                        EvensMark(split: split, line: math.max(line, 0)),
+                        RepaintBoundary(
+                          child: EvensMark(split: split, line: line),
+                        ),
+                        Align(
+                          alignment: const Alignment(0, 0.42),
+                          child: Opacity(
+                            opacity: tag,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                              ),
+                              child: Text(
+                                'fr_tagline'.tr(),
+                                textAlign: TextAlign.center,
+                                style: AppTypography.titleSmall.copyWith(
+                                  color: p.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                         Positioned(
                           bottom: MediaQuery.paddingOf(context).bottom + 24,
                           child: Opacity(
@@ -215,9 +236,9 @@ class _BrandIntroState extends State<BrandIntro>
                       ],
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
       ],
     );

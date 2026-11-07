@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "En skanning koster {count} poeng",
   "bf_scan_cost_points_many": "En skanning koster {count} poeng",
   "bf_scan_cost_points_other": "En skanning koster {count} poeng",
-  "bf_scan_cost_pro": "Pro: ubegrenset skanning"
+  "bf_scan_cost_pro": "Pro: ubegrenset skanning",
+  "fr_tagline": "Del den. Gjør opp. Hold det jevnt.",
+  "fr_pay_now": "Betal nå"
 }

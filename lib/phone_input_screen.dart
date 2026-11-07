@@ -5,12 +5,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/auth_wrapper.dart' show AuthFlow;
+import 'package:intl_phone_field/country_picker_dialog.dart' show PickerDialogStyle;
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:split_bill_app/services/permission_flow.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
 import 'package:split_bill_app/services/user_preferences_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/motion/shake_on_error.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
@@ -35,6 +37,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   String? _fullPhoneNumber; // E.164, e.g. +201012345678
   String _isoCode = 'EG';
   bool _isLoading = false;
+  final _shake = ShakeController();
   Key _fieldKey = UniqueKey();
 
   /// Fields written once for a new account, with or without a phone.
@@ -53,6 +56,12 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         existing?['currencyCode'] ?? UserPreferencesService.defaultCurrencyCode,
   };
 
+  @override
+  void dispose() {
+    _shake.dispose();
+    super.dispose();
+  }
+
   void _goHome() {
     // AuthWrapper re-reads the user doc and shows the permission gate and
     // Home itself; replacing the root route would drop the update check.
@@ -62,6 +71,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   Future<void> _savePhone() async {
     final phone = _fullPhoneNumber;
     if (phone == null || phone.isEmpty) {
+      _shake.shake();
       AppToast.show(
         context,
         message: 'please_enter_a_valid_phone_number'.tr(),
@@ -227,7 +237,24 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                         alignment: AlignmentDirectional.centerStart,
                         child: V3IconButton.back(context),
                       ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: p.accentSoft,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          AppIcons.phone,
+                          size: 30,
+                          color: p.onAccentSoft,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Semantics(
                       header: true,
                       child: Text(
@@ -250,24 +277,52 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     const SizedBox(height: 26),
                     V3FieldLabel('acct_phone_label'.tr()),
                     // Phone numbers are always entered left to right.
-                    Directionality(
-                      textDirection: ui.TextDirection.ltr,
-                      child: IntlPhoneField(
-                        key: _fieldKey,
-                        initialCountryCode: _isoCode,
-                        disableLengthCheck: false,
-                        invalidNumberMessage:
-                            'please_enter_a_valid_phone_number'.tr(),
-                        decoration: InputDecoration(
-                          hintText: '10 1234 5678',
-                          counterText: '',
+                    ShakeOnError(
+                      controller: _shake,
+                      child: Directionality(
+                        textDirection: ui.TextDirection.ltr,
+                        child: IntlPhoneField(
+                          key: _fieldKey,
+                          style: AppTypography.titleLarge.copyWith(
+                            color: p.textPrimary,
+                            fontSize: 20,
+                          ),
+                          dropdownTextStyle: AppTypography.titleLarge.copyWith(
+                            color: p.textPrimary,
+                            fontSize: 18,
+                          ),
+                          flagsButtonPadding: const EdgeInsetsDirectional.only(
+                            start: 14,
+                          ),
+                          pickerDialogStyle: PickerDialogStyle(
+                            backgroundColor: p.surface,
+                            countryCodeStyle: AppTypography.bodyMedium.copyWith(
+                              color: p.textSecondary,
+                            ),
+                            countryNameStyle: AppTypography.bodyLarge.copyWith(
+                              color: p.textPrimary,
+                            ),
+                          ),
+                          dropdownIcon: Icon(
+                            AppIcons.chevronDown,
+                            size: 18,
+                            color: p.textSecondary,
+                          ),
+                          initialCountryCode: _isoCode,
+                          disableLengthCheck: false,
+                          invalidNumberMessage:
+                              'please_enter_a_valid_phone_number'.tr(),
+                          decoration: InputDecoration(
+                            hintText: '10 1234 5678',
+                            counterText: '',
+                          ),
+                          onChanged: (phone) => setState(() {
+                            _fullPhoneNumber = phone.completeNumber;
+                            _isoCode = phone.countryISOCode;
+                          }),
+                          onCountryChanged: (country) =>
+                              setState(() => _isoCode = country.code),
                         ),
-                        onChanged: (phone) => setState(() {
-                          _fullPhoneNumber = phone.completeNumber;
-                          _isoCode = phone.countryISOCode;
-                        }),
-                        onCountryChanged: (country) =>
-                            setState(() => _isoCode = country.code),
                       ),
                     ),
                     const Spacer(),

@@ -81,12 +81,21 @@ class _NotificationPermissionScreenState
                 AppHaptics.light();
                 await widget.onRequest();
               }),
-        child: Text('acct_notif_cta'.tr()),
+        child: _busy
+            ? SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: p.onInverseSurface,
+                ),
+              )
+            : Text('acct_notif_cta'.tr()),
       ),
       secondary: TextButton(
         key: const ValueKey('notif-later'),
         onPressed: _busy ? null : () => _run(widget.onDefer),
-        style: TextButton.styleFrom(foregroundColor: p.textPrimary),
+        style: TextButton.styleFrom(foregroundColor: p.textSecondary),
         child: Text('acct_maybe_later'.tr()),
       ),
     );
@@ -135,7 +144,15 @@ class PermissionExplainerScaffold extends StatelessWidget {
                           child: Center(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 24),
-                              child: illustration,
+                              // Illustration tile: soft mint panel behind it.
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: p.accentSoft.withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                child: illustration,
+                              ),
                             ),
                           ),
                         ),
@@ -210,11 +227,7 @@ class SampleNotificationCard extends StatelessWidget {
               color: p.accent,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
-              AppIcons.receipt,
-              size: 20,
-              color: p.onAccent,
-            ),
+            child: Icon(AppIcons.receipt, size: 20, color: p.onAccent),
           ),
           const SizedBox(width: 12),
           Expanded(

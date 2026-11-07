@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Satu pindaian butuh {count} poin",
   "bf_scan_cost_points_many": "Satu pindaian butuh {count} poin",
   "bf_scan_cost_points_other": "Satu pindaian butuh {count} poin",
-  "bf_scan_cost_pro": "Pro: pindai tanpa batas"
+  "bf_scan_cost_pro": "Pro: pindai tanpa batas",
+  "fr_tagline": "Bagi. Lunasi. Tetap impas.",
+  "fr_pay_now": "Bayar sekarang"
 }

@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Сканирование стоит {count} балла",
   "bf_scan_cost_points_many": "Сканирование стоит {count} баллов",
   "bf_scan_cost_points_other": "Сканирование стоит {count} балла",
-  "bf_scan_cost_pro": "Pro: безлимитное сканирование"
+  "bf_scan_cost_pro": "Pro: безлимитное сканирование",
+  "fr_tagline": "Раздели. Рассчитайся. Будьте квиты.",
+  "fr_pay_now": "Оплатить"
 }

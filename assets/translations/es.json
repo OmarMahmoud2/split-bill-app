@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Un escaneo cuesta {count} puntos",
   "bf_scan_cost_points_many": "Un escaneo cuesta {count} puntos",
   "bf_scan_cost_points_other": "Un escaneo cuesta {count} puntos",
-  "bf_scan_cost_pro": "Pro: escaneos ilimitados"
+  "bf_scan_cost_pro": "Pro: escaneos ilimitados",
+  "fr_tagline": "Divídelo. Salda cuentas. Quedad en paz.",
+  "fr_pay_now": "Pagar ahora"
 }

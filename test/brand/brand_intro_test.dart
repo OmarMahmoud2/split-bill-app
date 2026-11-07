@@ -50,6 +50,16 @@ void main() {
     expect(find.byType(EvensMark), findsNothing);
   });
 
+  testWidgets('completes within its 1.1 s budget', (tester) async {
+    await tester.pumpWidget(_app(const BrandIntro(child: Text('app'))));
+    await tester.pump(const Duration(milliseconds: 1050));
+    expect(find.byType(EvensMark), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump();
+    expect(find.byType(EvensMark), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('the child State survives the end of the intro', (tester) async {
     var inits = 0;
     await tester.pumpWidget(
@@ -69,6 +79,7 @@ void main() {
     await tester.pump();
     expect(find.byType(EvensMark), findsNothing);
     expect(find.text('app'), findsOneWidget);
+    expect(tester.hasRunningAnimations, isFalse);
   });
 
   testWidgets('the mark paints in light and dark', (tester) async {

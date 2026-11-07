@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "En scanning koster {count} point",
   "bf_scan_cost_points_many": "En scanning koster {count} point",
   "bf_scan_cost_points_other": "En scanning koster {count} point",
-  "bf_scan_cost_pro": "Pro: ubegrænsede scanninger"
+  "bf_scan_cost_pro": "Pro: ubegrænsede scanninger",
+  "fr_tagline": "Del den. Afgør den. Hold den lige.",
+  "fr_pay_now": "Betal nu"
 }

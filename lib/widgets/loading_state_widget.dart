@@ -12,13 +12,24 @@ class LoadingStateWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.asset(
-            'assets/animations/loading.json',
-            width: 150,
-            height: 150,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) =>
-                const CircularProgressIndicator(),
+          // The Lottie loader stays; it just sits on a soft framed tile.
+          Container(
+            width: 168,
+            height: 168,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: context.palette.surface,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: context.palette.hairline),
+            ),
+            child: Lottie.asset(
+              'assets/animations/loading.json',
+              width: 130,
+              height: 130,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  const CircularProgressIndicator(),
+            ),
           ),
           if (message != null) ...[
             const SizedBox(height: 16),

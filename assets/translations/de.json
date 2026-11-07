@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Ein Scan kostet {count} Punkte",
   "bf_scan_cost_points_many": "Ein Scan kostet {count} Punkte",
   "bf_scan_cost_points_other": "Ein Scan kostet {count} Punkte",
-  "bf_scan_cost_pro": "Pro: unbegrenzt scannen"
+  "bf_scan_cost_pro": "Pro: unbegrenzt scannen",
+  "fr_tagline": "Teilen. Begleichen. Quitt bleiben.",
+  "fr_pay_now": "Jetzt zahlen"
 }

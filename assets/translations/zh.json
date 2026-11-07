@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "每次扫描需 {count} 积分",
   "bf_scan_cost_points_many": "每次扫描需 {count} 积分",
   "bf_scan_cost_points_other": "每次扫描需 {count} 积分",
-  "bf_scan_cost_pro": "Pro：无限次扫描"
+  "bf_scan_cost_pro": "Pro：无限次扫描",
+  "fr_tagline": "分摊,结清,两不相欠。",
+  "fr_pay_now": "立即支付"
 }

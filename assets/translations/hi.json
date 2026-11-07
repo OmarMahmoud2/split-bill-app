@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "एक स्कैन की क़ीमत {count} पॉइंट है",
   "bf_scan_cost_points_many": "एक स्कैन की क़ीमत {count} पॉइंट है",
   "bf_scan_cost_points_other": "एक स्कैन की क़ीमत {count} पॉइंट है",
-  "bf_scan_cost_pro": "प्रो: असीमित स्कैन"
+  "bf_scan_cost_pro": "प्रो: असीमित स्कैन",
+  "fr_tagline": "बाँटो। चुकाओ। हिसाब बराबर रखो।",
+  "fr_pay_now": "अभी भुगतान करें"
 }

@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Una scansione costa {count} punti",
   "bf_scan_cost_points_many": "Una scansione costa {count} punti",
   "bf_scan_cost_points_other": "Una scansione costa {count} punti",
-  "bf_scan_cost_pro": "Pro: scansioni illimitate"
+  "bf_scan_cost_pro": "Pro: scansioni illimitate",
+  "fr_tagline": "Dividi. Salda. Restate pari.",
+  "fr_pay_now": "Paga ora"
 }

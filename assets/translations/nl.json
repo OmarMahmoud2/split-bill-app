@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Een scan kost {count} punten",
   "bf_scan_cost_points_many": "Een scan kost {count} punten",
   "bf_scan_cost_points_other": "Een scan kost {count} punten",
-  "bf_scan_cost_pro": "Pro: onbeperkt scannen"
+  "bf_scan_cost_pro": "Pro: onbeperkt scannen",
+  "fr_tagline": "Splits het. Reken af. Blijf quitte.",
+  "fr_pay_now": "Nu betalen"
 }

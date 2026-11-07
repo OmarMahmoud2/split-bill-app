@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "En skanning kostar {count} poäng",
   "bf_scan_cost_points_many": "En skanning kostar {count} poäng",
   "bf_scan_cost_points_other": "En skanning kostar {count} poäng",
-  "bf_scan_cost_pro": "Pro: obegränsad skanning"
+  "bf_scan_cost_pro": "Pro: obegränsad skanning",
+  "fr_tagline": "Dela. Gör upp. Håll det jämnt.",
+  "fr_pay_now": "Betala nu"
 }

@@ -2249,5 +2249,7 @@
   "bf_scan_cost_points_few": "Skan kosztuje {count} punkty",
   "bf_scan_cost_points_many": "Skan kosztuje {count} punktów",
   "bf_scan_cost_points_other": "Skan kosztuje {count} punktu",
-  "bf_scan_cost_pro": "Pro: skanowanie bez limitu"
+  "bf_scan_cost_pro": "Pro: skanowanie bez limitu",
+  "fr_tagline": "Podziel. Rozlicz. Bądźcie kwita.",
+  "fr_pay_now": "Zapłać teraz"
 }
