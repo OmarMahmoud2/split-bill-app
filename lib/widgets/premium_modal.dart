@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
@@ -195,8 +196,7 @@ class _PremiumModalState extends State<PremiumModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.palette.canvas,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: PaywallBody(

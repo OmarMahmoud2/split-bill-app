@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/widgets/payment_method_mark.dart';
 import 'dart:ui' show PlatformDispatcher;
 
@@ -382,8 +383,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: Column(

@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'dart:io' show Platform;
 
 import 'dart:ui' as ui;
@@ -201,10 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       resizeToAvoidBottomInset: true,
       body: AdaptiveBody.form(
         child: SafeArea(

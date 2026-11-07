@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:split_bill_app/services/analytics_service.dart';
@@ -370,7 +371,6 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final size = GuestSize.of(MediaQuery.sizeOf(context).width);
     final view = _view;
     final personal = widget.initialParticipantId != null;
@@ -434,8 +434,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       ),
     );
 
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: Stack(
         children: [
           const GuestOrbs(),

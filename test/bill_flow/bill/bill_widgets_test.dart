@@ -30,7 +30,8 @@ Widget _app(Widget child, {bool dark = false}) => MaterialApp(
 String _plain(String s) => s.replaceAll(RegExp('[\u2066\u2069]'), '');
 
 Finder _text(String value) => find.byWidgetPredicate(
-  (w) => w is Text && _plain(w.data ?? w.textSpan?.toPlainText() ?? '') == value,
+  (w) =>
+      w is Text && _plain(w.data ?? w.textSpan?.toPlainText() ?? '') == value,
 );
 
 /// Text of a [Text] or a [RichText] under [finder].
@@ -38,7 +39,9 @@ String _shown(WidgetTester tester, Finder finder) {
   final texts = tester.widgetList<Text>(
     find.descendant(of: finder, matching: find.byType(Text)),
   );
-  return _plain(texts.map((t) => t.data ?? t.textSpan?.toPlainText() ?? '').join());
+  return _plain(
+    texts.map((t) => t.data ?? t.textSpan?.toPlainText() ?? '').join(),
+  );
 }
 
 void main() {

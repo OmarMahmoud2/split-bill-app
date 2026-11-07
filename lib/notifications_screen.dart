@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -176,13 +177,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     final p = context.palette;
     if (user == null) {
-      return Scaffold(
-        backgroundColor: p.background,
+      return AppScaffold(
         body: Center(child: Text('please_log_in_to_view_notifications').tr()),
       );
     }
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody(
         child: SafeArea(
           child: Column(

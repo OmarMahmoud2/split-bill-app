@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -654,8 +655,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
         : draft.assignmentOf(active).people.toSet();
     final left = progress.left;
 
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody(
         child: SafeArea(
           bottom: false,

@@ -2,6 +2,7 @@
 /// category (or by group when bills carry no category), and payback speed.
 library;
 
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
@@ -51,13 +52,11 @@ class _InsightsScreenState extends State<InsightsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final title = DateFormat.yMMMM(localeTag(context)).format(_month);
     final now = DateTime.now();
     final isCurrent = _month.year == now.year && _month.month == now.month;
     final rtl = Directionality.of(context) == TextDirection.rtl;
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody(
         child: SafeArea(
           child: Column(

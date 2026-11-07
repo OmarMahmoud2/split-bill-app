@@ -1,6 +1,7 @@
 /// Friend: everything between you two, across groups, bills and IOUs.
 library;
 
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -53,9 +54,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody(
         child: SafeArea(
           child: StreamBuilder<HomeLedgerState>(

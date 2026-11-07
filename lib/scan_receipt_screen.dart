@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:io';
 
@@ -822,7 +823,6 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final Widget body;
     PreferredSizeWidget? appBar;
     switch (_phase) {
@@ -861,8 +861,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
         );
     }
 
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       appBar: appBar,
       body: AdaptiveBody(
         child: AnimatedSwitcher(

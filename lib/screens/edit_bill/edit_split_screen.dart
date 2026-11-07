@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/bill_flow/bill_calculator.dart';
@@ -137,8 +138,7 @@ class _EditSplitScreenState extends State<EditSplitScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: ListenableBuilder(

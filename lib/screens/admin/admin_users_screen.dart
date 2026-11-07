@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -178,7 +179,6 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final top = V3TopBar(
       leading: V3IconButton.back(context),
       title: 'adm3_users_title'.tr(),
@@ -198,8 +198,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     } else {
       body = _list(context);
     }
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: SafeArea(
         bottom: false,
         child: Column(

@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -359,9 +360,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: AdaptiveBody(
         child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: _stream,

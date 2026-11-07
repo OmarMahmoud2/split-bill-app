@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/services/admin_ai_usage_service.dart';
@@ -54,9 +55,7 @@ class _AdminAiUsageScreenState extends State<AdminAiUsageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -134,10 +133,7 @@ class _AdminAiUsageScreenState extends State<AdminAiUsageScreen> {
       AiUsageFailed() => ErrorState(onRetry: _retry),
       AiUsageLoaded(:final report) =>
         report.isEmpty
-            ? EmptyState(
-                icon: AppIcons.sparkle,
-                title: 'adm3_ai_empty'.tr(),
-              )
+            ? EmptyState(icon: AppIcons.sparkle, title: 'adm3_ai_empty'.tr())
             : _AiUsageBody(report: report),
     };
   }

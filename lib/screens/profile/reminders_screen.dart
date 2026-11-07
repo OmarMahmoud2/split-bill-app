@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart'
@@ -194,9 +195,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: Column(

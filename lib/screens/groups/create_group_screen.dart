@@ -2,6 +2,7 @@
 /// debts and members.
 library;
 
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -145,8 +146,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     final p = context.palette;
     final df = DateFormat.MMMd(localeTag(context));
     final ready = _name.text.trim().isNotEmpty && !_saving;
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: Column(

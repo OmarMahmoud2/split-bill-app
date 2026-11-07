@@ -7,6 +7,7 @@
 /// enable the "Everything shown in USD/EGP" chips below.
 library;
 
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +45,7 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final me = LedgerMe.current()?.uid ?? '';
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: StreamBuilder<GroupLedgerInput?>(

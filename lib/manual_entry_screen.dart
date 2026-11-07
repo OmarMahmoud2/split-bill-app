@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -220,8 +221,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     final p = context.palette;
     final currencyCode = context.watch<AppSettingsProvider>().currencyCode;
 
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       appBar: ScanTopBar(title: 'bf_scan_manual_title'.tr(), close: true),
       body: AdaptiveBody.form(
         child: GestureDetector(

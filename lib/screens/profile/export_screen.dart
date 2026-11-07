@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -327,8 +328,7 @@ class _ExportScreenState extends State<ExportScreen> {
               'to': _fmtDate(_range!.end),
             },
           );
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: Column(

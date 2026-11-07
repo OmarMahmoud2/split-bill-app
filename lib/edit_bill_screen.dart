@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -438,14 +439,12 @@ class _EditBillScreenState extends State<EditBillScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _cancel();
       },
-      child: Scaffold(
-        backgroundColor: p.background,
+      child: AppScaffold(
         body: AdaptiveBody(
           child: SafeArea(
             child: ListenableBuilder(

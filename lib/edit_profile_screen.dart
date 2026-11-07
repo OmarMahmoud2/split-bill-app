@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -147,8 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final p = context.palette;
     final name = _nameController.text;
 
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: Column(

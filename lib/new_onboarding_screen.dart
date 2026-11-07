@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:ui' as ui;
 
@@ -138,8 +139,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     final p = context.palette;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: AppTheme.overlayStyleFor(Theme.of(context).brightness),
-      child: Scaffold(
-        backgroundColor: p.canvas,
+      child: AppScaffold(
         body: AdaptiveBody.form(
           child: SafeArea(
             child: Center(

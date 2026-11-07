@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -149,10 +150,8 @@ class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
     return StreamBuilder<Map<String, dynamic>?>(
       stream: _userStream,
       builder: (context, snapshot) {
-        final p = context.palette;
         if (snapshot.hasData && snapshot.data == null) {
-          return Scaffold(
-            backgroundColor: p.canvas,
+          return AppScaffold(
             body: SafeArea(
               child: Column(
                 children: [
@@ -172,8 +171,7 @@ class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
           );
         }
         final data = snapshot.data ?? widget.userData;
-        return Scaffold(
-          backgroundColor: p.canvas,
+        return AppScaffold(
           body: SafeArea(
             bottom: false,
             child: CustomScrollView(

@@ -1,4 +1,5 @@
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:ui' as ui;
 
@@ -220,8 +221,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final canPop = Navigator.of(context).canPop();
-    return Scaffold(
-      backgroundColor: p.canvas,
+    return AppScaffold(
       body: AdaptiveBody.form(
         child: SafeArea(
           child: LayoutBuilder(

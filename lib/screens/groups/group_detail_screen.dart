@@ -1,6 +1,7 @@
 /// Group or trip: balances, bills and totals, with the budget bar.
 library;
 
+import 'package:split_bill_app/widgets/layout/app_scaffold.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -237,9 +238,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    return Scaffold(
-      backgroundColor: p.background,
+    return AppScaffold(
       body: AdaptiveBody(
         child: SafeArea(
           child: StreamBuilder<GroupLedgerInput?>(
