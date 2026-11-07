@@ -121,7 +121,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 12),
             child: AppTextField(
               controller: _searchController,
               hint: 'search_name_or_phone'.tr(),
@@ -144,7 +144,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                    padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                     itemCount: _filteredContacts.length,
                     itemBuilder: (context, index) {
                       final contact = _filteredContacts[index];
@@ -222,7 +222,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
           ? null
           : SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 12),
                 child: SizedBox(
                   height: 54,
                   child: FilledButton(

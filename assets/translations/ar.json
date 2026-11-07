@@ -2258,8 +2258,8 @@
   "bf_share_tile_message": "راسل المجموعة",
   "bf_share_tile_qr": "عرض رمز QR",
   "bf_share_tile_each": "أرسل لكل شخص رابطه",
-  "bf_summary_save_people_one": "حفظ ومشاركة · شخص واحد",
-  "bf_summary_save_people_two": "حفظ ومشاركة · شخصان",
+  "bf_summary_save_people_one": "حفظ ومشاركة · شخص واحد ({count})",
+  "bf_summary_save_people_two": "حفظ ومشاركة · شخصان ({count})",
   "bf_summary_save_people_few": "حفظ ومشاركة · {count} أشخاص",
   "bf_summary_save_people_many": "حفظ ومشاركة · {count} شخصًا",
   "bf_summary_save_people_other": "حفظ ومشاركة · {count} شخص"

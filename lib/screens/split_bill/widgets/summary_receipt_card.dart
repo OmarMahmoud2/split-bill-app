@@ -93,7 +93,7 @@ class SummaryReceiptCard extends StatelessWidget {
 
     return Container(
       key: const ValueKey('summary_receipt'),
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+      padding: const EdgeInsetsDirectional.fromSTEB(18, 18, 18, 16),
       decoration: BoxDecoration(
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
