@@ -2289,5 +2289,16 @@
   "you_exp_custom": "कस्टम",
   "pw_ad_offer": "1 पॉइंट के लिए छोटा विज्ञापन देखें · आज {left} बाकी",
   "exp_done_sub": "{name} साझा करने के लिए तैयार है।",
-  "exp_share_file": "फ़ाइल साझा करें"
+  "exp_share_file": "फ़ाइल साझा करें",
+  "scanx_step_1": "आइटम ढूंढे जा रहे हैं…",
+  "scanx_step_2": "कीमतें पढ़ी जा रही हैं…",
+  "scanx_step_3": "सब जोड़ा जा रहा है…",
+  "bf_share_tile_message": "ग्रुप को मैसेज करें",
+  "bf_share_tile_qr": "QR कोड दिखाएं",
+  "bf_share_tile_each": "हर व्यक्ति को उसका लिंक भेजें",
+  "bf_summary_save_people_one": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_two": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_few": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_many": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_other": "सहेजें और साझा करें · {count} लोग"
 }

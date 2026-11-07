@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Tùy chọn",
   "pw_ad_offer": "Xem quảng cáo ngắn để nhận 1 điểm · hôm nay còn {left} lượt",
   "exp_done_sub": "{name} đã sẵn sàng để chia sẻ.",
-  "exp_share_file": "Chia sẻ tệp"
+  "exp_share_file": "Chia sẻ tệp",
+  "scanx_step_1": "Đang tìm các món…",
+  "scanx_step_2": "Đang đọc giá…",
+  "scanx_step_3": "Đang cộng tổng…",
+  "bf_share_tile_message": "Nhắn cho nhóm",
+  "bf_share_tile_qr": "Hiện mã QR",
+  "bf_share_tile_each": "Gửi cho mỗi người liên kết riêng",
+  "bf_summary_save_people_one": "Lưu và chia sẻ · {count} người",
+  "bf_summary_save_people_two": "Lưu và chia sẻ · {count} người",
+  "bf_summary_save_people_few": "Lưu và chia sẻ · {count} người",
+  "bf_summary_save_people_many": "Lưu và chia sẻ · {count} người",
+  "bf_summary_save_people_other": "Lưu và chia sẻ · {count} người"
 }

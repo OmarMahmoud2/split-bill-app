@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Tilpasset",
   "pw_ad_offer": "Se en kort reklame for 1 point · {left} tilbage i dag",
   "exp_done_sub": "{name} er klar til deling.",
-  "exp_share_file": "Del fil"
+  "exp_share_file": "Del fil",
+  "scanx_step_1": "Finder varerne…",
+  "scanx_step_2": "Læser priserne…",
+  "scanx_step_3": "Lægger det hele sammen…",
+  "bf_share_tile_message": "Skriv til gruppen",
+  "bf_share_tile_qr": "Vis QR-kode",
+  "bf_share_tile_each": "Send hver person deres link",
+  "bf_summary_save_people_one": "Gem og del · {count} person",
+  "bf_summary_save_people_two": "Gem og del · {count} personer",
+  "bf_summary_save_people_few": "Gem og del · {count} personer",
+  "bf_summary_save_people_many": "Gem og del · {count} personer",
+  "bf_summary_save_people_other": "Gem og del · {count} personer"
 }

@@ -2289,5 +2289,16 @@
   "you_exp_custom": "自定义",
   "pw_ad_offer": "观看短广告获得 1 积分 · 今天还剩 {left} 次",
   "exp_done_sub": "{name} 已可分享。",
-  "exp_share_file": "分享文件"
+  "exp_share_file": "分享文件",
+  "scanx_step_1": "正在查找项目…",
+  "scanx_step_2": "正在读取价格…",
+  "scanx_step_3": "正在汇总…",
+  "bf_share_tile_message": "发消息给群组",
+  "bf_share_tile_qr": "显示二维码",
+  "bf_share_tile_each": "给每个人发送专属链接",
+  "bf_summary_save_people_one": "保存并分享 · {count}人",
+  "bf_summary_save_people_two": "保存并分享 · {count}人",
+  "bf_summary_save_people_few": "保存并分享 · {count}人",
+  "bf_summary_save_people_many": "保存并分享 · {count}人",
+  "bf_summary_save_people_other": "保存并分享 · {count}人"
 }

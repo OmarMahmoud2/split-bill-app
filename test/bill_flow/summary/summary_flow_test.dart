@@ -7,6 +7,7 @@ import 'package:split_bill_app/bill_summary_confirm_screen.dart';
 import 'package:split_bill_app/screens/split_bill/bill_roulette_screen.dart';
 import 'package:split_bill_app/screens/split_bill/bill_share_screen.dart';
 import 'package:split_bill_app/screens/split_bill/split_method_screen.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/summary_receipt_card.dart';
 import 'package:split_bill_app/theme/theme.dart';
 
 Widget _app(Widget home, {bool dark = false, TextDirection? dir}) =>
@@ -209,6 +210,33 @@ void main() {
     expect(find.text('bf_share_whatsapp'), findsOneWidget);
     expect(find.text('bf_share_message'), findsOneWidget);
     expect(find.byKey(const ValueKey('share_qr_card')), findsOneWidget);
+    expect(find.byKey(const ValueKey('share_tile_message')), findsOneWidget);
+    expect(find.byKey(const ValueKey('share_tile_copy')), findsOneWidget);
+    expect(find.text('bf_share_tile_each'), findsOneWidget);
+  });
+
+  testWidgets('SummaryReceiptCard shows items, charges and the total', (
+    tester,
+  ) async {
+    final c = computeBill(_draft);
+    await tester.pumpWidget(
+      _app(
+        Scaffold(
+          body: SummaryReceiptCard(
+            draft: _draft,
+            storeName: 'Sea Breeze',
+            totalMinor: c.grandTotalMinor,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Platter'), findsOneWidget);
+    expect(find.text('receipt_tax'), findsOneWidget);
+    expect(find.text('receipt_service_charge'), findsOneWidget);
+    expect(c.grandTotalMinor, 8127);
+    expect(find.byKey(const ValueKey('summary_total')), findsOneWidget);
+    expect(find.textContaining('81.27'), findsWidgets);
   });
 
   testWidgets('roulette picks and confirms a winner', (tester) async {

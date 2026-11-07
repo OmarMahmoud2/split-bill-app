@@ -2289,5 +2289,16 @@
   "you_exp_custom": "حسب ضرورت",
   "pw_ad_offer": "مختصر اشتہار دیکھیں، 1 پوائنٹ پائیں · آج {left} باقی",
   "exp_done_sub": "{name} شیئر کے لیے تیار ہے۔",
-  "exp_share_file": "فائل شیئر کریں"
+  "exp_share_file": "فائل شیئر کریں",
+  "scanx_step_1": "آئٹمز تلاش کیے جا رہے ہیں…",
+  "scanx_step_2": "قیمتیں پڑھی جا رہی ہیں…",
+  "scanx_step_3": "سب کا مجموعہ نکالا جا رہا ہے…",
+  "bf_share_tile_message": "گروپ کو پیغام بھیجیں",
+  "bf_share_tile_qr": "QR کوڈ دکھائیں",
+  "bf_share_tile_each": "ہر شخص کو اس کا لنک بھیجیں",
+  "bf_summary_save_people_one": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_two": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_few": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_many": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_other": "محفوظ کریں اور شیئر کریں · {count} افراد"
 }

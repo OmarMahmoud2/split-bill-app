@@ -269,6 +269,62 @@ class AppIcons {
       matchTextDirection: true,
     ),
   ); // scan
+  static const AppDuoGlyph messageDuo = AppDuoGlyph(
+    IconData(
+      0xe16d,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+    IconData(
+      0xe16c,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+  ); // chatCircleDots
+  static const AppDuoGlyph linkDuo = AppDuoGlyph(
+    IconData(
+      0xe2e3,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+    IconData(
+      0xe2e2,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+  ); // link
+  static const AppDuoGlyph qrDuo = AppDuoGlyph(
+    IconData(
+      0xe3e7,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+    IconData(
+      0xe3e6,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+  ); // qrCode
+  static const AppDuoGlyph sendDuo = AppDuoGlyph(
+    IconData(
+      0xe399,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+    IconData(
+      0xe398,
+      fontFamily: 'PhosphorDuotone',
+      fontPackage: _pkg,
+      matchTextDirection: true,
+    ),
+  ); // paperPlaneTilt
   static const IconData qr = IconData(
     0xe3e6,
     fontFamily: 'PhosphorRegular',

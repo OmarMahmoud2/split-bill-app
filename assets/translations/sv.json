@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Anpassat",
   "pw_ad_offer": "Titta på en kort annons för 1 poäng · {left} kvar idag",
   "exp_done_sub": "{name} är redo att delas.",
-  "exp_share_file": "Dela fil"
+  "exp_share_file": "Dela fil",
+  "scanx_step_1": "Hittar varorna…",
+  "scanx_step_2": "Läser priserna…",
+  "scanx_step_3": "Räknar ihop allt…",
+  "bf_share_tile_message": "Skriv till gruppen",
+  "bf_share_tile_qr": "Visa QR-kod",
+  "bf_share_tile_each": "Skicka var och en sin länk",
+  "bf_summary_save_people_one": "Spara och dela · {count} person",
+  "bf_summary_save_people_two": "Spara och dela · {count} personer",
+  "bf_summary_save_people_few": "Spara och dela · {count} personer",
+  "bf_summary_save_people_many": "Spara och dela · {count} personer",
+  "bf_summary_save_people_other": "Spara och dela · {count} personer"
 }

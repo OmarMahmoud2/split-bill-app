@@ -93,6 +93,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   final _priceFocusNode = FocusNode();
 
   String? _amountError;
+  String? _whatError;
   String? _itemError;
   String? _qtyError;
   String? _priceError;
@@ -161,7 +162,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   }
 
   void _finish() {
-    if (_formKey.currentState?.validate() != true) {
+    if (_storeController.text.trim().isEmpty) {
+      setState(() => _whatError = 'bf_scan_manual_what_for_required'.tr());
       AppHaptics.error();
       return;
     }
@@ -229,18 +231,17 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             children: [
               _buildAmountHero(p, currencyCode),
               const SizedBox(height: AppSpacing.xxl),
-              _label(p, 'bf_scan_manual_what_for'.tr()),
-              TextFormField(
+              AppTextField(
+                key: const ValueKey('manual-what-for'),
                 controller: _storeController,
+                label: 'bf_scan_manual_what_for'.tr(),
+                hint: 'bf_scan_manual_what_for_hint'.tr(),
+                errorText: _whatError,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  hintText: 'bf_scan_manual_what_for_hint'.tr(),
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
-                ),
-                validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'bf_scan_manual_what_for_required'.tr()
-                    : null,
+                onChanged: (_) {
+                  if (_whatError != null) setState(() => _whatError = null);
+                },
               ),
               const SizedBox(height: 14),
               _label(p, 'bf_scan_manual_date'.tr()),
@@ -464,11 +465,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
               namedArgs: {'name': item.name},
             ),
             constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-            icon: Icon(
-              AppIcons.removeCircle,
-              size: 20,
-              color: p.textSecondary,
-            ),
+            icon: Icon(AppIcons.removeCircle, size: 20, color: p.textSecondary),
           ),
         ],
       ),

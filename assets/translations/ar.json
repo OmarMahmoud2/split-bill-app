@@ -2289,5 +2289,16 @@
   "you_exp_custom": "مخصص",
   "pw_ad_offer": "شاهد إعلانًا قصيرًا مقابل نقطة واحدة · متبقٍ {left} اليوم",
   "exp_done_sub": "{name} جاهز للمشاركة.",
-  "exp_share_file": "مشاركة الملف"
+  "exp_share_file": "مشاركة الملف",
+  "scanx_step_1": "جارٍ العثور على الأصناف…",
+  "scanx_step_2": "جارٍ قراءة الأسعار…",
+  "scanx_step_3": "جارٍ جمع المجموع…",
+  "bf_share_tile_message": "راسل المجموعة",
+  "bf_share_tile_qr": "عرض رمز QR",
+  "bf_share_tile_each": "أرسل لكل شخص رابطه",
+  "bf_summary_save_people_one": "حفظ ومشاركة · شخص واحد ({count})",
+  "bf_summary_save_people_two": "حفظ ومشاركة · شخصان ({count})",
+  "bf_summary_save_people_few": "حفظ ومشاركة · {count} أشخاص",
+  "bf_summary_save_people_many": "حفظ ومشاركة · {count} شخصًا",
+  "bf_summary_save_people_other": "حفظ ومشاركة · {count} شخص"
 }

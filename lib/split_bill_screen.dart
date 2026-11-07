@@ -19,7 +19,7 @@ import 'package:split_bill_app/services/public_profile_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/multi_contact_picker.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/voice_command_overlay.dart';
 
 import 'bill_summary_confirm_screen.dart';
@@ -434,46 +434,56 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
   }
 
   void _showSimpleAssignSheet(int index, String itemName) {
-    PremiumBottomSheet.show<void>(
-      context: context,
-      child: SimpleAssignmentSheet(
-        participants: participants,
-        itemName: itemName,
-        currentSelection: List.of(itemAssignments[index] ?? const []),
-        onConfirm: (ids) {
-          setState(() {
-            if (ids.isEmpty) {
-              itemAssignments.remove(index);
-            } else {
-              itemAssignments[index] = ids;
-            }
-            quantityAssignments.remove(index);
-          });
-          Navigator.pop(context);
-        },
+    showLedgerSheet<void>(
+      context,
+      builder: (_) => Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+        child: SingleChildScrollView(
+          child: SimpleAssignmentSheet(
+            participants: participants,
+            itemName: itemName,
+            currentSelection: List.of(itemAssignments[index] ?? const []),
+            onConfirm: (ids) {
+              setState(() {
+                if (ids.isEmpty) {
+                  itemAssignments.remove(index);
+                } else {
+                  itemAssignments[index] = ids;
+                }
+                quantityAssignments.remove(index);
+              });
+              Navigator.pop(context);
+            },
+          ),
+        ),
       ),
     );
   }
 
   void _showUnitsSheet(int index, String itemName, int quantity) {
-    PremiumBottomSheet.show<void>(
-      context: context,
-      child: ComplexAssignmentSheet(
-        participants: participants,
-        itemName: itemName,
-        initialMap: Map.of(quantityAssignments[index] ?? const {}),
-        maxQty: quantity,
-        onConfirm: (units) {
-          setState(() {
-            if (units.isEmpty) {
-              quantityAssignments.remove(index);
-            } else {
-              quantityAssignments[index] = units;
-              itemAssignments.remove(index);
-            }
-          });
-          Navigator.pop(context);
-        },
+    showLedgerSheet<void>(
+      context,
+      builder: (_) => Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+        child: SingleChildScrollView(
+          child: ComplexAssignmentSheet(
+            participants: participants,
+            itemName: itemName,
+            initialMap: Map.of(quantityAssignments[index] ?? const {}),
+            maxQty: quantity,
+            onConfirm: (units) {
+              setState(() {
+                if (units.isEmpty) {
+                  quantityAssignments.remove(index);
+                } else {
+                  quantityAssignments[index] = units;
+                  itemAssignments.remove(index);
+                }
+              });
+              Navigator.pop(context);
+            },
+          ),
+        ),
       ),
     );
   }

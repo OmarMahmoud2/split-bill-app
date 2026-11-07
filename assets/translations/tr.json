@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Özel",
   "pw_ad_offer": "Kısa bir reklam izle, 1 puan kazan · bugün {left} hakkın kaldı",
   "exp_done_sub": "{name} paylaşıma hazır.",
-  "exp_share_file": "Dosyayı paylaş"
+  "exp_share_file": "Dosyayı paylaş",
+  "scanx_step_1": "Kalemler bulunuyor…",
+  "scanx_step_2": "Fiyatlar okunuyor…",
+  "scanx_step_3": "Hepsi toplanıyor…",
+  "bf_share_tile_message": "Gruba mesaj gönder",
+  "bf_share_tile_qr": "QR kodu göster",
+  "bf_share_tile_each": "Herkese kendi bağlantısını gönder",
+  "bf_summary_save_people_one": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_two": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_few": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_many": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_other": "Kaydet ve paylaş · {count} kişi"
 }

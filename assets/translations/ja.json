@@ -2289,5 +2289,16 @@
   "you_exp_custom": "カスタム",
   "pw_ad_offer": "短い広告を見て1ポイント獲得 · 今日はあと{left}回",
   "exp_done_sub": "{name} を共有できます。",
-  "exp_share_file": "ファイルを共有"
+  "exp_share_file": "ファイルを共有",
+  "scanx_step_1": "品目を探しています…",
+  "scanx_step_2": "価格を読み取っています…",
+  "scanx_step_3": "合計を計算しています…",
+  "bf_share_tile_message": "グループにメッセージ",
+  "bf_share_tile_qr": "QRコードを表示",
+  "bf_share_tile_each": "各自にリンクを送る",
+  "bf_summary_save_people_one": "保存して共有 · {count}人",
+  "bf_summary_save_people_two": "保存して共有 · {count}人",
+  "bf_summary_save_people_few": "保存して共有 · {count}人",
+  "bf_summary_save_people_many": "保存して共有 · {count}人",
+  "bf_summary_save_people_other": "保存して共有 · {count}人"
 }

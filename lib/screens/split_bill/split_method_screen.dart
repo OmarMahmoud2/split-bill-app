@@ -240,8 +240,8 @@ class _SplitMethodScreenState extends State<SplitMethodScreen> {
                     child: Text(
                       'bf_split_title'.tr(),
                       style: AppTypography.titleMedium.copyWith(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
                         color: p.textPrimary,
                       ),
                     ),
@@ -380,6 +380,15 @@ class SplitMethodSegments extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: m == value ? p.surface : null,
                       borderRadius: BorderRadius.circular(9),
+                      boxShadow: m == value
+                          ? [
+                              BoxShadow(
+                                color: p.shadow.withValues(alpha: 0.10),
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Text(
                       'bf_split_seg_${m.wireName}'.tr(),
@@ -470,6 +479,7 @@ class _MethodRow extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppTypography.amount.copyWith(
                   fontSize: 16,
+                  fontFeatures: AppTypography.tabularFigures,
                   color: p.textPrimary,
                 ),
               ),
@@ -623,9 +633,14 @@ class _RoundIconButton extends StatelessWidget {
         child: Center(
           child: Material(
             color: p.surface,
-            shape: CircleBorder(side: BorderSide(color: p.hairline)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: p.hairline),
+            ),
             child: InkWell(
-              customBorder: const CircleBorder(),
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               onTap: onTap,
               child: SizedBox(
                 width: size,

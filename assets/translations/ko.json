@@ -2289,5 +2289,16 @@
   "you_exp_custom": "직접 설정",
   "pw_ad_offer": "짧은 광고를 보고 1포인트 받기 · 오늘 {left}회 남음",
   "exp_done_sub": "{name} 파일을 공유할 수 있어요.",
-  "exp_share_file": "파일 공유"
+  "exp_share_file": "파일 공유",
+  "scanx_step_1": "항목을 찾는 중…",
+  "scanx_step_2": "가격을 읽는 중…",
+  "scanx_step_3": "합계를 계산하는 중…",
+  "bf_share_tile_message": "그룹에 메시지 보내기",
+  "bf_share_tile_qr": "QR 코드 보기",
+  "bf_share_tile_each": "각자에게 링크 보내기",
+  "bf_summary_save_people_one": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_two": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_few": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_many": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_other": "저장하고 공유 · {count}명"
 }

@@ -12,6 +12,7 @@ import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// One person to send a link to.
@@ -169,6 +170,16 @@ class BillShareScreen extends StatelessWidget {
     _open(context, smsUri(text, phone: t.phoneNumber), text);
   }
 
+  void _openGroupMessage(BuildContext context) {
+    final text = groupShareText(
+      targets: targets,
+      billId: billId,
+      currency: currency,
+      store: storeName,
+    );
+    _open(context, smsUri(text), text);
+  }
+
   void _showQr(BuildContext context) {
     final p = context.palette;
     final url = personalBillUrl(billId);
@@ -239,10 +250,14 @@ class BillShareScreen extends StatelessWidget {
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        color: p.accent,
+                        color: p.accentSoft,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(AppIcons.check, color: p.onAccent, size: 32),
+                      child: Icon(
+                        AppIcons.successFill,
+                        color: p.accent,
+                        size: 36,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -251,6 +266,7 @@ class BillShareScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: AppTypography.headlineMedium.copyWith(
                       fontSize: 26,
+                      fontWeight: FontWeight.w800,
                       color: p.textPrimary,
                     ),
                   ),
@@ -264,6 +280,64 @@ class BillShareScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 22),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ShareOptionTile(
+                          key: const ValueKey('share_tile_message'),
+                          glyph: AppIcons.messageDuo,
+                          label: 'bf_share_tile_message'.tr(),
+                          onTap: () => _openGroupMessage(context),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ShareOptionTile(
+                          key: const ValueKey('share_tile_copy'),
+                          glyph: AppIcons.linkDuo,
+                          label: 'bf_share_copy_link'.tr(),
+                          onTap: () => _copy(context, personalBillUrl(billId)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ShareOptionTile(
+                          key: const ValueKey('share_qr_card'),
+                          glyph: AppIcons.qrDuo,
+                          label: 'bf_share_tile_qr'.tr(),
+                          onTap: () => _showQr(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (others.isNotEmpty) ...[
+                    const SizedBox(height: 22),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(
+                        start: 4,
+                        bottom: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          AppDuoIcon(
+                            AppIcons.sendDuo,
+                            size: 20,
+                            color: p.accent,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'bf_share_tile_each'.tr(),
+                              style: AppTypography.titleMedium.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: p.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   if (others.isNotEmpty)
                     Container(
                       decoration: BoxDecoration(
@@ -296,60 +370,6 @@ class BillShareScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  const SizedBox(height: 14),
-                  Material(
-                    color: p.surface,
-                    shape: AppRadii.cardShape(p.hairline),
-                    child: InkWell(
-                      key: const ValueKey('share_qr_card'),
-                      customBorder: AppRadii.cardShape(p.hairline),
-                      onTap: () => _showQr(context),
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 64,
-                              height: 64,
-                              decoration: BoxDecoration(
-                                color: p.surfaceVariant,
-                                borderRadius: AppRadii.rowRadius,
-                              ),
-                              child: Icon(
-                                AppIcons.qr,
-                                color: p.textSecondary,
-                                size: 36,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'bf_share_table_title'.tr(),
-                                    style: AppTypography.titleSmall.copyWith(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: p.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'bf_share_table_body'.tr(),
-                                    style: AppTypography.bodySmall.copyWith(
-                                      fontSize: 13,
-                                      color: p.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -506,6 +526,67 @@ class ShareTargetRow extends StatelessWidget {
             icon: Icon(AppIcons.link, color: p.textSecondary),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A big option tile on the share screen: duotone icon in a mint tile, label.
+class ShareOptionTile extends StatelessWidget {
+  const ShareOptionTile({
+    super.key,
+    required this.glyph,
+    required this.label,
+    required this.onTap,
+  });
+
+  final AppDuoGlyph glyph;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: Pressable(
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 104),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+          decoration: BoxDecoration(
+            color: p.surface,
+            borderRadius: AppRadii.cardRadius,
+            border: Border.all(color: p.hairline),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: p.accentSoft,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: AppDuoIcon(glyph, size: 26, color: p.accent),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                label,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelLarge.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: p.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

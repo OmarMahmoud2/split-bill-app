@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Personalizado",
   "pw_ad_offer": "Mira un anuncio corto por 1 punto · te quedan {left} hoy",
   "exp_done_sub": "{name} está listo para compartir.",
-  "exp_share_file": "Compartir archivo"
+  "exp_share_file": "Compartir archivo",
+  "scanx_step_1": "Buscando los artículos…",
+  "scanx_step_2": "Leyendo los precios…",
+  "scanx_step_3": "Sumando todo…",
+  "bf_share_tile_message": "Escribir al grupo",
+  "bf_share_tile_qr": "Mostrar código QR",
+  "bf_share_tile_each": "Enviar a cada persona su enlace",
+  "bf_summary_save_people_one": "Guardar y compartir · {count} persona",
+  "bf_summary_save_people_two": "Guardar y compartir · {count} personas",
+  "bf_summary_save_people_few": "Guardar y compartir · {count} personas",
+  "bf_summary_save_people_many": "Guardar y compartir · {count} personas",
+  "bf_summary_save_people_other": "Guardar y compartir · {count} personas"
 }

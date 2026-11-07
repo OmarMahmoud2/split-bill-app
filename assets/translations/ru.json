@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Свой период",
   "pw_ad_offer": "Посмотрите короткую рекламу за 1 балл · сегодня осталось {left}",
   "exp_done_sub": "Файл {name} готов к отправке.",
-  "exp_share_file": "Поделиться файлом"
+  "exp_share_file": "Поделиться файлом",
+  "scanx_step_1": "Ищем позиции…",
+  "scanx_step_2": "Считываем цены…",
+  "scanx_step_3": "Подсчитываем итог…",
+  "bf_share_tile_message": "Написать в группу",
+  "bf_share_tile_qr": "Показать QR-код",
+  "bf_share_tile_each": "Отправить каждому его ссылку",
+  "bf_summary_save_people_one": "Сохранить и поделиться · {count} человек",
+  "bf_summary_save_people_two": "Сохранить и поделиться · {count} человека",
+  "bf_summary_save_people_few": "Сохранить и поделиться · {count} человека",
+  "bf_summary_save_people_many": "Сохранить и поделиться · {count} человек",
+  "bf_summary_save_people_other": "Сохранить и поделиться · {count} человека"
 }

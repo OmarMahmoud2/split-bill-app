@@ -4,8 +4,9 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/services/contact_service.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/theme/app_icons.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 
 class MultiContactPicker extends StatefulWidget {
   final List<String> alreadySelectedIds;
@@ -104,59 +105,31 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final count = _selectedIds.length;
     return Scaffold(
-      backgroundColor: p.surface,
+      backgroundColor: p.background,
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'select_contacts',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ).tr(),
-            if (_selectedIds.isNotEmpty)
-              Text(
-                'bf_assign_selected_count'.tr(
-                  namedArgs: {'count': '${_selectedIds.length}'},
-                ),
-                style: const TextStyle(fontSize: 12),
-              ),
-          ],
+        backgroundColor: p.background,
+        title: Text(
+          'select_contacts'.tr(),
+          style: AppTypography.titleLarge.copyWith(
+            color: p.textPrimary,
+            fontWeight: FontWeight.w800,
+          ),
         ),
-        actions: [
-          if (_selectedIds.isNotEmpty)
-            TextButton(
-              onPressed: _returnSelection,
-              child: Text(
-                'add',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ).tr(),
-            ),
-        ],
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 12),
+            child: AppTextField(
               controller: _searchController,
+              hint: 'search_name_or_phone'.tr(),
+              textInputAction: TextInputAction.search,
               onChanged: _filterContacts,
-              decoration: InputDecoration(
-                hintText: 'search_name_or_phone'.tr(),
-                prefixIcon: const Icon(AppIcons.search),
-                filled: true,
-                fillColor: p.surfaceVariant,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
+              prefix: Icon(AppIcons.search, color: p.accent, size: 20),
             ),
           ),
-
-          // Contact List
           Expanded(
             child: _isLoading
                 ? Semantics(
@@ -171,55 +144,94 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                     ),
                   )
                 : ListView.builder(
+                    padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                     itemCount: _filteredContacts.length,
                     itemBuilder: (context, index) {
                       final contact = _filteredContacts[index];
-                      final displayName = contact.displayName ?? '';
-                      final isSelected = _selectedIds.contains(contact.id);
-                      final hasPhone = contact.phones.isNotEmpty;
-
-                      if (!hasPhone) return const SizedBox.shrink();
-
-                      return ListTile(
-                        leading: PalAvatar(
-                          seed: displayName.trim().toLowerCase(),
-                          name: displayName,
-                          size: 40,
-                          ringColor: isSelected ? p.accent : null,
-                        ),
-                        title: Text(
-                          displayName,
-                          style: TextStyle(
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                      final name = contact.displayName ?? '';
+                      final selected = _selectedIds.contains(contact.id);
+                      if (contact.phones.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Pressable(
+                          onTap: () => _toggleSelection(contact),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 160),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: selected ? p.accentSoft : p.surface,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: selected ? p.accent : p.border,
+                                width: selected ? 1.5 : 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                PalAvatar(
+                                  seed: name.trim().toLowerCase(),
+                                  name: name,
+                                  size: 40,
+                                  ringColor: selected ? p.accent : null,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTypography.titleMedium
+                                            .copyWith(
+                                              color: p.textPrimary,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                      ),
+                                      Text(
+                                        contact.phones.first.number,
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: p.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  selected
+                                      ? AppIcons.successFill
+                                      : AppIcons.add,
+                                  size: selected ? 24 : 20,
+                                  color: selected ? p.accent : p.textTertiary,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        subtitle: Text(
-                          contact.phones.isNotEmpty
-                              ? contact.phones.first.number
-                              : 'bf_assign_no_number'.tr(),
-                        ),
-                        trailing: Checkbox(
-                          value: isSelected,
-                          onChanged: (val) => _toggleSelection(contact),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        onTap: () => _toggleSelection(contact),
                       );
                     },
                   ),
           ),
         ],
       ),
-      floatingActionButton: _selectedIds.isNotEmpty
-          ? FloatingActionButton(
-              onPressed: _returnSelection,
-              child: const Icon(AppIcons.check),
-            )
-          : null,
+      bottomNavigationBar: count == 0
+          ? null
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 12),
+                child: SizedBox(
+                  height: 54,
+                  child: FilledButton(
+                    onPressed: _returnSelection,
+                    child: Text('${'add'.tr()} · $count'),
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

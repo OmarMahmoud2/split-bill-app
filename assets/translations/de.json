@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Benutzerdefiniert",
   "pw_ad_offer": "Kurze Werbung ansehen für 1 Punkt · heute noch {left}",
   "exp_done_sub": "{name} ist bereit zum Teilen.",
-  "exp_share_file": "Datei teilen"
+  "exp_share_file": "Datei teilen",
+  "scanx_step_1": "Positionen werden gesucht…",
+  "scanx_step_2": "Preise werden gelesen…",
+  "scanx_step_3": "Alles wird zusammengerechnet…",
+  "bf_share_tile_message": "Gruppe benachrichtigen",
+  "bf_share_tile_qr": "QR-Code zeigen",
+  "bf_share_tile_each": "Jeder bekommt seinen Link",
+  "bf_summary_save_people_one": "Speichern und teilen · {count} Person",
+  "bf_summary_save_people_two": "Speichern und teilen · {count} Personen",
+  "bf_summary_save_people_few": "Speichern und teilen · {count} Personen",
+  "bf_summary_save_people_many": "Speichern und teilen · {count} Personen",
+  "bf_summary_save_people_other": "Speichern und teilen · {count} Personen"
 }

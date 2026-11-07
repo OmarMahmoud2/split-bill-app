@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Własny",
   "pw_ad_offer": "Obejrzyj krótką reklamę za 1 punkt · dziś zostało {left}",
   "exp_done_sub": "Plik {name} jest gotowy do udostępnienia.",
-  "exp_share_file": "Udostępnij plik"
+  "exp_share_file": "Udostępnij plik",
+  "scanx_step_1": "Szukam pozycji…",
+  "scanx_step_2": "Odczytuję ceny…",
+  "scanx_step_3": "Sumuję wszystko…",
+  "bf_share_tile_message": "Napisz do grupy",
+  "bf_share_tile_qr": "Pokaż kod QR",
+  "bf_share_tile_each": "Wyślij każdemu jego link",
+  "bf_summary_save_people_one": "Zapisz i udostępnij · {count} osoba",
+  "bf_summary_save_people_two": "Zapisz i udostępnij · {count} osoby",
+  "bf_summary_save_people_few": "Zapisz i udostępnij · {count} osoby",
+  "bf_summary_save_people_many": "Zapisz i udostępnij · {count} osób",
+  "bf_summary_save_people_other": "Zapisz i udostępnij · {count} osoby"
 }

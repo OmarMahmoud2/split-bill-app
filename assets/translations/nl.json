@@ -2289,5 +2289,16 @@
   "you_exp_custom": "Aangepast",
   "pw_ad_offer": "Bekijk een korte advertentie voor 1 punt · nog {left} vandaag",
   "exp_done_sub": "{name} staat klaar om te delen.",
-  "exp_share_file": "Bestand delen"
+  "exp_share_file": "Bestand delen",
+  "scanx_step_1": "Items zoeken…",
+  "scanx_step_2": "Prijzen lezen…",
+  "scanx_step_3": "Alles optellen…",
+  "bf_share_tile_message": "Bericht naar de groep",
+  "bf_share_tile_qr": "QR-code tonen",
+  "bf_share_tile_each": "Stuur ieder zijn link",
+  "bf_summary_save_people_one": "Opslaan en delen · {count} persoon",
+  "bf_summary_save_people_two": "Opslaan en delen · {count} personen",
+  "bf_summary_save_people_few": "Opslaan en delen · {count} personen",
+  "bf_summary_save_people_many": "Opslaan en delen · {count} personen",
+  "bf_summary_save_people_other": "Opslaan en delen · {count} personen"
 }

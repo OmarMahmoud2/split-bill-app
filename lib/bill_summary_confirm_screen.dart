@@ -20,6 +20,9 @@ import 'package:split_bill_app/screens/split_bill/split_method_screen.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
 import 'package:split_bill_app/services/added_push.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/summary_receipt_card.dart';
+import 'package:split_bill_app/utils/plural_text.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/offline_write.dart';
 import 'package:split_bill_app/utils/money_format.dart';
@@ -241,19 +244,20 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
             ),
             const SizedBox(height: 12),
-            TextField(
+            AppTextField(
               controller: controller,
               autofocus: true,
+              money: true,
               keyboardType: TextInputType.numberWithOptions(
                 decimal: decimals > 0,
               ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
               ],
-              decoration: InputDecoration(
-                prefixText: '${_draft.currency} ',
-                border: const OutlineInputBorder(
-                  borderRadius: AppRadii.rowRadius,
+              prefix: Text(
+                _draft.currency,
+                style: AppTypography.labelMedium.copyWith(
+                  color: p.textSecondary,
                 ),
               ),
             ),
@@ -653,25 +657,11 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
               child: ListView(
                 padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 16),
                 children: [
-                  Text(
-                    'bf_summary_paid_by_you'.tr(
-                      namedArgs: {'store': _storeName},
-                    ),
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: p.textSecondary,
-                    ),
+                  SummaryReceiptCard(
+                    draft: _draft,
+                    storeName: _storeName,
+                    totalMinor: c.grandTotalMinor,
                   ),
-                  MoneyText(
-                    minor: c.grandTotalMinor,
-                    currency: _draft.currency,
-                    size: MoneySize.hero,
-                    tone: MoneyTone.neutral,
-                    animate: true,
-                    animateFromZero: false,
-                    style: const TextStyle(fontSize: 40),
-                  ),
-                  const SizedBox(height: 4),
-                  _ChargesLine(draft: _draft),
                   if (issue != null) ...[
                     const SizedBox(height: 12),
                     Semantics(
@@ -790,46 +780,13 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                     )
                   : AssignPillButton(
                       key: const ValueKey('summary_save'),
-                      label: 'bf_summary_save'.tr(),
+                      label: pluralText('bf_summary_save_people', _ids.length),
                       muted: !c.isValid,
                       onPressed: _save,
                     ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ChargesLine extends StatelessWidget {
-  const _ChargesLine({required this.draft});
-
-  final BillDraft draft;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    String m(int v) => formatMoneyMinor(v, draft.currency);
-    String part(String key, int v) => key.tr(namedArgs: {'amount': m(v)});
-    final parts = <String>[
-      part('bf_summary_items_part', draft.itemsSubtotalMinor),
-      if (draft.taxMinor > 0) part('bf_summary_tax_part', draft.taxMinor),
-      if (draft.serviceMinor > 0)
-        part('bf_summary_service_part', draft.serviceMinor),
-      if (draft.tipMinor > 0) part('bf_summary_tip_part', draft.tipMinor),
-      if (draft.deliveryMinor > 0)
-        part('bf_summary_delivery_part', draft.deliveryMinor),
-      if (draft.otherChargesMinor > 0)
-        part('bf_summary_other_part', draft.otherChargesMinor),
-      if (draft.discountMinor > 0)
-        part('bf_summary_discount_part', draft.discountMinor),
-    ];
-    return Text(
-      parts.join(' · '),
-      style: AppTypography.bodySmall.copyWith(
-        fontSize: 13,
-        color: p.textSecondary,
       ),
     );
   }

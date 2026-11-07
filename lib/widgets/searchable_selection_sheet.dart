@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:split_bill_app/theme/app_palette.dart';
-import 'package:split_bill_app/theme/app_icons.dart';
+import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 
 class SearchableSheetItem<T> {
   const SearchableSheetItem({
@@ -57,8 +58,7 @@ class _SearchableSelectionSheetState<T>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = context.palette;
 
     final filteredItems = widget.items.where((item) {
       final query = _query.trim().toLowerCase();
@@ -74,65 +74,42 @@ class _SearchableSelectionSheetState<T>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Header & Search
         Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 16),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 widget.title,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.6,
+                style: AppTypography.headlineSmall.copyWith(
+                  color: p.textPrimary,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 18),
-
-              // Refined Search Field
-              Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(
-                    alpha: 0.5,
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: colorScheme.outline.withValues(alpha: 0.1),
-                  ),
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) => setState(() => _query = value),
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: widget.searchHint,
-                    hintStyle: TextStyle(
-                      color: colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                    prefixIcon: Icon(
-                      AppIcons.search,
-                      color: colorScheme.primary,
-                    ),
-                    suffixIcon: _query.isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: 'bf_bills_clear_search'.tr(),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() => _query = '');
-                            },
-                            icon: const Icon(AppIcons.cancel),
-                            color: colorScheme.onSurface.withValues(alpha: 0.3),
+              const SizedBox(height: 14),
+              AppTextField(
+                controller: _searchController,
+                hint: widget.searchHint,
+                textInputAction: TextInputAction.search,
+                onChanged: (value) => setState(() => _query = value),
+                prefix: Icon(AppIcons.search, color: p.accent, size: 20),
+                suffix: _query.isEmpty
+                    ? null
+                    : GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          _searchController.clear();
+                          setState(() => _query = '');
+                        },
+                        child: Tooltip(
+                          message: 'bf_bills_clear_search'.tr(),
+                          child: Icon(
+                            AppIcons.cancel,
+                            size: 20,
+                            color: p.textTertiary,
                           ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
+                        ),
+                      ),
               ),
             ],
           ),
@@ -140,13 +117,13 @@ class _SearchableSelectionSheetState<T>
 
         // List
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.sizeOf(context).height * 0.5,
           child: filteredItems.isEmpty
               ? _buildEmptyState(context)
               : ListView.separated(
                   padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 24),
                   itemCount: filteredItems.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final item = filteredItems[index];
                     final selected = widget.isSelected(item.value);
@@ -164,88 +141,58 @@ class _SearchableSelectionSheetState<T>
     SearchableSheetItem<T> item,
     bool selected,
   ) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => widget.onSelected(item.value),
-        borderRadius: BorderRadius.circular(22),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: selected
-                ? colorScheme.primary.withValues(alpha: 0.08)
-                : theme.cardColor,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: selected
-                  ? colorScheme.primary.withValues(alpha: 0.3)
-                  : colorScheme.outline.withValues(alpha: 0.1),
-              width: selected ? 2 : 1,
-            ),
-            boxShadow: [
-              if (!selected)
-                BoxShadow(
-                  color: context.palette.shadow.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-            ],
+    final p = context.palette;
+    return Pressable(
+      onTap: () => widget.onSelected(item.value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: selected ? p.accentSoft : p.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? p.accent : p.border,
+            width: selected ? 1.5 : 1,
           ),
-          child: Row(
-            children: [
-              // Iconic Leading
-              item.leading,
-              const SizedBox(width: 16),
-
-              // Text Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: selected ? colorScheme.primary : null,
-                      ),
+        ),
+        child: Row(
+          children: [
+            item.leading,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: AppTypography.titleMedium.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: selected ? p.onAccentSoft : p.textPrimary,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.subtitle,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: p.textSecondary,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              const SizedBox(width: 8),
-
-              // Status Indicator
-              if (selected)
-                Icon(AppIcons.successFill, color: colorScheme.primary)
-              else
-                Icon(
-                  AppIcons.chevronRight,
-                  size: 14,
-                  color: colorScheme.outline.withValues(alpha: 0.5),
-                ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            if (selected)
+              Icon(AppIcons.successFill, color: p.accent)
+            else
+              Icon(AppIcons.chevronRight, size: 14, color: p.textTertiary),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+    final p = context.palette;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -253,32 +200,28 @@ class _SearchableSelectionSheetState<T>
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
-                shape: BoxShape.circle,
+                color: p.surfaceVariant,
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(
-                AppIcons.search,
-                size: 40,
-                color: colorScheme.onSurface.withValues(alpha: 0.3),
-              ),
+              child: Icon(AppIcons.search, size: 32, color: p.textSecondary),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             Text(
               widget.emptyTitle,
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
+              style: AppTypography.titleLarge.copyWith(
+                color: p.textPrimary,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               widget.emptyMessage,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+              style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
             ),
           ],
         ),
