@@ -19,6 +19,8 @@ import 'package:firebase_core/firebase_core.dart';
 // ignore: depend_on_referenced_packages
 import 'package:firebase_core_platform_interface/test.dart';
 import 'package:flutter/foundation.dart';
+// ignore: depend_on_referenced_packages
+import 'package:intl/intl.dart' show NumberFormat;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -300,6 +302,21 @@ String _transcript(String lang) => switch (lang) {
   'de' => 'Leo hatte die Pasta, Sara und ich haben uns die Pizza geteilt',
   'fr' => 'Leo a pris les pâtes, Sara et moi avons partagé la pizza',
   'es' => 'Leo pidió la pasta, Sara y yo compartimos la pizza',
+  'it' => 'Leo ha preso la pasta, io e Sara abbiamo diviso la pizza',
+  'pt' => 'O Leo pediu a massa, eu e a Sara dividimos a pizza',
+  'nl' => 'Leo had de pasta, Sara en ik deelden de pizza',
+  'pl' => 'Leo zjadł makaron, a ja z Sarą podzieliliśmy pizzę',
+  'ru' => 'Лео взял пасту, мы с Сарой поделили пиццу',
+  'tr' => 'Leo makarnayı aldı, Sara ile pizzayı paylaştık',
+  'sv' => 'Leo tog pastan, Sara och jag delade pizzan',
+  'da' => 'Leo fik pastaen, Sara og jeg delte pizzaen',
+  'nb' => 'Leo tok pastaen, Sara og jeg delte pizzaen',
+  'id' => 'Leo makan pasta, aku dan Sara berbagi pizza',
+  'vi' => 'Leo ăn mì Ý, tôi và Sara chia nhau bánh pizza',
+  'ko' => '레오는 파스타, 사라와 나는 피자를 나눠 먹었어요',
+  'th' => 'ลีโอกินพาสต้า ฉันกับซาร่าแบ่งพิซซ่ากัน',
+  'hi' => 'लियो ने पास्ता लिया, सारा और मैंने पिज़्ज़ा बाँटा',
+  'ur' => 'لیو نے پاستا لیا، سارہ اور میں نے پیزا بانٹا',
   _ => 'Leo had the pasta, Sara and I shared the pizza',
 };
 
@@ -310,7 +327,9 @@ List<Map<String, dynamic>> _people() => [
 
 // ------------------------------------------------------------- harness
 
-const _w = 440.0, _h = 956.0;
+// Taller than a 19.5:9 phone so the breakdown list, the settle rows and the
+// home bill are fully visible; the status bar is drawn in frame_screenshots.py.
+const _w = 440.0, _h = 1080.0;
 
 class _Shot {
   _Shot(this.tester, this.p);
@@ -563,6 +582,35 @@ void main() {
       await s.pump(const SettleUpScreen.group(groupId: 'g1'));
       await s.save('5-settle');
 
+      // callout strings (translations are loaded by now)
+      // Strings for the callouts that tool/store/frame_screenshots.py draws.
+      final money = NumberFormat.simpleCurrency(
+        locale: p.lang, name: cur, decimalDigits: currencyDecimals(cur));
+      // intl has no Arabic riyal symbol; direction marks are re-added when drawn.
+      String m(int minor) => money
+          .format(fromMinorUnits(minor, cur))
+          .replaceAll('Riyal', 'ر.س')
+          .replaceAll(RegExp('[‎‏]'), '');
+      final gb = _guestBill(p);
+      final leo = (gb['participants'] as List).firstWhere((x) => x['id'] == 'leo') as Map;
+      final meta = <String, String>{
+        // Same sum the scan screen shows (rounded per line), not the per-person total.
+        'total': m(
+          [
+            ...(receipt['items'] as List).map((i) => i['price'] as num),
+            receipt['tax'] as num,
+            receipt['service_charge'] as num,
+          ].fold<int>(0, (a, v) => a + toMinorUnits(v.toDouble(), cur)),
+        ),
+        'total_label': 'receipt_total'.tr(),
+        'transcript': _transcript(p.lang),
+        'owe': 'fx_you_owe'.tr(namedArgs: {'amount': m(leo['shareMinor'] as int)}),
+        'leo': '${_names['leo']}  ${m(leo['shareMinor'] as int)}',
+        'settle': 'settle_n_payments_settle'.tr(namedArgs: {'count': '5'}),
+        'paid': '${'status_paid'.tr()}  ${m(_minor(cur, 24) + _minor(cur, 20))}',
+        'name': 'Yuki',
+      };
+
       // 6 home (light) and 7 home (dark)
       final homeRepo = _homeRepo(p);
       LedgerRepository.instance = homeRepo;
@@ -577,8 +625,15 @@ void main() {
       );
       await s.pump(home());
       await s.save('6-home');
+      meta['owed_label'] = 'home_owed_overall'.tr();
+      meta['owed'] = tester
+          .widgetList<Text>(find.byType(Text))
+          .map((t) => t.data ?? '')
+          .firstWhere((t) => t.startsWith('+'), orElse: () => '');
       await s.pump(home(), dark: true);
       await s.save('7-home-dark');
+      File('build/store_raw/${p.key}/meta.json')
+          .writeAsStringSync(jsonEncode(meta));
       for (final o in owned) {
         o.dispose();
       }
@@ -682,14 +737,14 @@ FakeLedgerRepository _settleRepo(Profile p) {
     createdBy: 'maya',
     type: GroupType.trip,
     currency: p.currency,
-    members: [for (final id in _ids.take(5)) GroupMember(id: id, name: _names[id]!)],
+    members: [for (final id in _ids) GroupMember(id: id, name: _names[id]!)],
   );
   return FakeLedgerRepository(
     groups: [g],
     groupBills: {
       'g1': [
-        _bill(p, 'b1', 'Dinner at Lumen', 'maya', {'maya': 20, 'leo': 31, 'sara': 28, 'omar': 22, 'yuki': 24}, groupId: 'g1'),
-        _bill(p, 'b2', 'Tram passes', 'leo', {'maya': 12, 'leo': 12, 'sara': 12, 'omar': 12, 'yuki': 12}, groupId: 'g1'),
+        _bill(p, 'b1', 'Dinner at Lumen', 'maya', {'maya': 20, 'leo': 31, 'sara': 28, 'omar': 22, 'yuki': 24, 'ana': 18}, groupId: 'g1'),
+        _bill(p, 'b2', 'Tram passes', 'leo', {'maya': 12, 'leo': 12, 'sara': 12, 'omar': 12, 'yuki': 12, 'ana': 12}, groupId: 'g1'),
         _bill(p, 'b3', 'Pastéis de nata', 'sara', {'maya': 8, 'sara': 8, 'yuki': 8}, groupId: 'g1'),
         _bill(p, 'b4', 'Rooftop drinks', 'omar', {'leo': 26, 'omar': 26, 'yuki': 26, 'sara': 26}, groupId: 'g1'),
       ],

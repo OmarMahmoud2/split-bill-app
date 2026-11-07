@@ -1,245 +1,542 @@
 {
- "en-US / en-CA": [
-  "Scan it",
-  "Say who had what",
-  "Every cent accounted for",
-  "Friends pay from a link",
-  "Settle in fewer payments",
-  "Any currency, 22 languages",
-  "Free, no daily limits"
- ],
- "en-GB / en-AU": [
-  "Scan it",
-  "Say who had what",
-  "Every penny accounted for",
-  "Mates pay from a link",
-  "Settle in fewer payments",
-  "Any currency, 22 languages",
-  "Free, no daily limits"
- ],
- "de-DE": [
-  "Scannen",
-  "Sagen, wer was hatte",
-  "Jeder Cent nachvollziehbar",
-  "Freunde zahlen per Link",
-  "Mit weniger Zahlungen ausgleichen",
-  "Jede Währung, 22 Sprachen",
-  "Kostenlos, ohne Tageslimit"
- ],
- "nl-NL": [
-  "Scan de bon",
-  "Zeg wie wat had",
-  "Elke cent verantwoord",
-  "Vrienden betalen via een link",
-  "Verrekenen met minder betalingen",
-  "Elke valuta, 22 talen",
-  "Gratis, zonder daglimiet"
- ],
- "sv": [
-  "Skanna",
-  "Säg vem som tog vad",
-  "Varje öre redovisat",
-  "Vänner betalar via en länk",
-  "Gör upp med färre betalningar",
-  "Alla valutor, 22 språk",
-  "Gratis, utan dagsgräns"
- ],
- "da": [
-  "Scan",
-  "Sig hvem der fik hvad",
-  "Hver øre gjort op",
-  "Venner betaler via et link",
-  "Afregn med færre betalinger",
-  "Alle valutaer, 22 sprog",
-  "Gratis, uden dagligt loft"
- ],
- "no": [
-  "Skann",
-  "Si hvem som fikk hva",
-  "Hvert øre gjort rede for",
-  "Venner betaler via en lenke",
-  "Gjør opp med færre betalinger",
-  "Alle valutaer, 22 språk",
-  "Gratis, uten dagsgrense"
- ],
- "fr-FR": [
-  "Scannez",
-  "Dites qui a pris quoi",
-  "Chaque centime justifié",
-  "Vos amis paient depuis un lien",
-  "Réglez en moins de paiements",
-  "Toutes les devises, 22 langues",
-  "Gratuit, sans limite quotidienne"
- ],
- "fr-CA": [
-  "Scannez",
-  "Dites qui a pris quoi",
-  "Chaque cent justifié",
-  "Vos amis paient depuis un lien",
-  "Réglez en moins de paiements",
-  "Toutes les devises, 22 langues",
-  "Gratuit, sans limite quotidienne"
- ],
- "es-ES": [
-  "Escanéalo",
-  "Di quién pidió qué",
-  "Cada céntimo justificado",
-  "Tus amigos pagan desde un enlace",
-  "Salda con menos pagos",
-  "Cualquier moneda, 22 idiomas",
-  "Gratis, sin límite diario"
- ],
- "es-MX / es-419": [
-  "Escanéalo",
-  "Di quién pidió qué",
-  "Cada centavo justificado",
-  "Tus amigos pagan desde un enlace",
-  "Salda con menos pagos",
-  "Cualquier moneda, 22 idiomas",
-  "Gratis, sin límite diario"
- ],
- "it": [
-  "Scansiona",
-  "Di' chi ha preso cosa",
-  "Ogni centesimo giustificato",
-  "Gli amici pagano da un link",
-  "Salda con meno pagamenti",
-  "Qualsiasi valuta, 22 lingue",
-  "Gratis, senza limite giornaliero"
- ],
- "pt-BR": [
-  "Escaneie",
-  "Diga quem pediu o quê",
-  "Cada centavo justificado",
-  "Seus amigos pagam por um link",
-  "Acerte com menos pagamentos",
-  "Qualquer moeda, 22 idiomas",
-  "Grátis, sem limite diário"
- ],
- "pt-PT": [
-  "Digitaliza",
-  "Diz quem pediu o quê",
-  "Cada cêntimo justificado",
-  "Os amigos pagam por um link",
-  "Acerta com menos pagamentos",
-  "Qualquer moeda, 22 idiomas",
-  "Grátis, sem limite diário"
- ],
- "pl": [
-  "Zeskanuj",
-  "Powiedz, kto co zamówił",
-  "Każdy grosz rozliczony",
-  "Znajomi płacą z linku",
-  "Rozlicz mniejszą liczbą przelewów",
-  "Każda waluta, 22 języki",
-  "Za darmo, bez dziennego limitu"
- ],
- "ru": [
-  "Сканируйте",
-  "Скажите, кто что брал",
-  "Каждая копейка учтена",
-  "Друзья платят по ссылке",
-  "Меньше переводов при расчёте",
-  "Любая валюта, 22 языка",
-  "Бесплатно, без дневного лимита"
- ],
- "tr": [
-  "Tara",
-  "Kim ne aldı söyle",
-  "Her kuruşun hesabı belli",
-  "Arkadaşların bağlantıdan öder",
-  "Daha az ödemeyle hesaplaş",
-  "Her para birimi, 22 dil",
-  "Ücretsiz, günlük sınır yok"
- ],
- "ar-SA / ar": [
-  "امسح الإيصال",
-  "قل من أخذ ماذا",
-  "كل قرش محسوب",
-  "أصدقاؤك يدفعون من رابط",
-  "سوّي الحساب بتحويلات أقل",
-  "أي عملة، 22 لغة",
-  "مجاني، بلا حد يومي"
- ],
- "hi / hi-IN": [
-  "स्कैन करें",
-  "बोलें किसने क्या लिया",
-  "हर पैसे का हिसाब",
-  "दोस्त लिंक से चुकाते हैं",
-  "कम पेमेंट में हिसाब चुकता",
-  "कोई भी करेंसी, 22 भाषाएं",
-  "मुफ़्त, कोई दैनिक सीमा नहीं"
- ],
- "ur (Play)": [
-  "اسکین کریں",
-  "بولیں کس نے کیا لیا",
-  "ہر پیسے کا حساب",
-  "دوست لنک سے ادا کرتے ہیں",
-  "کم ادائیگیوں میں حساب برابر",
-  "کوئی بھی کرنسی، 22 زبانیں",
-  "مفت، کوئی روزانہ حد نہیں"
- ],
- "id": [
-  "Pindai",
-  "Sebut siapa makan apa",
-  "Tiap rupiah jelas",
-  "Teman bayar lewat tautan",
-  "Lunasi dengan lebih sedikit transfer",
-  "Mata uang apa pun, 22 bahasa",
-  "Gratis, tanpa batas harian"
- ],
- "ja": [
-  "レシートを撮る",
-  "誰が何を食べたか話す",
-  "1円まで明細に",
-  "友達はリンクから支払い",
-  "最少回数で精算",
-  "あらゆる通貨、22言語",
-  "無料、1日の上限なし"
- ],
- "ko": [
-  "영수증 스캔",
-  "누가 뭘 먹었는지 말하기",
-  "1원까지 정확하게",
-  "친구는 링크에서 송금",
-  "더 적은 송금으로 정산",
-  "모든 통화, 22개 언어",
-  "무료, 하루 제한 없음"
- ],
- "th": [
-  "สแกน",
-  "บอกว่าใครกินอะไร",
-  "ทุกสตางค์มีที่มา",
-  "เพื่อนจ่ายจากลิงก์",
-  "เคลียร์ด้วยการโอนที่น้อยลง",
-  "ทุกสกุลเงิน 22 ภาษา",
-  "ฟรี ไม่จำกัดต่อวัน"
- ],
- "vi": [
-  "Quét",
-  "Nói ai ăn gì",
-  "Từng đồng rõ ràng",
-  "Bạn bè trả qua link",
-  "Thanh toán với ít lần chuyển hơn",
-  "Mọi loại tiền, 22 ngôn ngữ",
-  "Miễn phí, không giới hạn mỗi ngày"
- ],
- "zh-Hans / zh-CN": [
-  "扫小票",
-  "说一句谁吃了什么",
-  "每一分钱都有去向",
-  "朋友点开链接付款",
-  "用更少的转账结清",
-  "任何货币，22 种语言",
-  "免费，不限每日次数"
- ],
- "zh-Hant / zh-TW": [
-  "掃收據",
-  "說一句誰吃了什麼",
-  "每一塊錢都有去向",
-  "朋友點開連結付款",
-  "用更少的轉帳結清",
-  "任何貨幣，22 種語言",
-  "免費，不限每日次數"
- ]
+ "en-US / en-CA": {
+  "head": [
+   "Scan it",
+   "Say who had what",
+   "Every cent accounted for",
+   "Friends pay from a link",
+   "Settle in fewer payments",
+   "Any currency, 22 languages",
+   "Free, no daily limits"
+  ],
+  "sub": [
+   "Snap the receipt. Items fill in instantly.",
+   "Just talk. Evens assigns every item.",
+   "Everyone's share, tax and tip included.",
+   "No app or account needed to pay.",
+   "Fewer transfers, everyone square.",
+   "Bills, people and balances in one place.",
+   "Split as many bills as you like."
+  ]
+ },
+ "en-GB / en-AU": {
+  "head": [
+   "Scan it",
+   "Say who had what",
+   "Every penny accounted for",
+   "Mates pay from a link",
+   "Settle in fewer payments",
+   "Any currency, 22 languages",
+   "Free, no daily limits"
+  ],
+  "sub": [
+   "Snap the receipt. Items fill in instantly.",
+   "Just talk. Evens assigns every item.",
+   "Everyone's share, tax and tip included.",
+   "Mates pay without an app or account.",
+   "Fewer transfers, everyone square.",
+   "Bills, people and balances in one place.",
+   "Split as many bills as you like."
+  ]
+ },
+ "de-DE": {
+  "head": [
+   "Scannen",
+   "Sagen, wer was hatte",
+   "Jeder Cent nachvollziehbar",
+   "Freunde zahlen per Link",
+   "Mit weniger Zahlungen ausgleichen",
+   "Jede Währung, 22 Sprachen",
+   "Kostenlos, ohne Tageslimit"
+  ],
+  "sub": [
+   "Beleg knipsen, Posten sind sofort da.",
+   "Einfach sagen – Evens ordnet alles zu.",
+   "Jeder Anteil, inkl. Steuer und Trinkgeld.",
+   "Zum Zahlen weder App noch Konto nötig.",
+   "Weniger Überweisungen, alle quitt.",
+   "Rechnungen, Leute und Salden an einem Ort.",
+   "So viele Rechnungen teilen, wie du willst."
+  ]
+ },
+ "nl-NL": {
+  "head": [
+   "Scan de bon",
+   "Zeg wie wat had",
+   "Elke cent verantwoord",
+   "Vrienden betalen via een link",
+   "Verrekenen met minder betalingen",
+   "Elke valuta, 22 talen",
+   "Gratis, zonder daglimiet"
+  ],
+  "sub": [
+   "Fotografeer de bon, items staan er meteen.",
+   "Gewoon praten. Evens wijst alles toe.",
+   "Ieders deel, inclusief btw en fooi.",
+   "Betalen zonder app of account.",
+   "Minder overboekingen, iedereen quitte.",
+   "Bonnen, mensen en saldo's op één plek.",
+   "Splits zoveel bonnen als je wilt."
+  ]
+ },
+ "sv": {
+  "head": [
+   "Skanna",
+   "Säg vem som tog vad",
+   "Varje öre redovisat",
+   "Vänner betalar via en länk",
+   "Gör upp med färre betalningar",
+   "Alla valutor, 22 språk",
+   "Gratis, utan dagsgräns"
+  ],
+  "sub": [
+   "Fota kvittot – raderna fylls i direkt.",
+   "Bara prata. Evens fördelar varje rad.",
+   "Allas andel, med moms och dricks.",
+   "Betala utan app eller konto.",
+   "Färre betalningar, alla kvitt.",
+   "Notor, personer och saldon på ett ställe.",
+   "Dela hur många notor du vill."
+  ]
+ },
+ "da": {
+  "head": [
+   "Scan",
+   "Sig hvem der fik hvad",
+   "Hver øre gjort op",
+   "Venner betaler via et link",
+   "Afregn med færre betalinger",
+   "Alle valutaer, 22 sprog",
+   "Gratis, uden dagligt loft"
+  ],
+  "sub": [
+   "Fotografér bonen – alt udfyldes straks.",
+   "Bare tal. Evens fordeler hver vare.",
+   "Alles andel, inkl. moms og drikkepenge.",
+   "Betal uden app eller konto.",
+   "Færre overførsler, alle er kvit.",
+   "Regninger, folk og saldi ét sted.",
+   "Del så mange regninger, du vil."
+  ]
+ },
+ "no": {
+  "head": [
+   "Skann",
+   "Si hvem som fikk hva",
+   "Hvert øre gjort rede for",
+   "Venner betaler via en lenke",
+   "Gjør opp med færre betalinger",
+   "Alle valutaer, 22 språk",
+   "Gratis, uten dagsgrense"
+  ],
+  "sub": [
+   "Ta bilde av kvitteringen – alt fylles ut.",
+   "Bare snakk. Evens fordeler hver vare.",
+   "Alles andel, med mva og tips.",
+   "Betal uten app eller konto.",
+   "Færre overføringer, alle er skuls.",
+   "Regninger, folk og saldoer på ett sted.",
+   "Del så mange regninger du vil."
+  ]
+ },
+ "fr-FR": {
+  "head": [
+   "Scannez",
+   "Dites qui a pris quoi",
+   "Chaque centime justifié",
+   "Vos amis paient depuis un lien",
+   "Réglez en moins de paiements",
+   "Toutes les devises, 22 langues",
+   "Gratuit, sans limite quotidienne"
+  ],
+  "sub": [
+   "Photographiez le ticket, tout se remplit.",
+   "Parlez, Evens attribue chaque article.",
+   "Part de chacun, taxes et pourboire inclus.",
+   "Payer sans appli ni compte.",
+   "Moins de virements, tous quittes.",
+   "Notes, amis et soldes au même endroit.",
+   "Partagez autant de notes que vous voulez."
+  ]
+ },
+ "fr-CA": {
+  "head": [
+   "Scannez",
+   "Dites qui a pris quoi",
+   "Chaque cent justifié",
+   "Vos amis paient depuis un lien",
+   "Réglez en moins de paiements",
+   "Toutes les devises, 22 langues",
+   "Gratuit, sans limite quotidienne"
+  ],
+  "sub": [
+   "Photographiez la facture, tout se remplit.",
+   "Parlez, Evens attribue chaque article.",
+   "Part de chacun, taxes et pourboire inclus.",
+   "Payer sans appli ni compte.",
+   "Moins de virements, tous quittes.",
+   "Factures, amis et soldes au même endroit.",
+   "Autant de factures que vous voulez."
+  ]
+ },
+ "es-ES": {
+  "head": [
+   "Escanéalo",
+   "Di quién pidió qué",
+   "Cada céntimo justificado",
+   "Tus amigos pagan desde un enlace",
+   "Salda con menos pagos",
+   "Cualquier moneda, 22 idiomas",
+   "Gratis, sin límite diario"
+  ],
+  "sub": [
+   "Foto al ticket y los artículos aparecen.",
+   "Solo habla. Evens asigna cada artículo.",
+   "La parte de cada uno, con IVA y propina.",
+   "Pagar sin app ni cuenta.",
+   "Menos transferencias, todos en paz.",
+   "Cuentas, gente y saldos en un solo sitio.",
+   "Divide todas las cuentas que quieras."
+  ]
+ },
+ "es-MX / es-419": {
+  "head": [
+   "Escanéalo",
+   "Di quién pidió qué",
+   "Cada centavo justificado",
+   "Tus amigos pagan desde un enlace",
+   "Salda con menos pagos",
+   "Cualquier moneda, 22 idiomas",
+   "Gratis, sin límite diario"
+  ],
+  "sub": [
+   "Fotografía el ticket y todo se llena solo.",
+   "Solo habla. Evens asigna cada artículo.",
+   "La parte de cada quien, con IVA y propina.",
+   "Pagar sin app ni cuenta.",
+   "Menos transferencias, todos a mano.",
+   "Cuentas, gente y saldos en un solo lugar.",
+   "Divide todas las cuentas que quieras."
+  ]
+ },
+ "it": {
+  "head": [
+   "Scansiona",
+   "Di' chi ha preso cosa",
+   "Ogni centesimo giustificato",
+   "Gli amici pagano da un link",
+   "Salda con meno pagamenti",
+   "Qualsiasi valuta, 22 lingue",
+   "Gratis, senza limite giornaliero"
+  ],
+  "sub": [
+   "Foto allo scontrino e le voci compaiono.",
+   "Basta parlare. Evens assegna ogni voce.",
+   "La quota di ciascuno, con tasse e mancia.",
+   "Si paga senza app né account.",
+   "Meno bonifici, tutti pari.",
+   "Conti, persone e saldi in un unico posto.",
+   "Dividi tutti i conti che vuoi."
+  ]
+ },
+ "pt-BR": {
+  "head": [
+   "Escaneie",
+   "Diga quem pediu o quê",
+   "Cada centavo justificado",
+   "Seus amigos pagam por um link",
+   "Acerte com menos pagamentos",
+   "Qualquer moeda, 22 idiomas",
+   "Grátis, sem limite diário"
+  ],
+  "sub": [
+   "Fotografe o recibo e os itens aparecem.",
+   "É só falar. Evens atribui cada item.",
+   "A parte de cada um, com impostos e gorjeta.",
+   "Pague sem app nem conta.",
+   "Menos transferências, todos quites.",
+   "Contas, pessoas e saldos num só lugar.",
+   "Divida quantas contas quiser."
+  ]
+ },
+ "pt-PT": {
+  "head": [
+   "Digitaliza",
+   "Diz quem pediu o quê",
+   "Cada cêntimo justificado",
+   "Os amigos pagam por um link",
+   "Acerta com menos pagamentos",
+   "Qualquer moeda, 22 idiomas",
+   "Grátis, sem limite diário"
+  ],
+  "sub": [
+   "Tira foto ao recibo e os itens aparecem.",
+   "Basta falar. Evens atribui cada item.",
+   "A parte de cada um, com IVA e gorjeta.",
+   "Paga-se sem app nem conta.",
+   "Menos transferências, todos quites.",
+   "Contas, pessoas e saldos num só sítio.",
+   "Divide as contas que quiseres."
+  ]
+ },
+ "pl": {
+  "head": [
+   "Zeskanuj",
+   "Powiedz, kto co zamówił",
+   "Każdy grosz rozliczony",
+   "Znajomi płacą z linku",
+   "Rozlicz mniejszą liczbą przelewów",
+   "Każda waluta, 22 języki",
+   "Za darmo, bez dziennego limitu"
+  ],
+  "sub": [
+   "Zdjęcie paragonu – pozycje wpisane od razu.",
+   "Wystarczy mówić. Evens przypisze wszystko.",
+   "Udział każdego, z podatkiem i napiwkiem.",
+   "Płatność bez aplikacji i konta.",
+   "Mniej przelewów, wszyscy kwita.",
+   "Rachunki, ludzie i salda w jednym miejscu.",
+   "Dziel tyle rachunków, ile chcesz."
+  ]
+ },
+ "ru": {
+  "head": [
+   "Сканируйте",
+   "Скажите, кто что брал",
+   "Каждая копейка учтена",
+   "Друзья платят по ссылке",
+   "Меньше переводов при расчёте",
+   "Любая валюта, 22 языка",
+   "Бесплатно, без дневного лимита"
+  ],
+  "sub": [
+   "Фото чека — и позиции уже на месте.",
+   "Просто скажите — Evens распределит всё.",
+   "Доля каждого, с налогом и чаевыми.",
+   "Оплата без приложения и аккаунта.",
+   "Меньше переводов, все в расчёте.",
+   "Счета, люди и балансы в одном месте.",
+   "Делите сколько угодно счетов."
+  ]
+ },
+ "tr": {
+  "head": [
+   "Tara",
+   "Kim ne aldı söyle",
+   "Her kuruşun hesabı belli",
+   "Arkadaşların bağlantıdan öder",
+   "Daha az ödemeyle hesaplaş",
+   "Her para birimi, 22 dil",
+   "Ücretsiz, günlük sınır yok"
+  ],
+  "sub": [
+   "Fişi çek, kalemler anında dolsun.",
+   "Sadece anlat, Evens her kalemi dağıtsın.",
+   "Herkesin payı, vergi ve bahşiş dahil.",
+   "Ödemek için uygulama da hesap da gerekmez.",
+   "Daha az transfer, herkes ödeşmiş.",
+   "Hesaplar, kişiler ve bakiyeler tek yerde.",
+   "İstediğin kadar hesap böl."
+  ]
+ },
+ "ar-SA / ar": {
+  "head": [
+   "امسح الإيصال",
+   "قل من أخذ ماذا",
+   "كل قرش محسوب",
+   "أصدقاؤك يدفعون من رابط",
+   "سوّي الحساب بتحويلات أقل",
+   "أي عملة، 22 لغة",
+   "مجاني، بلا حد يومي"
+  ],
+  "sub": [
+   "صوّر الإيصال وتظهر البنود فورًا.",
+   "فقط تكلّم وسيوزّع Evens كل بند.",
+   "حصة كل شخص، مع الضريبة والإكرامية.",
+   "الدفع بلا تطبيق ولا حساب.",
+   "تحويلات أقل، ولا أحد مدين لأحد.",
+   "الفواتير والأشخاص والأرصدة في مكان واحد.",
+   "قسّم ما تشاء من الفواتير."
+  ]
+ },
+ "hi / hi-IN": {
+  "head": [
+   "स्कैन करें",
+   "बोलें किसने क्या लिया",
+   "हर पैसे का हिसाब",
+   "दोस्त लिंक से चुकाते हैं",
+   "कम पेमेंट में हिसाब चुकता",
+   "कोई भी करेंसी, 22 भाषाएं",
+   "मुफ़्त, कोई दैनिक सीमा नहीं"
+  ],
+  "sub": [
+   "रसीद की फ़ोटो लें, आइटम तुरंत भर जाते हैं।",
+   "बस बोलें, Evens हर आइटम बाँट देता है।",
+   "हर किसी का हिस्सा, टैक्स और टिप समेत।",
+   "पेमेंट के लिए न ऐप चाहिए, न अकाउंट।",
+   "कम ट्रांसफ़र, सबका हिसाब बराबर।",
+   "बिल, लोग और बैलेंस, सब एक जगह।",
+   "जितने चाहें उतने बिल बाँटें।"
+  ]
+ },
+ "ur (Play)": {
+  "head": [
+   "اسکین کریں",
+   "بولیں کس نے کیا لیا",
+   "ہر پیسے کا حساب",
+   "دوست لنک سے ادا کرتے ہیں",
+   "کم ادائیگیوں میں حساب برابر",
+   "کوئی بھی کرنسی، 22 زبانیں",
+   "مفت، کوئی روزانہ حد نہیں"
+  ],
+  "sub": [
+   "رسید کی تصویر لیں، آئٹم فوراً بھر جاتے ہیں۔",
+   "بس بولیں، Evens ہر آئٹم بانٹ دیتا ہے۔",
+   "ہر ایک کا حصہ، ٹیکس اور ٹپ سمیت۔",
+   "ادائیگی کے لیے نہ ایپ چاہیے نہ اکاؤنٹ۔",
+   "کم ٹرانسفر، سب کا حساب برابر۔",
+   "بل، لوگ اور بیلنس، سب ایک جگہ۔",
+   "جتنے چاہیں اتنے بل بانٹیں۔"
+  ]
+ },
+ "id": {
+  "head": [
+   "Pindai",
+   "Sebut siapa makan apa",
+   "Tiap rupiah jelas",
+   "Teman bayar lewat tautan",
+   "Lunasi dengan lebih sedikit transfer",
+   "Mata uang apa pun, 22 bahasa",
+   "Gratis, tanpa batas harian"
+  ],
+  "sub": [
+   "Foto struknya, item langsung terisi.",
+   "Cukup bicara. Evens membagi tiap item.",
+   "Bagian tiap orang, termasuk pajak dan tip.",
+   "Bayar tanpa aplikasi atau akun.",
+   "Lebih sedikit transfer, semua impas.",
+   "Tagihan, orang, dan saldo di satu tempat.",
+   "Bagi tagihan sebanyak yang kamu mau."
+  ]
+ },
+ "ja": {
+  "head": [
+   "レシートを撮る",
+   "誰が何を食べたか話す",
+   "1円まで明細に",
+   "友達はリンクから支払い",
+   "最少回数で精算",
+   "あらゆる通貨、22言語",
+   "無料、1日の上限なし"
+  ],
+  "sub": [
+   "レシートを撮れば明細が自動入力",
+   "話すだけでEvensが全員に割り当て",
+   "税・チップ込みで一人ひとりの額を表示",
+   "支払いにアプリも登録も不要",
+   "送金は最小限、全員すっきり精算",
+   "お会計・メンバー・残高をひとまとめ",
+   "何枚でも好きなだけ割り勘"
+  ]
+ },
+ "ko": {
+  "head": [
+   "영수증 스캔",
+   "누가 뭘 먹었는지 말하기",
+   "1원까지 정확하게",
+   "친구는 링크에서 송금",
+   "더 적은 송금으로 정산",
+   "모든 통화, 22개 언어",
+   "무료, 하루 제한 없음"
+  ],
+  "sub": [
+   "영수증을 찍으면 항목이 바로 채워져요",
+   "말만 하면 Evens가 항목을 나눠요",
+   "세금·팁 포함 각자 몫을 한눈에",
+   "앱도 계정도 없이 바로 송금",
+   "송금은 줄이고, 정산은 깔끔하게",
+   "영수증·사람·잔액을 한곳에",
+   "원하는 만큼 영수증을 나눠요"
+  ]
+ },
+ "th": {
+  "head": [
+   "สแกน",
+   "บอกว่าใครกินอะไร",
+   "ทุกสตางค์มีที่มา",
+   "เพื่อนจ่ายจากลิงก์",
+   "เคลียร์ด้วยการโอนที่น้อยลง",
+   "ทุกสกุลเงิน 22 ภาษา",
+   "ฟรี ไม่จำกัดต่อวัน"
+  ],
+  "sub": [
+   "ถ่ายใบเสร็จ รายการขึ้นให้ทันที",
+   "แค่พูด Evens จัดให้ทุกรายการ",
+   "ดูส่วนของแต่ละคน รวมภาษีและทิป",
+   "จ่ายได้เลย ไม่ต้องมีแอปหรือบัญชี",
+   "โอนน้อยลง เคลียร์กันครบทุกคน",
+   "บิล คน และยอดค้าง รวมในที่เดียว",
+   "หารบิลกี่ใบก็ได้ตามใจ"
+  ]
+ },
+ "vi": {
+  "head": [
+   "Quét",
+   "Nói ai ăn gì",
+   "Từng đồng rõ ràng",
+   "Bạn bè trả qua link",
+   "Thanh toán với ít lần chuyển hơn",
+   "Mọi loại tiền, 22 ngôn ngữ",
+   "Miễn phí, không giới hạn mỗi ngày"
+  ],
+  "sub": [
+   "Chụp hóa đơn, món tự điền ngay.",
+   "Chỉ cần nói, Evens chia từng món.",
+   "Phần mỗi người, gồm cả thuế và tip.",
+   "Trả tiền không cần app hay tài khoản.",
+   "Ít lần chuyển hơn, ai cũng sòng phẳng.",
+   "Hóa đơn, bạn bè và số dư ở một nơi.",
+   "Chia bao nhiêu hóa đơn tùy bạn."
+  ]
+ },
+ "zh-Hans / zh-CN": {
+  "head": [
+   "扫小票",
+   "说一句谁吃了什么",
+   "每一分钱都有去向",
+   "朋友点开链接付款",
+   "用更少的转账结清",
+   "任何货币，22 种语言",
+   "免费，不限每日次数"
+  ],
+  "sub": [
+   "拍下小票，明细立刻填好",
+   "说一句，Evens 自动分配每一项",
+   "每人该付多少，含税和小费",
+   "付款无需装应用或注册",
+   "转账更少，人人两清",
+   "账单、朋友和欠款，一处看全",
+   "想分多少张账单都行"
+  ]
+ },
+ "zh-Hant / zh-TW": {
+  "head": [
+   "掃收據",
+   "說一句誰吃了什麼",
+   "每一塊錢都有去向",
+   "朋友點開連結付款",
+   "用更少的轉帳結清",
+   "任何貨幣，22 種語言",
+   "免費，不限每日次數"
+  ],
+  "sub": [
+   "拍下收據，明細立刻填好",
+   "說一句，Evens 自動分配每一項",
+   "每人該付多少，含稅和小費",
+   "付款不必裝 App 或註冊",
+   "轉帳更少，人人兩清",
+   "帳單、朋友和欠款，一處看全",
+   "想分幾張帳單都行"
+  ]
+ }
 }
