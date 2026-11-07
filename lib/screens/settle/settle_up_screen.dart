@@ -3,6 +3,7 @@
 /// registry -> launcher), records cash, or nudges.
 library;
 
+import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
@@ -189,37 +190,38 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final me = _me;
-    return Scaffold(
-      backgroundColor: p.background,
-      body: AdaptiveBody(
-        child: SafeArea(
-          child: me == null
-              ? ErrorState(title: 'please_log_in_2'.tr())
-              : StreamBuilder<Object?>(
-                  stream: _stream,
-                  builder: (context, snap) {
-                    if (snap.hasError) {
-                      return Column(
-                        children: [
-                          LedgerTopBar(title: 'settle_up_title'.tr()),
-                          Expanded(
-                            child: ErrorState(
-                              message: 'settle_load_failed'.tr(),
-                              onRetry: () => setState(() {
-                                _stream = null;
-                                didChangeDependencies();
-                              }),
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AdaptiveBody(
+          child: SafeArea(
+            child: me == null
+                ? ErrorState(title: 'please_log_in_2'.tr())
+                : StreamBuilder<Object?>(
+                    stream: _stream,
+                    builder: (context, snap) {
+                      if (snap.hasError) {
+                        return Column(
+                          children: [
+                            LedgerTopBar(title: 'settle_up_title'.tr()),
+                            Expanded(
+                              child: ErrorState(
+                                message: 'settle_load_failed'.tr(),
+                                onRetry: () => setState(() {
+                                  _stream = null;
+                                  didChangeDependencies();
+                                }),
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    }
-                    if (!snap.hasData) return _skeleton();
-                    return _content(context, snap.data, me);
-                  },
-                ),
+                          ],
+                        );
+                      }
+                      if (!snap.hasData) return _skeleton();
+                      return _content(context, snap.data, me);
+                    },
+                  ),
+          ),
         ),
       ),
     );

@@ -13,7 +13,10 @@ Widget _app(Widget child, {bool reduceMotion = false}) => MaterialApp(
 );
 
 String _shown(WidgetTester tester) {
-  final text = tester.widget<Text>(find.byType(Text)).data!;
+  final text = tester
+      .widget<Text>(find.byType(Text))
+      .textSpan!
+      .toPlainText();
   return text.replaceAll(RegExp('[\u2066\u2069]'), '');
 }
 
@@ -98,5 +101,37 @@ void main() {
     final style = tester.widget<Text>(find.byType(Text)).style!;
     expect(style.fontFamily, AppTypography.displayFamily);
     expect(style.fontFeatures, contains(const FontFeature.tabularFigures()));
+  });
+
+  testWidgets('symbol and sign are smaller spans than the digits', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        const MoneyText(
+          minor: 6240,
+          currency: 'USD',
+          sign: MoneySign.always,
+          size: MoneySize.hero,
+          locale: 'en',
+        ),
+      ),
+    );
+    final root = tester.widget<Text>(find.byType(Text)).textSpan! as TextSpan;
+    final spans = <TextSpan>[];
+    root.visitChildren((s) {
+      if (s is TextSpan && s.text != null) spans.add(s);
+      return true;
+    });
+    final size = tester.widget<Text>(find.byType(Text)).style!.fontSize!;
+    expect(spans.map((s) => s.text).join(), r'+$62.40');
+    expect(spans.first.text, r'+$');
+    expect(spans.first.style!.fontSize, closeTo(size * 0.62, 0.01));
+    expect(spans.last.text, '62.40');
+    expect(spans.last.style, isNull);
+    expect(
+      tester.widget<Text>(find.byType(Text)).textDirection,
+      TextDirection.ltr,
+    );
   });
 }

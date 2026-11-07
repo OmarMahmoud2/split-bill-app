@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
@@ -602,198 +603,205 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
     final adjusted =
         _draft.overrides.isNotEmpty || _draft.rouletteWinnerId != null;
 
-    return Scaffold(
-      backgroundColor: p.canvas,
-      body: AdaptiveBody(
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 12, 0),
-                child: Row(
-                  children: [
-                    IconButton(
-                      tooltip: 'bf_split_back'.tr(),
-                      constraints: const BoxConstraints(
-                        minWidth: 44,
-                        minHeight: 44,
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AdaptiveBody(
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 12, 0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        tooltip: 'bf_split_back'.tr(),
+                        constraints: const BoxConstraints(
+                          minWidth: 44,
+                          minHeight: 44,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: p.surface,
+                          side: BorderSide(color: p.hairline),
+                        ),
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        icon: Icon(AppIcons.back, color: p.textPrimary),
                       ),
-                      style: IconButton.styleFrom(
-                        backgroundColor: p.surface,
-                        side: BorderSide(color: p.hairline),
-                      ),
-                      onPressed: () => Navigator.of(context).maybePop(),
-                      icon: Icon(AppIcons.back, color: p.textPrimary),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'bf_summary_title'.tr(),
-                        style: AppTypography.titleMedium.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: p.textPrimary,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'bf_summary_title'.tr(),
+                          style: AppTypography.titleMedium.copyWith(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            color: p.textPrimary,
+                          ),
                         ),
                       ),
-                    ),
-                    TextButton(
-                      key: const ValueKey('summary_edit_charges'),
-                      onPressed: _editCharges,
-                      style: TextButton.styleFrom(
-                        foregroundColor: p.accent,
-                        minimumSize: const Size(44, 44),
-                      ),
-                      child: Text(
-                        'bf_summary_edit'.tr(),
-                        style: AppTypography.labelLarge.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                      TextButton(
+                        key: const ValueKey('summary_edit_charges'),
+                        onPressed: _editCharges,
+                        style: TextButton.styleFrom(
+                          foregroundColor: p.accent,
+                          minimumSize: const Size(44, 44),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 16),
-                  children: [
-                    SummaryReceiptCard(
-                      draft: _draft,
-                      storeName: _storeName,
-                      totalMinor: c.grandTotalMinor,
-                    ),
-                    if (issue != null) ...[
-                      const SizedBox(height: 12),
-                      Semantics(
-                        liveRegion: true,
-                        child: Container(
-                          key: const ValueKey('summary_issue'),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: p.oweSoft,
-                            borderRadius: AppRadii.rowRadius,
-                          ),
-                          child: Text(
-                            issue.$1.tr(namedArgs: issue.$2),
-                            style: AppTypography.bodySmall.copyWith(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: p.oweInk,
-                            ),
+                        child: Text(
+                          'bf_summary_edit'.tr(),
+                          style: AppTypography.labelLarge.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ],
-                    const SizedBox(height: 16),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: p.surface,
-                        borderRadius: AppRadii.cardRadius,
-                        border: Border.all(color: p.hairline),
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      20,
+                      18,
+                      20,
+                      16,
+                    ),
+                    children: [
+                      SummaryReceiptCard(
+                        draft: _draft,
+                        storeName: _storeName,
+                        totalMinor: c.grandTotalMinor,
                       ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Column(
-                        children: [
-                          for (var i = 0; i < _ids.length; i++)
-                            StaggeredEntrance(
-                              index: i,
-                              child: _PersonRow(
-                                key: ValueKey('summary_person_${_ids[i]}'),
-                                participant: _participant(_ids[i]),
-                                name: _displayName(_participant(_ids[i])),
-                                breakdown:
-                                    c.people[_ids[i]] ??
-                                    PersonBreakdown(
-                                      id: _ids[i],
-                                      lines: const [],
-                                    ),
-                                currency: _draft.currency,
-                                first: i == 0,
-                                expanded: _expandedId == _ids[i],
-                                isWinner: _draft.rouletteWinnerId == _ids[i],
-                                onTap: () {
-                                  AppHaptics.selection();
-                                  setState(
-                                    () => _expandedId = _expandedId == _ids[i]
-                                        ? null
-                                        : _ids[i],
-                                  );
-                                },
-                                onEdit: () => _editShare(_ids[i]),
+                      if (issue != null) ...[
+                        const SizedBox(height: 12),
+                        Semantics(
+                          liveRegion: true,
+                          child: Container(
+                            key: const ValueKey('summary_issue'),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: p.oweSoft,
+                              borderRadius: AppRadii.rowRadius,
+                            ),
+                            child: Text(
+                              issue.$1.tr(namedArgs: issue.$2),
+                              style: AppTypography.bodySmall.copyWith(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: p.oweInk,
                               ),
                             ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _ActionCard(
-                      key: const ValueKey('summary_split_method'),
-                      icon: AppIcons.split,
-                      title: 'bf_summary_split_method'.tr(),
-                      subtitle: 'bf_split_seg_${_draft.method.wireName}'.tr(),
-                      onTap: _editSplit,
-                    ),
-                    if (adjusted) ...[
-                      const SizedBox(height: 12),
-                      _ActionCard(
-                        key: const ValueKey('summary_reset'),
-                        icon: AppIcons.undo,
-                        title: 'bf_summary_reset_title'.tr(),
-                        subtitle: 'bf_summary_reset_body'.tr(),
-                        onTap: _resetShares,
-                      ),
-                    ],
-                    if (widget.participants.length > 1) ...[
-                      const SizedBox(height: 12),
-                      _ActionCard(
-                        key: const ValueKey('summary_roulette'),
-                        icon: AppIcons.pieChart,
-                        title: 'bill_roulette'.tr(),
-                        subtitle: 'bf_summary_roulette_body'.tr(),
-                        onTap: _roulette,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
-                child: _isCreating
-                    ? SizedBox(
-                        height: 52,
-                        child: FilledButton(
-                          onPressed: null,
-                          style: FilledButton.styleFrom(
-                            disabledBackgroundColor: p.inverseSurface,
-                            shape: const StadiumBorder(),
                           ),
-                          child: SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.4,
-                              color: p.onInverseSurface,
-                              semanticsLabel: 'bf_summary_saving'.tr(),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: p.surface,
+                          borderRadius: AppRadii.cardRadius,
+                          border: Border.all(color: p.hairline),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          children: [
+                            for (var i = 0; i < _ids.length; i++)
+                              StaggeredEntrance(
+                                index: i,
+                                child: _PersonRow(
+                                  key: ValueKey('summary_person_${_ids[i]}'),
+                                  participant: _participant(_ids[i]),
+                                  name: _displayName(_participant(_ids[i])),
+                                  breakdown:
+                                      c.people[_ids[i]] ??
+                                      PersonBreakdown(
+                                        id: _ids[i],
+                                        lines: const [],
+                                      ),
+                                  currency: _draft.currency,
+                                  first: i == 0,
+                                  expanded: _expandedId == _ids[i],
+                                  isWinner: _draft.rouletteWinnerId == _ids[i],
+                                  onTap: () {
+                                    AppHaptics.selection();
+                                    setState(
+                                      () => _expandedId = _expandedId == _ids[i]
+                                          ? null
+                                          : _ids[i],
+                                    );
+                                  },
+                                  onEdit: () => _editShare(_ids[i]),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _ActionCard(
+                        key: const ValueKey('summary_split_method'),
+                        icon: AppIcons.split,
+                        title: 'bf_summary_split_method'.tr(),
+                        subtitle: 'bf_split_seg_${_draft.method.wireName}'.tr(),
+                        onTap: _editSplit,
+                      ),
+                      if (adjusted) ...[
+                        const SizedBox(height: 12),
+                        _ActionCard(
+                          key: const ValueKey('summary_reset'),
+                          icon: AppIcons.undo,
+                          title: 'bf_summary_reset_title'.tr(),
+                          subtitle: 'bf_summary_reset_body'.tr(),
+                          onTap: _resetShares,
+                        ),
+                      ],
+                      if (widget.participants.length > 1) ...[
+                        const SizedBox(height: 12),
+                        _ActionCard(
+                          key: const ValueKey('summary_roulette'),
+                          icon: AppIcons.pieChart,
+                          title: 'bill_roulette'.tr(),
+                          subtitle: 'bf_summary_roulette_body'.tr(),
+                          onTap: _roulette,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+                  child: _isCreating
+                      ? SizedBox(
+                          height: 52,
+                          child: FilledButton(
+                            onPressed: null,
+                            style: FilledButton.styleFrom(
+                              disabledBackgroundColor: p.inverseSurface,
+                              shape: const StadiumBorder(),
+                            ),
+                            child: SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.4,
+                                color: p.onInverseSurface,
+                                semanticsLabel: 'bf_summary_saving'.tr(),
+                              ),
                             ),
                           ),
+                        )
+                      : AssignPillButton(
+                          key: const ValueKey('summary_save'),
+                          label: pluralText(
+                            'bf_summary_save_people',
+                            _ids.length,
+                          ),
+                          muted: !c.isValid,
+                          onPressed: _save,
                         ),
-                      )
-                    : AssignPillButton(
-                        key: const ValueKey('summary_save'),
-                        label: pluralText(
-                          'bf_summary_save_people',
-                          _ids.length,
-                        ),
-                        muted: !c.isValid,
-                        onPressed: _save,
-                      ),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

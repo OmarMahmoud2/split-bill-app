@@ -50,6 +50,7 @@ class MoneyText extends StatefulWidget {
     this.animate = false,
     this.animateFromZero = true,
     this.duration = AppMotion.money,
+    this.curve = AppMotion.quiet,
     this.showSymbol = true,
     this.locale,
     this.textAlign,
@@ -67,6 +68,7 @@ class MoneyText extends StatefulWidget {
     bool animate = false,
     bool animateFromZero = true,
     Duration duration = AppMotion.money,
+    Curve curve = AppMotion.quiet,
     bool showSymbol = true,
     String? locale,
     TextAlign? textAlign,
@@ -82,6 +84,7 @@ class MoneyText extends StatefulWidget {
          animate: animate,
          animateFromZero: animateFromZero,
          duration: duration,
+         curve: curve,
          showSymbol: showSymbol,
          locale: locale,
          textAlign: textAlign,
@@ -103,6 +106,7 @@ class MoneyText extends StatefulWidget {
   final bool animate;
   final bool animateFromZero;
   final Duration duration;
+  final Curve curve;
   final bool showSymbol;
   final String? locale;
   final TextAlign? textAlign;
@@ -125,6 +129,14 @@ class MoneyText extends StatefulWidget {
         return p.neutralAmount;
     }
   }
+
+  /// How big the currency symbol and sign are next to the digits: small
+  /// beside big amounts, readable in rows.
+  static double symbolScale(MoneySize size) => switch (size) {
+    MoneySize.hero || MoneySize.large => 0.62,
+    MoneySize.row => 0.8,
+    MoneySize.small => 1,
+  };
 
   static TextStyle styleFor(MoneySize size) => switch (size) {
     MoneySize.small => AppTypography.amountSmall,
@@ -169,12 +181,40 @@ class _MoneyTextState extends State<MoneyText> {
       widget.size,
     ).copyWith(color: color).merge(widget.style);
 
-    Widget text(String value) => Text(
-      // An LTR paragraph so "+$12.00" never reorders inside RTL rows. (Bidi
-      // isolate marks measured one glyph short in RTL and clipped "E£0.00".)
-      value,
-      textDirection: TextDirection.ltr,
+    final scale = MoneyText.symbolScale(widget.size);
+    final baseSize = style.fontSize ?? 16;
+
+    // Sign and symbol are their own spans, smaller than the digits and on
+    // the same baseline. An LTR paragraph so "+$12.00" never reorders inside
+    // RTL rows. (Bidi isolate marks measured one glyph short in RTL and
+    // clipped "E£0.00".)
+    InlineSpan spans(int minor) {
+      final full = _format(minor);
+      if (scale == 1 || !widget.showSymbol) return TextSpan(text: full);
+      final number = formatMoneyMinor(
+        minor.abs(),
+        widget.currency,
+        sign: MoneySign.none,
+        showSymbol: false,
+        locale: widget.locale,
+      );
+      final at = full.indexOf(number);
+      if (at < 0) return TextSpan(text: full);
+      final small = TextStyle(fontSize: baseSize * scale);
+      return TextSpan(
+        children: [
+          if (at > 0) TextSpan(text: full.substring(0, at), style: small),
+          TextSpan(text: number),
+          if (at + number.length < full.length)
+            TextSpan(text: full.substring(at + number.length), style: small),
+        ],
+      );
+    }
+
+    Widget text(int minor) => Text.rich(
+      TextSpan(children: [spans(minor)]),
       style: style,
+      textDirection: TextDirection.ltr,
       textAlign: widget.textAlign,
       maxLines: 1,
       softWrap: false,
@@ -186,14 +226,14 @@ class _MoneyTextState extends State<MoneyText> {
         widget.animate &&
         _from != widget.minor &&
         !AppMotion.reduceMotion(context);
-    if (!shouldAnimate) return text(finalText);
+    if (!shouldAnimate) return text(widget.minor);
 
     return TweenAnimationBuilder<double>(
       key: ValueKey(widget.minor),
       tween: Tween(begin: _from.toDouble(), end: widget.minor.toDouble()),
       duration: widget.duration,
-      curve: AppMotion.quiet,
-      builder: (context, v, _) => text(_format(v.round())),
+      curve: widget.curve,
+      builder: (context, v, _) => text(v.round()),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -58,126 +59,132 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final me = _me;
-    return Scaffold(
-      backgroundColor: p.background,
-      body: AdaptiveBody(
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (!widget.embedded)
-                LedgerTopBar(
-                  actions: [
-                    RoundIconButton(
-                      icon: AppIcons.add,
-                      tooltip: 'groups_new_title'.tr(),
-                      onPressed: _create,
-                    ),
-                  ],
-                ),
-              ScreenTitle(
-                'groups'.tr(),
-                trailing: widget.embedded
-                    ? RoundIconButton(
+    return AppBackground(
+      enabled: !widget.embedded,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AdaptiveBody(
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (!widget.embedded)
+                  LedgerTopBar(
+                    actions: [
+                      RoundIconButton(
                         icon: AppIcons.add,
                         tooltip: 'groups_new_title'.tr(),
                         onPressed: _create,
-                      )
-                    : null,
-              ),
-              Expanded(
-                child: me == null
-                    ? ErrorState(title: 'please_log_in_2'.tr())
-                    : StreamBuilder<HomeLedgerState>(
-                        stream: widget.state ?? _own,
-                        builder: (context, snap) {
-                          if (snap.hasError) {
-                            return ErrorState(
-                              onRetry: () => setState(() {
-                                _own = null;
-                                didChangeDependencies();
-                              }),
-                            );
-                          }
-                          if (!snap.hasData) {
-                            return const Padding(
-                              padding: EdgeInsets.all(20),
-                              child: SkeletonShimmer(
-                                child: Column(
-                                  children: [
-                                    SkeletonCard(),
-                                    SizedBox(height: 10),
-                                    SkeletonCard(),
-                                    SizedBox(height: 10),
-                                    SkeletonCard(),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                          final state = snap.data!;
-                          if (state.groups.isEmpty) {
-                            return EmptyState(
-                              icon: AppIcons.people,
-                              title: 'groups_empty_title'.tr(),
-                              message: 'groups_empty_body'.tr(),
-                              actionLabel: 'groups_new_title'.tr(),
-                              onAction: _create,
-                            );
-                          }
-                          final active = state.groups
-                              .where((g) => !g.archived)
-                              .toList();
-                          final archived = state.groups
-                              .where((g) => g.archived)
-                              .toList();
-                          return ListView(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                              20,
-                              16,
-                              20,
-                              MediaQuery.paddingOf(context).bottom + 16,
-                            ),
-                            children: [
-                              for (final (i, g) in active.indexed)
-                                StaggeredEntrance(
-                                  index: i,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: GroupCard(
-                                      group: g,
-                                      input: state.input(g.id),
-                                      me: me.uid,
-                                    ),
-                                  ),
-                                ),
-                              if (archived.isNotEmpty) ...[
-                                OverlineLabel(
-                                  'groups_archived_section'.tr(),
-                                  padding: const EdgeInsets.only(
-                                    top: 12,
-                                    bottom: 8,
-                                  ),
-                                ),
-                                for (final g in archived)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: GroupCard(
-                                      group: g,
-                                      input: null,
-                                      me: me.uid,
-                                    ),
-                                  ),
-                              ],
-                            ],
-                          );
-                        },
                       ),
-              ),
-            ],
+                    ],
+                  ),
+                ScreenTitle(
+                  'groups'.tr(),
+                  trailing: widget.embedded
+                      ? RoundIconButton(
+                          icon: AppIcons.add,
+                          tooltip: 'groups_new_title'.tr(),
+                          onPressed: _create,
+                        )
+                      : null,
+                ),
+                Expanded(
+                  child: me == null
+                      ? ErrorState(title: 'please_log_in_2'.tr())
+                      : StreamBuilder<HomeLedgerState>(
+                          stream: widget.state ?? _own,
+                          builder: (context, snap) {
+                            if (snap.hasError) {
+                              return ErrorState(
+                                onRetry: () => setState(() {
+                                  _own = null;
+                                  didChangeDependencies();
+                                }),
+                              );
+                            }
+                            if (!snap.hasData) {
+                              return const Padding(
+                                padding: EdgeInsets.all(20),
+                                child: SkeletonShimmer(
+                                  child: Column(
+                                    children: [
+                                      SkeletonCard(),
+                                      SizedBox(height: 10),
+                                      SkeletonCard(),
+                                      SizedBox(height: 10),
+                                      SkeletonCard(),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                            final state = snap.data!;
+                            if (state.groups.isEmpty) {
+                              return EmptyState(
+                                icon: AppIcons.people,
+                                title: 'groups_empty_title'.tr(),
+                                message: 'groups_empty_body'.tr(),
+                                actionLabel: 'groups_new_title'.tr(),
+                                onAction: _create,
+                              );
+                            }
+                            final active = state.groups
+                                .where((g) => !g.archived)
+                                .toList();
+                            final archived = state.groups
+                                .where((g) => g.archived)
+                                .toList();
+                            return ListView(
+                              padding: EdgeInsetsDirectional.fromSTEB(
+                                20,
+                                16,
+                                20,
+                                MediaQuery.paddingOf(context).bottom + 16,
+                              ),
+                              children: [
+                                for (final (i, g) in active.indexed)
+                                  StaggeredEntrance(
+                                    index: i,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: GroupCard(
+                                        group: g,
+                                        input: state.input(g.id),
+                                        me: me.uid,
+                                      ),
+                                    ),
+                                  ),
+                                if (archived.isNotEmpty) ...[
+                                  OverlineLabel(
+                                    'groups_archived_section'.tr(),
+                                    padding: const EdgeInsets.only(
+                                      top: 12,
+                                      bottom: 8,
+                                    ),
+                                  ),
+                                  for (final g in archived)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: GroupCard(
+                                        group: g,
+                                        input: null,
+                                        me: me.uid,
+                                      ),
+                                    ),
+                                ],
+                              ],
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
