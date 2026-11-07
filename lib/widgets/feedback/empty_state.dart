@@ -4,9 +4,11 @@ import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/theme/app_spacing.dart';
 import 'package:split_bill_app/theme/app_typography.dart';
 import 'package:split_bill_app/theme/app_icons.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 
-/// "Nothing here yet" with one next step. No illustration: a quiet icon in
-/// a tonal circle, a title, one line of help and an optional action.
+/// "Nothing here yet" with one next step: a group of pal avatars ([palSeeds])
+/// or an icon in a mint tile, a title, one line of help and an optional
+/// action.
 ///
 /// ```dart
 /// EmptyState(
@@ -26,6 +28,7 @@ class EmptyState extends StatelessWidget {
     this.actionLabel,
     this.onAction,
     this.compact = false,
+    this.palSeeds = const [],
   });
 
   final IconData icon;
@@ -38,6 +41,9 @@ class EmptyState extends StatelessWidget {
 
   /// Smaller paddings for use inside a card or list section.
   final bool compact;
+
+  /// Shows an overlapping group of pals (one per seed) instead of the icon.
+  final List<String> palSeeds;
 
   @override
   Widget build(BuildContext context) {
@@ -55,15 +61,25 @@ class EmptyState extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ExcludeSemantics(
-                child: Container(
-                  width: circle,
-                  height: circle,
-                  decoration: BoxDecoration(
-                    color: p.accentSoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, size: circle * 0.45, color: p.onAccentSoft),
-                ),
+                child: palSeeds.isNotEmpty
+                    ? AvatarStack(
+                        people: [for (final s in palSeeds) (s, s, null)],
+                        size: compact ? 40 : 56,
+                        max: 4,
+                      )
+                    : Container(
+                        width: circle,
+                        height: circle,
+                        decoration: BoxDecoration(
+                          color: p.accentSoft,
+                          borderRadius: AppRadii.cardRadius,
+                        ),
+                        child: Icon(
+                          icon,
+                          size: circle * 0.45,
+                          color: p.onAccentSoft,
+                        ),
+                      ),
               ),
               SizedBox(height: compact ? AppSpacing.md : AppSpacing.xl),
               Text(

@@ -71,17 +71,19 @@ class _ShimmerScope extends InheritedWidget {
 ///   for (var i = 0; i < 3; i++) const SkeletonCard(),
 /// ]))
 /// ```
+const _lineRadius = BorderRadius.all(Radius.circular(8));
+
 class Skeleton extends StatefulWidget {
   const Skeleton({
     super.key,
     this.width,
     this.height = 14,
-    this.borderRadius = AppRadii.chipRadius,
+    this.borderRadius = _lineRadius,
     this.shape = BoxShape.rectangle,
   });
 
   const Skeleton.line({super.key, this.width, this.height = 14})
-    : borderRadius = AppRadii.chipRadius,
+    : borderRadius = _lineRadius,
       shape = BoxShape.rectangle;
 
   const Skeleton.circle({super.key, double size = 40})

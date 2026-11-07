@@ -226,13 +226,13 @@ class _AppToastHostState extends State<_AppToastHost>
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    // The toast is an inverse (ink) surface, so status colors come from the
-    // opposite palette to keep contrast.
-    final inv = p.isDark ? AppPalette.light : AppPalette.dark;
+    // The toast is ink in light mode, so status colors come from the dark
+    // palette there to keep contrast; in dark mode it is a raised navy card.
+    final inv = p.isDark ? p : AppPalette.dark;
     final (IconData icon, Color iconColor) = switch (widget.type) {
       AppToastType.success => (AppIcons.successFill, inv.accent),
       AppToastType.info => (AppIcons.info, inv.info),
-      AppToastType.warning => (AppIcons.warning, inv.owe),
+      AppToastType.warning => (AppIcons.warning, inv.coral),
       AppToastType.error => (AppIcons.error, inv.error),
     };
     final top = widget.position == AppToastPosition.top;
@@ -244,21 +244,32 @@ class _AppToastHostState extends State<_AppToastHost>
     );
 
     Widget toast = Material(
-      color: p.inverseSurface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadii.rowRadius),
+      color: p.toast,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: p.isDark ? BorderSide(color: p.border) : BorderSide.none,
+      ),
       elevation: p.isDark ? 0 : AppSpacing.elevationXl,
       shadowColor: p.shadow.withValues(alpha: 0.35),
       child: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(14, 12, 8, 12),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: iconColor),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.18),
+                borderRadius: AppRadii.rowRadius,
+              ),
+              child: Icon(icon, size: 18, color: iconColor),
+            ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 widget.message,
                 style: AppTypography.bodyMedium.copyWith(
-                  color: p.onInverseSurface,
+                  color: p.onToast,
                   fontWeight: FontWeight.w600,
                 ),
               ),

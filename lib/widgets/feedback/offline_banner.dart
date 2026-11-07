@@ -6,7 +6,7 @@ import 'package:split_bill_app/theme/app_spacing.dart';
 import 'package:split_bill_app/theme/app_typography.dart';
 import 'package:split_bill_app/theme/app_icons.dart';
 
-/// The ink "Offline. Changes will sync when you're back." banner from the
+/// The ink (navy in dark mode) "Offline. Changes will sync when you're back." banner from the
 /// v3 states mockup. Animates its height in and out with [visible]; the
 /// connectivity source is up to the screen.
 ///
@@ -42,18 +42,23 @@ class OfflineBanner extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: p.inverseSurface,
-            borderRadius: AppRadii.rowRadius,
+            color: p.toast,
+            borderRadius: BorderRadius.circular(18),
+            border: p.isDark ? Border.all(color: p.border) : null,
           ),
           child: Row(
             children: [
-              Icon(AppIcons.wifiOff, size: 16, color: p.onInverseSurface),
+              Icon(
+                AppIcons.wifiOff,
+                size: 18,
+                color: (p.isDark ? p : AppPalette.dark).coral,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   message ?? 'feedback_offline_banner'.tr(),
                   style: AppTypography.titleSmall.copyWith(
-                    color: p.onInverseSurface,
+                    color: p.onToast,
                   ),
                 ),
               ),

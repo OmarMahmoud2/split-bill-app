@@ -181,10 +181,15 @@ class ErrorState extends StatelessWidget {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: p.surfaceVariant,
-                    shape: BoxShape.circle,
+                    // Offline is a wait, not a failure: sky, not red.
+                    color: icon == AppIcons.wifiOff ? p.skySoft : p.errorSoft,
+                    borderRadius: AppRadii.cardRadius,
                   ),
-                  child: Icon(icon, size: 30, color: p.textSecondary),
+                  child: Icon(
+                    icon,
+                    size: 30,
+                    color: icon == AppIcons.wifiOff ? p.sky : p.error,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 Text(

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/theme/app_colors.dart';
 import 'package:split_bill_app/theme/app_haptics.dart';
 import 'package:split_bill_app/theme/app_motion.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
@@ -12,9 +13,9 @@ import 'package:split_bill_app/widgets/money_text.dart';
 ///
 /// A check draws and scales in, the amount counts up (or rolls from
 /// [rollFromMinor] to [amountMinor], e.g. a balance settling to zero), the
-/// title and message fade in, and a success haptic fires once. Set
-/// [celebrate] for the big moments only ("whole group settled"): a quiet,
-/// one-shot confetti. Under Reduce Motion everything is a 150 ms crossfade
+/// title and message fade in, a one-shot confetti burst (mint, coral, sky and
+/// sun) plays and a success haptic fires once. Set [celebrate] for the big
+/// moments ("whole group settled") to get a bigger burst. Under Reduce Motion everything is a 150 ms crossfade
 /// and there is no confetti; the haptic stays.
 ///
 /// ```dart
@@ -157,10 +158,10 @@ class _SuccessScreenState extends State<SuccessScreen>
     _reduce = AppMotion.reduceMotion(context);
     if (_reduce) _intro.duration = AppMotion.reducedCrossfade;
     _intro.forward();
-    if (widget.celebrate && !_reduce) {
+    if (!_reduce) {
       _confetti = AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 2400),
+        duration: Duration(milliseconds: widget.celebrate ? 3200 : 2400),
       )..forward();
     }
   }
@@ -245,13 +246,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                   child: CustomPaint(
                     painter: _ConfettiPainter(
                       animation: _confetti!,
-                      colors: [
-                        p.accent,
-                        p.owe,
-                        p.textPrimary,
-                        p.primaryStrong,
-                        p.borderStrong,
-                      ],
+                      pieces: widget.celebrate ? 56 : 32,
+                      colors: [p.accent, p.coral, p.sky, AppColors.sun],
                     ),
                   ),
                 ),
@@ -440,39 +436,56 @@ class _CheckPainter extends CustomPainter {
       old.progress != progress || old.color != color;
 }
 
-/// A handful of slow-drifting pieces, once. "Quiet" on purpose.
+/// A burst of mint, coral, sky and sun pieces from the top centre that fan
+/// out, fall with gravity and fade, once. Deterministic (seeded) so tests
+/// and golden frames are stable.
 class _ConfettiPainter extends CustomPainter {
-  _ConfettiPainter({required this.animation, required this.colors})
-    : super(repaint: animation);
+  _ConfettiPainter({
+    required this.animation,
+    required this.colors,
+    required this.pieces,
+  }) : super(repaint: animation);
 
   final Animation<double> animation;
   final List<Color> colors;
-
-  static const _pieces = 14;
+  final int pieces;
 
   @override
   void paint(Canvas canvas, Size size) {
     final rnd = math.Random(7);
     final t = animation.value;
-    for (var i = 0; i < _pieces; i++) {
-      final x = size.width * (0.08 + 0.84 * rnd.nextDouble());
-      final delay = 0.25 * rnd.nextDouble();
+    final origin = Offset(size.width / 2, size.height * 0.28);
+    for (var i = 0; i < pieces; i++) {
+      final angle = -math.pi / 2 + (rnd.nextDouble() - 0.5) * math.pi * 1.1;
+      final speed = size.height * (0.18 + 0.32 * rnd.nextDouble());
+      final delay = 0.12 * rnd.nextDouble();
       final local = ((t - delay) / (1 - delay)).clamp(0.0, 1.0);
       if (local <= 0 || local >= 1) continue;
-      final y = size.height * 0.12 + size.height * 0.45 * local;
-      final opacity = local < 0.2 ? local / 0.2 : 1 - (local - 0.2) / 0.8;
-      final paint = Paint()
-        ..color = colors[i % colors.length].withValues(alpha: opacity * 0.9);
-      canvas.save();
-      canvas.translate(x + 12 * math.sin(local * 6 + i), y);
-      canvas.rotate(local * math.pi * 1.1 * (i.isEven ? 1 : -1));
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          const Rect.fromLTWH(-3, -5, 6, 10),
-          const Radius.circular(2),
-        ),
-        paint,
+      final burst = Curves.easeOutCubic.transform(local);
+      final pos = Offset(
+        origin.dx + math.cos(angle) * speed * burst,
+        origin.dy +
+            math.sin(angle) * speed * burst +
+            size.height * 0.5 * local * local,
       );
+      final opacity = local < 0.7 ? 1.0 : 1 - (local - 0.7) / 0.3;
+      final paint = Paint()
+        ..color = colors[i % colors.length].withValues(alpha: opacity);
+      canvas.save();
+      canvas.translate(pos.dx, pos.dy);
+      canvas.rotate(local * math.pi * (2 + 3 * rnd.nextDouble()));
+      final w = 5 + 4 * rnd.nextDouble();
+      if (i % 3 == 0) {
+        canvas.drawCircle(Offset.zero, w / 2, paint);
+      } else {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(center: Offset.zero, width: w, height: w * 1.8),
+            const Radius.circular(2),
+          ),
+          paint,
+        );
+      }
       canvas.restore();
     }
   }

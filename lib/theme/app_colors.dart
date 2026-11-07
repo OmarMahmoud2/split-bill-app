@@ -65,6 +65,8 @@ class AppColors {
   static const Color errorRedDark = Color(0xFFFF6B6B);
   static const Color errorStrongDark = Color(0xFFFF9A9A);
   static const Color errorSoftDark = Color(0xFF332534); // 14% error on surface
+  /// Confetti yellow (also the pal 'sun' fill).
+  static const Color sun = Color(0xFFFFC94D);
   static const Color goldPremium = Color(0xFFFFD36B);
   static const Color heroLineDark = Color(0xFF2A3854);
 
