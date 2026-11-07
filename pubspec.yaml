@@ -27,8 +27,7 @@ dependencies:
   flutter_contacts: 2.1.0 # UIScene-safe registration; supports the current Flutter SDK.
   share_plus: ^12.0.1
   google_mobile_ads: ^7.0.0
-  flutter_fortune_wheel: ^1.3.2
-  rxdart: ^0.28.0 # Required by fortune_wheel
+  rxdart: ^0.28.0
   url_launcher: ^6.3.2
   firebase_storage: ^13.6.1
   app_links: ^7.0.0
