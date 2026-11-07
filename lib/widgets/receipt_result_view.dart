@@ -10,6 +10,7 @@ import 'package:split_bill_app/screens/scan_receipt/review_totals.dart';
 import 'package:split_bill_app/screens/scan_receipt/widgets/participants_reference_list.dart';
 import 'package:split_bill_app/screens/scan_receipt/widgets/review_banner.dart';
 import 'package:split_bill_app/screens/scan_receipt/widgets/scan_top_bar.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
@@ -376,13 +377,11 @@ class ReceiptResultView extends StatelessWidget {
             onSave: () => Navigator.of(dialogContext).pop(true),
             onCancel: () => Navigator.of(dialogContext).pop(false),
             children: [
-              TextField(
+              AppTextField(
                 controller: name,
                 autofocus: true,
+                label: 'receipt_store_name'.tr(),
                 textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  labelText: 'receipt_store_name'.tr(),
-                ),
               ),
               const SizedBox(height: AppSpacing.md),
               OutlinedButton.icon(
@@ -604,14 +603,12 @@ class ReceiptResultView extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.md),
               ],
-              TextField(
+              AppTextField(
                 controller: name,
                 autofocus: index == null,
+                label: 'receipt_item'.tr(),
+                errorText: nameError,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  labelText: 'receipt_item'.tr(),
-                  errorText: nameError,
-                ),
               ),
               const SizedBox(height: AppSpacing.md),
               Row(
@@ -619,14 +616,12 @@ class ReceiptResultView extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: 88,
-                    child: TextField(
+                    child: AppTextField(
                       controller: qty,
+                      label: 'receipt_qty'.tr(),
+                      errorText: qtyError,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        labelText: 'receipt_qty'.tr(),
-                        errorText: qtyError,
-                      ),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -731,31 +726,31 @@ class _ItemsCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: 30,
-                      child: Text(
-                        '$qty×',
-                        style: AppTypography.amountSmall.copyWith(
-                          fontSize: 13,
-                          color: isFlagged ? p.oweInk : p.textSecondary,
-                        ),
-                      ),
-                    ),
                     Expanded(
-                      child: Text(
-                        name,
-                        style: AppTypography.bodyLarge.copyWith(
-                          fontSize: 15,
-                          color: isFlagged ? p.oweInk : p.textPrimary,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: AppTypography.bodyLarge.copyWith(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: isFlagged ? p.oweInk : p.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '$qty × ${formatMoneyMinor(unit, currency)}',
+                            style: AppTypography.bodySmall.copyWith(
+                              fontFeatures: AppTypography.tabularFigures,
+                              color: isFlagged ? p.oweInk : p.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     if (isFlagged) ...[
-                      Icon(
-                        AppIcons.warning,
-                        size: 16,
-                        color: p.oweInk,
-                      ),
+                      Icon(AppIcons.warning, size: 16, color: p.oweInk),
                       const SizedBox(width: 6),
                     ],
                     MoneyText(
@@ -763,8 +758,10 @@ class _ItemsCard extends StatelessWidget {
                       currency: currency,
                       tone: MoneyTone.neutral,
                       showSymbol: false,
-                      style: TextStyle(
+                      style: AppTypography.amount.copyWith(
                         fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        fontFeatures: AppTypography.tabularFigures,
                         color: isFlagged ? p.oweInk : p.textPrimary,
                       ),
                     ),
@@ -931,20 +928,20 @@ class _AmountField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return TextField(
+    return AppTextField(
       controller: controller,
       autofocus: autofocus,
+      label: label,
+      errorText: errorText,
+      hint: minorToInputText(0, currency),
+      money: true,
       keyboardType: TextInputType.numberWithOptions(
         decimal: currencyDecimals(currency) > 0,
       ),
       textAlign: TextAlign.end,
-      style: AppTypography.amount.copyWith(color: p.textPrimary),
-      decoration: InputDecoration(
-        labelText: label,
-        errorText: errorText,
-        hintText: minorToInputText(0, currency),
-        prefixText: '$currency ',
-        prefixStyle: AppTypography.labelMedium.copyWith(color: p.textSecondary),
+      prefix: Text(
+        currency,
+        style: AppTypography.labelMedium.copyWith(color: p.textSecondary),
       ),
     );
   }
@@ -971,7 +968,7 @@ class _ReviewDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: p.surface,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      shape: const RoundedRectangleBorder(borderRadius: AppRadii.cardRadius),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(

@@ -236,6 +236,31 @@ class _ScanReadingViewState extends State<ScanReadingView>
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              AnimatedBuilder(
+                animation: _reveal,
+                builder: (context, _) {
+                  final step = (_reveal.value * 3).floor().clamp(0, 2);
+                  return AnimatedSwitcher(
+                    duration: AppMotion.durationFor(context, AppMotion.medium),
+                    child: Row(
+                      key: ValueKey(step),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(AppIcons.sparkle, size: 16, color: p.accent),
+                        const SizedBox(width: 6),
+                        Text(
+                          'scanx_step_${step + 1}'.tr(),
+                          style: AppTypography.labelLarge.copyWith(
+                            color: p.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
               const Spacer(),
               if (widget.showPrivacyNote) ...[
                 Row(
