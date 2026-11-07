@@ -1,4 +1,3 @@
-import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'dart:async';
 import 'dart:ui' show PlatformDispatcher;
 
@@ -369,42 +368,42 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return AppBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        // Wide screens: the canvas sits around a centred 480px card.
-        body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final view = _view;
-              final page = Column(
-                children: [
-                  _header(),
-                  Expanded(child: _switcher(view, _body(view))),
-                ],
-              );
-              if (constraints.maxWidth < 600) return page;
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 480),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: p.background,
-                        borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: p.border),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(28),
-                        child: page,
-                      ),
+    return Scaffold(
+      // Wide screens: the canvas sits around a centred 480px card.
+      backgroundColor: MediaQuery.sizeOf(context).width >= 600
+          ? p.surfaceVariant
+          : p.background,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final view = _view;
+            final page = Column(
+              children: [
+                _header(),
+                Expanded(child: _switcher(view, _body(view))),
+              ],
+            );
+            if (constraints.maxWidth < 600) return page;
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: p.background,
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: p.border),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: page,
                     ),
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
