@@ -134,7 +134,10 @@ class _AdminAiUsageScreenState extends State<AdminAiUsageScreen> {
       AiUsageFailed() => ErrorState(onRetry: _retry),
       AiUsageLoaded(:final report) =>
         report.isEmpty
-            ? EmptyState(icon: AppIcons.sparkle, title: 'adm3_ai_empty'.tr())
+            ? EmptyState(
+                icon: AppIcons.sparkle,
+                title: 'adm3_ai_empty'.tr(),
+              )
             : _AiUsageBody(report: report),
     };
   }

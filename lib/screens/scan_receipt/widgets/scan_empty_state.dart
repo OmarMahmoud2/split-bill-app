@@ -71,7 +71,11 @@ class ScanEmptyState extends StatelessWidget {
                   color: p.accentSoft,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(AppIcons.scan, color: p.onAccentSoft, size: 26),
+                child: Icon(
+                  AppIcons.scan,
+                  color: p.onAccentSoft,
+                  size: 26,
+                ),
               ),
             ),
           const SizedBox(height: AppSpacing.lg),

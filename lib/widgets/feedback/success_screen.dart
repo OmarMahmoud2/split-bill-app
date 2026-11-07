@@ -73,10 +73,7 @@ class SuccessScreen extends StatefulWidget {
     return Navigator.of(context).push<T>(
       PageRouteBuilder<T>(
         transitionDuration: AppMotion.durationFor(context, AppMotion.slow),
-        reverseTransitionDuration: AppMotion.durationFor(
-          context,
-          AppMotion.medium,
-        ),
+        reverseTransitionDuration: AppMotion.durationFor(context, AppMotion.medium),
         pageBuilder: (_, _, _) => SuccessScreen(
           title: title,
           primaryLabel: primaryLabel,

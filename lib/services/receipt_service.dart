@@ -63,8 +63,7 @@ ReceiptScanException classifyScanError(
   int statusCode,
   Map<String, dynamic> payload,
 ) {
-  final code =
-      payload['errorCode']?.toString() ?? payload['error_code']?.toString();
+  final code = payload['errorCode']?.toString() ?? payload['error_code']?.toString();
   final refundedRaw = payload['refunded'] ?? payload['credit_refunded'];
   final message = payload['error']?.toString();
   ReceiptScanFailure failure;
@@ -126,7 +125,10 @@ class ReceiptService {
 
   String _normalizeLabel(String? value) {
     if (value == null) return '';
-    return value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim();
+    return value
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
+        .trim();
   }
 
   bool _matchesAny(String label, List<String> patterns) {
@@ -238,8 +240,10 @@ class ReceiptService {
 
     final id = requestId ?? _requestIdFactory();
     lastRequestId = id;
-    final request = http.MultipartRequest('POST', BackendConfig.receiptScanUri)
-      ..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+    final request = http.MultipartRequest(
+      'POST',
+      BackendConfig.receiptScanUri,
+    )..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
     request.fields['requestId'] = id;
     request.headers['X-Request-Id'] = id;
 
@@ -272,9 +276,7 @@ class ReceiptService {
   /// Parses a scan response (public for tests).
   Map<String, dynamic> parseScanResponse(http.Response response) {
     final contentType = response.headers['content-type'] ?? '';
-    final isJsonResponse = contentType.toLowerCase().contains(
-      'application/json',
-    );
+    final isJsonResponse = contentType.toLowerCase().contains('application/json');
     Map<String, dynamic> payload = <String, dynamic>{};
 
     if (response.body.isNotEmpty && isJsonResponse) {

@@ -113,9 +113,7 @@ class ProfileContent extends StatelessWidget {
     );
 
     return ListView(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.paddingOf(context).bottom + 24,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 24),
       children: [
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),

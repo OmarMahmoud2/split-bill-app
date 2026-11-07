@@ -49,7 +49,6 @@ class AppSettingsProvider extends ChangeNotifier {
     _currencyCode = code;
     BillReader.defaultFallbackCurrency = code;
   }
-
   ThemeMode get themeMode => _themeMode;
 
   /// Whether [AppHaptics] fires. Device-local, defaults to on.

@@ -120,9 +120,9 @@ class LedgerView {
     final balances = computeBalances(expenses, payments: settlements);
     final pairwise = pairwiseTransfers(expenses, payments: settlements);
     final transfers = simplify
-        ? simplifyDebts(
-            balances,
-          ).map((c, l) => MapEntry(c, [...l]..sort(_byAmountDesc)))
+        ? simplifyDebts(balances).map(
+            (c, l) => MapEntry(c, [...l]..sort(_byAmountDesc)),
+          )
         : pairwise;
     return LedgerView._(
       balances: balances,
@@ -148,7 +148,8 @@ class LedgerView {
 
   bool get isSettled => balances.isEmpty;
 
-  List<Transfer> get allTransfers => transfers.values.expand((l) => l).toList();
+  List<Transfer> get allTransfers =>
+      transfers.values.expand((l) => l).toList();
 
   int get transferCount => allTransfers.length;
 
@@ -158,8 +159,9 @@ class LedgerView {
       if ((e.value[person] ?? 0) != 0) e.key: e.value[person]!,
   };
 
-  List<Transfer> transfersInvolving(String person) =>
-      allTransfers.where((t) => t.from == person || t.to == person).toList();
+  List<Transfer> transfersInvolving(String person) => allTransfers
+      .where((t) => t.from == person || t.to == person)
+      .toList();
 }
 
 /// Where a friend balance comes from: a group, or bills/IOUs outside groups.
@@ -281,7 +283,10 @@ class BalanceSummary {
     return null;
   }
 
-  Set<String> get currencies => {...owedToMe.keys, ...iOwe.keys};
+  Set<String> get currencies => {
+    ...owedToMe.keys,
+    ...iOwe.keys,
+  };
 }
 
 /// Builds per-friend balances for [me]:
@@ -307,8 +312,10 @@ BalanceSummary buildCounterparties({
     if (photo != null && photo.isNotEmpty) photos.putIfAbsent(id, () => photo);
   }
 
-  Counterparty person(String id) =>
-      people.putIfAbsent(id, () => Counterparty(id: id, name: names[id] ?? ''));
+  Counterparty person(String id) => people.putIfAbsent(
+    id,
+    () => Counterparty(id: id, name: names[id] ?? ''),
+  );
 
   void apply(Transfer t, String? groupId, String label) {
     final String other;
@@ -373,9 +380,8 @@ BalanceSummary buildCounterparties({
   }
 
   for (final g in groups) {
-    final bills = [
-      ...g.bills,
-    ]..sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
+    final bills = [...g.bills]
+      ..sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
     for (final b in bills) {
       countBill(b, g.group.id, g.group.name);
     }
@@ -385,22 +391,17 @@ BalanceSummary buildCounterparties({
   }
 
   final groupIds = {for (final g in groups) g.group.id};
-  final loose =
-      looseBills
-          .where((b) => b.groupId == null || !groupIds.contains(b.groupId))
-          .toList()
-        ..sort(
-          (a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)),
-        );
+  final loose = looseBills
+      .where((b) => b.groupId == null || !groupIds.contains(b.groupId))
+      .toList()
+    ..sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
   for (final b in loose) {
     countBill(b, null, looseLabel);
   }
   final direct = directPayments.where((p) => p.groupId == null);
   final (expenses, settlements) = ledgerEntries(loose, direct);
-  for (final t in pairwiseTransfers(
-    expenses,
-    payments: settlements,
-  ).values.expand((l) => l)) {
+  for (final t in pairwiseTransfers(expenses, payments: settlements).values
+      .expand((l) => l)) {
     apply(t, null, looseLabel);
   }
 

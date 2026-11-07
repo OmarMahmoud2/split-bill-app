@@ -13,9 +13,7 @@ class GuestSession {
   static Future<User?> ensureSignedIn() {
     final current = FirebaseAuth.instance.currentUser;
     if (current != null) return Future.value(current);
-    return _pending ??= _signInAnonymously().whenComplete(
-      () => _pending = null,
-    );
+    return _pending ??= _signInAnonymously().whenComplete(() => _pending = null);
   }
 
   static Future<User?> _signInAnonymously() async {

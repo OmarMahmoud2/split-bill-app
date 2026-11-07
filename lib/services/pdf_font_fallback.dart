@@ -34,10 +34,8 @@ class PdfFontResult {
 
 /// Loads Noto fallback fonts for the non-Latin scripts in a report.
 class PdfFontFallback {
-  PdfFontFallback({
-    http.Client? client,
-    this.timeout = const Duration(seconds: 8),
-  }) : _client = client ?? http.Client();
+  PdfFontFallback({http.Client? client, this.timeout = const Duration(seconds: 8)})
+    : _client = client ?? http.Client();
 
   final http.Client _client;
   final Duration timeout;
@@ -133,7 +131,6 @@ class PdfFontFallback {
 
   /// First `url(...)` in a Google Fonts stylesheet.
   @visibleForTesting
-  static String? fontUrlFromCss(String css) => RegExp(
-    r'url\(([^)]+)\)',
-  ).firstMatch(css)?.group(1)?.replaceAll(RegExp('["\']'), '');
+  static String? fontUrlFromCss(String css) =>
+      RegExp(r'url\(([^)]+)\)').firstMatch(css)?.group(1)?.replaceAll(RegExp('["\']'), '');
 }

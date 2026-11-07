@@ -261,8 +261,7 @@ class AppTheme {
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
           backgroundColor: WidgetStateProperty.resolveWith(
-            (s) =>
-                s.contains(WidgetState.selected) ? p.surface : p.surfaceVariant,
+            (s) => s.contains(WidgetState.selected) ? p.surface : p.surfaceVariant,
           ),
           foregroundColor: WidgetStateProperty.resolveWith(
             (s) => s.contains(WidgetState.selected)
@@ -318,9 +317,7 @@ class AppTheme {
         elevation: floatingElevation,
         shadowColor: floatingShadow,
         barrierColor: p.scrim,
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppRadii.dialogRadius,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.dialogRadius),
         titleTextStyle: AppTypography.headlineMedium.copyWith(
           color: p.textPrimary,
         ),
@@ -406,7 +403,9 @@ class AppTheme {
 
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-          (s) => s.contains(WidgetState.selected) ? p.onMint : p.textSecondary,
+          (s) => s.contains(WidgetState.selected)
+              ? p.onMint
+              : p.textSecondary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) =>

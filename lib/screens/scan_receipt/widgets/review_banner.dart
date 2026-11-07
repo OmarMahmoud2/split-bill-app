@@ -35,7 +35,9 @@ class ReviewBanner extends StatelessWidget {
             Padding(
               padding: const EdgeInsetsDirectional.only(top: 1),
               child: Icon(
-                warning ? AppIcons.warning : AppIcons.success,
+                warning
+                    ? AppIcons.warning
+                    : AppIcons.success,
                 size: 16,
                 color: foreground,
               ),

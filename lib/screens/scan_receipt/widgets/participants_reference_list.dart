@@ -30,7 +30,11 @@ class ParticipantsReferenceList extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(AppIcons.voice, size: 16, color: palette.textSecondary),
+              Icon(
+                AppIcons.voice,
+                size: 16,
+                color: palette.textSecondary,
+              ),
               const SizedBox(width: 8),
               Text(
                 'voice_reference',

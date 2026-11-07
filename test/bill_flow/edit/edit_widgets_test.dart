@@ -164,8 +164,8 @@ void main() {
           matching: find.byType(Text),
         ),
       );
-      expect(_plain(money.data!), contains('+'));
-      expect(_plain(money.data!), contains('54.18'));
+      expect(_plain((money.data ?? money.textSpan!.toPlainText())), contains('+'));
+      expect(_plain((money.data ?? money.textSpan!.toPlainText())), contains('54.18'));
       expect(money.style!.color, AppPalette.light.owed);
       expect(find.text('Sea Breeze Grill'), findsOneWidget);
       expect(find.text('4'), findsOneWidget);
@@ -200,8 +200,8 @@ void main() {
           matching: find.byType(Text),
         ),
       );
-      expect(_plain(money.data!), startsWith(kMinusSign));
-      expect(_plain(money.data!), contains('12.500'));
+      expect(_plain((money.data ?? money.textSpan!.toPlainText())), startsWith(kMinusSign));
+      expect(_plain((money.data ?? money.textSpan!.toPlainText())), contains('12.500'));
       expect(money.style!.color, AppPalette.dark.owe);
       expect(find.textContaining('bf_bills_paid_by'), findsOneWidget);
     });

@@ -330,7 +330,11 @@ Future<void> showGuestReceipt(BuildContext context, GuestBill bill) {
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     child: Row(
                       children: [
-                        GuestAvatar(id: person.id, name: person.name, size: 32),
+                        GuestAvatar(
+                          id: person.id,
+                          name: person.name,
+                          size: 32,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(

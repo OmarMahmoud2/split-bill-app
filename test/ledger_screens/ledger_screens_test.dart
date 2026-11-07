@@ -28,11 +28,8 @@ import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import '../data/fixtures.dart';
 import 'fake_repo.dart';
 
-Finder textPlain(String value) => find.byWidgetPredicate(
-  (w) =>
-      w is Text &&
-      plainText(w.data ?? w.textSpan?.toPlainText() ?? '') == value,
-);
+Finder textPlain(String value) =>
+    find.byWidgetPredicate((w) => w is Text && plainText(w.data ?? w.textSpan?.toPlainText() ?? '') == value);
 
 final trip = LedgerGroup(
   id: 'g1',
@@ -48,24 +45,15 @@ final trip = LedgerGroup(
   ],
 );
 
-FakeLedgerRepository tripRepo({List<BillRecord>? loose}) =>
-    FakeLedgerRepository(
-      groups: [trip],
-      groupBills: {
-        'g1': [
-          bill('b1', 'me', {
-            'me': 3000,
-            'sara': 3000,
-            'ali': 3000,
-          }, groupId: 'g1'),
-        ],
-      },
-      recentBills:
-          loose ??
-          [
-            bill('l1', 'mona', {'mona': 1000, 'me': 2400}),
-          ],
-    );
+FakeLedgerRepository tripRepo({List<BillRecord>? loose}) => FakeLedgerRepository(
+  groups: [trip],
+  groupBills: {
+    'g1': [
+      bill('b1', 'me', {'me': 3000, 'sara': 3000, 'ali': 3000}, groupId: 'g1'),
+    ],
+  },
+  recentBills: loose ?? [bill('l1', 'mona', {'mona': 1000, 'me': 2400})],
+);
 
 HomeActions noActions() => HomeActions(
   onNew: () {},
@@ -94,50 +82,30 @@ void main() {
 
   group('Home', () {
     for (final dark in [false, true]) {
-      testWidgets(
-        'net balance, settle with and groups (${dark ? 'dark' : 'light'})',
-        (tester) async {
-          tester.view.physicalSize = const Size(800, 2400);
-          tester.view.devicePixelRatio = 1;
-          addTearDown(tester.view.reset);
-          repo = tripRepo();
-          LedgerRepository.instance = repo;
-          final stream = watchHomeLedger(repo, 'me');
-          await tester.pumpWidget(
-            testApp(
-              HomeDashboard(
-                stream: stream,
-                actions: noActions(),
-                onRetry: () {},
-              ),
-              dark: dark,
-            ),
-          );
-          await tester.pumpAndSettle();
-          // me: +60.00 from the trip, −24.00 to Mona.
-          expect(textPlain('+\$36.00'), findsOneWidget);
-          expect(find.text('home_owed_overall'), findsOneWidget);
-          expect(find.text('Sara'), findsWidgets);
-          expect(find.text('MONA'), findsOneWidget);
-          expect(textPlain('−\$24.00'), findsWidgets);
-          expect(find.text('Dahab trip'), findsWidgets);
-          expect(tester.takeException(), isNull);
-        },
-      );
+      testWidgets('net balance, settle with and groups (${dark ? 'dark' : 'light'})', (tester) async {
+        tester.view.physicalSize = const Size(800, 2400);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        repo = tripRepo();
+        LedgerRepository.instance = repo;
+        final stream = watchHomeLedger(repo, 'me');
+        await tester.pumpWidget(testApp(HomeDashboard(stream: stream, actions: noActions(), onRetry: () {}), dark: dark));
+        await tester.pumpAndSettle();
+        // me: +60.00 from the trip, −24.00 to Mona.
+        expect(textPlain('+\$36.00'), findsOneWidget);
+        expect(find.text('home_owed_overall'), findsOneWidget);
+        expect(find.text('Sara'), findsWidgets);
+        expect(find.text('MONA'), findsOneWidget);
+        expect(textPlain('−\$24.00'), findsWidgets);
+        expect(find.text('Dahab trip'), findsWidgets);
+        expect(tester.takeException(), isNull);
+      });
     }
 
     testWidgets('first-day empty state', (tester) async {
       repo = FakeLedgerRepository();
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(
-          HomeDashboard(
-            stream: watchHomeLedger(repo, 'me'),
-            actions: noActions(),
-            onRetry: () {},
-          ),
-        ),
-      );
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
       await tester.pumpAndSettle();
       expect(find.text('home_first_title'), findsOneWidget);
       expect(find.text('new_scan_title'), findsOneWidget);
@@ -147,14 +115,7 @@ void main() {
       repo = tripRepo();
       LedgerRepository.instance = repo;
       await tester.pumpWidget(
-        testApp(
-          HomeDashboard(
-            stream: watchHomeLedger(repo, 'me'),
-            actions: noActions(),
-            onRetry: () {},
-          ),
-          direction: TextDirection.rtl,
-        ),
+        testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {}), direction: TextDirection.rtl),
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
@@ -162,21 +123,9 @@ void main() {
     });
 
     testWidgets('hero says all square when nothing is open', (tester) async {
-      repo = FakeLedgerRepository(
-        recentBills: [
-          bill('l1', 'me', {'me': 1000, 'mona': 1000}, paid: {'mona'}),
-        ],
-      );
+      repo = FakeLedgerRepository(recentBills: [bill('l1', 'me', {'me': 1000, 'mona': 1000}, paid: {'mona'})]);
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(
-          HomeDashboard(
-            stream: watchHomeLedger(repo, 'me'),
-            actions: noActions(),
-            onRetry: () {},
-          ),
-        ),
-      );
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
       await tester.pumpAndSettle();
       expect(find.text('home_all_square'), findsOneWidget);
       expect(find.text('settle_up_title'), findsOneWidget);
@@ -184,47 +133,22 @@ void main() {
     });
 
     testWidgets('hero says you owe overall', (tester) async {
-      repo = FakeLedgerRepository(
-        recentBills: [
-          bill('l1', 'mona', {'mona': 1000, 'me': 2400}),
-        ],
-      );
+      repo = FakeLedgerRepository(recentBills: [bill('l1', 'mona', {'mona': 1000, 'me': 2400})]);
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(
-          HomeDashboard(
-            stream: watchHomeLedger(repo, 'me'),
-            actions: noActions(),
-            onRetry: () {},
-          ),
-        ),
-      );
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
       await tester.pumpAndSettle();
       expect(find.text('home_owe_overall'), findsOneWidget);
       expect(textPlain('−\$24.00'), findsWidgets);
     });
 
-    testWidgets('hero amount never clips in RTL on a narrow screen', (
-      tester,
-    ) async {
+    testWidgets('hero amount never clips in RTL on a narrow screen', (tester) async {
       tester.view.physicalSize = const Size(320 * 3, 800 * 3);
       tester.view.devicePixelRatio = 3;
       addTearDown(tester.view.reset);
-      repo = FakeLedgerRepository(
-        recentBills: [
-          bill('l1', 'me', {'me': 100, 'mona': 987654321}),
-        ],
-      );
+      repo = FakeLedgerRepository(recentBills: [bill('l1', 'me', {'me': 100, 'mona': 987654321})]);
       LedgerRepository.instance = repo;
       await tester.pumpWidget(
-        testApp(
-          HomeDashboard(
-            stream: watchHomeLedger(repo, 'me'),
-            actions: noActions(),
-            onRetry: () {},
-          ),
-          direction: TextDirection.rtl,
-        ),
+        testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {}), direction: TextDirection.rtl),
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
@@ -237,46 +161,27 @@ void main() {
       final s = HomeLedgerState(
         groups: const [],
         groupInputs: const [],
-        recentBills: [
-          bill('a', 'me', {'me': 1, 'x': 1}, date: DateTime(2026, 1, 1)),
-        ],
+        recentBills: [bill('a', 'me', {'me': 1, 'x': 1}, date: DateTime(2026, 1, 1))],
         directPayments: [
-          PaymentRecord(
-            id: 'p',
-            from: 'x',
-            to: 'me',
-            amountMinor: 1,
-            currency: 'USD',
-            createdBy: 'x',
-            createdAt: DateTime(2026, 2, 1),
-          ),
+          PaymentRecord(id: 'p', from: 'x', to: 'me', amountMinor: 1, currency: 'USD', createdBy: 'x', createdAt: DateTime(2026, 2, 1)),
         ],
         summary: BalanceSummary(me: 'me', people: const []),
       );
       final items = recentActivity(s, 'me');
-      expect(items.map((i) => i.kind), [
-        ActivityKind.payment,
-        ActivityKind.billAdded,
-      ]);
+      expect(items.map((i) => i.kind), [ActivityKind.payment, ActivityKind.billAdded]);
     });
   });
 
   group('Settle up', () {
-    testWidgets('records cash for the last payment and celebrates the group', (
-      tester,
-    ) async {
+    testWidgets('records cash for the last payment and celebrates the group', (tester) async {
       repo = FakeLedgerRepository(
         groups: [trip],
         groupBills: {
-          'g1': [
-            bill('b1', 'me', {'me': 1000, 'ali': 1000}, groupId: 'g1'),
-          ],
+          'g1': [bill('b1', 'me', {'me': 1000, 'ali': 1000}, groupId: 'g1')],
         },
       );
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(const SettleUpScreen.group(groupId: 'g1')),
-      );
+      await tester.pumpWidget(testApp(const SettleUpScreen.group(groupId: 'g1')));
       await tester.pumpAndSettle();
       expect(find.text('settle_one_payment_settles'), findsOneWidget);
       await tester.tap(find.text('settle_record_cash'));
@@ -309,30 +214,22 @@ void main() {
         },
       );
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(const SettleUpScreen.group(groupId: 'g1')),
-      );
+      await tester.pumpWidget(testApp(const SettleUpScreen.group(groupId: 'g1')));
       await tester.pumpAndSettle();
       expect(find.text('settle_one_payment_settles'), findsOneWidget);
       expect(find.text('settle_instead_of'), findsOneWidget);
       expect(find.text('settle_nudge_name'), findsOneWidget);
     });
 
-    testWidgets('a failed write shows an error toast and records nothing', (
-      tester,
-    ) async {
+    testWidgets('a failed write shows an error toast and records nothing', (tester) async {
       repo = FakeLedgerRepository(
         groups: [trip],
         groupBills: {
-          'g1': [
-            bill('b1', 'ali', {'ali': 1000, 'me': 1000}, groupId: 'g1'),
-          ],
+          'g1': [bill('b1', 'ali', {'ali': 1000, 'me': 1000}, groupId: 'g1')],
         },
       )..failWrites = true;
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(const SettleUpScreen.group(groupId: 'g1')),
-      );
+      await tester.pumpWidget(testApp(const SettleUpScreen.group(groupId: 'g1')));
       await tester.pumpAndSettle();
       expect(find.text('settle_pay_name'), findsOneWidget);
       await tester.tap(find.text('settle_record_cash'));
@@ -347,21 +244,12 @@ void main() {
       final c = Counterparty(id: 'ali', name: 'Ali');
       final summary = buildCounterparties(
         me: 'me',
-        looseBills: [
-          bill('1', 'me', {'ali': 500}),
-          bill('2', 'ali', {'me': 200}, currency: 'EGP'),
-        ],
+        looseBills: [bill('1', 'me', {'ali': 500}), bill('2', 'ali', {'me': 200}, currency: 'EGP')],
       );
       final rows = friendSettleRows(summary.person('ali')!, 'me');
       expect(rows.length, 2);
-      expect(
-        rows.firstWhere((r) => r.transfer.currency == 'USD').transfer.from,
-        'ali',
-      );
-      expect(
-        rows.firstWhere((r) => r.transfer.currency == 'EGP').transfer.from,
-        'me',
-      );
+      expect(rows.firstWhere((r) => r.transfer.currency == 'USD').transfer.from, 'ali');
+      expect(rows.firstWhere((r) => r.transfer.currency == 'EGP').transfer.from, 'me');
       expect(c.isSettled, isTrue);
     });
   });
@@ -381,16 +269,7 @@ void main() {
       repo = FakeLedgerRepository();
       LedgerRepository.instance = repo;
       await tester.pumpWidget(
-        testApp(
-          const Scaffold(
-            body: QuickIouSheet(
-              people: [
-                GroupMember(id: 'ali', name: 'Ali'),
-                GroupMember(id: 'sara', name: 'Sara'),
-              ],
-            ),
-          ),
-        ),
+        testApp(const Scaffold(body: QuickIouSheet(people: [GroupMember(id: 'ali', name: 'Ali'), GroupMember(id: 'sara', name: 'Sara')]))),
       );
       await tester.tap(find.text('Ali'));
       await tester.enterText(find.byType(TextField).first, '20');
@@ -436,16 +315,9 @@ void main() {
           currency: 'USD',
           budgetMinor: 120000,
           endDate: DateTime(2026, 11, 6),
-          members: const [
-            GroupMember(id: 'a', name: 'a'),
-            GroupMember(id: 'b', name: 'b'),
-            GroupMember(id: 'c', name: 'c'),
-            GroupMember(id: 'd', name: 'd'),
-          ],
+          members: const [GroupMember(id: 'a', name: 'a'), GroupMember(id: 'b', name: 'b'), GroupMember(id: 'c', name: 'c'), GroupMember(id: 'd', name: 'd')],
         ),
-        bills: [
-          bill('1', 'a', {'a': 96800}, groupId: 'g'),
-        ],
+        bills: [bill('1', 'a', {'a': 96800}, groupId: 'g')],
         payments: const [],
       );
       final s = BudgetStatus.of(input, now: DateTime(2026, 11, 6, 10))!;
@@ -469,49 +341,29 @@ void main() {
         (-4000, 'friend_you_owe'),
         (0, 'friend_all_square'),
       ]) {
-        await tester.pumpWidget(
-          testApp(
-            Scaffold(
-              body: FriendBalanceHeader(friend: friend(net), preferred: 'USD'),
-            ),
-          ),
-        );
+        await tester.pumpWidget(testApp(Scaffold(body: FriendBalanceHeader(friend: friend(net), preferred: 'USD'))));
         await tester.pumpAndSettle();
         expect(find.text(key), findsOneWidget, reason: 'net $net');
         expect(find.text('Sara'), findsOneWidget);
         if (net == 0) {
           expect(textPlain('+\$62.00'), findsNothing);
         } else {
-          expect(
-            find.textContaining(net > 0 ? '62.00' : '40.00'),
-            findsWidgets,
-          );
+          expect(find.textContaining(net > 0 ? '62.00' : '40.00'), findsWidgets);
         }
       }
     });
 
-    testWidgets('shows the balance across contexts and nudges once a week', (
-      tester,
-    ) async {
+    testWidgets('shows the balance across contexts and nudges once a week', (tester) async {
       repo = tripRepo();
       LedgerRepository.instance = repo;
       final sent = <String>[];
       nudgeService = NudgeService(
-        sender:
-            ({
-              required targetUid,
-              required billId,
-              required title,
-              required body,
-              required args,
-            }) async {
-              sent.add('$targetUid/$billId');
-              return true;
-            },
+        sender: ({required targetUid, required billId, required title, required body, required args}) async {
+          sent.add('$targetUid/$billId');
+          return true;
+        },
       );
-      await tester.pumpWidget(
-        testApp(const FriendDetailScreen(friendId: 'ali')),
-      );
+      await tester.pumpWidget(testApp(const FriendDetailScreen(friendId: 'ali')));
       await tester.pumpAndSettle();
       expect(find.text('friend_owes_you'), findsOneWidget);
       expect(textPlain('+\$30.00'), findsWidgets);
@@ -529,15 +381,13 @@ void main() {
 
   group('Pay sheet', () {
     testWidgets('opens the recipient method, then records it', (tester) async {
-      repo = FakeLedgerRepository(
-        profiles: {
-          'mona': {
-            'customPaymentMethods': [
-              {'name': 'PayPal', 'value': 'paypal.me/mona', 'type': 'paypal'},
-            ],
-          },
+      repo = FakeLedgerRepository(profiles: {
+        'mona': {
+          'customPaymentMethods': [
+            {'name': 'PayPal', 'value': 'paypal.me/mona', 'type': 'paypal'},
+          ],
         },
-      );
+      });
       LedgerRepository.instance = repo;
       final opened = <Uri>[];
       paymentLauncher = PaymentLauncher(
@@ -555,13 +405,7 @@ void main() {
             builder: (context) => Scaffold(
               body: Center(
                 child: TextButton(
-                  onPressed: () async => result = await showPaySheet(
-                    context,
-                    recipientId: 'mona',
-                    recipientName: 'Mona',
-                    amountMinor: 2400,
-                    currency: 'USD',
-                  ),
+                  onPressed: () async => result = await showPaySheet(context, recipientId: 'mona', recipientName: 'Mona', amountMinor: 2400, currency: 'USD'),
                   child: const Text('go'),
                 ),
               ),
@@ -585,16 +429,7 @@ void main() {
       repo = FakeLedgerRepository();
       LedgerRepository.instance = repo;
       await tester.pumpWidget(
-        testApp(
-          const Scaffold(
-            body: PaySheet(
-              recipientId: 'x',
-              recipientName: 'X',
-              amountMinor: 100,
-              currency: 'USD',
-            ),
-          ),
-        ),
+        testApp(const Scaffold(body: PaySheet(recipientId: 'x', recipientName: 'X', amountMinor: 100, currency: 'USD'))),
       );
       await tester.pumpAndSettle();
       expect(find.text('pay_no_methods_title'), findsOneWidget);
@@ -603,9 +438,7 @@ void main() {
   });
 
   group('Home polish', () {
-    testWidgets('one Settle entry; quick actions are Scan, Expense, IOU', (
-      tester,
-    ) async {
+    testWidgets('one Settle entry; quick actions are Scan, Expense, IOU', (tester) async {
       repo = tripRepo();
       LedgerRepository.instance = repo;
       var iou = 0;
@@ -618,15 +451,7 @@ void main() {
         onOpenProfile: () {},
         onOpenNotifications: () {},
       );
-      await tester.pumpWidget(
-        testApp(
-          HomeDashboard(
-            stream: watchHomeLedger(repo, 'me'),
-            actions: actions,
-            onRetry: () {},
-          ),
-        ),
-      );
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: actions, onRetry: () {})));
       await tester.pumpAndSettle();
       expect(find.text('settle_up_title'), findsOneWidget);
       expect(find.text('home_qa_settle'), findsNothing);
@@ -638,115 +463,67 @@ void main() {
     testWidgets('QR button opens my code', (tester) async {
       repo = tripRepo();
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(
-          HomeDashboard(
-            stream: watchHomeLedger(repo, 'me'),
-            actions: noActions(),
-            onRetry: () {},
-          ),
-        ),
-      );
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('hx_qr_tooltip'));
       await tester.pumpAndSettle();
       expect(find.byType(Dialog), findsOneWidget);
     });
 
-    testWidgets(
-      'my avatar uses the Evens profile photo, never the sign-in photo',
-      (tester) async {
-        const auth = 'https://lh3.googleusercontent.com/n.png';
-        const mine = 'data:image/jpeg;base64,AAAA';
-        LedgerMe.debugOverride = const LedgerMe(
-          uid: 'me',
-          name: 'Omar Test',
-          photoUrl: auth,
-        );
-        addTearDown(() => MyPhoto.set(null));
-        expect(MyPhoto.chosen(auth), isNull);
-        MyPhoto.set(auth);
-        expect(MyPhoto.notifier.value, isNull);
-        MyPhoto.set(mine);
-        repo = tripRepo();
-        LedgerRepository.instance = repo;
-        await tester.pumpWidget(
-          testApp(
-            HomeDashboard(
-              stream: watchHomeLedger(repo, 'me'),
-              actions: noActions(),
-              onRetry: () {},
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-        final urls = tester
-            .widgetList<PalAvatar>(find.byType(PalAvatar))
-            .map((a) => a.photoUrl)
-            .toList();
-        expect(urls, contains(mine));
-        expect(urls, isNot(contains(auth)));
-      },
-    );
+    testWidgets('my avatar uses the Evens profile photo, never the sign-in photo', (tester) async {
+      const auth = 'https://lh3.googleusercontent.com/n.png';
+      const mine = 'data:image/jpeg;base64,AAAA';
+      LedgerMe.debugOverride = const LedgerMe(uid: 'me', name: 'Omar Test', photoUrl: auth);
+      addTearDown(() => MyPhoto.set(null));
+      expect(MyPhoto.chosen(auth), isNull);
+      MyPhoto.set(auth);
+      expect(MyPhoto.notifier.value, isNull);
+      MyPhoto.set(mine);
+      repo = tripRepo();
+      LedgerRepository.instance = repo;
+      await tester.pumpWidget(testApp(HomeDashboard(stream: watchHomeLedger(repo, 'me'), actions: noActions(), onRetry: () {})));
+      await tester.pumpAndSettle();
+      final urls = tester.widgetList<PalAvatar>(find.byType(PalAvatar)).map((a) => a.photoUrl).toList();
+      expect(urls, contains(mine));
+      expect(urls, isNot(contains(auth)));
+    });
 
     testWidgets('nav pill slides to the tapped tab', (tester) async {
       var index = 0;
-      await tester.pumpWidget(
-        testApp(
-          StatefulBuilder(
-            builder: (context, setState) => Scaffold(
-              bottomNavigationBar: FloatingTabBar(
-                index: index,
-                onSelect: (i) => setState(() => index = i),
-                onNew: () {},
-                onScan: () {},
-                newLabel: 'new',
-                scanHint: 'scan',
-                tabs: [
-                  for (final l in ['A', 'B', 'C', 'D'])
-                    TabSpec(AppIcons.home, AppIcons.homeFill, l),
-                ],
-              ),
-            ),
+      await tester.pumpWidget(testApp(StatefulBuilder(
+        builder: (context, setState) => Scaffold(
+          bottomNavigationBar: FloatingTabBar(
+            index: index,
+            onSelect: (i) => setState(() => index = i),
+            onNew: () {},
+            onScan: () {},
+            newLabel: 'new',
+            scanHint: 'scan',
+            tabs: [
+              for (final l in ['A', 'B', 'C', 'D']) TabSpec(AppIcons.home, AppIcons.homeFill, l),
+            ],
           ),
         ),
-      );
+      )));
       await tester.pumpAndSettle();
-      final start = tester
-          .getTopLeft(find.byKey(const ValueKey('nav_indicator')))
-          .dx;
+      final start = tester.getTopLeft(find.byKey(const ValueKey('nav_indicator'))).dx;
       await tester.tap(find.text('D'));
       await tester.pumpAndSettle();
-      final end = tester
-          .getTopLeft(find.byKey(const ValueKey('nav_indicator')))
-          .dx;
+      final end = tester.getTopLeft(find.byKey(const ValueKey('nav_indicator'))).dx;
       expect(end, greaterThan(start + 100));
     });
   });
 
   group('Activity', () {
-    testWidgets('month headers with a summary and a card for this month', (
-      tester,
-    ) async {
+    testWidgets('month headers with a summary and a card for this month', (tester) async {
       final now = DateTime.now();
-      repo = FakeLedgerRepository(
-        activityPages: [
-          ActivityPage([
-            activityFromBill(
-              bill('b1', 'sara', {'sara': 1200, 'me': 1200}, date: now),
-              'me',
-            ),
-            activityFromBill(
-              bill('b2', 'sara', {
-                'sara': 800,
-                'me': 800,
-              }, date: now.subtract(const Duration(days: 45))),
-              'me',
-            ),
-          ], const ActivityCursor()),
-          const ActivityPage([], null),
-        ],
-      );
+      repo = FakeLedgerRepository(activityPages: [
+        ActivityPage([
+          activityFromBill(bill('b1', 'sara', {'sara': 1200, 'me': 1200}, date: now), 'me'),
+          activityFromBill(bill('b2', 'sara', {'sara': 800, 'me': 800}, date: now.subtract(const Duration(days: 45))), 'me'),
+        ], const ActivityCursor()),
+        const ActivityPage([], null),
+      ]);
       LedgerRepository.instance = repo;
       await tester.pumpWidget(testApp(const ActivityScreen(embedded: true)));
       await tester.pumpAndSettle();
@@ -767,33 +544,13 @@ void main() {
 
     testWidgets('groups items by day and loads the next page', (tester) async {
       final now = DateTime.now();
-      repo = FakeLedgerRepository(
-        activityPages: [
-          ActivityPage([
-            activityFromPayment(
-              PaymentRecord(
-                id: 'p',
-                from: 'ali',
-                fromName: 'Ali',
-                to: 'me',
-                amountMinor: 3024,
-                currency: 'USD',
-                createdBy: 'ali',
-                createdAt: now,
-              ),
-              'me',
-            ),
-            activityFromBill(
-              bill('b', 'sara', {
-                'sara': 1200,
-                'me': 1200,
-              }, date: now.subtract(const Duration(days: 1))),
-              'me',
-            ),
-          ], const ActivityCursor()),
-          const ActivityPage([], null),
-        ],
-      );
+      repo = FakeLedgerRepository(activityPages: [
+        ActivityPage([
+          activityFromPayment(PaymentRecord(id: 'p', from: 'ali', fromName: 'Ali', to: 'me', amountMinor: 3024, currency: 'USD', createdBy: 'ali', createdAt: now), 'me'),
+          activityFromBill(bill('b', 'sara', {'sara': 1200, 'me': 1200}, date: now.subtract(const Duration(days: 1))), 'me'),
+        ], const ActivityCursor()),
+        const ActivityPage([], null),
+      ]);
       LedgerRepository.instance = repo;
       await tester.pumpWidget(testApp(const ActivityScreen(embedded: true)));
       await tester.pumpAndSettle();
@@ -814,25 +571,17 @@ void main() {
   });
 
   group('Create group', () {
-    testWidgets('creates a trip with currency, budget and simplify on', (
-      tester,
-    ) async {
+    testWidgets('creates a trip with currency, budget and simplify on', (tester) async {
       repo = FakeLedgerRepository();
       LedgerRepository.instance = repo;
-      await tester.pumpWidget(
-        testApp(
-          Builder(
-            builder: (context) => Scaffold(
-              body: TextButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const CreateGroupScreen()),
-                ),
-                child: const Text('open'),
-              ),
-            ),
+      await tester.pumpWidget(testApp(Builder(
+        builder: (context) => Scaffold(
+          body: TextButton(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CreateGroupScreen())),
+            child: const Text('open'),
           ),
         ),
-      );
+      )));
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('group_type_home'));
@@ -854,30 +603,12 @@ void main() {
 
   group('Notifications', () {
     testWidgets('unread cards show a dot, read ones blend in', (tester) async {
-      await tester.pumpWidget(
-        testApp(
-          const Scaffold(
-            body: Column(
-              children: [
-                NotificationCard(
-                  title: 'Ali paid you',
-                  body: 'Check the proof',
-                  when: 'now',
-                  read: false,
-                ),
-                NotificationCard(
-                  title: 'Old one',
-                  body: '',
-                  when: '1 Nov',
-                  read: true,
-                  reminder: true,
-                ),
-              ],
-            ),
-          ),
-          dark: true,
-        ),
-      );
+      await tester.pumpWidget(testApp(const Scaffold(
+        body: Column(children: [
+          NotificationCard(title: 'Ali paid you', body: 'Check the proof', when: 'now', read: false),
+          NotificationCard(title: 'Old one', body: '', when: '1 Nov', read: true, reminder: true),
+        ]),
+      ), dark: true));
       expect(find.text('Ali paid you'), findsOneWidget);
       expect(find.text('Old one'), findsOneWidget);
       expect(tester.takeException(), isNull);

@@ -26,6 +26,9 @@ class ShareLinkUtils {
   }
 
   static String buildBillShareUrl(String billId, {String? participantId}) {
-    return buildBillShareUri(billId, participantId: participantId).toString();
+    return buildBillShareUri(
+      billId,
+      participantId: participantId,
+    ).toString();
   }
 }

@@ -57,7 +57,9 @@ class OfflineBanner extends StatelessWidget {
               Expanded(
                 child: Text(
                   message ?? 'feedback_offline_banner'.tr(),
-                  style: AppTypography.titleSmall.copyWith(color: p.onToast),
+                  style: AppTypography.titleSmall.copyWith(
+                    color: p.onToast,
+                  ),
                 ),
               ),
             ],

@@ -27,12 +27,7 @@ const int activityPageSize = 20;
 
 /// Opaque cursor for [LedgerRepository.fetchActivity].
 class ActivityCursor {
-  const ActivityCursor({
-    this.bills,
-    this.payments,
-    this.billsDone = false,
-    this.paymentsDone = false,
-  });
+  const ActivityCursor({this.bills, this.payments, this.billsDone = false, this.paymentsDone = false});
   final Object? bills;
   final Object? payments;
   final bool billsDone;
@@ -79,15 +74,9 @@ abstract class LedgerRepository {
 
   Stream<List<LedgerGroup>> watchMyGroups(String uid);
   Stream<LedgerGroup?> watchGroup(String groupId);
-  Stream<List<BillRecord>> watchGroupBills(
-    String groupId, {
-    String fallbackCurrency,
-  });
+  Stream<List<BillRecord>> watchGroupBills(String groupId, {String fallbackCurrency});
   Stream<List<PaymentRecord>> watchGroupPayments(String groupId);
-  Stream<List<BillRecord>> watchRecentBills(
-    String uid, {
-    String fallbackCurrency,
-  });
+  Stream<List<BillRecord>> watchRecentBills(String uid, {String fallbackCurrency});
 
   /// Top-level payments and IOUs between [uid] and someone else.
   Stream<List<PaymentRecord>> watchDirectPayments(String uid);
@@ -129,22 +118,18 @@ class FirestoreLedgerRepository implements LedgerRepository {
   String? get currentUid =>
       _uid != null ? _uid() : FirebaseAuth.instance.currentUser?.uid;
 
-  CollectionReference<Map<String, dynamic>> get _groups =>
-      _db.collection('groups');
-  CollectionReference<Map<String, dynamic>> get _bills =>
-      _db.collection('bills');
+  CollectionReference<Map<String, dynamic>> get _groups => _db.collection('groups');
+  CollectionReference<Map<String, dynamic>> get _bills => _db.collection('bills');
 
   @override
-  Stream<List<LedgerGroup>> watchMyGroups(
-    String uid,
-  ) => _groups.where('memberIds', arrayContains: uid).snapshots().map((s) {
-    final list = [for (final d in s.docs) LedgerGroup.fromMap(d.id, d.data())];
-    list.sort(
-      (a, b) =>
-          (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)),
-    );
-    return list;
-  });
+  Stream<List<LedgerGroup>> watchMyGroups(String uid) => _groups
+      .where('memberIds', arrayContains: uid)
+      .snapshots()
+      .map((s) {
+        final list = [for (final d in s.docs) LedgerGroup.fromMap(d.id, d.data())];
+        list.sort((a, b) => (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
+        return list;
+      });
 
   @override
   Stream<LedgerGroup?> watchGroup(String groupId) => _groups
@@ -153,24 +138,15 @@ class FirestoreLedgerRepository implements LedgerRepository {
       .map((d) => d.exists ? LedgerGroup.fromMap(d.id, d.data()!) : null);
 
   @override
-  Stream<List<BillRecord>> watchGroupBills(
-    String groupId, {
-    String fallbackCurrency = 'USD',
-  }) => _bills
+  Stream<List<BillRecord>> watchGroupBills(String groupId, {String fallbackCurrency = 'USD'}) => _bills
       .where('groupId', isEqualTo: groupId)
       .orderBy('date', descending: true)
       .limit(groupBillsLimit)
       .snapshots()
-      .map(
-        (s) => [
-          for (final d in s.docs)
-            BillRecord.fromMap(
-              d.id,
-              d.data(),
-              fallbackCurrency: fallbackCurrency,
-            ),
-        ],
-      );
+      .map((s) => [
+            for (final d in s.docs)
+              BillRecord.fromMap(d.id, d.data(), fallbackCurrency: fallbackCurrency),
+          ]);
 
   @override
   Stream<List<PaymentRecord>> watchGroupPayments(String groupId) => _groups
@@ -179,29 +155,18 @@ class FirestoreLedgerRepository implements LedgerRepository {
       .orderBy('createdAt', descending: true)
       .limit(groupBillsLimit)
       .snapshots()
-      .map(
-        (s) => [for (final d in s.docs) PaymentRecord.fromMap(d.id, d.data())],
-      );
+      .map((s) => [for (final d in s.docs) PaymentRecord.fromMap(d.id, d.data())]);
 
   @override
-  Stream<List<BillRecord>> watchRecentBills(
-    String uid, {
-    String fallbackCurrency = 'USD',
-  }) => _bills
+  Stream<List<BillRecord>> watchRecentBills(String uid, {String fallbackCurrency = 'USD'}) => _bills
       .where('participants_uids', arrayContains: uid)
       .orderBy('date', descending: true)
       .limit(recentBillsLimit)
       .snapshots()
-      .map(
-        (s) => [
-          for (final d in s.docs)
-            BillRecord.fromMap(
-              d.id,
-              d.data(),
-              fallbackCurrency: fallbackCurrency,
-            ),
-        ],
-      );
+      .map((s) => [
+            for (final d in s.docs)
+              BillRecord.fromMap(d.id, d.data(), fallbackCurrency: fallbackCurrency),
+          ]);
 
   @override
   Stream<List<PaymentRecord>> watchDirectPayments(String uid) => _db
@@ -210,9 +175,7 @@ class FirestoreLedgerRepository implements LedgerRepository {
       .orderBy('createdAt', descending: true)
       .limit(recentBillsLimit)
       .snapshots()
-      .map(
-        (s) => [for (final d in s.docs) PaymentRecord.fromMap(d.id, d.data())],
-      );
+      .map((s) => [for (final d in s.docs) PaymentRecord.fromMap(d.id, d.data())]);
 
   @override
   Future<ActivityPage> fetchActivity(
@@ -231,10 +194,8 @@ class FirestoreLedgerRepository implements LedgerRepository {
         .where('participants_uids', arrayContains: uid)
         .orderBy('createdAt', descending: true)
         .limit(limit);
-    if (c.bills is DocumentSnapshot)
-      billsQ = billsQ.startAfterDocument(c.bills! as DocumentSnapshot);
-    if (c.payments is DocumentSnapshot)
-      payQ = payQ.startAfterDocument(c.payments! as DocumentSnapshot);
+    if (c.bills is DocumentSnapshot) billsQ = billsQ.startAfterDocument(c.bills! as DocumentSnapshot);
+    if (c.payments is DocumentSnapshot) payQ = payQ.startAfterDocument(c.payments! as DocumentSnapshot);
 
     final results = await Future.wait([
       c.billsDone ? Future.value(null) : billsQ.get(),
@@ -244,31 +205,17 @@ class FirestoreLedgerRepository implements LedgerRepository {
     final payDocs = results[1]?.docs ?? const [];
     final billItems = [
       for (final d in billDocs)
-        activityFromBill(
-          BillRecord.fromMap(
-            d.id,
-            d.data(),
-            fallbackCurrency: fallbackCurrency,
-          ),
-          uid,
-        ),
+        activityFromBill(BillRecord.fromMap(d.id, d.data(), fallbackCurrency: fallbackCurrency), uid),
     ];
     final payItems = [
-      for (final d in payDocs)
-        activityFromPayment(PaymentRecord.fromMap(d.id, d.data()), uid),
+      for (final d in payDocs) activityFromPayment(PaymentRecord.fromMap(d.id, d.data()), uid),
     ];
     final merged = mergeNewestFirst(billItems, payItems, (i) => i.date, limit);
-    final billsDone =
-        c.billsDone ||
-        (billDocs.length < limit && merged.takenFromA == billDocs.length);
-    final paymentsDone =
-        c.paymentsDone ||
-        (payDocs.length < limit && merged.takenFromB == payDocs.length);
+    final billsDone = c.billsDone || (billDocs.length < limit && merged.takenFromA == billDocs.length);
+    final paymentsDone = c.paymentsDone || (payDocs.length < limit && merged.takenFromB == payDocs.length);
     final next = ActivityCursor(
       bills: merged.takenFromA > 0 ? billDocs[merged.takenFromA - 1] : c.bills,
-      payments: merged.takenFromB > 0
-          ? payDocs[merged.takenFromB - 1]
-          : c.payments,
+      payments: merged.takenFromB > 0 ? payDocs[merged.takenFromB - 1] : c.payments,
       billsDone: billsDone,
       paymentsDone: paymentsDone,
     );
@@ -276,10 +223,7 @@ class FirestoreLedgerRepository implements LedgerRepository {
   }
 
   @override
-  Future<String> createGroup(
-    GroupDraft draft, {
-    required GroupMember creator,
-  }) async {
+  Future<String> createGroup(GroupDraft draft, {required GroupMember creator}) async {
     final members = [
       creator,
       ...draft.members.where((m) => m.id != creator.id),
@@ -293,8 +237,7 @@ class FirestoreLedgerRepository implements LedgerRepository {
       'type': draft.type.name,
       'currency': draft.currency,
       if (draft.budgetMinor != null) 'budgetMinor': draft.budgetMinor,
-      if (draft.startDate != null)
-        'startDate': Timestamp.fromDate(draft.startDate!),
+      if (draft.startDate != null) 'startDate': Timestamp.fromDate(draft.startDate!),
       if (draft.endDate != null) 'endDate': Timestamp.fromDate(draft.endDate!),
       'simplifyDebts': draft.simplifyDebts,
     });
@@ -303,10 +246,7 @@ class FirestoreLedgerRepository implements LedgerRepository {
 
   @override
   Future<void> updateGroup(String groupId, Map<String, dynamic> fields) =>
-      _groups.doc(groupId).update({
-        ...fields,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+      _groups.doc(groupId).update({...fields, 'updatedAt': FieldValue.serverTimestamp()});
 
   @override
   Stream<bool> watchHasUnread(String uid) => _db
@@ -384,10 +324,7 @@ Stream<HomeLedgerState> watchHomeLedger(
     return Rx.combineLatestList([
       for (final g in active)
         Rx.combineLatest2(
-          repo.watchGroupBills(
-            g.id,
-            fallbackCurrency: g.currency ?? fallbackCurrency,
-          ),
+          repo.watchGroupBills(g.id, fallbackCurrency: g.currency ?? fallbackCurrency),
           repo.watchGroupPayments(g.id),
           (List<BillRecord> b, List<PaymentRecord> p) =>
               GroupLedgerInput(group: g, bills: b, payments: p),
@@ -455,10 +392,7 @@ Stream<GroupLedgerInput?> watchGroupLedger(
 }) => repo.watchGroup(groupId).switchMap((group) {
   if (group == null) return Stream<GroupLedgerInput?>.value(null);
   return Rx.combineLatest2(
-    repo.watchGroupBills(
-      groupId,
-      fallbackCurrency: group.currency ?? fallbackCurrency,
-    ),
+    repo.watchGroupBills(groupId, fallbackCurrency: group.currency ?? fallbackCurrency),
     repo.watchGroupPayments(groupId),
     (List<BillRecord> b, List<PaymentRecord> p) =>
         GroupLedgerInput(group: group, bills: b, payments: p),

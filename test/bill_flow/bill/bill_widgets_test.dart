@@ -37,7 +37,7 @@ String _shown(WidgetTester tester, Finder finder) {
   final texts = tester.widgetList<Text>(
     find.descendant(of: finder, matching: find.byType(Text)),
   );
-  return _plain(texts.map((t) => t.data ?? '').join());
+  return _plain(texts.map((t) => t.data ?? t.textSpan?.toPlainText() ?? '').join());
 }
 
 void main() {

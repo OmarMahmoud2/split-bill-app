@@ -162,7 +162,11 @@ class _SignUpModalState extends State<SignUpModal> {
                           .tr(),
                   onPressed: () =>
                       setState(() => _hidePassword = !_hidePassword),
-                  icon: Icon(_hidePassword ? AppIcons.eyeOff : AppIcons.eye),
+                  icon: Icon(
+                    _hidePassword
+                        ? AppIcons.eyeOff
+                        : AppIcons.eye,
+                  ),
                 ),
               ),
               validator: (v) => _validate('password', v),

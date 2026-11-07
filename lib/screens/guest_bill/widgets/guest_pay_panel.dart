@@ -231,7 +231,9 @@ class _GuestPayMethodsState extends State<GuestPayMethods> {
                   setState(() => _qrOpen = _qrOpen == index ? null : index),
               icon: Icon(_qrOpen == index ? AppIcons.close : AppIcons.qr),
               label: Text(
-                _qrOpen == index ? 'guest_hide_qr'.tr() : 'guest_show_qr'.tr(),
+                _qrOpen == index
+                    ? 'guest_hide_qr'.tr()
+                    : 'guest_show_qr'.tr(),
               ),
             ),
           ),
@@ -450,7 +452,11 @@ class GuestProofZone extends StatelessWidget {
               child: Column(
                 children: [
                   if (!desktop) ...[
-                    Icon(AppIcons.upload, size: 26, color: p.textSecondary),
+                    Icon(
+                      AppIcons.upload,
+                      size: 26,
+                      color: p.textSecondary,
+                    ),
                     const SizedBox(height: 8),
                   ],
                   Text(

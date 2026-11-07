@@ -25,7 +25,8 @@ class AdModal extends StatefulWidget {
     return showLedgerSheet<bool>(
       context,
       showClose: false,
-      builder: (_) => AdModal(onWatchAd: onWatchAd, watchedToday: watchedToday),
+      builder: (_) =>
+          AdModal(onWatchAd: onWatchAd, watchedToday: watchedToday),
     );
   }
 

@@ -99,7 +99,10 @@ Map<String, int> splitByExactAmounts(int total, Map<String, int> amounts) {
 
 /// Splits [total] by [percentages], which must be >= 0 and sum to 100
 /// (within 1e-6, so 100/3 three times is accepted).
-Map<String, int> splitByPercentages(int total, Map<String, num> percentages) {
+Map<String, int> splitByPercentages(
+  int total,
+  Map<String, num> percentages,
+) {
   if (percentages.isEmpty) throw const EmptyParticipantsError();
   final weights = <String, int>{};
   num sum = 0;

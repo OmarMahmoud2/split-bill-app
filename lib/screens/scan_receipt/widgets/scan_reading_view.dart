@@ -266,7 +266,11 @@ class _ScanReadingViewState extends State<ScanReadingView>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(AppIcons.lock, size: 14, color: p.textSecondary),
+                    Icon(
+                      AppIcons.lock,
+                      size: 14,
+                      color: p.textSecondary,
+                    ),
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(

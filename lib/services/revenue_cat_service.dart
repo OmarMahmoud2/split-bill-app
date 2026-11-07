@@ -176,9 +176,7 @@ class RevenueCatService {
     if (user == null) return false;
 
     final now = DateTime.now();
-    if (!force &&
-        _lastSyncTime != null &&
-        now.difference(_lastSyncTime!).inMinutes < 5) {
+    if (!force && _lastSyncTime != null && now.difference(_lastSyncTime!).inMinutes < 5) {
       return false;
     }
     return syncCurrentUser();

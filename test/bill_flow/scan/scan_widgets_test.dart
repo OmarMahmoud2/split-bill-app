@@ -252,7 +252,7 @@ void main() {
           matching: find.byType(Text),
         ),
       );
-      expect(_plain(total.data!), contains('29.07'));
+      expect(_plain((total.data ?? total.textSpan!.toPlainText())), contains('29.07'));
       expect(_textPlain('25.50'), findsOneWidget); // subtotal
       expect(find.text('bf_scan_review_add_tip'), findsOneWidget);
       expect(find.text('receipt_add_item'), findsOneWidget);
@@ -303,7 +303,7 @@ void main() {
           matching: find.byType(Text),
         ),
       );
-      expect(_plain(total.data!), contains('2.350'));
+      expect(_plain((total.data ?? total.textSpan!.toPlainText())), contains('2.350'));
       // No banner when there is nothing to review.
       expect(find.byType(ReviewBanner), findsNothing);
     });
