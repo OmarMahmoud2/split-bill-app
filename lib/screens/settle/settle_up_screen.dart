@@ -427,11 +427,17 @@ class _SettleCard extends StatelessWidget {
     final t = row.transfer;
     final from = names[t.from] ?? '';
     final to = names[t.to] ?? '';
+    final amountText = moneyLabel(context, t.amount, t.currency);
+    final involvesMe = t.from == me || t.to == me;
     final String line;
     if (t.from == me) {
-      line = 'settle_you_pay'.tr(namedArgs: {'name': to});
+      line = 'bd2_you_owe_name'.tr(
+        namedArgs: {'name': to, 'amount': amountText},
+      );
     } else if (t.to == me) {
-      line = 'settle_pays_you'.tr(namedArgs: {'name': from});
+      line = 'bd2_owes_you_name'.tr(
+        namedArgs: {'name': from, 'amount': amountText},
+      );
     } else {
       line = 'settle_pays'.tr(namedArgs: {'from': from, 'to': to});
     }
@@ -537,12 +543,13 @@ class _SettleCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  MoneyText(
-                    minor: t.amount,
-                    currency: t.currency,
-                    tone: tone,
-                    sign: MoneySign.none,
-                  ),
+                  if (!involvesMe)
+                    MoneyText(
+                      minor: t.amount,
+                      currency: t.currency,
+                      tone: tone,
+                      sign: MoneySign.none,
+                    ),
                 ],
               ),
             ),
@@ -553,12 +560,18 @@ class _SettleCard extends StatelessWidget {
             if (settled)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'settle_settled_label'.tr(),
-                  style: AppTypography.labelMedium.copyWith(
-                    color: p.owed,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  children: [
+                    Icon(AppIcons.success, size: 16, color: p.owed),
+                    const SizedBox(width: 4),
+                    Text(
+                      'settle_settled_label'.tr(),
+                      style: AppTypography.labelMedium.copyWith(
+                        color: p.owed,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],

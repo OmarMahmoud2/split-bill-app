@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU, fiş olmadan birinin sana borçlu olduğunu belirten bir nottur.",
   "bd2_iou_explainer_title": "IOU nedir?",
   "bd2_iou_explainer_body": "Fiş olmadan birinin sana borçlu olduğunu belirten bir not. Ali'ye taksi için 200 TL mi verdin? Bir IOU ekle, Evens geri ödeyene kadar takip etsin.",
-  "bd2_paid_count": "{total} kişiden {paid} ödedi"
+  "bd2_paid_count": "{total} kişiden {paid} ödedi",
+  "bd2_you_owe_name": "{name} kişisine {amount} borçlusun",
+  "bd2_owes_you_name": "{name} sana {amount} borçlu",
+  "bd2_you_sent_waiting": "{amount} gönderdin · {name} onayı bekleniyor",
+  "bd2_you_paid_title": "Ödeme kaydedildi",
+  "bd2_you_paid_body": "{name} kişisine {amount} ödedin."
 }

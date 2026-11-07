@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU एक नोट है कि किसी पर आपका पैसा बकाया है, बिना बिल के।",
   "bd2_iou_explainer_title": "IOU क्या है?",
   "bd2_iou_explainer_body": "एक नोट कि किसी पर आपका पैसा बकाया है, बिना बिल के। अली को टैक्सी के लिए ₹200 उधार दिए? IOU जोड़ें और Evens तब तक हिसाब रखेगा जब तक वह लौटा न दे।",
-  "bd2_paid_count": "{total} में से {paid} ने भुगतान किया"
+  "bd2_paid_count": "{total} में से {paid} ने भुगतान किया",
+  "bd2_you_owe_name": "आप पर {name} का {amount} बकाया है",
+  "bd2_owes_you_name": "{name} पर आपका {amount} बकाया है",
+  "bd2_you_sent_waiting": "आपने {amount} भेजे · {name} की पुष्टि का इंतज़ार",
+  "bd2_you_paid_title": "भुगतान दर्ज हुआ",
+  "bd2_you_paid_body": "आपने {name} को {amount} चुकाए।"
 }

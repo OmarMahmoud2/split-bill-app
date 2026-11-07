@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU คือโน้ตว่ามีคนติดเงินคุณ โดยไม่ต้องมีบิล",
   "bd2_iou_explainer_title": "IOU คืออะไร",
   "bd2_iou_explainer_body": "โน้ตว่ามีคนติดเงินคุณ โดยไม่ต้องมีบิล ให้อาลีหยิบยืม 200 บาทค่าแท็กซี่ใช่ไหม เพิ่ม IOU แล้ว Evens จะคอยติดตามจนกว่าเขาจะจ่ายคืน",
-  "bd2_paid_count": "จ่ายแล้ว {paid} จาก {total} คน"
+  "bd2_paid_count": "จ่ายแล้ว {paid} จาก {total} คน",
+  "bd2_you_owe_name": "คุณติด {name} {amount}",
+  "bd2_owes_you_name": "{name} ติดคุณ {amount}",
+  "bd2_you_sent_waiting": "คุณส่ง {amount} · รอ {name} ยืนยัน",
+  "bd2_you_paid_title": "บันทึกการชำระเงินแล้ว",
+  "bd2_you_paid_body": "คุณจ่าย {name} {amount} แล้ว"
 }

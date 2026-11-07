@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "En IOU er et notat om at noen skylder deg penger, uten regning.",
   "bd2_iou_explainer_title": "Hva er en IOU?",
   "bd2_iou_explainer_body": "Et notat om at noen skylder deg penger, uten regning. Lånt Ali 200 kr til en taxi? Legg til en IOU, så holder Evens oversikt til han betaler tilbake.",
-  "bd2_paid_count": "{paid} av {total} har betalt"
+  "bd2_paid_count": "{paid} av {total} har betalt",
+  "bd2_you_owe_name": "Du skylder {name} {amount}",
+  "bd2_owes_you_name": "{name} skylder deg {amount}",
+  "bd2_you_sent_waiting": "Du sendte {amount} · venter på {name}",
+  "bd2_you_paid_title": "Betaling registrert",
+  "bd2_you_paid_body": "Du betalte {name} {amount}."
 }

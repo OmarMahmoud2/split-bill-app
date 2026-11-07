@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOUは、請求書なしで誰かがあなたに借りていることを記録するメモです。",
   "bd2_iou_explainer_title": "IOUとは？",
   "bd2_iou_explainer_body": "請求書なしで誰かがあなたに借りていることを記録するメモです。アリにタクシー代2,000円を貸した？IOUを追加すれば、返してもらうまでEvensが記録します。",
-  "bd2_paid_count": "{total}人中{paid}人が支払い済み"
+  "bd2_paid_count": "{total}人中{paid}人が支払い済み",
+  "bd2_you_owe_name": "{name}に{amount}を支払う",
+  "bd2_owes_you_name": "{name}があなたに{amount}を支払う",
+  "bd2_you_sent_waiting": "{amount}を送信 · {name}の確認待ち",
+  "bd2_you_paid_title": "支払いを記録しました",
+  "bd2_you_paid_body": "{name}に{amount}を支払いました。"
 }

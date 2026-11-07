@@ -76,12 +76,17 @@ class _PaySheetState extends State<PaySheet> {
 
   Future<List<StoredPaymentMethod>> _load() async {
     if (!widget.recipientHasAccount) return const [];
-    final profile = await LedgerRepository.instance.publicProfile(widget.recipientId);
+    final profile = await LedgerRepository.instance.publicProfile(
+      widget.recipientId,
+    );
     final platform = currentPaymentPlatform();
     final methods = parseStoredPaymentMethods(profile)
-        .where((m) => m.value.trim().isNotEmpty && m.type.isAvailableOn(platform))
+        .where(
+          (m) => m.value.trim().isNotEmpty && m.type.isAvailableOn(platform),
+        )
         .toList();
-    if (methods.isNotEmpty && mounted) setState(() => _selected ??= methods.first);
+    if (methods.isNotEmpty && mounted)
+      setState(() => _selected ??= methods.first);
     return methods;
   }
 
@@ -97,12 +102,19 @@ class _PaySheetState extends State<PaySheet> {
     );
     final outcome = await paymentLauncher.run(launch);
     if (!mounted) return;
-    final instruction = launch.instructionKey.tr(namedArgs: launch.instructionArgs);
+    final instruction = launch.instructionKey.tr(
+      namedArgs: launch.instructionArgs,
+    );
     switch (outcome) {
       case PaymentLaunchOutcome.openedPrefilled:
       case PaymentLaunchOutcome.openedAmountCopied:
       case PaymentLaunchOutcome.copied:
-        AppToast.show(context, message: instruction, type: AppToastType.info, position: AppToastPosition.top);
+        AppToast.show(
+          context,
+          message: instruction,
+          type: AppToastType.info,
+          position: AppToastPosition.top,
+        );
         setState(() => _launched = true);
       case PaymentLaunchOutcome.failed:
         AppToast.show(
@@ -120,13 +132,21 @@ class _PaySheetState extends State<PaySheet> {
     final amount = moneyLabel(context, widget.amountMinor, widget.currency);
     final who = widget.contextLabel == null || widget.contextLabel!.isEmpty
         ? 'pay_you_pay'.tr(namedArgs: {'name': widget.recipientName})
-        : 'pay_you_pay_in'.tr(namedArgs: {'name': widget.recipientName, 'group': widget.contextLabel!});
+        : 'pay_you_pay_in'.tr(
+            namedArgs: {
+              'name': widget.recipientName,
+              'group': widget.contextLabel!,
+            },
+          );
     return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(who, style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
+          Text(
+            who,
+            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+          ),
           const SizedBox(height: 2),
           Align(
             alignment: AlignmentDirectional.centerStart,
@@ -135,7 +155,7 @@ class _PaySheetState extends State<PaySheet> {
               currency: widget.currency,
               tone: MoneyTone.neutral,
               size: MoneySize.large,
-              style: const TextStyle(fontSize: 40),
+              style: const TextStyle(fontSize: 48),
             ),
           ),
           FutureBuilder<List<StoredPaymentMethod>>(
@@ -155,7 +175,8 @@ class _PaySheetState extends State<PaySheet> {
                     message: 'pay_methods_failed_body'.tr(),
                     onRetry: () => setState(() => _methods = _load()),
                     secondaryLabel: 'settle_record_cash'.tr(),
-                    onSecondary: () => Navigator.of(context).pop(const PaySheetResult('cash')),
+                    onSecondary: () =>
+                        Navigator.of(context).pop(const PaySheetResult('cash')),
                   ),
                 );
               }
@@ -170,13 +191,17 @@ class _PaySheetState extends State<PaySheet> {
                         child: EmptyState(
                           compact: true,
                           icon: AppIcons.wallet,
-                          title: 'pay_no_methods_title'.tr(namedArgs: {'name': widget.recipientName}),
+                          title: 'pay_no_methods_title'.tr(
+                            namedArgs: {'name': widget.recipientName},
+                          ),
                           message: 'pay_no_methods_body'.tr(),
                         ),
                       ),
                       const SizedBox(height: 14),
                       FilledButton(
-                        onPressed: () => Navigator.of(context).pop(const PaySheetResult('cash')),
+                        onPressed: () => Navigator.of(
+                          context,
+                        ).pop(const PaySheetResult('cash')),
                         child: Text('settle_record_cash'.tr()),
                       ),
                     ],
@@ -216,34 +241,47 @@ class _PaySheetState extends State<PaySheet> {
                   const SizedBox(height: 12),
                   Text(
                     'pay_footnote'.tr(),
-                    style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: p.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   if (!_launched)
                     FilledButton(
                       onPressed: () => _open(selected),
-                      child: Text('pay_open_app'.tr(namedArgs: {'app': selected.label, 'amount': amount})),
+                      child: Text(
+                        'pay_open_app'.tr(
+                          namedArgs: {'app': selected.label, 'amount': amount},
+                        ),
+                      ),
                     )
                   else ...[
                     Text(
                       'pay_did_it_go_through'.tr(),
                       textAlign: TextAlign.center,
-                      style: AppTypography.titleSmall.copyWith(color: p.textPrimary),
+                      style: AppTypography.titleSmall.copyWith(
+                        color: p.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     FilledButton(
-                      onPressed: () => Navigator.of(context).pop(PaySheetResult(selected.type.id)),
+                      onPressed: () => Navigator.of(
+                        context,
+                      ).pop(PaySheetResult(selected.type.id)),
                       child: Text('pay_yes_mark_paid'.tr()),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton(
                       onPressed: () => _open(selected),
-                      child: Text('pay_open_again'.tr(namedArgs: {'app': selected.label})),
+                      child: Text(
+                        'pay_open_again'.tr(namedArgs: {'app': selected.label}),
+                      ),
                     ),
                   ],
                   const SizedBox(height: 4),
                   TextButton(
-                    onPressed: () => Navigator.of(context).pop(const PaySheetResult('cash')),
+                    onPressed: () =>
+                        Navigator.of(context).pop(const PaySheetResult('cash')),
                     child: Text('pay_paid_in_cash'.tr()),
                   ),
                 ],
@@ -257,7 +295,11 @@ class _PaySheetState extends State<PaySheet> {
 }
 
 class _MethodTile extends StatelessWidget {
-  const _MethodTile({required this.method, required this.selected, required this.onTap});
+  const _MethodTile({
+    required this.method,
+    required this.selected,
+    required this.onTap,
+  });
   final StoredPaymentMethod method;
   final bool selected;
   final VoidCallback onTap;
@@ -284,7 +326,11 @@ class _MethodTile extends StatelessWidget {
                   width: 30,
                   height: 30,
                   child: logo != null
-                      ? Image.asset(logo, fit: BoxFit.cover, errorBuilder: (_, _, _) => _initials(p))
+                      ? Image.asset(
+                          logo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => _initials(p),
+                        )
                       : _initials(p),
                 ),
               ),
@@ -298,13 +344,19 @@ class _MethodTile extends StatelessWidget {
                       method.label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTypography.labelLarge.copyWith(color: p.textPrimary, fontSize: 14),
+                      style: AppTypography.labelLarge.copyWith(
+                        color: p.textPrimary,
+                        fontSize: 14,
+                      ),
                     ),
                     Text(
                       method.value,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTypography.caption.copyWith(color: p.textSecondary, fontSize: 11),
+                      style: AppTypography.caption.copyWith(
+                        color: p.textSecondary,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                 ),
@@ -321,7 +373,10 @@ class _MethodTile extends StatelessWidget {
     child: Center(
       child: Text(
         method.type.initials,
-        style: AppTypography.labelSmall.copyWith(color: p.textPrimary, fontWeight: FontWeight.w700),
+        style: AppTypography.labelSmall.copyWith(
+          color: p.textPrimary,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     ),
   );

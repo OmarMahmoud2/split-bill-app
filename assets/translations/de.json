@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "Ein IOU ist eine Notiz, dass dir jemand Geld schuldet, ohne Rechnung.",
   "bd2_iou_explainer_title": "Was ist ein IOU?",
   "bd2_iou_explainer_body": "Eine Notiz, dass dir jemand Geld schuldet, ohne Rechnung. Ali 20 € fürs Taxi geliehen? Lege ein IOU an, und Evens behält es im Blick, bis er zurückzahlt.",
-  "bd2_paid_count": "{paid} von {total} bezahlt"
+  "bd2_paid_count": "{paid} von {total} bezahlt",
+  "bd2_you_owe_name": "Du schuldest {name} {amount}",
+  "bd2_owes_you_name": "{name} schuldet dir {amount}",
+  "bd2_you_sent_waiting": "Du hast {amount} gesendet · warte auf {name}",
+  "bd2_you_paid_title": "Zahlung erfasst",
+  "bd2_you_paid_body": "Du hast {name} {amount} bezahlt."
 }

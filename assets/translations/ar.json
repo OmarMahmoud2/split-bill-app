@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "الدين المكتوب ملاحظة بأن شخصًا ما مدين لك، بدون فاتورة.",
   "bd2_iou_explainer_title": "ما هو الدين المكتوب؟",
   "bd2_iou_explainer_body": "ملاحظة بأن شخصًا ما مدين لك، بدون فاتورة. أقرضت علي ٢٠٠ جنيه لسيارة أجرة؟ أضف ملاحظة دين وسيتتبعها Evens حتى يسددها لك.",
-  "bd2_paid_count": "{paid} من {total} دفعوا"
+  "bd2_paid_count": "{paid} من {total} دفعوا",
+  "bd2_you_owe_name": "أنت مدين لـ {name} بمبلغ {amount}",
+  "bd2_owes_you_name": "{name} مدين لك بمبلغ {amount}",
+  "bd2_you_sent_waiting": "أرسلت {amount} · بانتظار {name}",
+  "bd2_you_paid_title": "تم تسجيل الدفعة",
+  "bd2_you_paid_body": "دفعت {amount} إلى {name}."
 }

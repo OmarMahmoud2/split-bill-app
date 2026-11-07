@@ -116,6 +116,22 @@ Future<bool> recordPaymentWithFeedback(
       : 'settle_marked_paid_toast'.tr(
           namedArgs: {'name': payment.fromName ?? '', 'amount': amount},
         );
+  if (payment.from == me) {
+    final nav = Navigator.of(context);
+    await SuccessScreen.show<void>(
+      context,
+      title: 'bd2_you_paid_title'.tr(),
+      message: 'bd2_you_paid_body'.tr(
+        namedArgs: {'name': payment.toName ?? '', 'amount': amount},
+      ),
+      amountMinor: payment.amountMinor,
+      currency: payment.currency,
+      celebrate: true,
+      primaryLabel: 'done'.tr(),
+      onPrimary: nav.pop,
+    );
+    return true;
+  }
   AppToast.show(context, message: message, type: AppToastType.success);
   return true;
 }

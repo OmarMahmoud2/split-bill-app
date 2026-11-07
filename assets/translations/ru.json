@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU — это заметка о том, что вам кто-то должен, без счёта.",
   "bd2_iou_explainer_title": "Что такое IOU?",
   "bd2_iou_explainer_body": "Заметка о том, что вам кто-то должен, без счёта. Одолжили Али 200 ₽ на такси? Добавьте IOU, и Evens будет следить, пока он не вернёт.",
-  "bd2_paid_count": "{paid} из {total} оплатили"
+  "bd2_paid_count": "{paid} из {total} оплатили",
+  "bd2_you_owe_name": "Вы должны {name} {amount}",
+  "bd2_owes_you_name": "{name} должен вам {amount}",
+  "bd2_you_sent_waiting": "Вы отправили {amount} · ждём {name}",
+  "bd2_you_paid_title": "Платёж записан",
+  "bd2_you_paid_body": "Вы заплатили {name} {amount}."
 }

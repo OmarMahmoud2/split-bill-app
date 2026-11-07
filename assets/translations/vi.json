@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU là ghi chú rằng ai đó nợ bạn, không cần hóa đơn.",
   "bd2_iou_explainer_title": "IOU là gì?",
   "bd2_iou_explainer_body": "Ghi chú rằng ai đó nợ bạn, không cần hóa đơn. Cho Ali mượn 50.000đ đi taxi? Thêm IOU và Evens sẽ theo dõi cho đến khi bạn ấy trả lại.",
-  "bd2_paid_count": "{paid}/{total} người đã trả"
+  "bd2_paid_count": "{paid}/{total} người đã trả",
+  "bd2_you_owe_name": "Bạn nợ {name} {amount}",
+  "bd2_owes_you_name": "{name} nợ bạn {amount}",
+  "bd2_you_sent_waiting": "Bạn đã gửi {amount} · chờ {name} xác nhận",
+  "bd2_you_paid_title": "Đã ghi nhận thanh toán",
+  "bd2_you_paid_body": "Bạn đã trả {name} {amount}."
 }

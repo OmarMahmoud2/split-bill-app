@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "Een IOU is een notitie dat iemand je geld schuldig is, zonder rekening.",
   "bd2_iou_explainer_title": "Wat is een IOU?",
   "bd2_iou_explainer_body": "Een notitie dat iemand je geld schuldig is, zonder rekening. Ali €20 geleend voor een taxi? Voeg een IOU toe en Evens houdt het bij tot hij je terugbetaalt.",
-  "bd2_paid_count": "{paid} van {total} betaald"
+  "bd2_paid_count": "{paid} van {total} betaald",
+  "bd2_you_owe_name": "Je bent {name} {amount} schuldig",
+  "bd2_owes_you_name": "{name} is jou {amount} schuldig",
+  "bd2_you_sent_waiting": "Je stuurde {amount} · wacht op {name}",
+  "bd2_you_paid_title": "Betaling vastgelegd",
+  "bd2_you_paid_body": "Je betaalde {name} {amount}."
 }

@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "Un IOU est une note indiquant que quelqu'un vous doit de l'argent, sans addition.",
   "bd2_iou_explainer_title": "C'est quoi un IOU ?",
   "bd2_iou_explainer_body": "Une note indiquant que quelqu'un vous doit de l'argent, sans addition. Vous avez prêté 20 € à Ali pour un taxi ? Ajoutez un IOU et Evens garde le compte jusqu'à son remboursement.",
-  "bd2_paid_count": "{paid} sur {total} ont payé"
+  "bd2_paid_count": "{paid} sur {total} ont payé",
+  "bd2_you_owe_name": "Vous devez {amount} à {name}",
+  "bd2_owes_you_name": "{name} vous doit {amount}",
+  "bd2_you_sent_waiting": "Vous avez envoyé {amount} · en attente de {name}",
+  "bd2_you_paid_title": "Paiement enregistré",
+  "bd2_you_paid_body": "Vous avez payé {amount} à {name}."
 }

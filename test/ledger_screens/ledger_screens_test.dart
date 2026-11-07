@@ -384,8 +384,8 @@ void main() {
       LedgerRepository.instance = repo;
       await tester.pumpWidget(testApp(const ActivityScreen(embedded: true)));
       await tester.pumpAndSettle();
-      expect(find.text('ACTIVITY_TODAY'), findsOneWidget);
-      expect(find.text('ACTIVITY_YESTERDAY'), findsOneWidget);
+      expect(find.text('activity_today'), findsOneWidget);
+      expect(find.text('activity_yesterday'), findsOneWidget);
       expect(textPlain('+\$30.24'), findsOneWidget);
       expect(textPlain('−\$12.00'), findsOneWidget);
       expect(repo.activityCalls, 2);

@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU ایک نوٹ ہے کہ کسی کے ذمے آپ کی رقم ہے، بغیر بل کے۔",
   "bd2_iou_explainer_title": "IOU کیا ہے؟",
   "bd2_iou_explainer_body": "ایک نوٹ کہ کسی کے ذمے آپ کی رقم ہے، بغیر بل کے۔ علی کو ٹیکسی کے لیے ۲۰۰ روپے دیے؟ IOU شامل کریں اور Evens واپسی تک حساب رکھے گا۔",
-  "bd2_paid_count": "{total} میں سے {paid} نے ادا کیا"
+  "bd2_paid_count": "{total} میں سے {paid} نے ادا کیا",
+  "bd2_you_owe_name": "آپ پر {name} کے {amount} واجب ہیں",
+  "bd2_owes_you_name": "{name} کے ذمے آپ کے {amount} ہیں",
+  "bd2_you_sent_waiting": "آپ نے {amount} بھیجے · {name} کا انتظار",
+  "bd2_you_paid_title": "ادائیگی درج ہو گئی",
+  "bd2_you_paid_body": "آپ نے {name} کو {amount} ادا کیے۔"
 }

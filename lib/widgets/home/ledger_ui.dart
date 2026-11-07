@@ -2,7 +2,8 @@
 /// (v3 "Quiet ledger": hairline cards, tinted initials, pill buttons).
 library;
 
-import 'package:easy_localization/easy_localization.dart' show StringTranslateExtension;
+import 'package:easy_localization/easy_localization.dart'
+    show StringTranslateExtension;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/pal_avatar.dart';
@@ -215,12 +216,11 @@ class OverlineLabel extends StatelessWidget {
     child: Semantics(
       header: true,
       child: Text(
-        text.toUpperCase(),
+        text,
         style: AppTypography.labelMedium.copyWith(
           color: context.palette.textSecondary,
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.4,
         ),
       ),
     ),

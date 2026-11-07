@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU adalah catatan bahwa seseorang berutang padamu, tanpa tagihan.",
   "bd2_iou_explainer_title": "Apa itu IOU?",
   "bd2_iou_explainer_body": "Catatan bahwa seseorang berutang padamu, tanpa tagihan. Meminjamkan Ali Rp50.000 untuk taksi? Tambahkan IOU dan Evens mencatatnya sampai dia membayar.",
-  "bd2_paid_count": "{paid} dari {total} sudah bayar"
+  "bd2_paid_count": "{paid} dari {total} sudah bayar",
+  "bd2_you_owe_name": "Kamu berutang {amount} ke {name}",
+  "bd2_owes_you_name": "{name} berutang {amount} padamu",
+  "bd2_you_sent_waiting": "Kamu mengirim {amount} · menunggu {name}",
+  "bd2_you_paid_title": "Pembayaran dicatat",
+  "bd2_you_paid_body": "Kamu membayar {amount} ke {name}."
 }

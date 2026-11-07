@@ -106,7 +106,7 @@ class ParticipantBillView extends StatelessWidget {
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 8),
           child: Text(
-            'bf_bill_pay_with'.tr(namedArgs: {'name': firstName}).toUpperCase(),
+            'bf_bill_pay_with'.tr(namedArgs: {'name': firstName}),
             style: AppTypography.labelMedium.copyWith(
               color: p.textSecondary,
               fontWeight: FontWeight.w600,
@@ -129,7 +129,12 @@ class ParticipantBillView extends StatelessWidget {
             icon: settled ? AppIcons.success : AppIcons.clock,
             text: settled
                 ? 'bf_bill_settled_note'.tr(namedArgs: {'host': firstName})
-                : 'bf_bill_waiting_note'.tr(namedArgs: {'host': firstName}),
+                : 'bd2_you_sent_waiting'.tr(
+                    namedArgs: {
+                      'amount': formatMoneyMinor(share, currency),
+                      'name': firstName,
+                    },
+                  ),
           ),
         ),
       const SizedBox(height: AppSpacing.xxl),

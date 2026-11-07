@@ -2202,5 +2202,10 @@
   "bd2_iou_explainer_short": "IOU 是一张欠条，记录别人欠你钱，无需账单。",
   "bd2_iou_explainer_title": "什么是 IOU？",
   "bd2_iou_explainer_body": "一张欠条，记录别人欠你钱，无需账单。借给阿里 20 元打车？添加一条 IOU，Evens 会帮你记着，直到他还钱。",
-  "bd2_paid_count": "{total} 人中 {paid} 人已付款"
+  "bd2_paid_count": "{total} 人中 {paid} 人已付款",
+  "bd2_you_owe_name": "你欠 {name} {amount}",
+  "bd2_owes_you_name": "{name} 欠你 {amount}",
+  "bd2_you_sent_waiting": "你已发送 {amount} · 等待 {name} 确认",
+  "bd2_you_paid_title": "已记录付款",
+  "bd2_you_paid_body": "你已向 {name} 支付 {amount}。"
 }
