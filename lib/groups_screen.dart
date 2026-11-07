@@ -141,7 +141,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                 20,
                                 16,
                                 20,
-                                MediaQuery.paddingOf(context).bottom + 16,
+                                MediaQuery.paddingOf(context).bottom +
+                                    44, // + raised centre button
                               ),
                               children: [
                                 for (final (i, g) in active.indexed)

@@ -138,7 +138,9 @@ class HomeDashboard extends StatelessWidget {
                 );
               return ListView(
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery.paddingOf(context).bottom + 16,
+                  bottom:
+                      MediaQuery.paddingOf(context).bottom +
+                      44, // + raised centre button
                 ),
                 children: [
                   header,

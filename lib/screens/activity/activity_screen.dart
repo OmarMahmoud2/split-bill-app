@@ -482,7 +482,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
           controller: _scroll,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.only(
-            bottom: MediaQuery.paddingOf(context).bottom + 16,
+            bottom:
+                MediaQuery.paddingOf(context).bottom +
+                44, // + raised centre button
           ),
           children: [
             if (_monthCard(context, me.uid) case final card?) card,
