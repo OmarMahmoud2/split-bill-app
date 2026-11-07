@@ -2,17 +2,15 @@
 /// group or trip), plus the entry points other features plug into.
 library;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/manual_entry_screen.dart';
 import 'package:split_bill_app/scan_receipt_screen.dart';
 import 'package:split_bill_app/config/feature_costs.dart';
-import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/plural_text.dart';
+import 'package:split_bill_app/utils/wallet_status.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 
 typedef BillEntry = void Function(BuildContext context, {List<GroupMember>? members, String? groupId});
@@ -111,19 +109,6 @@ Future<void> showNewSheet(
   );
 }
 
-/// Pro status and points of the signed-in user; null when unknown (offline,
-/// signed out, Firebase not set up).
-Future<({bool pro, int points})?> _loadWallet() async {
-  try {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return null;
-    final data = (await FirebaseFirestore.instance.collection('users').doc(uid).get()).data();
-    return (pro: RevenueCatService.isUserActivePremium(data), points: (data?['points'] as num?)?.toInt() ?? 0);
-  } catch (_) {
-    return null;
-  }
-}
-
 class NewSheet extends StatefulWidget {
   const NewSheet({super.key, required this.methods, this.more = const []});
   final List<NewSheetOption> methods;
@@ -134,7 +119,7 @@ class NewSheet extends StatefulWidget {
 }
 
 class _NewSheetState extends State<NewSheet> {
-  late final Future<({bool pro, int points})?> _wallet = _loadWallet();
+  late final Future<({bool pro, int points})?> _wallet = loadWalletStatus();
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/config/feature_costs.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/plural_text.dart';
+import 'package:split_bill_app/utils/wallet_status.dart';
 
 /// The scan start screen: take or choose a photo, type it in, or snap now
 /// and split later. With an [image] (a resumed draft, or after a failed
@@ -88,6 +91,8 @@ class ScanEmptyState extends StatelessWidget {
             hasImage ? 'bf_scan_ready_hint'.tr() : 'bf_scan_idle_hint'.tr(),
             style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
           ),
+          const SizedBox(height: AppSpacing.md),
+          const _ScanCostNote(),
           const SizedBox(height: AppSpacing.xl),
           if (hasImage) ...[
             FilledButton.icon(
@@ -149,6 +154,64 @@ class ScanEmptyState extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// "A scan costs 2 points" (or "Pro: unlimited scans" for Pro users).
+class _ScanCostNote extends StatefulWidget {
+  const _ScanCostNote();
+
+  @override
+  State<_ScanCostNote> createState() => _ScanCostNoteState();
+}
+
+class _ScanCostNoteState extends State<_ScanCostNote> {
+  late final Future<({bool pro, int points})?> _wallet = loadWalletStatus();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return FutureBuilder(
+      future: _wallet,
+      builder: (context, snap) {
+        final pro = snap.data?.pro ?? false;
+        return Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            decoration: BoxDecoration(
+              color: pro ? p.premium : p.accentSoft,
+              borderRadius: AppRadii.chipRadius,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  pro ? AppIcons.crown : AppIcons.star,
+                  size: 14,
+                  color: pro ? p.onPremium : p.onAccentSoft,
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    pro
+                        ? 'bf_scan_cost_pro'.tr()
+                        : pluralText(
+                            'bf_scan_cost_points',
+                            FeatureCosts.receiptScanPoints,
+                          ),
+                    style: AppTypography.labelMedium.copyWith(
+                      color: pro ? p.onPremium : p.onAccentSoft,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
