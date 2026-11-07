@@ -63,7 +63,12 @@ class GuestOrbs extends StatelessWidget {
                 children: [
                   orb(p.primary, const Alignment(-1.1, -1), s),
                   orb(p.sky, const Alignment(1.1, -0.2), s * 0.9),
-                  orb(p.coral, const Alignment(-0.5, 1.2), s * 0.7),
+                  // Coral over navy turns muddy: dark mode uses mint again.
+                  orb(
+                    p.isDark ? p.primary : p.coral,
+                    const Alignment(-0.5, 1.2),
+                    s * 0.7,
+                  ),
                 ],
               );
             },
@@ -109,13 +114,22 @@ class GuestTopBar extends SliverPersistentHeaderDelegate {
                 constraints: BoxConstraints(maxWidth: maxWidth),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: hPad),
+                  // Brand left, actions pinned to the right edge (a Spacer
+                  // next to Flexibles split the space and centred them).
                   child: const Row(
                     children: [
                       GuestBrand(),
-                      Spacer(),
-                      Flexible(child: GuestLanguageButton()),
-                      SizedBox(width: 8),
-                      Flexible(child: GuestGetAppPill()),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GuestLanguageButton(),
+                            SizedBox(width: 8),
+                            Flexible(child: GuestGetAppPill()),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
