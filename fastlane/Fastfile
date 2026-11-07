@@ -21,6 +21,8 @@ IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
 FLUTTER_BIN = ENV.fetch("FLUTTER_BIN", "/Users/omarmahmoud/FlutterDev/flutter/bin/flutter")
 IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata_v2")
 IOS_FILTERED_METADATA_PATH = File.join(PROJECT_ROOT, "build", "fastlane", "ios_metadata")
+IOS_SCREENSHOTS_PATH = File.join(PROJECT_ROOT, "fastlane", "screenshots_2_0")
+ANDROID_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata_v2", "android")
 IOS_APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.example.splitBillApp")
 PRIVACY_POLICY_URL = "https://omarmali.net/split-bill/privacy/"
 TERMS_OF_USE_URL = "https://omarmali.net/split-bill/terms/"
@@ -29,10 +31,11 @@ IOS_APP_STORE_LOCALES = %w[
   hi id it ja ko nl-NL no pl pt-BR pt-PT ru sv th tr vi zh-Hans zh-Hant
 ]
 APP_REVIEW_NOTES = [
-  "Version 1.2.0 (build #{BUILD_NUMBER}) is a security update.",
-  "It updates the Cloud Firestore SDK to 12.19.3, which removes root certificates chaining to the compromised eMudhra intermediate CAs, as required by Google's Firebase security advisory.",
-  "It also tightens account data access. There are no new features or changes to in-app purchases.",
-  "To verify: sign in, create a bill, and open Profile > Go Premium; behaviour is unchanged.",
+  "Evens #{APP_VERSION} (build #{BUILD_NUMBER}) is a redesign with new features.",
+  "Sign in with Apple or Google; no demo account is needed.",
+  "To test: tap + to add a bill (scan a receipt or add items by hand), say or tap who had what, then share the bill link. Friends open the link in a browser without the app.",
+  "New: groups and trips with settle-up, IOUs, payment reminders, a who-pays roulette, and an Evens Pro subscription (You > Evens Pro) for unlimited scans and voice, recurring bills and exports.",
+  "Receipt scanning and voice assignment send the image or transcript to our server only to read the items.",
   "Privacy Policy: #{PRIVACY_POLICY_URL}",
   "Terms of Use (EULA): #{TERMS_OF_USE_URL}"
 ].join("\n")
@@ -259,6 +262,41 @@ def submit_ios_review!(api_key)
   UI.success("Submitted #{APP_VERSION} (#{BUILD_NUMBER}) using the existing review: #{result.state}.")
 end
 
+# iPhone screenshots only: deliver's overwrite would also wipe the iPad sets.
+def replace_ios_iphone_screenshots!(api_key)
+  ensure_file_exists!(File.join(IOS_SCREENSHOTS_PATH, "en-US"), "Render the store screenshots first (tool/store/run_store_screenshots.sh).")
+  app = Spaceship::ConnectAPI::App.find(IOS_APP_IDENTIFIER)
+  version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+  UI.user_error!("No editable iOS version #{APP_VERSION} in App Store Connect") unless version&.version_string == APP_VERSION
+  deleted = 0
+  version.get_app_store_version_localizations.each do |localization|
+    localization.get_app_screenshot_sets.each do |set|
+      next unless set.screenshot_display_type.to_s.start_with?("APP_IPHONE")
+      (set.app_screenshots || []).each { |shot| shot.delete!; deleted += 1 }
+    end
+  end
+  UI.message("Deleted #{deleted} old iPhone screenshot(s).")
+  deliver(
+    ios_deliver_options(api_key).merge(
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      overwrite_screenshots: false,
+      screenshots_path: IOS_SCREENSHOTS_PATH,
+      submit_for_review: false
+    )
+  )
+end
+
+# supply reads images/phoneScreenshots; the 2.0 renders live in phoneScreenshots_2_0.
+def stage_android_screenshots!
+  Dir.glob(File.join(ANDROID_METADATA_PATH, "*", "images", "phoneScreenshots_2_0")).each do |src|
+    dest = File.join(File.dirname(src), "phoneScreenshots")
+    FileUtils.rm_rf(dest)
+    FileUtils.cp_r(src, dest)
+  end
+end
+
 platform :ios do
   desc "Upload the verified IPA and metadata without submitting it for review"
   lane :upload_build do
@@ -318,9 +356,15 @@ platform :ios do
       )
     )
 
+    replace_ios_iphone_screenshots!(api_key)
     ensure_ios_whats_new!
 
     submit_ios_review!(api_key)
+  end
+
+  desc "Replace the iPhone screenshots of the editable version with fastlane/screenshots_2_0"
+  lane :upload_screenshots do
+    replace_ios_iphone_screenshots!(app_store_api_key)
   end
 end
 
@@ -347,6 +391,7 @@ platform :android do
   lane :release do |options|
     build_android_aab unless option_enabled?(options[:skip_build])
     ensure_file_exists!(ANDROID_AAB, "Run `fastlane android build_aab` first, or omit skip_build.")
+    stage_android_screenshots!
 
     supply(
       track: ENV.fetch("ANDROID_TRACK", "production"),
@@ -354,7 +399,7 @@ platform :android do
       metadata_path: "fastlane/metadata_v2/android",
       skip_upload_metadata: false,
       skip_upload_images: true,
-      skip_upload_screenshots: true,
+      skip_upload_screenshots: false,
       skip_upload_changelogs: false,
       release_status: ENV.fetch("ANDROID_RELEASE_STATUS", "completed"),
       changes_not_sent_for_review: false,

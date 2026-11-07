@@ -71,3 +71,4 @@ firestore-debug.log
 fastlane/screenshots_2_0/
 fastlane/metadata_v2/android/*/images/phoneScreenshots_2_0/
 build/store_raw/
+fastlane/metadata_v2/android/*/images/phoneScreenshots/
