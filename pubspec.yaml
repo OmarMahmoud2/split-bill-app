@@ -56,6 +56,7 @@ dependencies:
   speech_to_text: ^7.5.0
   pdf: ^3.12.0
   firebase_analytics: ^12.6.1
+  phosphor_flutter: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -81,13 +82,13 @@ flutter:
     - assets/payments/
     - assets/translations/
     - assets/fonts/Inter/OFL.txt
-    - assets/fonts/InterTight/OFL.txt
+    - assets/fonts/PlusJakartaSans/OFL.txt
     - assets/fonts/IBMPlexMono/OFL.txt
 
   # v3 typography. SIL Open Font License 1.1 (assets/fonts/*/OFL.txt).
   # Static instances of the Google Fonts variable fonts (ofl/inter,
-  # ofl/intertight): Inter at opsz 14, wght 400/500/600/700; Inter Tight
-  # wght 600/700.
+  # ofl/plusjakartasans): Inter at opsz 14, wght 400/500/600/700; Plus
+  # Jakarta Sans wght 600/700/800.
   fonts:
     - family: Inter
       fonts:
@@ -99,12 +100,14 @@ flutter:
           weight: 600
         - asset: assets/fonts/Inter/Inter-Bold.ttf
           weight: 700
-    - family: InterTight
+    - family: PlusJakartaSans
       fonts:
-        - asset: assets/fonts/InterTight/InterTight-SemiBold.ttf
+        - asset: assets/fonts/PlusJakartaSans/PlusJakartaSans-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/InterTight/InterTight-Bold.ttf
+        - asset: assets/fonts/PlusJakartaSans/PlusJakartaSans-Bold.ttf
           weight: 700
+        - asset: assets/fonts/PlusJakartaSans/PlusJakartaSans-ExtraBold.ttf
+          weight: 800
     # Only inside the paywall receipt (Pro perks and "Due today").
     - family: IBMPlexMono
       fonts:

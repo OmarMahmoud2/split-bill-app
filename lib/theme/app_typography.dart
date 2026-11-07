@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// v3 "Quiet ledger" typography.
+/// "Midnight & Mint" typography.
 ///
 /// * **Inter** (400/500/600/700) for reading, labels and rows.
-/// * **Inter Tight** (600/700) with tabular figures for every amount and
-///   for display titles.
+/// * **Plus Jakarta Sans** (600/700/800) with tabular figures for every
+///   amount and for display titles.
 ///
 /// Both are bundled under `assets/fonts/` (SIL Open Font License 1.1, see
 /// `assets/fonts/*/OFL.txt`) and registered in `pubspec.yaml`, so nothing
@@ -37,7 +37,7 @@ class AppTypography {
   static const String bodyFamily = 'Inter';
 
   /// Numbers and display titles (bundled asset).
-  static const String displayFamily = 'InterTight';
+  static const String displayFamily = 'PlusJakartaSans';
 
   static const List<FontFeature> tabularFigures = [
     FontFeature.tabularFigures(),
@@ -54,20 +54,20 @@ class AppTypography {
     leadingDistribution: TextLeadingDistribution.even,
   );
 
-  // ==================== DISPLAY STYLES (Inter Tight) ====================
+  // ==================== DISPLAY STYLES (Plus Jakarta Sans) ====================
 
   /// Large, bold headers (e.g. hero balance on Home).
   static TextStyle displayLarge = _display.copyWith(
-    fontSize: 44,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -1.2,
+    fontSize: 40,
+    fontWeight: FontWeight.w800,
+    letterSpacing: -1,
     height: 1.1,
   );
 
   /// Medium headers (e.g. bill totals).
   static TextStyle displayMedium = _display.copyWith(
     fontSize: 36,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w800,
     letterSpacing: -0.8,
     height: 1.15,
   );
@@ -75,22 +75,22 @@ class AppTypography {
   /// Small headers (e.g. "3 payments settle everyone").
   static TextStyle displaySmall = _display.copyWith(
     fontSize: 28,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w800,
     letterSpacing: -0.5,
     height: 1.2,
   );
 
   // ==================== HEADLINE STYLES ====================
 
-  /// Page titles (Inter Tight).
+  /// Page titles (Plus Jakarta Sans).
   static TextStyle headlineLarge = _display.copyWith(
     fontSize: 24,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w800,
     letterSpacing: -0.4,
     height: 1.25,
   );
 
-  /// Card titles, sheet titles (Inter Tight).
+  /// Card titles, sheet titles (Plus Jakarta Sans).
   static TextStyle headlineMedium = _display.copyWith(
     fontSize: 20,
     fontWeight: FontWeight.w700,
@@ -142,12 +142,12 @@ class AppTypography {
     height: 1.5,
   );
 
-  /// Secondary content text.
+  /// Secondary content text (15/22).
   static TextStyle bodyMedium = _body.copyWith(
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: FontWeight.w400,
     letterSpacing: 0,
-    height: 1.5,
+    height: 22 / 15,
   );
 
   /// Tertiary content text.
@@ -176,7 +176,7 @@ class AppTypography {
     height: 1.3,
   );
 
-  /// Small labels (section captions use uppercase + 0.4 tracking).
+  /// Small labels.
   static TextStyle labelSmall = _body.copyWith(
     fontSize: 12,
     fontWeight: FontWeight.w600,
@@ -194,7 +194,7 @@ class AppTypography {
     height: 1.4,
   );
 
-  /// Section captions ("TYPE", "MOTION" in the spec).
+  /// Section captions (sentence case, never all caps).
   static TextStyle overline = _body.copyWith(
     fontSize: 12,
     fontWeight: FontWeight.w600,
@@ -202,12 +202,12 @@ class AppTypography {
     height: 1.4,
   );
 
-  // ==================== AMOUNTS (Inter Tight, tabular) ====================
+  // ==================== AMOUNTS (Plus Jakarta Sans, tabular) ====================
 
   /// Hero amount (Home net balance, success screen): 56 w700.
   static TextStyle amountHero = _display.copyWith(
     fontSize: 56,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w800,
     letterSpacing: -1.5,
     height: 1.1,
   );
@@ -215,7 +215,7 @@ class AppTypography {
   /// Large amount (cards): 32 w700.
   static TextStyle amountLarge = _display.copyWith(
     fontSize: 32,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w800,
     letterSpacing: -0.6,
     height: 1.15,
   );

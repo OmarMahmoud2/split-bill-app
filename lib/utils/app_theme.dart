@@ -6,13 +6,13 @@ import 'package:split_bill_app/theme/app_spacing.dart';
 import 'package:split_bill_app/theme/app_typography.dart';
 
 /// Builds the app's [ThemeData] for light and dark mode from [AppPalette]
-/// (v3 "Quiet ledger").
+/// ("Midnight & Mint", docs/2.0/PREMIUM_POLISH.md).
 ///
 /// Every color here comes from the palette; change [AppPalette.light] /
 /// [AppPalette.dark], not this file, to recolor the app. Shapes come from
-/// [AppRadii]: pill buttons, 12-radius inputs with visible labels, hairline
-/// cards, 28-radius sheets. Only sheets, dialogs and menus cast a shadow, and
-/// only in light mode.
+/// [AppRadii]: 16-radius buttons, 14-radius 52 px inputs with visible labels,
+/// hairline cards, 24-radius dialogs, 32-radius sheets. Only primary buttons,
+/// sheets, dialogs, menus and the floating nav cast a shadow.
 class AppTheme {
   AppTheme._(); // Private constructor
 
@@ -48,7 +48,7 @@ class AppTheme {
     secondaryContainer: p.accentSoft,
     onSecondaryContainer: p.onAccentSoft,
     tertiary: p.owe,
-    onTertiary: p.isDark ? p.background : Colors.white,
+    onTertiary: p.onMint,
     tertiaryContainer: p.oweSoft,
     onTertiaryContainer: p.oweInk,
     error: p.error,
@@ -108,10 +108,14 @@ class AppTheme {
       overlayColor: WidgetStatePropertyAll(
         p.onInverseSurface.withValues(alpha: 0.08),
       ),
-      elevation: const WidgetStatePropertyAll(0),
-      shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+      elevation: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.disabled) || p.isDark ? 0.0 : 3.0,
+      ),
+      shadowColor: WidgetStatePropertyAll(
+        p.isDark ? Colors.transparent : p.shadow.withValues(alpha: 0.35),
+      ),
       surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-      shape: const WidgetStatePropertyAll(AppRadii.pill),
+      shape: const WidgetStatePropertyAll(AppRadii.buttonShape),
       padding: const WidgetStatePropertyAll(pillPadding),
       minimumSize: const WidgetStatePropertyAll(Size(64, AppSpacing.buttonLg)),
       textStyle: WidgetStatePropertyAll(AppTypography.labelLarge),
@@ -167,8 +171,8 @@ class AppTheme {
           foregroundColor: p.textPrimary,
           backgroundColor: p.surface,
           disabledForegroundColor: p.textDisabled,
-          side: BorderSide(color: p.borderStrong),
-          shape: AppRadii.pill,
+          side: BorderSide(color: p.borderStrong, width: 1.5),
+          shape: AppRadii.buttonShape,
           padding: pillPadding,
           minimumSize: const Size(64, AppSpacing.buttonLg),
           textStyle: AppTypography.labelLarge,
@@ -179,7 +183,7 @@ class AppTheme {
         style: TextButton.styleFrom(
           foregroundColor: p.primary,
           disabledForegroundColor: p.textDisabled,
-          shape: AppRadii.pill,
+          shape: AppRadii.buttonShape,
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
             vertical: AppSpacing.md,
@@ -203,7 +207,7 @@ class AppTheme {
         focusElevation: p.isDark ? 0 : AppSpacing.elevationSm,
         hoverElevation: p.isDark ? 0 : AppSpacing.elevationMd,
         highlightElevation: p.isDark ? 0 : AppSpacing.elevationMd,
-        shape: const StadiumBorder(),
+        shape: AppRadii.buttonShape,
         extendedTextStyle: AppTypography.labelLarge,
       ),
 
@@ -242,7 +246,7 @@ class AppTheme {
         selectedColor: p.accentSoft,
         disabledColor: p.surfaceVariant,
         checkmarkColor: p.onAccentSoft,
-        side: BorderSide(color: p.borderStrong),
+        side: BorderSide(color: p.border),
         labelStyle: AppTypography.titleSmall.copyWith(color: p.textPrimary),
         secondaryLabelStyle: AppTypography.titleSmall.copyWith(
           color: p.onAccentSoft,
@@ -251,7 +255,27 @@ class AppTheme {
           horizontal: AppSpacing.md,
           vertical: AppSpacing.xs,
         ),
-        shape: const RoundedRectangleBorder(borderRadius: AppRadii.chipRadius),
+        shape: const StadiumBorder(),
+      ),
+
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (s) => s.contains(WidgetState.selected) ? p.surface : p.surfaceVariant,
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (s) => s.contains(WidgetState.selected)
+                ? p.textPrimary
+                : p.textSecondary,
+          ),
+          side: const WidgetStatePropertyAll(BorderSide.none),
+          elevation: const WidgetStatePropertyAll(0),
+          shape: const WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: AppRadii.rowRadius),
+          ),
+          textStyle: WidgetStatePropertyAll(AppTypography.labelMedium),
+          minimumSize: const WidgetStatePropertyAll(Size(0, 44)),
+        ),
       ),
 
       dividerTheme: DividerThemeData(
@@ -282,7 +306,7 @@ class AppTheme {
         shadowColor: floatingShadow,
         modalBarrierColor: p.scrim,
         dragHandleColor: p.borderStrong,
-        dragHandleSize: const Size(36, 5),
+        dragHandleSize: const Size(40, 5),
         shape: const RoundedRectangleBorder(borderRadius: AppRadii.sheetRadius),
         clipBehavior: Clip.antiAlias,
       ),
@@ -293,7 +317,7 @@ class AppTheme {
         elevation: floatingElevation,
         shadowColor: floatingShadow,
         barrierColor: p.scrim,
-        shape: const RoundedRectangleBorder(borderRadius: AppRadii.cardRadius),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.dialogRadius),
         titleTextStyle: AppTypography.headlineMedium.copyWith(
           color: p.textPrimary,
         ),
@@ -315,13 +339,13 @@ class AppTheme {
       ),
 
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: p.inverseSurface,
+        backgroundColor: p.toast,
         contentTextStyle: AppTypography.bodyMedium.copyWith(
-          color: p.onInverseSurface,
+          color: p.onToast,
           fontWeight: FontWeight.w600,
         ),
-        actionTextColor: p.isDark ? AppColors.tealLight : AppColors.tealDark,
-        closeIconColor: p.onInverseSurface,
+        actionTextColor: AppColors.tealDark,
+        closeIconColor: p.onToast,
         elevation: 0,
         shape: const RoundedRectangleBorder(borderRadius: AppRadii.rowRadius),
         behavior: SnackBarBehavior.floating,
@@ -380,7 +404,7 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)
-              ? (p.isDark ? p.background : Colors.white)
+              ? p.onMint
               : p.textSecondary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
@@ -418,10 +442,10 @@ class AppTheme {
 
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
-          color: p.inverseSurface,
-          borderRadius: AppRadii.chipRadius,
+          color: p.toast,
+          borderRadius: AppRadii.rowRadius,
         ),
-        textStyle: AppTypography.bodySmall.copyWith(color: p.onInverseSurface),
+        textStyle: AppTypography.bodySmall.copyWith(color: p.onToast),
       ),
 
       textSelectionTheme: TextSelectionThemeData(

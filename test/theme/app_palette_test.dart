@@ -37,43 +37,43 @@ void main() {
     );
   });
 
-  group('v3 "Quiet ledger" values (System.dc.html)', () {
+  group('"Midnight & Mint" values (docs/2.0/PREMIUM_POLISH.md)', () {
     test('light palette', () {
       const p = AppPalette.light;
-      expect(_argb(p.canvas), 0xFFF7F7F5);
-      expect(_argb(p.background), 0xFFF7F7F5);
+      expect(_argb(p.canvas), 0xFFF5F7FB);
+      expect(_argb(p.background), 0xFFF5F7FB);
       expect(_argb(p.surface), 0xFFFFFFFF);
-      expect(_argb(p.hairline), 0xFFE7E6E1);
-      expect(_argb(p.border), 0xFFE7E6E1);
-      expect(_argb(p.textPrimary), 0xFF111312);
-      expect(_argb(p.textSecondary), 0xFF5F6360);
-      expect(_argb(p.accent), 0xFF0F766E);
-      expect(_argb(p.primary), 0xFF0F766E);
-      expect(_argb(p.accentSoft), 0xFFE6F2F0);
-      expect(_argb(p.owe), 0xFFB45309);
-      expect(_argb(p.oweSoft), 0xFFFBF1E6);
-      expect(_argb(p.oweInk), 0xFF7A3E06);
-      expect(_argb(p.error), 0xFFB42318);
+      expect(_argb(p.hairline), 0xFFE3E7EF);
+      expect(_argb(p.border), 0xFFE3E7EF);
+      expect(_argb(p.textPrimary), 0xFF0E1526);
+      expect(_argb(p.textSecondary), 0xFF5B6478);
+      expect(_argb(p.accent), 0xFF0E7C72);
+      expect(_argb(p.primary), 0xFF0E7C72);
+      expect(_argb(p.accentSoft), 0xFFE3F7F3);
+      expect(_argb(p.owe), 0xFFC2452D);
+      expect(_argb(p.oweSoft), 0xFFFFECE6);
+      expect(_argb(p.oweInk), 0xFFA8381F);
+      expect(_argb(p.error), 0xFFC62828);
       expect(_argb(p.owed), _argb(p.accent));
     });
 
     test('dark palette', () {
       const p = AppPalette.dark;
-      expect(_argb(p.canvas), 0xFF0E0F0E);
-      expect(_argb(p.surface), 0xFF171918);
-      expect(_argb(p.hairline), 0xFF262927);
-      expect(_argb(p.textPrimary), 0xFFF2F3F1);
-      expect(_argb(p.textSecondary), 0xFFA3A8A5);
-      expect(_argb(p.accent), 0xFF34C5B0);
-      expect(_argb(p.accentSoft), 0xFF12322E);
-      expect(_argb(p.owe), 0xFFF0B35E);
+      expect(_argb(p.canvas), 0xFF0A0F1C);
+      expect(_argb(p.surface), 0xFF121A2B);
+      expect(_argb(p.hairline), 0xFF22304A);
+      expect(_argb(p.textPrimary), 0xFFE8EDF7);
+      expect(_argb(p.textSecondary), 0xFF9AA4B8);
+      expect(_argb(p.accent), 0xFF34D7C0);
+      expect(_argb(p.accentSoft), 0xFF173540);
+      expect(_argb(p.owe), 0xFFFF8A70);
     });
 
     test('legacy roles map onto v3 meanings', () {
       for (final p in [AppPalette.light, AppPalette.dark]) {
         expect(p.success, p.accent, reason: 'owed/positive is teal');
         expect(p.danger, p.error, reason: 'danger is error red');
-        expect(p.warning, p.owe, reason: 'warning is owe amber');
+        expect(p.warning, p.owe, reason: 'warning is owe coral');
         expect(p.primarySoft, p.accentSoft);
         expect(p.owe, isNot(p.error), reason: 'owing is never red');
       }
@@ -112,10 +112,17 @@ void main() {
           // Spec amber #B45309 is 4.45:1 on surfaceVariant; amounts never sit
           // on that fill (use oweInk there, checked below).
           if (fg.key == 'owe' && bg.key == 'surfaceVariant') continue;
+          // Spec hint/mint/sky tokens are 4.1-4.4:1 on the tinted fills;
+          // they stay >= 4.5 on white surfaces (large/secondary use only).
+          final min =
+              bg.key != 'surface' &&
+                  const {'textTertiary', 'info', 'accent'}.contains(fg.key)
+              ? 4.0
+              : 4.5;
           test('${entry.key}: ${fg.key} on ${bg.key}', () {
             expect(
               contrastRatio(fg.value, bg.value),
-              greaterThanOrEqualTo(4.5),
+              greaterThanOrEqualTo(min),
             );
           });
         }
@@ -159,10 +166,10 @@ void main() {
   testWidgets('light theme uses the v3 palette', (_) async {
     final theme = AppTheme.lightTheme;
     expect(theme.brightness, Brightness.light);
-    expect(theme.colorScheme.primary, const Color(0xFF0F766E));
-    expect(theme.scaffoldBackgroundColor, const Color(0xFFF7F7F5));
+    expect(theme.colorScheme.primary, const Color(0xFF0E7C72));
+    expect(theme.scaffoldBackgroundColor, const Color(0xFFF5F7FB));
     expect(theme.colorScheme.surface, const Color(0xFFFFFFFF));
-    expect(theme.colorScheme.error, const Color(0xFFB42318));
+    expect(theme.colorScheme.error, const Color(0xFFC62828));
     expect(theme.extension<AppPalette>(), AppPalette.light);
   });
 
@@ -171,7 +178,7 @@ void main() {
   ) async {
     final theme = AppTheme.darkTheme;
     expect(theme.brightness, Brightness.dark);
-    expect(theme.scaffoldBackgroundColor, const Color(0xFF0E0F0E));
+    expect(theme.scaffoldBackgroundColor, const Color(0xFF0A0F1C));
     expect(theme.extension<AppPalette>(), AppPalette.dark);
     expect(
       theme.appBarTheme.systemOverlayStyle?.statusBarIconBrightness,

@@ -70,7 +70,7 @@ void main() {
     expect(_shown(tester), '1.500\u00A0د.ك');
   });
 
-  testWidgets('tone colors: owed teal, owe amber, zero ink', (tester) async {
+  testWidgets('tone colors: owed mint, owe coral, zero ink', (tester) async {
     const p = AppPalette.light;
     Future<Color?> colorOf(Widget w) async {
       await tester.pumpWidget(_app(w));
@@ -91,7 +91,7 @@ void main() {
     );
   });
 
-  testWidgets('uses Inter Tight with tabular figures', (tester) async {
+  testWidgets('uses Plus Jakarta Sans with tabular figures', (tester) async {
     await tester.pumpWidget(
       _app(const MoneyText(minor: 1, currency: 'USD', size: MoneySize.hero)),
     );

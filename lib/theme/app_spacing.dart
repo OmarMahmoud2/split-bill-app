@@ -207,17 +207,20 @@ class AppSpacing {
 
 /// v3 "Quiet ledger" shape tokens.
 ///
-/// 6 for chips, 12 for rows and inputs, 20 for cards, 28 for bottom-sheet
-/// top corners, full for pill buttons and avatars. Depth comes from 1 px
-/// [hairline] borders, not shadows; only sheets and menus cast one soft
-/// shadow, in light mode (`context.palette.sheetShadow`).
+/// Hero 28, cards 20, tiles/inputs 14, buttons 16, dialogs 24, bottom-sheet
+/// top corners 32, full for chips and avatars. Depth comes from 1 px
+/// [hairline] borders, not shadows; only the hero card, primary buttons, the
+/// floating nav and sheets cast a soft shadow.
 class AppRadii {
   AppRadii._();
 
   static const double chip = 6;
-  static const double row = 12;
+  static const double row = 14;
   static const double card = 20;
-  static const double sheet = 28;
+  static const double sheet = 32;
+  static const double hero = 28;
+  static const double button = 16;
+  static const double dialog = 24;
   static const double full = 999;
 
   /// Hairline border width.
@@ -239,6 +242,18 @@ class AppRadii {
 
   static const StadiumBorder pill = StadiumBorder();
 
+  /// Rounded-square shape of filled / outlined buttons (radius 16).
+  static const RoundedRectangleBorder buttonShape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(button)),
+  );
+
+  static const BorderRadius dialogRadius = BorderRadius.all(
+    Radius.circular(dialog),
+  );
+  static const BorderRadius heroRadius = BorderRadius.all(
+    Radius.circular(hero),
+  );
+
   /// A card shape with a hairline border in [color].
   static RoundedRectangleBorder cardShape(Color color) =>
       RoundedRectangleBorder(
@@ -246,7 +261,7 @@ class AppRadii {
         side: BorderSide(color: color, width: hairline),
       );
 
-  /// A 12-radius row/input shape with a hairline border in [color].
+  /// A 14-radius row/input shape with a hairline border in [color].
   static RoundedRectangleBorder rowShape(Color color) => RoundedRectangleBorder(
     borderRadius: rowRadius,
     side: BorderSide(color: color, width: hairline),

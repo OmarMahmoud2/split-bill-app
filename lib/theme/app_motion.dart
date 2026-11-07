@@ -35,7 +35,7 @@ class AppMotion {
   static const Duration reducedCrossfade = fast;
 
   /// Delay between items of a staggered entrance.
-  static const Duration staggerStep = Duration(milliseconds: 40);
+  static const Duration staggerStep = Duration(milliseconds: 30);
 
   /// Toast auto-dismiss.
   static const Duration toastVisible = Duration(milliseconds: 4000);

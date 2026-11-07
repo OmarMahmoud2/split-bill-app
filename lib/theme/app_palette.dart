@@ -7,24 +7,31 @@ import 'package:split_bill_app/theme/app_colors.dart';
 /// through `context.palette` and never hard-code `Colors.*` for surfaces,
 /// text or brand colors.
 ///
-/// Values follow the v3 "Quiet ledger" system (design `v3/System.dc.html`):
-/// warm neutrals, one teal [accent], amber for what you owe ([owe]), red
-/// ([error]) only for errors and destructive actions. A sign or a word must
-/// always sit next to a color.
+/// Values follow the "Midnight & Mint" system (docs/2.0/PREMIUM_POLISH.md):
+/// blue-tinted neutrals, mint [accent] for what is owed to you and for
+/// selection/focus, coral ([owe]) for what you owe, sky ([sky]) for pending
+/// confirmation, red ([error]) only for errors and destructive actions. A sign
+/// or a word must always sit next to a color.
 ///
 /// The pre-v3 role names ([primary], [success], [danger], [warning], ...)
-/// are kept and mapped onto v3 values so existing call sites keep compiling:
+/// are kept and mapped onto these values so existing call sites keep compiling:
 ///
-/// | legacy role          | v3 meaning                         |
+/// | legacy role          | meaning                            |
 /// |----------------------|------------------------------------|
 /// | background           | canvas                             |
 /// | border               | hairline                           |
 /// | borderSubtle         | row divider                        |
-/// | primary / accent     | teal accent                        |
-/// | primarySoft          | teal soft ([accentSoft])           |
-/// | success              | teal accent (owed to you)          |
+/// | primary / accent     | mint accent                        |
+/// | primarySoft          | mint soft ([accentSoft])           |
+/// | success              | mint accent (owed to you)          |
 /// | danger / dangerAccent| error red                          |
-/// | warning              | owe amber                          |
+/// | warning              | coral (same as [owe])              |
+/// | info                 | sky                                |
+///
+/// Extra roles that are derived from brightness (no constructor field):
+/// [raised], [onMint], [coral], [coralSoft], [onCoralSoft], [coralText],
+/// [sky], [skySoft], [hero], [onHero], [heroLine], [heroShadow], [softShadow],
+/// [toast], [onToast], [gold].
 ///
 /// Note: `danger` is error red, not "you owe". Use [owe] for amounts the
 /// user owes.
@@ -129,8 +136,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color textDisabled;
 
   // ------------------------------------------------------------------- brand
-  /// Teal accent for selection, links, switches and focus. Primary filled
-  /// buttons use [inverseSurface] (ink), per the v3 mockups.
+  /// Mint accent for selection, links, switches and focus. Primary filled
+  /// buttons use [inverseSurface] (ink in light, mint in dark).
   final Color primary;
 
   /// Higher-contrast teal for small accent text.
@@ -154,10 +161,10 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color onAccentSoft;
 
   // ------------------------------------------------------------------ money
-  /// "You owe" amounts: amber, never red.
+  /// "You owe" amounts: coral, never red.
   final Color owe;
 
-  /// Amber soft fill and the text color to use on it.
+  /// Coral soft fill and the text color to use on it.
   final Color oweSoft;
   final Color oweInk;
 
@@ -178,7 +185,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color dangerSoft;
   final Color dangerAccent;
 
-  /// Caution (amber, the same hue as [owe]).
+  /// Caution (coral, the same hue as [owe]).
   final Color warning;
   final Color warningStrong;
   final Color warningSoft;
@@ -213,13 +220,70 @@ class AppPalette extends ThemeExtension<AppPalette> {
   // ----------------------------------------------------------------- aliases
   bool get isDark => brightness == Brightness.dark;
 
+  /// Muted fill for chips, tiles and the segmented track.
+  Color get raised => surfaceVariant;
+
+  /// Text and icons on the filled mint accent.
+  Color get onMint => isDark ? AppColors.onMintDark : const Color(0xFFFFFFFF);
+
+  /// Brand coral for icons and fills (amount text uses [owe] / [coralText],
+  /// the darker coral in light mode).
+  Color get coral => isDark ? AppColors.coralDark : AppColors.coralLight;
+  Color get coralSoft => oweSoft;
+  Color get onCoralSoft => oweInk;
+
+  /// Coral that passes contrast for small amount text.
+  Color get coralText => owe;
+
+  /// Waiting / pending confirmation.
+  Color get sky => isDark ? AppColors.skyDark : AppColors.skyLight;
+  Color get skySoft => isDark ? AppColors.skySoftDark : AppColors.skySoftLight;
+
+  /// Balance hero card fill (ink in light, raised navy in dark).
+  Color get hero => isDark ? AppColors.surface2Dark : AppColors.inkLight;
+
+  /// 1px inner line on the dark hero card (transparent in light).
+  Color get heroLine => isDark ? AppColors.heroLineDark : const Color(0x00000000);
+
+  /// Text on [hero].
+  Color get onHero => isDark ? AppColors.inkDark : const Color(0xFFFFFFFF);
+
+  /// Shadow under the hero card (light mode only).
+  List<BoxShadow> get heroShadow => isDark
+      ? const []
+      : const [
+          BoxShadow(
+            color: Color(0x380E1526),
+            offset: Offset(0, 16),
+            blurRadius: 32,
+          ),
+        ];
+
+  /// Soft shadow under primary buttons and the floating nav.
+  List<BoxShadow> get softShadow => [
+    BoxShadow(
+      color: (isDark ? const Color(0xFF000000) : AppColors.inkLight)
+          .withValues(alpha: isDark ? 0.4 : 0.14),
+      offset: const Offset(0, 8),
+      blurRadius: 20,
+    ),
+  ];
+
+  /// Toast / snackbar / offline banner fill and its text color (ink in
+  /// light, raised navy in dark; never the loud mint of [inverseSurface]).
+  Color get toast => isDark ? AppColors.surface2Dark : AppColors.inkLight;
+  Color get onToast => isDark ? AppColors.inkDark : const Color(0xFFFFFFFF);
+
+  /// Premium gold (on ink).
+  Color get gold => AppColors.goldPremium;
+
   /// v3 name for [background].
   Color get canvas => background;
 
   /// v3 name for [border].
   Color get hairline => border;
 
-  /// Amount someone owes the current user (teal).
+  /// Amount someone owes the current user (mint).
   Color get owed => accent;
 
   /// Soft fill / ink for "owed to you" chips.
@@ -264,32 +328,32 @@ class AppPalette extends ThemeExtension<AppPalette> {
   // ----------------------------------------------------------------- presets
   static const AppPalette light = AppPalette(
     brightness: Brightness.light,
-    background: AppColors.canvasLight, // #F7F7F5
+    background: AppColors.canvasLight, // #F5F7FB
     surface: AppColors.surfaceLight, // #FFFFFF
-    surfaceVariant: AppColors.surface2Light, // #F2F1EE
+    surfaceVariant: AppColors.surface2Light, // #EEF1F6
     surfaceMuted: AppColors.canvasLight,
-    border: AppColors.hairlineLight, // #E7E6E1
-    borderSubtle: AppColors.dividerSubtleLight, // #EFEEEA
-    borderStrong: AppColors.borderStrongLight, // #D9D8D3
-    textPrimary: AppColors.inkLight, // #111312
+    border: AppColors.hairlineLight, // #E3E7EF
+    borderSubtle: AppColors.dividerSubtleLight, 
+    borderStrong: AppColors.borderStrongLight, 
+    textPrimary: AppColors.inkLight, // #0E1526
     textStrong: AppColors.inkLight,
-    textMedium: AppColors.inkMediumLight, // #3A3D3B
-    textSecondary: AppColors.mutedLight, // #5F6360
-    textTertiary: AppColors.tertiaryLight, // #6B6F6C
+    textMedium: AppColors.inkMediumLight, 
+    textSecondary: AppColors.mutedLight, // #5B6478
+    textTertiary: AppColors.tertiaryLight, // #6B7489
     textDisabled: AppColors.disabledLight,
-    primary: AppColors.tealLight, // #0F766E
+    primary: AppColors.tealLight, // #0E7C72
     primaryStrong: AppColors.tealStrongLight,
-    primarySoft: AppColors.tealSoftLight, // #E6F2F0
+    primarySoft: AppColors.tealSoftLight, // #E3F7F3
     onPrimary: Color(0xFFFFFFFF),
     primaryGradient: AppColors.primaryGradient,
     accent: AppColors.tealLight,
     onAccent: Color(0xFFFFFFFF),
     accentSoft: AppColors.tealSoftLight,
-    onAccentSoft: AppColors.tealInkLight, // #0B4F49
-    owe: AppColors.amberLight, // #B45309
-    oweSoft: AppColors.amberSoftLight, // #FBF1E6
-    oweInk: AppColors.amberInkLight, // #7A3E06
-    error: AppColors.errorRedLight, // #B42318
+    onAccentSoft: AppColors.tealInkLight, // #0A5F57
+    owe: AppColors.coralTextLight, // #C2452D (text-safe coral)
+    oweSoft: AppColors.coralSoftLight, // #FBF1E6
+    oweInk: AppColors.coralInkLight, // #A8381F
+    error: AppColors.errorRedLight, // #C62828
     onError: Color(0xFFFFFFFF),
     errorSoft: AppColors.errorSoftLight,
     success: AppColors.tealLight,
@@ -299,57 +363,57 @@ class AppPalette extends ThemeExtension<AppPalette> {
     dangerStrong: AppColors.errorStrongLight,
     dangerSoft: AppColors.errorSoftLight,
     dangerAccent: AppColors.errorRedLight,
-    warning: AppColors.amberLight,
-    warningStrong: AppColors.amberInkLight,
-    warningSoft: AppColors.amberSoftLight,
-    info: AppColors.info, // #3B5B7A
-    infoStrong: Color(0xFF2A445E),
-    infoSoft: AppColors.infoLight,
-    infoAccent: AppColors.info,
-    premium: Color(0xFFFFD700),
+    warning: AppColors.coralTextLight,
+    warningStrong: AppColors.coralInkLight,
+    warningSoft: AppColors.coralSoftLight,
+    info: AppColors.skyLight,
+    infoStrong: Color(0xFF2B55B8),
+    infoSoft: AppColors.skySoftLight,
+    infoAccent: AppColors.skyLight,
+    premium: AppColors.goldPremium,
     premiumStrong: Color(0xFFFFA500),
     onPremium: Color(0xFF000000),
     inverseSurface: AppColors.inkLight,
     onInverseSurface: Color(0xFFFFFFFF),
-    skeleton: AppColors.dividerSubtleLight, // #EFEEEA
+    skeleton: AppColors.dividerSubtleLight, 
     skeletonHighlight: AppColors.canvasLight,
     shadow: AppColors.inkLight,
-    scrim: Color(0x59111312), // ink 35%
+    scrim: Color(0x590E1526), // ink 35%
   );
 
   static const AppPalette dark = AppPalette(
     brightness: Brightness.dark,
-    background: AppColors.canvasDark, // #0E0F0E
-    surface: AppColors.surfaceDarkV3, // #171918
-    surfaceVariant: AppColors.surface2Dark, // #1F221F
-    surfaceMuted: Color(0xFF131514),
-    border: AppColors.hairlineDark, // #262927
-    borderSubtle: AppColors.dividerSubtleDark, // #222523
+    background: AppColors.canvasDark, // #0A0F1C
+    surface: AppColors.surfaceDarkV3, // #121A2B
+    surfaceVariant: AppColors.surface2Dark, // #1A2438
+    surfaceMuted: Color(0xFF0E1525),
+    border: AppColors.hairlineDark, // #22304A
+    borderSubtle: AppColors.dividerSubtleDark, 
     borderStrong: AppColors.borderStrongDark,
-    textPrimary: AppColors.inkDark, // #F2F3F1
+    textPrimary: AppColors.inkDark, // #E8EDF7
     textStrong: AppColors.inkDark,
     textMedium: AppColors.inkMediumDark,
-    textSecondary: AppColors.mutedDark, // #A3A8A5
+    textSecondary: AppColors.mutedDark, // #9AA4B8
     textTertiary: AppColors.tertiaryDark,
     textDisabled: AppColors.disabledDark,
-    primary: AppColors.tealDark, // #34C5B0
+    primary: AppColors.tealDark, // #34D7C0
     primaryStrong: AppColors.tealStrongDark,
-    primarySoft: AppColors.tealSoftDark, // #12322E
-    onPrimary: AppColors.canvasDark,
+    primarySoft: AppColors.tealSoftDark, 
+    onPrimary: AppColors.onMintDark,
     primaryGradient: LinearGradient(
-      colors: [AppColors.tealDark, Color(0xFF2BA894)],
+      colors: [AppColors.tealDark, Color(0xFF22B8A4)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
     accent: AppColors.tealDark,
-    onAccent: AppColors.canvasDark,
+    onAccent: AppColors.onMintDark,
     accentSoft: AppColors.tealSoftDark,
     onAccentSoft: AppColors.tealInkDark,
-    owe: AppColors.amberDark, // #F0B35E
-    oweSoft: AppColors.amberSoftDark,
-    oweInk: AppColors.amberInkDark,
+    owe: AppColors.coralDark, // #FF8A70
+    oweSoft: AppColors.coralSoftDark,
+    oweInk: AppColors.coralDark,
     error: AppColors.errorRedDark,
-    onError: AppColors.canvasDark,
+    onError: AppColors.onMintDark,
     errorSoft: AppColors.errorSoftDark,
     success: AppColors.tealDark,
     successStrong: AppColors.tealStrongDark,
@@ -358,20 +422,20 @@ class AppPalette extends ThemeExtension<AppPalette> {
     dangerStrong: AppColors.errorStrongDark,
     dangerSoft: AppColors.errorSoftDark,
     dangerAccent: AppColors.errorRedDark,
-    warning: AppColors.amberDark,
-    warningStrong: AppColors.amberInkDark,
-    warningSoft: AppColors.amberSoftDark,
-    info: Color(0xFF8DB3D9),
-    infoStrong: Color(0xFFB5CDE6),
-    infoSoft: Color(0xFF16222E),
-    infoAccent: Color(0xFF8DB3D9),
-    premium: Color(0xFFFFD700),
+    warning: AppColors.coralDark,
+    warningStrong: AppColors.coralDark,
+    warningSoft: AppColors.coralSoftDark,
+    info: AppColors.skyDark,
+    infoStrong: Color(0xFFA8C2FF),
+    infoSoft: AppColors.skySoftDark,
+    infoAccent: AppColors.skyDark,
+    premium: AppColors.goldPremium,
     premiumStrong: Color(0xFFFFA500),
     onPremium: Color(0xFF000000),
-    inverseSurface: AppColors.inkDark,
-    onInverseSurface: AppColors.canvasDark,
+    inverseSurface: AppColors.tealDark,
+    onInverseSurface: AppColors.onMintDark,
     skeleton: AppColors.dividerSubtleDark,
-    skeletonHighlight: Color(0xFF2A2D2B),
+    skeletonHighlight: Color(0xFF26324A),
     shadow: Color(0xFF000000),
     scrim: Color(0x99000000), // black 60%
   );

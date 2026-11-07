@@ -22,7 +22,7 @@ enum MoneyTone {
   auto,
 }
 
-/// Size presets mapping to `AppTypography.amount*` (Inter Tight, tabular).
+/// Size presets mapping to `AppTypography.amount*` (Plus Jakarta Sans, tabular).
 enum MoneySize { small, row, large, hero }
 
 /// An amount of money, formatted per currency (JPY 0, USD 2, KWD 3

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Color primitives for the v3 "Quiet ledger" design.
+/// Color primitives for the "Midnight & Mint" design (docs/2.0/PREMIUM_POLISH.md).
 ///
-/// Warm neutrals carry the screen, one teal accent marks what you can act
-/// on, and owing is amber, never alarm red. Red is only for errors and
-/// destructive actions.
+/// Blue-tinted neutrals carry the screen, mint marks what you can act on and
+/// what is owed to you, owing is coral, never alarm red. Red is only for
+/// errors and destructive actions.
 ///
 /// Widgets should not read these directly: use the semantic roles in
 /// `context.palette` (see `app_palette.dart`), which pick the light or dark
@@ -13,53 +13,60 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._(); // Private constructor to prevent instantiation
 
-  // ==================== V3 LIGHT ====================
+  // ==================== MIDNIGHT & MINT LIGHT ====================
 
-  static const Color canvasLight = Color(0xFFF7F7F5);
+  static const Color canvasLight = Color(0xFFF5F7FB);
   static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color surface2Light = Color(0xFFF2F1EE);
-  static const Color hairlineLight = Color(0xFFE7E6E1);
-  static const Color dividerSubtleLight = Color(0xFFEFEEEA);
-  static const Color borderStrongLight = Color(0xFFD9D8D3);
-  static const Color inkLight = Color(0xFF111312);
-  static const Color inkMediumLight = Color(0xFF3A3D3B);
-  static const Color mutedLight = Color(0xFF5F6360);
-  static const Color tertiaryLight = Color(0xFF6B6F6C);
-  static const Color disabledLight = Color(0xFFA8ABA8);
-  static const Color tealLight = Color(0xFF0F766E);
-  static const Color tealStrongLight = Color(0xFF0B5F58);
-  static const Color tealSoftLight = Color(0xFFE6F2F0);
-  static const Color tealInkLight = Color(0xFF0B4F49);
-  static const Color amberLight = Color(0xFFB45309);
-  static const Color amberSoftLight = Color(0xFFFBF1E6);
-  static const Color amberInkLight = Color(0xFF7A3E06);
-  static const Color errorRedLight = Color(0xFFB42318);
-  static const Color errorStrongLight = Color(0xFF912018);
-  static const Color errorSoftLight = Color(0xFFFDECEA);
+  static const Color surface2Light = Color(0xFFEEF1F6);
+  static const Color hairlineLight = Color(0xFFE3E7EF);
+  static const Color dividerSubtleLight = Color(0xFFEBEEF4);
+  static const Color borderStrongLight = Color(0xFFD4DAE6);
+  static const Color inkLight = Color(0xFF0E1526);
+  static const Color inkMediumLight = Color(0xFF2E364A);
+  static const Color mutedLight = Color(0xFF5B6478);
+  static const Color tertiaryLight = Color(0xFF6B7489);
+  static const Color disabledLight = Color(0xFFA6AEBF);
+  static const Color tealLight = Color(0xFF0E7C72);
+  static const Color tealStrongLight = Color(0xFF0A5F57);
+  static const Color tealSoftLight = Color(0xFFE3F7F3);
+  static const Color tealInkLight = Color(0xFF0A5F57);
+  static const Color coralLight = Color(0xFFE8664A);
+  static const Color coralTextLight = Color(0xFFC2452D);
+  static const Color coralSoftLight = Color(0xFFFFECE6);
+  static const Color coralInkLight = Color(0xFFA8381F);
+  static const Color skyLight = Color(0xFF3B6FE0);
+  static const Color skySoftLight = Color(0xFFE6EDFD);
+  static const Color errorRedLight = Color(0xFFC62828);
+  static const Color errorStrongLight = Color(0xFF9F1F1F);
+  static const Color errorSoftLight = Color(0xFFFDECEC);
 
-  // ==================== V3 DARK ====================
+  // ==================== MIDNIGHT & MINT DARK ====================
 
-  static const Color canvasDark = Color(0xFF0E0F0E);
-  static const Color surfaceDarkV3 = Color(0xFF171918);
-  static const Color surface2Dark = Color(0xFF1F221F);
-  static const Color hairlineDark = Color(0xFF262927);
-  static const Color dividerSubtleDark = Color(0xFF222523);
-  static const Color borderStrongDark = Color(0xFF3A3E3B);
-  static const Color inkDark = Color(0xFFF2F3F1);
-  static const Color inkMediumDark = Color(0xFFC9CCCA);
-  static const Color mutedDark = Color(0xFFA3A8A5);
-  static const Color tertiaryDark = Color(0xFF8E9390);
-  static const Color disabledDark = Color(0xFF5C605D);
-  static const Color tealDark = Color(0xFF34C5B0);
-  static const Color tealStrongDark = Color(0xFF5ED6C4);
-  static const Color tealSoftDark = Color(0xFF12322E);
-  static const Color tealInkDark = Color(0xFF8FE3D6);
-  static const Color amberDark = Color(0xFFF0B35E);
-  static const Color amberSoftDark = Color(0xFF33240F);
-  static const Color amberInkDark = Color(0xFFF6C987);
-  static const Color errorRedDark = Color(0xFFF97066);
-  static const Color errorStrongDark = Color(0xFFFDA29B);
-  static const Color errorSoftDark = Color(0xFF3A1A17);
+  static const Color canvasDark = Color(0xFF0A0F1C);
+  static const Color surfaceDarkV3 = Color(0xFF121A2B);
+  static const Color surface2Dark = Color(0xFF1A2438);
+  static const Color hairlineDark = Color(0xFF22304A);
+  static const Color dividerSubtleDark = Color(0xFF1B2740);
+  static const Color borderStrongDark = Color(0xFF2E3D5C);
+  static const Color inkDark = Color(0xFFE8EDF7);
+  static const Color inkMediumDark = Color(0xFFC5CDDD);
+  static const Color mutedDark = Color(0xFF9AA4B8);
+  static const Color tertiaryDark = Color(0xFF8A94A8);
+  static const Color disabledDark = Color(0xFF55607A);
+  static const Color tealDark = Color(0xFF34D7C0);
+  static const Color tealStrongDark = Color(0xFF5FE3D0);
+  static const Color tealSoftDark = Color(0xFF173540); // 14% mint on surface
+  static const Color tealInkDark = Color(0xFF34D7C0);
+  static const Color onMintDark = Color(0xFF06231F);
+  static const Color coralDark = Color(0xFFFF8A70);
+  static const Color coralSoftDark = Color(0xFF332A35); // 14% coral on surface
+  static const Color skyDark = Color(0xFF7AA2FF);
+  static const Color skySoftDark = Color(0xFF212D49); // 14% sky on surface
+  static const Color errorRedDark = Color(0xFFFF6B6B);
+  static const Color errorStrongDark = Color(0xFFFF9A9A);
+  static const Color errorSoftDark = Color(0xFF332534); // 14% error on surface
+  static const Color goldPremium = Color(0xFFFFD36B);
+  static const Color heroLineDark = Color(0xFF2A3854);
 
   // ==================== LEGACY NAMES (mapped to v3) ====================
 
@@ -88,11 +95,11 @@ class AppColors {
   static const Color errorLight = errorSoftLight;
   static const Color errorDark = errorStrongLight;
 
-  static const Color warning = amberLight;
-  static const Color warningLight = amberSoftLight;
+  static const Color warning = coralLight;
+  static const Color warningLight = coralSoftLight;
 
-  static const Color info = Color(0xFF3B5B7A);
-  static const Color infoLight = Color(0xFFEAF0F5);
+  static const Color info = skyLight;
+  static const Color infoLight = skySoftLight;
 
   static const Color backgroundLight = canvasLight;
   static const Color cardLight = surfaceLight;
@@ -101,8 +108,8 @@ class AppColors {
   static const Color textDisabledLight = disabledLight;
   static const Color dividerLight = hairlineLight;
   static const Color borderLight = hairlineLight;
-  static const Color overlayLight = Color(0x14111312);
-  static const Color shadowLight = Color(0x14111312); // 8% ink
+  static const Color overlayLight = Color(0x140E1526);
+  static const Color shadowLight = Color(0x140E1526); // 8% ink
 
   static const Color backgroundDark = canvasDark;
   static const Color surfaceDark = surfaceDarkV3;
@@ -117,13 +124,13 @@ class AppColors {
 
   // ==================== BILL STATUS COLORS ====================
 
-  /// "You owe": amber, never alarm red.
-  static const Color owingRed = amberLight;
+  /// "You owe": coral, never alarm red.
+  static const Color owingRed = coralTextLight;
 
   /// "Owed to you": the teal accent.
   static const Color owedGreen = tealLight;
 
-  static const Color pending = amberLight;
+  static const Color pending = skyLight;
   static const Color settled = tealLight;
 
   // ==================== PARTICIPANT COLORS ====================
