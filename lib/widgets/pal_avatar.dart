@@ -55,17 +55,21 @@ class PalAvatar extends StatelessWidget {
   /// Hair variant (0 cap, 1 bun, 2 tuft) for [seed].
   /// Uses the hash bits above the colour index so colour and hair vary
   /// independently (24 looks, not 6).
-  static int hairVariant(String seed) =>
-      (hashSeed(seed) ~/ pairs.length) % 3;
+  static int hairVariant(String seed) => (hashSeed(seed) ~/ pairs.length) % 3;
+
+  /// Guests get a new id on every bill; seed them by name so "Sara" looks
+  /// the same on every bill, in the app and on the guest web.
+  String get _effectiveSeed {
+    final n = name?.trim().toLowerCase() ?? '';
+    return seed.startsWith('guest_') && n.isNotEmpty ? n : seed;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final key = _effectiveSeed;
     final pal = CustomPaint(
       size: Size.square(size),
-      painter: _PalPainter(
-        pair: pairs[pairIndex(seed)],
-        hair: hairVariant(seed),
-      ),
+      painter: _PalPainter(pair: pairs[pairIndex(key)], hair: hairVariant(key)),
     );
     final url = photoUrl?.trim() ?? '';
     final image = url.isEmpty ? null : ImageUtils.getAvatarImage(url);

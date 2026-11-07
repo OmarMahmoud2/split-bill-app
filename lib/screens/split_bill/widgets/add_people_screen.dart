@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/data/ledger_repository.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/add_members_sheet.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_logic.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
@@ -83,6 +84,31 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
   List<AddPeopleGroup>? _groups;
   bool _groupsFailed = false;
   bool _busy = false;
+
+  /// People you already split with, built once so guest ids stay stable.
+  late final List<Map<String, dynamic>> _recent = _buildRecent();
+
+  List<Map<String, dynamic>> _buildRecent() {
+    final names = <String>{};
+    final out = <Map<String, dynamic>>[];
+    for (final c in HomeBalances.latest?.summary.people ?? const []) {
+      final name = c.name.trim();
+      if (name.isEmpty || !names.add(name.toLowerCase())) continue;
+      // A past guest comes back as a new guest with the same name: guest ids
+      // belong to the bill they were added on.
+      final isGuest = c.id.isEmpty || c.id.startsWith('guest_');
+      out.add(
+        isGuest
+            ? participantFromProfile({'name': name}, isGuest: true)
+            : participantFromProfile({
+                'id': c.id,
+                'name': name,
+                'photoUrl': c.photoUrl ?? '',
+              }),
+      );
+    }
+    return out;
+  }
 
   @override
   void initState() {
@@ -233,6 +259,25 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
           people: people,
         ));
       }
+    }
+    // People you already split with, one tap away (no searching each time).
+    final selectedNames = {
+      for (final x in _selected) x['name'].toString().trim().toLowerCase(),
+    };
+    final recent = [
+      for (final m in _recent)
+        if (!seen.contains(_id(m)) &&
+            // Name match hides only past guests; a registered namesake stays.
+            !(m['isGuest'] == true &&
+                selectedNames.contains(
+                  m['name'].toString().trim().toLowerCase(),
+                )) &&
+            _matches(m, query))
+          m,
+    ];
+    seen.addAll(recent.map(_id));
+    if (recent.isNotEmpty) {
+      sections.add((title: 'home_your_people'.tr(), people: recent));
     }
     final added = [
       for (final m in _added)
@@ -522,6 +567,7 @@ class PersonTile extends StatelessWidget {
                     seed: (person['id'] ?? person['name'] ?? '')
                         .toString()
                         .toLowerCase(),
+                    name: person['name']?.toString(),
                     photoUrl: person['photoUrl']?.toString(),
                     size: 56,
                     ringColor: selected ? p.accent : null,

@@ -307,7 +307,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       style: AppTypography.labelMedium.copyWith(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: p.textPrimary,
+        color: p.textSecondary,
       ),
     ),
   );

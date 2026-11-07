@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:split_bill_app/bill_flow/voice/voice_logic.dart'
     show firstNameOf;
 import 'package:split_bill_app/theme/theme.dart';
@@ -191,145 +192,155 @@ class _BillRouletteScreenState extends State<BillRouletteScreen>
     final amount = formatMoneyMinor(widget.totalMinor, widget.currency);
     final people = _people;
     final winner = _winner == null ? null : people[_winner!];
-    return Scaffold(
-      backgroundColor: _bg,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, c) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: c.maxHeight),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      20,
-                      12,
-                      20,
-                      0,
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          tooltip: 'bf_roulette_close'.tr(),
-                          constraints: const BoxConstraints(
-                            minWidth: 44,
-                            minHeight: 44,
-                          ),
-                          style: IconButton.styleFrom(
-                            backgroundColor: _panel,
-                            side: const BorderSide(color: _line),
-                          ),
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(AppIcons.close, color: Colors.white),
-                        ),
-                        Expanded(
-                          child: Text(
-                            'bf_roulette_title'.tr(
-                              namedArgs: {'amount': amount},
+    // Always-dark board: light status bar in both app themes.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: _bg,
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, c) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: c.maxHeight),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        20,
+                        12,
+                        20,
+                        0,
+                      ),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            tooltip: 'bf_roulette_close'.tr(),
+                            constraints: const BoxConstraints(
+                              minWidth: 44,
+                              minHeight: 44,
                             ),
-                            textAlign: TextAlign.center,
-                            style: AppTypography.headlineMedium.copyWith(
-                              fontSize: 22,
+                            style: IconButton.styleFrom(
+                              backgroundColor: _panel,
+                              side: const BorderSide(color: _line),
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: const Icon(
+                              AppIcons.close,
                               color: Colors.white,
                             ),
                           ),
+                          Expanded(
+                            child: Text(
+                              'bf_roulette_title'.tr(
+                                namedArgs: {'amount': amount},
+                              ),
+                              textAlign: TextAlign.center,
+                              style: AppTypography.headlineMedium.copyWith(
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 44),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    _Wheel(
+                      rotation: _rotation,
+                      people: people,
+                      nameOf: _name,
+                      seedOf: _seed,
+                      hub: _spinning ? '…' : 'bf_roulette_spin'.tr(),
+                      onHub: _spinning ? null : _spin,
+                    ),
+                    const SizedBox(height: 24),
+                    Semantics(
+                      liveRegion: true,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: winner == null
+                            ? Text(
+                                _spinning
+                                    ? 'bf_roulette_spinning'.tr()
+                                    : 'bf_roulette_caption'.tr(),
+                                textAlign: TextAlign.center,
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: _muted,
+                                ),
+                              )
+                            : _ResultCard(
+                                name: _name(winner),
+                                seed: _seed(winner),
+                                photoUrl: winner['photoUrl']?.toString(),
+                                amount: amount,
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _Chip(
+                          label: pluralText(
+                            'bf_roulette_people_in',
+                            people.length,
+                          ),
+                          selected: true,
                         ),
-                        const SizedBox(width: 44),
+                        if (_hasHost)
+                          _Chip(
+                            key: const ValueKey('roulette_leave_out'),
+                            label: 'bf_roulette_leave_me_out'.tr(),
+                            selected: _leaveMeOut,
+                            onTap: _toggleLeaveOut,
+                          ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 28),
-                  _Wheel(
-                    rotation: _rotation,
-                    people: people,
-                    nameOf: _name,
-                    seedOf: _seed,
-                    hub: _spinning ? '…' : 'bf_roulette_spin'.tr(),
-                    onHub: _spinning ? null : _spin,
-                  ),
-                  const SizedBox(height: 24),
-                  Semantics(
-                    liveRegion: true,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        20,
+                        0,
+                        20,
+                        16,
+                      ),
                       child: winner == null
-                          ? Text(
-                              _spinning
-                                  ? 'bf_roulette_spinning'.tr()
-                                  : 'bf_roulette_caption'.tr(),
-                              textAlign: TextAlign.center,
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: _muted,
-                              ),
+                          ? _RouletteButton(
+                              key: const ValueKey('roulette_spin'),
+                              label: _spinning
+                                  ? 'bf_roulette_good_luck'.tr()
+                                  : 'bf_roulette_spin_wheel'.tr(),
+                              onPressed: _spinning ? null : _spin,
                             )
-                          : _ResultCard(
-                              name: _name(winner),
-                              seed: _seed(winner),
-                              photoUrl: winner['photoUrl']?.toString(),
-                              amount: amount,
+                          : Row(
+                              children: [
+                                Expanded(
+                                  child: _RouletteButton(
+                                    key: const ValueKey('roulette_again'),
+                                    label: 'bf_roulette_spin_again'.tr(),
+                                    secondary: true,
+                                    onPressed: _spin,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  flex: 2,
+                                  child: _RouletteButton(
+                                    key: const ValueKey('roulette_confirm'),
+                                    label: 'bf_roulette_make_official'.tr(),
+                                    onPressed: () => Navigator.of(
+                                      context,
+                                    ).pop((winner['id'] ?? '').toString()),
+                                  ),
+                                ),
+                              ],
                             ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      _Chip(
-                        label: pluralText('bf_roulette_people_in', people.length),
-                        selected: true,
-                      ),
-                      if (_hasHost)
-                        _Chip(
-                          key: const ValueKey('roulette_leave_out'),
-                          label: 'bf_roulette_leave_me_out'.tr(),
-                          selected: _leaveMeOut,
-                          onTap: _toggleLeaveOut,
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      20,
-                      0,
-                      20,
-                      16,
-                    ),
-                    child: winner == null
-                        ? _RouletteButton(
-                            key: const ValueKey('roulette_spin'),
-                            label: _spinning
-                                ? 'bf_roulette_good_luck'.tr()
-                                : 'bf_roulette_spin_wheel'.tr(),
-                            onPressed: _spinning ? null : _spin,
-                          )
-                        : Row(
-                            children: [
-                              Expanded(
-                                child: _RouletteButton(
-                                  key: const ValueKey('roulette_again'),
-                                  label: 'bf_roulette_spin_again'.tr(),
-                                  secondary: true,
-                                  onPressed: _spin,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                flex: 2,
-                                child: _RouletteButton(
-                                  key: const ValueKey('roulette_confirm'),
-                                  label: 'bf_roulette_make_official'.tr(),
-                                  onPressed: () => Navigator.of(
-                                    context,
-                                  ).pop((winner['id'] ?? '').toString()),
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -400,8 +411,10 @@ class _Wheel extends StatelessWidget {
                         angle: (i + 0.5) * step,
                         child: Transform.translate(
                           offset: const Offset(0, -size * 0.32),
+                          // Undo the slice angle and the wheel's spin so
+                          // names and faces stay upright while it turns.
                           child: Transform.rotate(
-                            angle: -(i + 0.5) * step,
+                            angle: -(i + 0.5) * step - rotation,
                             child: SizedBox(
                               width: 70,
                               child: Column(
@@ -410,6 +423,7 @@ class _Wheel extends StatelessWidget {
                                   if (avatar > 0)
                                     PalAvatar(
                                       seed: seedOf(people[i]),
+                                      name: nameOf(people[i]),
                                       photoUrl: people[i]['photoUrl']
                                           ?.toString(),
                                       size: avatar,
@@ -457,7 +471,10 @@ class _Wheel extends StatelessWidget {
             ),
             const Positioned(
               top: 0,
-              child: CustomPaint(size: Size(26, 26), painter: _PointerPainter()),
+              child: CustomPaint(
+                size: Size(26, 26),
+                painter: _PointerPainter(),
+              ),
             ),
           ],
         ),
@@ -543,7 +560,13 @@ class _ResultCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          PalAvatar(seed: seed, photoUrl: photoUrl, size: 48, ringColor: _mint),
+          PalAvatar(
+            seed: seed,
+            name: name,
+            photoUrl: photoUrl,
+            size: 48,
+            ringColor: _mint,
+          ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -598,9 +621,9 @@ class _Chip extends StatelessWidget {
                 onTap!();
               },
         child: Container(
-          constraints: const BoxConstraints(minHeight: 44),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          alignment: Alignment.center,
+          // Sized by padding (12 + 20 line ≈ 44 pt): `alignment` would make
+          // the pill fill the whole row.
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
             color: selected ? _mint.withValues(alpha: 0.14) : _panel,
