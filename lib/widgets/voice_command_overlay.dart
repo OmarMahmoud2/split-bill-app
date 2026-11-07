@@ -17,6 +17,7 @@ import 'package:split_bill_app/screens/scan_receipt/widgets/no_points_dialog.dar
 import 'package:split_bill_app/services/bill_intelligence_service.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/services/voice_service.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -838,13 +839,34 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        _StatusPill(
+          key: const ValueKey('bf_voice_status'),
+          label: switch (_phase) {
+            _Phase.review => 'done'.tr(),
+            _Phase.listening || _Phase.recording => 'listening'.tr(),
+            _ => 'thinking'.tr(),
+          },
+          live: live,
+          done: _phase == _Phase.review,
+        ),
+        const SizedBox(height: 12),
         SizedBox(
-          height: 48,
+          height: 56,
           child: _LevelBars(level: _level, live: live),
         ),
-        const SizedBox(height: 18),
-        _buildTranscript(),
-        const SizedBox(height: 18),
+        const SizedBox(height: 14),
+        Container(
+          constraints: const BoxConstraints(minHeight: 96),
+          padding: const EdgeInsets.all(16),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: p.surfaceVariant,
+            borderRadius: AppRadii.cardRadius,
+            border: Border.all(color: p.border),
+          ),
+          child: _buildTranscript(),
+        ),
+        const SizedBox(height: 16),
         Flexible(
           child: SingleChildScrollView(
             child: Column(
@@ -978,6 +1000,52 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
 
 // ---------------------------------------------------------------- pieces
 
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({
+    super.key,
+    required this.label,
+    required this.live,
+    required this.done,
+  });
+  final String label;
+  final bool live;
+  final bool done;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: live || done ? p.accentSoft : p.surfaceVariant,
+          borderRadius: AppRadii.fullRadius,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              done
+                  ? AppIcons.successFill
+                  : (live ? AppIcons.mic : AppIcons.hourglass),
+              size: 16,
+              color: live || done ? p.accent : p.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: AppTypography.labelLarge.copyWith(
+                color: live || done ? p.onAccentSoft : p.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _LanguageChip extends StatelessWidget {
   const _LanguageChip({
     super.key,
@@ -1035,7 +1103,7 @@ class _LanguageChip extends StatelessWidget {
   }
 }
 
-/// Eight level bars. They follow the microphone level while [live]; static
+/// Twenty-four mint level bars. They follow the microphone level while [live]; static
 /// under reduce motion.
 class _LevelBars extends StatefulWidget {
   const _LevelBars({required this.level, required this.live});
@@ -1048,8 +1116,58 @@ class _LevelBars extends StatefulWidget {
 
 class _LevelBarsState extends State<_LevelBars>
     with SingleTickerProviderStateMixin {
-  static const _delays = [0.0, .1, .2, .3, .15, .25, .05, .35];
-  static const _still = [.45, .7, 1.0, .6, .85, .5, .9, .4];
+  static const _delays = [
+    0.0,
+    .1,
+    .2,
+    .3,
+    .15,
+    .25,
+    .05,
+    .35,
+    .12,
+    .22,
+    .32,
+    .08,
+    .18,
+    .28,
+    .02,
+    .38,
+    .14,
+    .24,
+    .34,
+    .06,
+    .16,
+    .26,
+    .36,
+    .04,
+  ];
+  static const _still = [
+    .45,
+    .7,
+    1.0,
+    .6,
+    .85,
+    .5,
+    .9,
+    .4,
+    .55,
+    .8,
+    .65,
+    .95,
+    .5,
+    .75,
+    .4,
+    .9,
+    .6,
+    .85,
+    .45,
+    .7,
+    .55,
+    .8,
+    .5,
+    .65,
+  ];
   late final AnimationController _wave = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 900),
@@ -1094,13 +1212,13 @@ class _LevelBarsState extends State<_LevelBars>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             for (var i = 0; i < _delays.length; i++) ...[
-              if (i > 0) const SizedBox(width: 5),
+              if (i > 0) const SizedBox(width: 4),
               Container(
-                width: 4,
-                height: 40 * _scale(i, reduce),
+                width: 3,
+                height: 52 * _scale(i, reduce),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(1.5),
                 ),
               ),
             ],
@@ -1182,6 +1300,7 @@ class _ItemCard extends StatelessWidget {
           for (final id in people)
             AvatarHop(
               child: _PersonChip(
+                seed: id,
                 label: units?[id] != null
                     ? '${_nameOf(id)} ×${units![id]}'
                     : _nameOf(id),
@@ -1243,25 +1362,42 @@ class _ItemCard extends StatelessWidget {
 }
 
 class _PersonChip extends StatelessWidget {
-  const _PersonChip({required this.label, required this.tint});
+  const _PersonChip({
+    required this.label,
+    required this.tint,
+    required this.seed,
+  });
   final String label;
   final Color tint;
+  final String seed;
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
     return Container(
-      height: 28,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(color: tint, borderRadius: AppRadii.fullRadius),
-      child: Text(
-        label,
-        style: AppTypography.labelMedium.copyWith(
-          color: p.textPrimary,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
+      height: 30,
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 10, 0),
+      decoration: BoxDecoration(
+        color: p.accentSoft,
+        borderRadius: AppRadii.fullRadius,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PalAvatar(seed: seed, name: label, size: 22),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.labelMedium.copyWith(
+                color: p.onAccentSoft,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
