@@ -97,9 +97,7 @@ class V3TopBar extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: large
-                    ? AppTypography.displaySmall.copyWith(
-                        color: p.textPrimary,
-                      )
+                    ? AppTypography.displaySmall.copyWith(color: p.textPrimary)
                     : AppTypography.titleLarge.copyWith(color: p.textPrimary),
               ),
             ),
@@ -185,11 +183,17 @@ class SettingsCard extends StatelessWidget {
     }
     return Padding(
       padding: margin,
-      child: Material(
-        color: p.surface,
-        shape: AppRadii.cardShape(p.hairline),
-        clipBehavior: Clip.antiAlias,
-        child: Column(mainAxisSize: MainAxisSize.min, children: items),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: AppRadii.cardRadius,
+          boxShadow: p.softShadow,
+        ),
+        child: Material(
+          color: p.surface,
+          shape: AppRadii.cardShape(p.hairline),
+          clipBehavior: Clip.antiAlias,
+          child: Column(mainAxisSize: MainAxisSize.min, children: items),
+        ),
       ),
     );
   }
@@ -226,7 +230,12 @@ class SettingsRow extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       child: InkWell(
-        onTap: onTap,
+        onTap: onTap == null
+            ? null
+            : () {
+                AppHaptics.light();
+                onTap!();
+              },
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 52),
           child: Padding(
@@ -279,11 +288,7 @@ class SettingsRow extends StatelessWidget {
                 if (trailing != null) ...[const SizedBox(width: 8), trailing!],
                 if (showChevron && onTap != null) ...[
                   const SizedBox(width: 6),
-                  Icon(
-                    AppIcons.chevronRight,
-                    size: 20,
-                    color: p.textTertiary,
-                  ),
+                  Icon(AppIcons.chevronRight, size: 20, color: p.textTertiary),
                 ],
               ],
             ),
@@ -447,9 +452,7 @@ class V3ChoiceChip extends StatelessWidget {
         color: selected ? p.inverseSurface : p.surface,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadii.chipRadius,
-          side: selected
-              ? BorderSide.none
-              : BorderSide(color: p.borderStrong),
+          side: selected ? BorderSide.none : BorderSide(color: p.borderStrong),
         ),
         child: InkWell(
           borderRadius: AppRadii.chipRadius,

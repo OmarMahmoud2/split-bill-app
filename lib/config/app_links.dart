@@ -21,6 +21,11 @@ class AppLinks {
   static const String termsOfUseUrl =
       'https://omarmali.net/split-bill/terms/';
 
+  static const String websiteUrl = 'https://omarmali.net/split-bill/';
+
+  /// Support opens the mail app.
+  static const String supportUrl = 'mailto:$supportEmail';
+
   static String get storeUrl =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
       ? appStoreUrl

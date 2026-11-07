@@ -207,51 +207,37 @@ class ProfileDialogs {
     );
   }
 
-  static void showLogout(BuildContext context) {
+  /// Confirm dialog, then sign out. [signOut] is injectable for tests.
+  static Future<void> showLogout(
+    BuildContext context, {
+    Future<void> Function()? signOut,
+  }) async {
     final rootNavigator = Navigator.of(context, rootNavigator: true);
     final rootContext = rootNavigator.context;
-    PremiumBottomSheet.show<void>(
-      context: context,
-      child: Builder(
-        builder: (sheetContext) => Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _title(sheetContext, 'prof_sign_out_title'.tr()),
-            const SizedBox(height: 8),
-            _body(sheetContext, 'prof_sign_out_body'.tr()),
-            const SizedBox(height: 20),
-            FilledButton(
-              key: const ValueKey('confirm-sign-out'),
-              onPressed: () async {
-                Navigator.of(sheetContext).pop();
-                AppHaptics.light();
-                _blockingProgress(rootContext, 'signing_out'.tr());
-                try {
-                  await AuthService().signOut();
-                  rootNavigator.popUntil((route) => route.isFirst);
-                } catch (_) {
-                  if (rootNavigator.canPop()) rootNavigator.pop();
-                  if (rootContext.mounted) {
-                    AppToast.show(
-                      rootContext,
-                      message: 'prof_sign_out_failed'.tr(),
-                      type: AppToastType.error,
-                    );
-                  }
-                }
-              },
-              child: Text('prof_sign_out'.tr()),
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () => Navigator.of(sheetContext).pop(),
-              child: Text('common_cancel'.tr()),
-            ),
-          ],
-        ),
-      ),
+    final ok = await showAppDialog(
+      context,
+      title: 'yx_logout_title'.tr(),
+      message: 'prof_sign_out_body'.tr(),
+      confirmLabel: 'yx_logout'.tr(),
+      cancelLabel: 'common_cancel'.tr(),
+      icon: AppIcons.logout,
     );
+    if (!ok || !rootContext.mounted) return;
+    AppHaptics.light();
+    _blockingProgress(rootContext, 'signing_out'.tr());
+    try {
+      await (signOut ?? AuthService().signOut)();
+      rootNavigator.popUntil((route) => route.isFirst);
+    } catch (_) {
+      if (rootNavigator.canPop()) rootNavigator.pop();
+      if (rootContext.mounted) {
+        AppToast.show(
+          rootContext,
+          message: 'prof_sign_out_failed'.tr(),
+          type: AppToastType.error,
+        );
+      }
+    }
   }
 
   static void showDeleteAccount(BuildContext context) {
@@ -268,12 +254,14 @@ class _DeleteAccountSheet extends StatefulWidget {
 
 class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
   final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
   bool _hidePassword = true;
   String? _passwordError;
 
   @override
   void dispose() {
     _passwordController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
@@ -311,7 +299,12 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final user = FirebaseAuth.instance.currentUser;
+    User? user;
+    try {
+      user = FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      // Firebase not initialised (tests): treat as no providers.
+    }
     final providers =
         user?.providerData
             .map((provider) => provider.providerId)
@@ -323,7 +316,10 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
         !providers.contains('google.com') &&
         !providers.contains('apple.com');
 
-    return Padding(
+    final word = 'yx_delete_word'.tr();
+    final typed =
+        _confirmController.text.trim().toUpperCase() == word.toUpperCase();
+    return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -394,6 +390,20 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
               ),
             ),
           ],
+          const SizedBox(height: 16),
+          Text(
+            'yx_delete_type'.tr(namedArgs: {'word': word}),
+            style: AppTypography.titleMedium.copyWith(color: p.textPrimary),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            key: const ValueKey('delete-confirm-field'),
+            controller: _confirmController,
+            autocorrect: false,
+            textCapitalization: TextCapitalization.characters,
+            onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(hintText: word),
+          ),
           const SizedBox(height: 20),
           FilledButton(
             key: const ValueKey('confirm-delete-account'),
@@ -401,7 +411,7 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
               backgroundColor: p.error,
               foregroundColor: p.onError,
             ),
-            onPressed: () => _delete(requiresPassword),
+            onPressed: typed ? () => _delete(requiresPassword) : null,
             child: Text('prof_delete_confirm'.tr()),
           ),
           const SizedBox(height: 10),

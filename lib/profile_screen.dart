@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/edit_profile_screen.dart';
@@ -101,6 +102,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Future<void> _openLink(String url) async {
+    final ok = await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!ok && mounted) {
+      AppToast.show(
+        context,
+        message: 'could_not_open_legal_link'.tr(),
+        type: AppToastType.error,
+      );
+    }
+  }
+
   Future<T?> _push<T>(Widget screen) =>
       Navigator.of(context).push<T>(MaterialPageRoute(builder: (_) => screen));
 
@@ -162,6 +177,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       case ProfileAction.deleteAccount:
         ProfileDialogs.showDeleteAccount(context);
+      case ProfileAction.logout:
+        await ProfileDialogs.showLogout(context);
     }
   }
 
@@ -196,11 +213,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     if (_user == null) return const LoginScreen();
     final settings = context.watch<AppSettingsProvider>();
-    final p = context.palette;
     final locale = context.locale.toLanguageTag();
 
     return Scaffold(
-      backgroundColor: p.canvas,
+      backgroundColor: Colors.transparent,
       body: AdaptiveBody(
         child: SafeArea(
           bottom: false,
@@ -259,6 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 data: view,
                 onAction: (action) => _onAction(action, data, isPro),
                 onHapticsChanged: settings.updateHapticsEnabled,
+                onOpenLink: _openLink,
               );
             },
           ),

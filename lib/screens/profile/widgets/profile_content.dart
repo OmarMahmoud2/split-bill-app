@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:split_bill_app/screens/profile/widgets/version_info.dart';
+import 'package:split_bill_app/screens/profile/widgets/profile_extras.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
@@ -28,6 +28,7 @@ enum ProfileAction {
   changePhoto,
   addIou,
   deleteAccount,
+  logout,
 }
 
 /// What the "You" screen shows. Pure data so the screen is testable.
@@ -85,8 +86,11 @@ class ProfileContent extends StatelessWidget {
     required this.data,
     required this.onAction,
     required this.onHapticsChanged,
+    this.onOpenLink,
   });
 
+  /// Footer links; the screen launches them externally.
+  final ValueChanged<String>? onOpenLink;
   final ProfileViewData data;
   final ValueChanged<ProfileAction> onAction;
   final ValueChanged<bool> onHapticsChanged;
@@ -113,7 +117,9 @@ class ProfileContent extends StatelessWidget {
     );
 
     return ListView(
-      padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 24),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.paddingOf(context).bottom + 24,
+      ),
       children: [
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
@@ -232,71 +238,14 @@ class ProfileContent extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
-          child: Container(
-            key: const ValueKey('profile-iou'),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: p.accentSoft,
-              borderRadius: AppRadii.cardRadius,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: p.accent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(AppIcons.iou, size: 20, color: p.onAccent),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'you_iou_title'.tr(),
-                        style: AppTypography.titleSmall.copyWith(
-                          color: p.onAccentSoft,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'you_iou_body'.tr(),
-                        style: AppTypography.bodySmall.copyWith(
-                          color: p.onAccentSoft,
-                          height: 1.45,
-                        ),
-                      ),
-                      InkWell(
-                        key: const ValueKey('profile-add-iou'),
-                        onTap: _tap(ProfileAction.addIou),
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(minHeight: 44),
-                          child: Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: Text(
-                              'you_iou_cta'.tr(),
-                              style: AppTypography.titleSmall.copyWith(
-                                color: p.onAccentSoft,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+        ProCard(
+          isPro: data.isPro,
+          planLabel: data.planLabel,
+          onTap: _tap(
+            data.isPro ? ProfileAction.subscription : ProfileAction.goPro,
           ),
         ),
+        IouCard(onAdd: _tap(ProfileAction.addIou)),
         group('prof_section_account'.tr(), [
           SettingsRow(
             key: const ValueKey('profile-edit'),
@@ -318,6 +267,13 @@ class ProfileContent extends StatelessWidget {
               title: 'prof_my_groups'.tr(),
               onTap: _tap(ProfileAction.groups),
             ),
+          SettingsRow(
+            key: const ValueKey('profile-logout'),
+            leading: tile(AppIcons.logout, p.raised, p.textPrimary),
+            title: 'yx_logout'.tr(),
+            showChevron: false,
+            onTap: _tap(ProfileAction.logout),
+          ),
         ]),
         group('you_group_money'.tr(), [
           SettingsRow(
@@ -416,13 +372,6 @@ class ProfileContent extends StatelessWidget {
             title: 'prof_privacy_data'.tr(),
             onTap: _tap(ProfileAction.privacyAndData),
           ),
-          SettingsRow(
-            key: const ValueKey('profile-delete-account'),
-            leading: tile(AppIcons.delete, p.errorSoft, p.error),
-            title: 'prof_delete_account'.tr(),
-            destructive: true,
-            onTap: _tap(ProfileAction.deleteAccount),
-          ),
         ]),
         if (data.isAdmin)
           group('prof_section_admin'.tr(), [
@@ -444,8 +393,9 @@ class ProfileContent extends StatelessWidget {
               onTap: _tap(ProfileAction.seedTransactions),
             ),
           ]),
+        DangerZoneCard(onDelete: _tap(ProfileAction.deleteAccount)),
         const SizedBox(height: 32),
-        const VersionInfo(),
+        EvensFooter(onOpen: onOpenLink ?? (_) {}),
       ],
     );
   }

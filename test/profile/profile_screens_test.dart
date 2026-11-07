@@ -140,8 +140,8 @@ void main() {
         expect(find.text('3 ways to get paid'), findsOneWidget);
         expect(find.text('Go Pro'), findsOneWidget);
         expect(find.byKey(const ValueKey('profile-pro-badge')), findsNothing);
-        expect(find.text('How people pay you'), findsOneWidget);
-        
+        await tester.scrollUntilVisible(find.text('How people pay you'), 200);
+        await tester.scrollUntilVisible(find.byKey(const ValueKey('profile-go-pro')), -200);
 
         await tester.tap(find.byKey(const ValueKey('profile-go-pro')));
         await tester.tap(find.byKey(const ValueKey('profile-subscription')));
