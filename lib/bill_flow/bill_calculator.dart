@@ -495,6 +495,20 @@ Map<String, List<BreakdownLine>> _itemizedLines(
     }
     if (!state.isComplete) {
       issues.add(UnassignedItemIssue(i, state.assignedUnits, item.quantity));
+      // Show what is assigned so far (1 of 2 units is not 0.00); the issue
+      // still blocks saving, and taxes wait for the full assignment.
+      state.unitAssignments.forEach((id, units) {
+        lines[id]!.add(
+          BreakdownLine(
+            kind: BreakdownKind.item,
+            label: item.name,
+            amountMinor: item.unitPriceMinor * units,
+            units: units,
+            quantity: item.quantity,
+            baseMinor: item.lineTotalMinor,
+          ),
+        );
+      });
       continue;
     }
     if (state.unitAssignments.isNotEmpty) {
