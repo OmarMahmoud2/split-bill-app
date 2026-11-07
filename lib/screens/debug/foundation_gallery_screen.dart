@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
@@ -214,12 +215,12 @@ class _FoundationGalleryScreenState extends State<FoundationGalleryScreen> {
           Row(
             children: [
               FilledButton(
-                onPressed: () => showModalBottomSheet<void>(
-                  context: context,
-                  showDragHandle: true,
+                onPressed: () => showLedgerSheet<void>(
+                  context,
+                  title: 'Sheet',
                   builder: (_) => const SizedBox(
                     height: 200,
-                    child: Center(child: Text('28-radius sheet')),
+                    child: Center(child: Text('32-radius sheet')),
                   ),
                 ),
                 child: const Text('Sheet'),

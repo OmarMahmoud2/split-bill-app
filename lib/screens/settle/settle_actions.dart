@@ -233,24 +233,14 @@ Future<bool> confirmCashPayment(
       : toIsMe
       ? 'settle_record_cash_body_paid_you'
       : 'settle_record_cash_body';
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('settle_record_cash_title'.tr()),
-      content: Text(
-        key.tr(namedArgs: {'from': fromName, 'to': toName, 'amount': amount}),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text('common_cancel'.tr()),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: Text('settle_mark_paid'.tr()),
-        ),
-      ],
+  final ok = await showAppDialog(
+    context,
+    icon: AppIcons.cash,
+    title: 'settle_record_cash_title'.tr(),
+    message: key.tr(
+      namedArgs: {'from': fromName, 'to': toName, 'amount': amount},
     ),
+    confirmLabel: 'settle_mark_paid'.tr(),
   );
-  return ok == true;
+  return ok;
 }

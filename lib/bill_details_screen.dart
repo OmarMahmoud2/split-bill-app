@@ -614,24 +614,13 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     final id = participant['id']?.toString() ?? '';
     final name = participant['name']?.toString() ?? '';
     if (id.isEmpty || _busy.contains(id)) return;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('bf_bill_proof_reject_title'.tr()),
-        content: Text(
-          'bf_bill_proof_reject_body'.tr(namedArgs: {'name': name}),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('common_cancel'.tr()),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text('bf_bill_proof_reject'.tr()),
-          ),
-        ],
-      ),
+    final ok = await showAppDialog(
+      context,
+      icon: AppIcons.cancel,
+      title: 'bf_bill_proof_reject_title'.tr(),
+      message: 'bf_bill_proof_reject_body'.tr(namedArgs: {'name': name}),
+      confirmLabel: 'bf_bill_proof_reject'.tr(),
+      destructive: true,
     );
     if (ok != true || !mounted) return;
     setState(() => _busy.add(id));

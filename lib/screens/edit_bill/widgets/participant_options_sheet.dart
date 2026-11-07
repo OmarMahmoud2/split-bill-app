@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
+import 'package:split_bill_app/widgets/feedback/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
 import 'package:split_bill_app/screens/edit_bill/widgets/participant_list.dart';
@@ -43,28 +44,17 @@ class ParticipantOptionsSheet extends StatelessWidget {
 
   Future<void> _confirmRemove(BuildContext context) async {
     final navigator = Navigator.of(context);
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          'bf_edit_remove_person_title'.tr(
-            namedArgs: {'name': participant.name},
-          ),
-        ),
-        content: Text('bf_edit_remove_person_body'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('common_cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text('common_remove'.tr()),
-          ),
-        ],
+    final ok = await showAppDialog(
+      context,
+      icon: AppIcons.personRemove,
+      title: 'bf_edit_remove_person_title'.tr(
+        namedArgs: {'name': participant.name},
       ),
+      message: 'bf_edit_remove_person_body'.tr(),
+      confirmLabel: 'common_remove'.tr(),
+      destructive: true,
     );
-    if (ok == true) {
+    if (ok) {
       AppHaptics.warning();
       navigator.pop();
       onRemove();

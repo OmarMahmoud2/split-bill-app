@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -172,15 +173,7 @@ Future<void> showGuestLanguagePicker(BuildContext context) async {
       ),
     );
   } else {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.8,
-      ),
-      builder: list,
-    );
+    await showLedgerSheet<void>(context, builder: list);
   }
 }
 

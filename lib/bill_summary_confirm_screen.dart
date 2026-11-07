@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -189,11 +190,9 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
   // --- Editing ---------------------------------------------------------
 
   Future<void> _editCharges() async {
-    final result = await showModalBottomSheet<BillDraft>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: context.palette.surface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadii.sheetRadius),
+    final result = await showLedgerSheet<BillDraft>(
+      context,
+      title: 'bf_summary_charges_title'.tr(),
       builder: (_) => _ChargesSheet(draft: _draft),
     );
     if (result == null || !mounted) return;
@@ -1189,114 +1188,87 @@ class _ChargesSheetState extends State<_ChargesSheet> {
     final decimals = currencyDecimals(widget.draft.currency);
     final preview = _result();
     final tooLarge = preview.grandTotalMinor < 0;
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: p.borderStrong,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'bf_summary_charges_title'.tr(),
-                style: AppTypography.headlineSmall.copyWith(
-                  color: p.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              for (final e in _c.entries)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          e.key.tr(),
-                          style: AppTypography.bodyLarge.copyWith(
-                            color: p.textPrimary,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 140,
-                        child: TextField(
-                          key: ValueKey('charge_${e.key}'),
-                          controller: e.value,
-                          onChanged: (_) => setState(() {}),
-                          textAlign: TextAlign.end,
-                          keyboardType: TextInputType.numberWithOptions(
-                            decimal: decimals > 0,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.,]'),
-                            ),
-                          ],
-                          decoration: InputDecoration(
-                            isDense: true,
-                            hintText: formatMoneyMinor(
-                              0,
-                              widget.draft.currency,
-                              showSymbol: false,
-                            ),
-                            suffixText: ' ${widget.draft.currency}',
-                            border: const OutlineInputBorder(
-                              borderRadius: AppRadii.rowRadius,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              if (tooLarge)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Text(
-                    'bf_split_discount_too_large'.tr(),
-                    style: AppTypography.bodySmall.copyWith(color: p.oweInk),
-                  ),
-                ),
-              Row(
+    return SingleChildScrollView(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final e in _c.entries)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
                 children: [
-                  Text(
-                    'total'.tr(),
-                    style: AppTypography.titleSmall.copyWith(
-                      color: p.textPrimary,
+                  Expanded(
+                    child: Text(
+                      e.key.tr(),
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: p.textPrimary,
+                      ),
                     ),
                   ),
-                  const Spacer(),
-                  MoneyText(
-                    minor: preview.grandTotalMinor,
-                    currency: preview.currency,
-                    tone: MoneyTone.neutral,
+                  SizedBox(
+                    width: 140,
+                    child: TextField(
+                      key: ValueKey('charge_${e.key}'),
+                      controller: e.value,
+                      onChanged: (_) => setState(() {}),
+                      textAlign: TextAlign.end,
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: decimals > 0,
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                      ],
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: formatMoneyMinor(
+                          0,
+                          widget.draft.currency,
+                          showSymbol: false,
+                        ),
+                        suffixText: ' ${widget.draft.currency}',
+                        border: const OutlineInputBorder(
+                          borderRadius: AppRadii.rowRadius,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              AssignPillButton(
-                key: const ValueKey('charges_save'),
-                label: 'bf_summary_charges_save'.tr(),
-                muted: tooLarge,
-                onPressed: tooLarge
-                    ? null
-                    : () => Navigator.of(context).pop(_result()),
+            ),
+          if (tooLarge)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                'bf_split_discount_too_large'.tr(),
+                style: AppTypography.bodySmall.copyWith(color: p.oweInk),
+              ),
+            ),
+          Row(
+            children: [
+              Text(
+                'total'.tr(),
+                style: AppTypography.titleSmall.copyWith(color: p.textPrimary),
+              ),
+              const Spacer(),
+              MoneyText(
+                minor: preview.grandTotalMinor,
+                currency: preview.currency,
+                tone: MoneyTone.neutral,
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 16),
+          AssignPillButton(
+            key: const ValueKey('charges_save'),
+            label: 'bf_summary_charges_save'.tr(),
+            muted: tooLarge,
+            onPressed: tooLarge
+                ? null
+                : () => Navigator.of(context).pop(_result()),
+          ),
+        ],
       ),
     );
   }

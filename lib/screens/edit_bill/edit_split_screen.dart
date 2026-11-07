@@ -120,24 +120,14 @@ class _EditSplitScreenState extends State<EditSplitScreen> {
   }
 
   Future<void> _everyoneSharesAll() async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('bf_edit_share_all_title'.tr()),
-        content: Text('bf_edit_share_all_body'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('common_cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text('bf_edit_share_all_confirm'.tr()),
-          ),
-        ],
-      ),
+    final ok = await showAppDialog(
+      context,
+      icon: AppIcons.people,
+      title: 'bf_edit_share_all_title'.tr(),
+      message: 'bf_edit_share_all_body'.tr(),
+      confirmLabel: 'bf_edit_share_all_confirm'.tr(),
     );
-    if (ok == true) {
+    if (ok) {
       AppHaptics.success();
       c.assignAllToEveryone();
     }

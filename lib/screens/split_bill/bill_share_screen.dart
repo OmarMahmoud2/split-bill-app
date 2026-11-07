@@ -1,5 +1,6 @@
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -172,74 +173,48 @@ class BillShareScreen extends StatelessWidget {
     final p = context.palette;
     final url = personalBillUrl(billId);
     AppHaptics.light();
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: p.surface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadii.sheetRadius),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(24, 16, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 5,
+    showLedgerSheet<void>(
+      context,
+      title: 'bf_share_qr_title'.tr(),
+      subtitle: 'bf_share_qr_body'.tr(),
+      builder: (ctx) => SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 8, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Semantics(
+              image: true,
+              label: 'bf_share_qr_semantics'.tr(),
+              child: Container(
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: p.borderStrong,
-                  borderRadius: BorderRadius.circular(3),
+                  // QR codes must stay dark-on-light to scan.
+                  color: AppPalette.light.surface,
+                  borderRadius: AppRadii.cardRadius,
+                  border: Border.all(color: p.hairline),
                 ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                'bf_share_qr_title'.tr(),
-                style: AppTypography.headlineSmall.copyWith(
-                  color: p.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'bf_share_qr_body'.tr(),
-                textAlign: TextAlign.center,
-                style: AppTypography.bodyMedium.copyWith(
-                  color: p.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Semantics(
-                image: true,
-                label: 'bf_share_qr_semantics'.tr(),
-                child: Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    // QR codes must stay dark-on-light to scan.
-                    color: AppPalette.light.surface,
-                    borderRadius: AppRadii.cardRadius,
-                    border: Border.all(color: p.hairline),
+                child: QrImageView(
+                  data: url,
+                  size: 220,
+                  backgroundColor: AppPalette.light.surface,
+                  eyeStyle: QrEyeStyle(
+                    eyeShape: QrEyeShape.square,
+                    color: AppPalette.light.textPrimary,
                   ),
-                  child: QrImageView(
-                    data: url,
-                    size: 220,
-                    backgroundColor: AppPalette.light.surface,
-                    eyeStyle: QrEyeStyle(
-                      eyeShape: QrEyeShape.square,
-                      color: AppPalette.light.textPrimary,
-                    ),
-                    dataModuleStyle: QrDataModuleStyle(
-                      dataModuleShape: QrDataModuleShape.square,
-                      color: AppPalette.light.textPrimary,
-                    ),
+                  dataModuleStyle: QrDataModuleStyle(
+                    dataModuleShape: QrDataModuleShape.square,
+                    color: AppPalette.light.textPrimary,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              AssignPillButton(
-                label: 'bf_share_copy_link'.tr(),
-                secondary: true,
-                onPressed: () => _copy(ctx, url),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 20),
+            AssignPillButton(
+              label: 'bf_share_copy_link'.tr(),
+              secondary: true,
+              onPressed: () => _copy(ctx, url),
+            ),
+          ],
         ),
       ),
     );
@@ -267,11 +242,7 @@ class BillShareScreen extends StatelessWidget {
                         color: p.accent,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        AppIcons.check,
-                        color: p.onAccent,
-                        size: 32,
-                      ),
+                      child: Icon(AppIcons.check, color: p.onAccent, size: 32),
                     ),
                   ),
                   const SizedBox(height: 10),

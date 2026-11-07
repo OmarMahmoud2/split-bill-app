@@ -204,22 +204,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   Future<void> _delete(LedgerGroup g) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('groups_delete_title'.tr(namedArgs: {'name': g.name})),
-        content: Text('groups_delete_body'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('common_cancel'.tr()),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text('groups_delete_confirm'.tr()),
-          ),
-        ],
-      ),
+    final ok = await showAppDialog(
+      context,
+      icon: AppIcons.delete,
+      title: 'groups_delete_title'.tr(namedArgs: {'name': g.name}),
+      message: 'groups_delete_body'.tr(),
+      confirmLabel: 'groups_delete_confirm'.tr(),
+      destructive: true,
     );
     if (ok != true || !mounted) return;
     AppHaptics.warning();

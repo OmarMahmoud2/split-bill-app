@@ -127,24 +127,16 @@ class _EditBillScreenState extends State<EditBillScreen> {
 
   Future<bool> _confirmDiscard() async {
     if (!_c.isDirty) return true;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('bf_edit_discard_title'.tr()),
-        content: Text('bf_edit_discard_body'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('bf_edit_keep_editing'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text('bf_edit_discard'.tr()),
-          ),
-        ],
-      ),
+    final ok = await showAppDialog(
+      context,
+      icon: AppIcons.warning,
+      title: 'bf_edit_discard_title'.tr(),
+      message: 'bf_edit_discard_body'.tr(),
+      confirmLabel: 'bf_edit_discard'.tr(),
+      cancelLabel: 'bf_edit_keep_editing'.tr(),
+      destructive: true,
     );
-    return ok == true;
+    return ok;
   }
 
   Future<void> _cancel() async {
@@ -198,24 +190,13 @@ class _EditBillScreenState extends State<EditBillScreen> {
   }
 
   Future<void> _delete() async {
-    final p = context.palette;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('bf_edit_delete_title'.tr()),
-        content: Text('bf_edit_delete_body'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text('common_cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            style: TextButton.styleFrom(foregroundColor: p.error),
-            child: Text('bf_edit_delete_confirm'.tr()),
-          ),
-        ],
-      ),
+    final ok = await showAppDialog(
+      context,
+      icon: AppIcons.delete,
+      title: 'bf_edit_delete_title'.tr(),
+      message: 'bf_edit_delete_body'.tr(),
+      confirmLabel: 'bf_edit_delete_confirm'.tr(),
+      destructive: true,
     );
     if (ok != true || !mounted) return;
     setState(() => _deleting = true);

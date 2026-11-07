@@ -2,6 +2,7 @@
 /// (v3 "Quiet ledger": hairline cards, tinted initials, pill buttons).
 library;
 
+import 'package:easy_localization/easy_localization.dart' show StringTranslateExtension;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/pal_avatar.dart';
@@ -441,19 +442,41 @@ class LedgerSegmented<T> extends StatelessWidget {
   }
 }
 
-/// Opens a v3 bottom sheet: 28 radius, drag handle, safe-area padding.
+/// Opens the app's bottom sheet: never full screen (height = content, at
+/// most 85% of the screen), 32 top radius, 40x5 drag handle, optional
+/// [title] / [subtitle] header with a 40 px close button, springs in.
+///
+/// Keyboard-aware: the sheet is padded by the keyboard height, so fields and
+/// the action button stay above it while the content scrolls if it must.
+/// [builder] returns the body; wrap long bodies in a scroll view.
 Future<T?> showLedgerSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
+  String? title,
+  String? subtitle,
+  bool showClose = true,
+  bool isDismissible = true,
 }) {
   final p = context.palette;
+  final reduce = AppMotion.reduceMotion(context);
   return showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    isDismissible: isDismissible,
     backgroundColor: p.isDark ? p.surfaceVariant : p.surface,
     barrierColor: p.scrim,
     shape: const RoundedRectangleBorder(borderRadius: AppRadii.sheetRadius),
+    clipBehavior: Clip.antiAlias,
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+    ),
+    sheetAnimationStyle: AnimationStyle(
+      duration: reduce ? AppMotion.fast : const Duration(milliseconds: 380),
+      reverseDuration: AppMotion.slow,
+      curve: AppMotion.quiet,
+      reverseCurve: AppMotion.emphasizedAccelerate,
+    ),
     builder: (context) => Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
@@ -464,7 +487,7 @@ Future<T?> showLedgerSheet<T>(
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 14),
               child: Container(
-                width: 36,
+                width: 40,
                 height: 5,
                 decoration: BoxDecoration(
                   color: p.borderStrong,
@@ -472,12 +495,93 @@ Future<T?> showLedgerSheet<T>(
                 ),
               ),
             ),
+            if (title != null)
+              _SheetHeader(
+                title: title,
+                subtitle: subtitle,
+                showClose: showClose,
+              ),
             Flexible(child: builder(context)),
           ],
         ),
       ),
     ),
   );
+}
+
+class _SheetHeader extends StatelessWidget {
+  const _SheetHeader({
+    required this.title,
+    this.subtitle,
+    required this.showClose,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool showClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 16, 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Semantics(
+                  header: true,
+                  child: Text(
+                    title,
+                    style: AppTypography.headlineMedium.copyWith(
+                      color: p.textPrimary,
+                    ),
+                  ),
+                ),
+                if (subtitle != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      subtitle!,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: p.textSecondary,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (showClose) ...[
+            const SizedBox(width: 12),
+            Semantics(
+              button: true,
+              label: 'close'.tr(),
+              excludeSemantics: true,
+              child: Material(
+                color: p.surfaceVariant,
+                borderRadius: AppRadii.rowRadius,
+                child: InkWell(
+                  borderRadius: AppRadii.rowRadius,
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: SizedBox.square(
+                    dimension: 40,
+                    child: Icon(
+                      AppIcons.close,
+                      size: 20,
+                      color: p.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 /// The thin "spent of budget" bar.

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter/material.dart';
 
 import 'package:split_bill_app/theme/theme.dart';
@@ -320,13 +321,5 @@ Future<void> showGuestReceipt(BuildContext context, GuestBill bill) {
       ),
     );
   }
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    constraints: BoxConstraints(
-      maxHeight: MediaQuery.sizeOf(context).height * 0.85,
-    ),
-    builder: content,
-  );
+  return showLedgerSheet<void>(context, builder: content);
 }

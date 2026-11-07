@@ -266,33 +266,13 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
   }
 
   Future<void> _confirmDeleteSavedDraft() async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        final p = dialogContext.palette;
-        return AlertDialog(
-          backgroundColor: p.surface,
-          shape: const RoundedRectangleBorder(
-            borderRadius: AppRadii.cardRadius,
-          ),
-          title: Text('delete_saved_draft'.tr()),
-          content: Text('delete_saved_draft_message'.tr()),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text('common_cancel'.tr()),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              style: FilledButton.styleFrom(
-                backgroundColor: p.error,
-                foregroundColor: p.onError,
-              ),
-              child: Text('common_delete'.tr()),
-            ),
-          ],
-        );
-      },
+    final shouldDelete = await showAppDialog(
+      context,
+      icon: AppIcons.delete,
+      title: 'delete_saved_draft'.tr(),
+      message: 'delete_saved_draft_message'.tr(),
+      confirmLabel: 'common_delete'.tr(),
+      destructive: true,
     );
 
     if (shouldDelete == true) {

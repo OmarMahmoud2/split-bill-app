@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:split_bill_app/widgets/feedback/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/bill_flow/bill_calculator.dart'
     show minorFromAny;
@@ -304,39 +305,13 @@ class BillDetailsModals {
 
   /// Destructive confirmation. Resolves true when confirmed.
   static Future<bool> confirmDelete(BuildContext context) async {
-    final p = context.palette;
-    final result = await showDialog<bool>(
-      context: context,
-      barrierColor: p.scrim,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: p.surface,
-        shape: const RoundedRectangleBorder(borderRadius: AppRadii.cardRadius),
-        title: Text(
-          'bf_bill_delete_title'.tr(),
-          style: AppTypography.titleLarge.copyWith(color: p.textPrimary),
-        ),
-        content: Text(
-          'bf_bill_delete_message'.tr(),
-          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(
-              'common_cancel'.tr(),
-              style: TextStyle(color: p.textPrimary),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(
-              'bf_bill_delete_confirm'.tr(),
-              style: TextStyle(color: p.error, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
+    return showAppDialog(
+      context,
+      icon: AppIcons.delete,
+      title: 'bf_bill_delete_title'.tr(),
+      message: 'bf_bill_delete_message'.tr(),
+      confirmLabel: 'bf_bill_delete_confirm'.tr(),
+      destructive: true,
     );
-    return result == true;
   }
 }

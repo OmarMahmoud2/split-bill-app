@@ -347,52 +347,16 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
       return;
     }
     final name = (participant['name'] ?? '').toString();
-    showDialog<void>(
-      context: context,
-      barrierColor: context.palette.scrim,
-      builder: (dialogContext) {
-        final p = dialogContext.palette;
-        return AlertDialog(
-          backgroundColor: p.surface,
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: AppRadii.cardRadius,
-            side: BorderSide(color: p.border),
-          ),
-          title: Text(
-            'remove_participant'.tr(),
-            style: AppTypography.headlineMedium.copyWith(color: p.textPrimary),
-          ),
-          content: Text(
-            'bf_assign_remove_confirm'.tr(namedArgs: {'name': name}),
-            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              style: TextButton.styleFrom(
-                foregroundColor: p.textPrimary,
-                minimumSize: const Size(44, 44),
-              ),
-              child: Text('common_cancel'.tr()),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                _removeParticipant(participant['id'].toString(), name);
-              },
-              style: FilledButton.styleFrom(
-                backgroundColor: p.error,
-                foregroundColor: p.onError,
-                minimumSize: const Size(44, 44),
-                shape: const StadiumBorder(),
-              ),
-              child: Text('common_remove'.tr()),
-            ),
-          ],
-        );
-      },
-    );
+    showAppDialog(
+      context,
+      icon: AppIcons.personRemove,
+      title: 'remove_participant'.tr(),
+      message: 'bf_assign_remove_confirm'.tr(namedArgs: {'name': name}),
+      confirmLabel: 'common_remove'.tr(),
+      destructive: true,
+    ).then((ok) {
+      if (ok) _removeParticipant(participant['id'].toString(), name);
+    });
   }
 
   void _removeParticipant(String id, String name) {

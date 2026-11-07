@@ -141,25 +141,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Future<void> _clearAll() async {
     if (user == null) return;
 
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('clear_all_notifications').tr(),
-        content: Text('this_will_delete_all_your_notification_history').tr(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('common_cancel').tr(),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              'clear_all',
-              style: TextStyle(color: context.palette.danger),
-            ).tr(),
-          ),
-        ],
-      ),
+    final confirm = await showAppDialog(
+      context,
+      icon: AppIcons.delete,
+      title: 'clear_all_notifications'.tr(),
+      message: 'this_will_delete_all_your_notification_history'.tr(),
+      confirmLabel: 'clear_all'.tr(),
+      destructive: true,
     );
 
     if (confirm == true) {
