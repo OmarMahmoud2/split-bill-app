@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:provider/provider.dart';
@@ -251,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   data['displayName'] as String?,
                   _user.displayName,
                 ], fallback: 'user'.tr()),
-                photoUrl: data['photoUrl'] as String?,
+                photoUrl: MyPhoto.chosen(data['photoUrl']),
                 isPro: isPro,
                 planLabel: planKind == null
                     ? null

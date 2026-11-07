@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:split_bill_app/screens/profile/widgets/photo_sheet.dart';
 import 'package:split_bill_app/services/profile_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
@@ -71,7 +72,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _pickImage() async {
     final hasPhoto =
         _newImage != null ||
-        ((widget.currentData['photoUrl'] as String?)?.isNotEmpty ?? false);
+        MyPhoto.chosen(widget.currentData['photoUrl']) != null;
     final res = await choosePhoto(
       context,
       hasPhoto: hasPhoto && !_removePhoto,
@@ -202,8 +203,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   size: 88,
                                   photoUrl: _removePhoto
                                       ? null
-                                      : widget.currentData['photoUrl']
-                                            as String?,
+                                      : MyPhoto.chosen(
+                                          widget.currentData['photoUrl'],
+                                        ),
                                 ),
                         ),
                       ),
