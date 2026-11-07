@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Personne ne doit rien à personne pour l’instant.",
   "people_my_code": "Mon QR code",
   "settle_all_square_body": "Rien à régler ici pour l’instant.",
-  "settle_all_square_title": "Tout le monde est quitte",
+  "settle_all_square_title": "Tout est réglé",
   "settle_archive_group": "Archiver le groupe",
   "settle_everyone_square": "Tout le monde est quitte",
   "settle_group_balance": "Solde de {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Cette action est irréversible",
   "you_exp_30d": "30 derniers jours",
   "you_exp_year": "Cette année",
-  "you_exp_custom": "Personnalisé"
+  "you_exp_custom": "Personnalisé",
+  "pw_ad_offer": "Regardez une courte pub pour 2 points · {left} restantes aujourd'hui",
+  "exp_done_sub": "{name} est prêt à être partagé.",
+  "exp_share_file": "Partager le fichier"
 }

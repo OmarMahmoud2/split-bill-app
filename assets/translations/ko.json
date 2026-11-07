@@ -1674,7 +1674,7 @@
   "people_all_square_body": "지금은 아무도 갚을 돈이 없어요.",
   "people_my_code": "내 QR 코드",
   "settle_all_square_body": "지금은 정산할 게 없어요.",
-  "settle_all_square_title": "모두 정산 완료",
+  "settle_all_square_title": "정산 완료",
   "settle_archive_group": "그룹 보관",
   "settle_everyone_square": "모두 정산 완료",
   "settle_group_balance": "{group} 잔액",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "되돌릴 수 없어요",
   "you_exp_30d": "최근 30일",
   "you_exp_year": "올해",
-  "you_exp_custom": "직접 설정"
+  "you_exp_custom": "직접 설정",
+  "pw_ad_offer": "짧은 광고를 보고 2포인트 받기 · 오늘 {left}회 남음",
+  "exp_done_sub": "{name} 파일을 공유할 수 있어요.",
+  "exp_share_file": "파일 공유"
 }

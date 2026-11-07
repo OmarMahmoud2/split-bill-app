@@ -1656,7 +1656,7 @@
   "people_all_square_body": "Nobody owes anybody right now.",
   "people_my_code": "My QR code",
   "settle_all_square_body": "Nothing to settle here right now.",
-  "settle_all_square_title": "Everyone's square",
+  "settle_all_square_title": "All square",
   "settle_archive_group": "Archive group",
   "settle_everyone_square": "Everyone's square",
   "settle_group_balance": "{group} balance",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "This cannot be undone",
   "you_exp_30d": "Last 30 days",
   "you_exp_year": "This year",
-  "you_exp_custom": "Custom"
+  "you_exp_custom": "Custom",
+  "pw_ad_offer": "Watch a short ad for 2 points · {left} left today",
+  "exp_done_sub": "{name} is ready to share.",
+  "exp_share_file": "Share file"
 }

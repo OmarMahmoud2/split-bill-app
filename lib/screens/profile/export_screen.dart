@@ -243,24 +243,40 @@ class _ExportScreenState extends State<ExportScreen> {
         await file.writeAsBytes(bytes);
       }
       if (!mounted) return;
-      final box = context.findRenderObject() as RenderBox?;
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path)],
-          subject: labels.reportTitle,
-          sharePositionOrigin: box == null
-              ? null
-              : box.localToGlobal(Offset.zero) & box.size,
-        ),
-      );
       AnalyticsService.instance.export(
         _format == ExportFormat.csv ? 'csv' : 'pdf',
       );
       if (!mounted) return;
-      AppToast.show(
+      if (!fontsComplete) {
+        AppToast.show(
+          context,
+          message: 'exp_fonts_unavailable'.tr(),
+          type: AppToastType.warning,
+        );
+      }
+      final size = MediaQuery.sizeOf(context);
+      final origin = Rect.fromCenter(
+        center: size.center(Offset.zero),
+        width: 1,
+        height: 1,
+      );
+      final navigator = Navigator.of(context);
+      await SuccessScreen.show<void>(
         context,
-        message: fontsComplete ? 'exp_done'.tr() : 'exp_fonts_unavailable'.tr(),
-        type: fontsComplete ? AppToastType.success : AppToastType.warning,
+        title: 'exp_done'.tr(),
+        message: 'exp_done_sub'.tr(
+          namedArgs: {'name': file.path.split('/').last},
+        ),
+        primaryLabel: 'exp_share_file'.tr(),
+        onPrimary: () => SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(file.path)],
+            subject: labels.reportTitle,
+            sharePositionOrigin: origin,
+          ),
+        ),
+        secondaryLabel: 'rem_done'.tr(),
+        onSecondary: () => navigator.pop(),
       );
     } catch (e) {
       debugPrint('Export failed: $e');
@@ -496,27 +512,48 @@ class _ExportScreenState extends State<ExportScreen> {
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  key: const ValueKey('exp-create'),
-                  onPressed: _busy ? null : _create,
-                  child: _busy
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: p.onInverseSurface,
-                            semanticsLabel: 'exp_creating'.tr(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_busy) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        minHeight: 4,
+                        color: p.accent,
+                        backgroundColor: p.hairline,
+                        semanticsLabel: 'exp_creating'.tr(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  FilledButton(
+                    key: const ValueKey('exp-create'),
+                    onPressed: _busy ? null : _create,
+                    child: _busy
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: p.onInverseSurface,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text('exp_creating'.tr()),
+                            ],
+                          )
+                        : Text(
+                            _format == ExportFormat.pdf
+                                ? 'exp_create_pdf'.tr()
+                                : 'exp_create_csv'.tr(),
                           ),
-                        )
-                      : Text(
-                          _format == ExportFormat.pdf
-                              ? 'exp_create_pdf'.tr()
-                              : 'exp_create_csv'.tr(),
-                        ),
-                ),
+                  ),
+                ],
               ),
             ),
           ],

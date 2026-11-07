@@ -1674,7 +1674,7 @@
   "people_all_square_body": "اس وقت کوئی کسی کا مقروض نہیں۔",
   "people_my_code": "میرا QR کوڈ",
   "settle_all_square_body": "اس وقت یہاں چکانے کو کچھ نہیں۔",
-  "settle_all_square_title": "سب کا حساب برابر ہے",
+  "settle_all_square_title": "حساب برابر",
   "settle_archive_group": "گروپ آرکائیو کریں",
   "settle_everyone_square": "سب کا حساب برابر ہے",
   "settle_group_balance": "{group} کا بیلنس",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "اسے واپس نہیں کیا جا سکتا",
   "you_exp_30d": "آخری 30 دن",
   "you_exp_year": "اس سال",
-  "you_exp_custom": "حسب ضرورت"
+  "you_exp_custom": "حسب ضرورت",
+  "pw_ad_offer": "مختصر اشتہار دیکھیں، 2 پوائنٹس پائیں · آج {left} باقی",
+  "exp_done_sub": "{name} شیئر کے لیے تیار ہے۔",
+  "exp_share_file": "فائل شیئر کریں"
 }

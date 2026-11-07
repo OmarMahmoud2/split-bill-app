@@ -300,12 +300,14 @@ class SettingsSwitchRow extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.subtitle,
+    this.leading,
   });
 
   final String title;
   final String? subtitle;
   final bool value;
   final ValueChanged<bool>? onChanged;
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -324,6 +326,7 @@ class SettingsSwitchRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
+                if (leading != null) ...[leading!, const SizedBox(width: 12)],
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

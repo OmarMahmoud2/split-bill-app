@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Teraz nikt nikomu nic nie jest winien.",
   "people_my_code": "Mój kod QR",
   "settle_all_square_body": "Na razie nie ma tu nic do rozliczenia.",
-  "settle_all_square_title": "Wszyscy są kwita",
+  "settle_all_square_title": "Jesteście kwita",
   "settle_archive_group": "Archiwizuj grupę",
   "settle_everyone_square": "Wszyscy są kwita",
   "settle_group_balance": "Saldo: {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Tego nie można cofnąć",
   "you_exp_30d": "Ostatnie 30 dni",
   "you_exp_year": "Ten rok",
-  "you_exp_custom": "Własny"
+  "you_exp_custom": "Własny",
+  "pw_ad_offer": "Obejrzyj krótką reklamę za 2 punkty · dziś zostało {left}",
+  "exp_done_sub": "Plik {name} jest gotowy do udostępnienia.",
+  "exp_share_file": "Udostępnij plik"
 }

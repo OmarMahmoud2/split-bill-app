@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Ninguém deve nada a ninguém no momento.",
   "people_my_code": "Meu QR code",
   "settle_all_square_body": "Nada para acertar aqui no momento.",
-  "settle_all_square_title": "Todo mundo quite",
+  "settle_all_square_title": "Tudo quite",
   "settle_archive_group": "Arquivar grupo",
   "settle_everyone_square": "Todo mundo quite",
   "settle_group_balance": "Saldo de {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Não é possível desfazer",
   "you_exp_30d": "Últimos 30 dias",
   "you_exp_year": "Este ano",
-  "you_exp_custom": "Personalizado"
+  "you_exp_custom": "Personalizado",
+  "pw_ad_offer": "Veja um anúncio curto por 2 pontos · restam {left} hoje",
+  "exp_done_sub": "{name} está pronto para compartilhar.",
+  "exp_share_file": "Compartilhar arquivo"
 }
