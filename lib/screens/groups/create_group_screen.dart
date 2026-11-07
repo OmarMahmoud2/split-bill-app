@@ -2,6 +2,7 @@
 /// debts and members.
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     super.dispose();
   }
 
-  String get _code => _currency ?? normalizeCurrency(preferredCurrency(context));
+  String get _code =>
+      _currency ?? normalizeCurrency(preferredCurrency(context));
 
   Future<void> _pickDates() async {
     final now = DateTime.now();
@@ -72,9 +74,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     final name = _name.text.trim();
     if (me == null || name.isEmpty) return;
     final budgetText = _budget.text.trim();
-    final budget = budgetText.isEmpty ? null : parseAmountMinor(budgetText, _code);
+    final budget = budgetText.isEmpty
+        ? null
+        : parseAmountMinor(budgetText, _code);
     if (budgetText.isNotEmpty && budget == null) {
-      AppToast.show(context, message: 'groups_budget_invalid'.tr(), type: AppToastType.warning);
+      AppToast.show(
+        context,
+        message: 'groups_budget_invalid'.tr(),
+        type: AppToastType.warning,
+      );
       return;
     }
     setState(() => _saving = true);
@@ -117,7 +125,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       onPrimary: () => SharePlus.instance.share(
         ShareParams(
           text: 'groups_invite_text'.tr(
-            namedArgs: {'name': me.name, 'group': name, 'link': AppLinks.appStoreUrl},
+            namedArgs: {
+              'name': me.name,
+              'group': name,
+              'link': AppLinks.appStoreUrl,
+            },
           ),
         ),
       ),
@@ -135,147 +147,191 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     final ready = _name.text.trim().isNotEmpty && !_saving;
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            LedgerTopBar(title: 'groups_new_title'.tr(), close: true),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 20),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                children: [
-                  _label('groups_type'.tr()),
-                  Row(
-                    children: [
-                      for (final t in GroupType.values) ...[
-                        if (t != GroupType.values.first) const SizedBox(width: 8),
-                        Expanded(
-                          child: LedgerCard(
-                            onTap: () {
-                              AppHaptics.selection();
-                              setState(() => _type = t);
-                            },
-                            color: t == _type ? p.accentSoft : null,
-                            borderColor: t == _type ? p.accent : p.border,
-                            borderWidth: t == _type ? 2 : AppRadii.hairline,
-                            semanticsLabel: t.labelKey.tr(),
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-                            child: ExcludeSemantics(
-                              child: Column(
-                                children: [
-                                  Icon(groupTypeIcon(t), size: 22, color: t == _type ? p.onAccentSoft : p.textSecondary),
-                                  const SizedBox(height: 4),
-                                  Text(t.labelKey.tr(), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTypography.labelMedium.copyWith(color: p.textPrimary, fontWeight: FontWeight.w600)),
-                                ],
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            children: [
+              LedgerTopBar(title: 'groups_new_title'.tr(), close: true),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 20),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  children: [
+                    _label('groups_type'.tr()),
+                    Row(
+                      children: [
+                        for (final t in GroupType.values) ...[
+                          if (t != GroupType.values.first)
+                            const SizedBox(width: 8),
+                          Expanded(
+                            child: LedgerCard(
+                              onTap: () {
+                                AppHaptics.selection();
+                                setState(() => _type = t);
+                              },
+                              color: t == _type ? p.accentSoft : null,
+                              borderColor: t == _type ? p.accent : p.border,
+                              borderWidth: t == _type ? 2 : AppRadii.hairline,
+                              semanticsLabel: t.labelKey.tr(),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 4,
+                              ),
+                              child: ExcludeSemantics(
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      groupTypeIcon(t),
+                                      size: 22,
+                                      color: t == _type
+                                          ? p.onAccentSoft
+                                          : p.textSecondary,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      t.labelKey.tr(),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.labelMedium.copyWith(
+                                        color: p.textPrimary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: _name,
+                      label: 'groups_name'.tr(),
+                      hint: 'groups_name_hint_${_type.name}'.tr(),
+                      maxLength: 120,
+                      textCapitalization: TextCapitalization.sentences,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _label('groups_main_currency'.tr()),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  shape: AppRadii.rowShape(p.borderStrong),
+                                  minimumSize: const Size.fromHeight(52),
+                                  alignment: AlignmentDirectional.centerStart,
+                                ),
+                                onPressed: () => CurrencySelectionSheet.show(
+                                  context: context,
+                                  selectedCode: _code,
+                                  onSelected: (c) => setState(
+                                    () => _currency = normalizeCurrency(c),
+                                  ),
+                                ),
+                                child: Text(_code),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AppTextField(
+                                controller: _budget,
+                                label: 'groups_budget_optional'.tr(),
+                                hint: '0',
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9.,]'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    controller: _name,
-                    label: 'groups_name'.tr(),
-                    hint: 'groups_name_hint_${_type.name}'.tr(),
-                    maxLength: 120,
-                    textCapitalization: TextCapitalization.sentences,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _label('groups_main_currency'.tr()),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                shape: AppRadii.rowShape(p.borderStrong),
-                                minimumSize: const Size.fromHeight(52),
-                                alignment: AlignmentDirectional.centerStart,
-                              ),
-                              onPressed: () => CurrencySelectionSheet.show(
-                                context: context,
-                                selectedCode: _code,
-                                onSelected: (c) => setState(() => _currency = normalizeCurrency(c)),
-                              ),
-                              child: Text(_code),
-                            ),
-                          ],
+                    ),
+                    const SizedBox(height: 16),
+                    _label('groups_dates_optional'.tr()),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: AppRadii.rowShape(p.borderStrong),
+                        minimumSize: const Size.fromHeight(52),
+                        alignment: AlignmentDirectional.centerStart,
+                      ),
+                      onPressed: _pickDates,
+                      child: Text(
+                        _dates == null
+                            ? 'groups_pick_dates'.tr()
+                            : '${df.format(_dates!.start)} – ${df.format(_dates!.end)}',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    LedgerCard(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      child: SwitchListTile.adaptive(
+                        activeTrackColor: context.palette.accent,
+                        contentPadding: EdgeInsets.zero,
+                        value: _simplify,
+                        onChanged: (v) {
+                          AppHaptics.selection();
+                          setState(() => _simplify = v);
+                        },
+                        title: Text(
+                          'groups_simplify_debts'.tr(),
+                          style: AppTypography.titleSmall.copyWith(
+                            color: p.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'groups_simplify_debts_sub'.tr(),
+                          style: AppTypography.bodySmall.copyWith(
+                            color: p.textSecondary,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AppTextField(
-                              controller: _budget,
-                              label: 'groups_budget_optional'.tr(),
-                              hint: '0',
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _label('groups_dates_optional'.tr()),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      shape: AppRadii.rowShape(p.borderStrong),
-                      minimumSize: const Size.fromHeight(52),
-                      alignment: AlignmentDirectional.centerStart,
                     ),
-                    onPressed: _pickDates,
-                    child: Text(
-                      _dates == null
-                          ? 'groups_pick_dates'.tr()
-                          : '${df.format(_dates!.start)} – ${df.format(_dates!.end)}',
+                    const SizedBox(height: 16),
+                    _label('groups_members'.tr()),
+                    MemberPickerField(
+                      members: _members,
+                      lockedIds: {?_me?.uid},
+                      onChanged: (m) => setState(() => _members = m),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  LedgerCard(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    child: SwitchListTile.adaptive(
-                      activeTrackColor: context.palette.accent,
-                      contentPadding: EdgeInsets.zero,
-                      value: _simplify,
-                      onChanged: (v) {
-                        AppHaptics.selection();
-                        setState(() => _simplify = v);
-                      },
-                      title: Text('groups_simplify_debts'.tr(), style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontWeight: FontWeight.w600)),
-                      subtitle: Text('groups_simplify_debts_sub'.tr(), style: AppTypography.bodySmall.copyWith(color: p.textSecondary)),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _label('groups_members'.tr()),
-                  MemberPickerField(
-                    members: _members,
-                    lockedIds: {?_me?.uid},
-                    onChanged: (m) => setState(() => _members = m),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: ready ? _create : null,
-                  child: Text('groups_create_and_invite'.tr()),
+                  ],
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: ready ? _create : null,
+                    child: Text('groups_create_and_invite'.tr()),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -283,7 +339,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   Widget _label(String text) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
-    child: Text(text, style: AppTypography.labelMedium.copyWith(color: context.palette.textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
+    child: Text(
+      text,
+      style: AppTypography.labelMedium.copyWith(
+        color: context.palette.textSecondary,
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
   );
 }
 

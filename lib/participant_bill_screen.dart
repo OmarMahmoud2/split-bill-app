@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -20,7 +21,8 @@ import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
 import 'package:split_bill_app/widgets/bill_details/participant_bill_view.dart';
 import 'package:split_bill_app/widgets/bill_details/pay_methods_list.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
-import 'package:split_bill_app/widgets/home/ledger_ui.dart' show showLedgerSheet;
+import 'package:split_bill_app/widgets/home/ledger_ui.dart'
+    show showLedgerSheet;
 
 import 'services/notification_service.dart';
 
@@ -360,110 +362,112 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
     final p = context.palette;
     return Scaffold(
       backgroundColor: p.canvas,
-      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: _stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            final error = snapshot.error!;
-            void retry() => setState(_subscribe);
-            return _withBack(
-              isOfflineError(error)
-                  ? ErrorState.offline(onRetry: retry)
-                  : ErrorState(
-                      title: 'bf_bill_load_error_title'.tr(),
-                      message: billErrorKey(error).tr(),
-                      onRetry: retry,
-                    ),
-            );
-          }
-          if (!snapshot.hasData) return const BillLoadingSkeleton();
-          final doc = snapshot.data!;
-          _trackOffline(doc.metadata.isFromCache);
-          final bill = doc.data();
-          if (!doc.exists || bill == null) {
-            return _withBack(
-              ErrorState(
-                icon: AppIcons.receipt,
-                title: 'bf_bill_not_found_title'.tr(),
-                message: 'bf_bill_not_found_message'.tr(),
-                retryLabel: 'bf_bill_go_back'.tr(),
-                onRetry: () => Navigator.of(context).maybePop(),
-              ),
-            );
-          }
-          final uid = _user?.uid ?? '';
-          final reader = BillReader(bill);
-          final me = reader.participant(uid);
-          if (me == null) {
-            return _withBack(
-              ErrorState(
-                icon: AppIcons.personSearch,
-                title: 'bf_bill_not_on_bill_title'.tr(),
-                message: 'bf_bill_not_on_bill_message'.tr(),
-                retryLabel: 'bf_bill_go_back'.tr(),
-                onRetry: () => Navigator.of(context).maybePop(),
-              ),
-            );
-          }
-          final status = payStatusOf(me);
-          // What is still due; the full share once paid.
-          final shareMinor = status == PayStatus.paid
-              ? reader.shareMinorOf(me)
-              : reader.outstandingMinorOf(me);
-          final hostId = bill['hostId']?.toString() ?? '';
-          final store = _storeName(bill);
+      body: AdaptiveBody(
+        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: _stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              final error = snapshot.error!;
+              void retry() => setState(_subscribe);
+              return _withBack(
+                isOfflineError(error)
+                    ? ErrorState.offline(onRetry: retry)
+                    : ErrorState(
+                        title: 'bf_bill_load_error_title'.tr(),
+                        message: billErrorKey(error).tr(),
+                        onRetry: retry,
+                      ),
+              );
+            }
+            if (!snapshot.hasData) return const BillLoadingSkeleton();
+            final doc = snapshot.data!;
+            _trackOffline(doc.metadata.isFromCache);
+            final bill = doc.data();
+            if (!doc.exists || bill == null) {
+              return _withBack(
+                ErrorState(
+                  icon: AppIcons.receipt,
+                  title: 'bf_bill_not_found_title'.tr(),
+                  message: 'bf_bill_not_found_message'.tr(),
+                  retryLabel: 'bf_bill_go_back'.tr(),
+                  onRetry: () => Navigator.of(context).maybePop(),
+                ),
+              );
+            }
+            final uid = _user?.uid ?? '';
+            final reader = BillReader(bill);
+            final me = reader.participant(uid);
+            if (me == null) {
+              return _withBack(
+                ErrorState(
+                  icon: AppIcons.personSearch,
+                  title: 'bf_bill_not_on_bill_title'.tr(),
+                  message: 'bf_bill_not_on_bill_message'.tr(),
+                  retryLabel: 'bf_bill_go_back'.tr(),
+                  onRetry: () => Navigator.of(context).maybePop(),
+                ),
+              );
+            }
+            final status = payStatusOf(me);
+            // What is still due; the full share once paid.
+            final shareMinor = status == PayStatus.paid
+                ? reader.shareMinorOf(me)
+                : reader.outstandingMinorOf(me);
+            final hostId = bill['hostId']?.toString() ?? '';
+            final store = _storeName(bill);
 
-          return SafeArea(
-            child: FutureBuilder<Map<String, dynamic>?>(
-              future: status == PayStatus.notYet && hostId.isNotEmpty
-                  ? _profileFor(hostId)
-                  : null,
-              builder: (context, profile) {
-                final loading =
-                    status == PayStatus.notYet &&
-                    hostId.isNotEmpty &&
-                    profile.connectionState != ConnectionState.done;
-                final entries = loading
-                    ? const <PayMethodEntry>[]
-                    : buildPayMethodEntries(
-                        methods: payMethodsFor(
-                          hostProfile: profile.data,
-                          bill: bill,
-                        ),
-                        shareMinor: shareMinor,
-                        currency: reader.currency,
-                        note: store,
-                        recipientName: _hostName(bill),
-                        message: 'bf_bill_apple_cash_message'.tr(
-                          namedArgs: {
-                            'amount': formatMoneyMinor(
-                              shareMinor,
-                              reader.currency,
-                            ),
-                            'store': store,
-                          },
-                        ),
-                        platform: currentPaymentPlatform(),
-                      );
-                return ParticipantBillView(
-                  hostName: _hostName(bill),
-                  storeName: store,
-                  currency: reader.currency,
-                  breakdown: reader.breakdownFor(uid),
-                  shareMinor: shareMinor,
-                  status: status,
-                  payEntries: entries,
-                  payLoading: loading,
-                  openingEntry: _opening,
-                  onOpenMethod: _openMethod,
-                  onPaid: () => _showPaidSheet(bill),
-                  submitting: _submitting,
-                  offline: _offline,
-                );
-              },
-            ),
-          );
-        },
+            return SafeArea(
+              child: FutureBuilder<Map<String, dynamic>?>(
+                future: status == PayStatus.notYet && hostId.isNotEmpty
+                    ? _profileFor(hostId)
+                    : null,
+                builder: (context, profile) {
+                  final loading =
+                      status == PayStatus.notYet &&
+                      hostId.isNotEmpty &&
+                      profile.connectionState != ConnectionState.done;
+                  final entries = loading
+                      ? const <PayMethodEntry>[]
+                      : buildPayMethodEntries(
+                          methods: payMethodsFor(
+                            hostProfile: profile.data,
+                            bill: bill,
+                          ),
+                          shareMinor: shareMinor,
+                          currency: reader.currency,
+                          note: store,
+                          recipientName: _hostName(bill),
+                          message: 'bf_bill_apple_cash_message'.tr(
+                            namedArgs: {
+                              'amount': formatMoneyMinor(
+                                shareMinor,
+                                reader.currency,
+                              ),
+                              'store': store,
+                            },
+                          ),
+                          platform: currentPaymentPlatform(),
+                        );
+                  return ParticipantBillView(
+                    hostName: _hostName(bill),
+                    storeName: store,
+                    currency: reader.currency,
+                    breakdown: reader.breakdownFor(uid),
+                    shareMinor: shareMinor,
+                    status: status,
+                    payEntries: entries,
+                    payLoading: loading,
+                    openingEntry: _opening,
+                    onOpenMethod: _openMethod,
+                    onPaid: () => _showPaidSheet(bill),
+                    submitting: _submitting,
+                    offline: _offline,
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

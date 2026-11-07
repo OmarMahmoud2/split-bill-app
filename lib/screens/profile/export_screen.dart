@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -328,235 +329,240 @@ class _ExportScreenState extends State<ExportScreen> {
           );
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: Column(
-          children: [
-            V3TopBar(
-              leading: V3IconButton.back(context),
-              title: 'exp_title'.tr(),
-              trailing: _isPro == false ? const ProBadge() : null,
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 24),
-                children: [
-                  _caption('exp_what'.tr()),
-                  if (widget.groupId != null) ...[
-                    V3RadioTile(
-                      key: const ValueKey('exp-scope-group'),
-                      selected: _scope == ExportScope.group,
-                      onTap: () => setState(() => _scope = ExportScope.group),
-                      child: Text(
-                        'exp_group_all'.tr(
-                          namedArgs: {'group': widget.groupName ?? ''},
-                        ),
-                        style: AppTypography.bodyLarge.copyWith(
-                          color: p.textPrimary,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ] else
-                    V3RadioTile(
-                      key: const ValueKey('exp-scope-all'),
-                      selected: _scope == ExportScope.all,
-                      onTap: () => setState(() => _scope = ExportScope.all),
-                      child: Text(
-                        'exp_all_bills'.tr(),
-                        style: AppTypography.bodyLarge.copyWith(
-                          color: p.textPrimary,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 10),
-                  V3RadioTile(
-                    key: const ValueKey('exp-scope-range'),
-                    selected: _scope == ExportScope.range,
-                    onTap: () {
-                      setState(() => _scope = ExportScope.range);
-                      if (_range == null) _pickRange();
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'exp_range'.tr(),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            children: [
+              V3TopBar(
+                leading: V3IconButton.back(context),
+                title: 'exp_title'.tr(),
+                trailing: _isPro == false ? const ProBadge() : null,
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 24),
+                  children: [
+                    _caption('exp_what'.tr()),
+                    if (widget.groupId != null) ...[
+                      V3RadioTile(
+                        key: const ValueKey('exp-scope-group'),
+                        selected: _scope == ExportScope.group,
+                        onTap: () => setState(() => _scope = ExportScope.group),
+                        child: Text(
+                          'exp_group_all'.tr(
+                            namedArgs: {'group': widget.groupName ?? ''},
+                          ),
                           style: AppTypography.bodyLarge.copyWith(
                             color: p.textPrimary,
                             fontSize: 15,
                           ),
                         ),
-                        if (_scope == ExportScope.range) ...[
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              V3ChoiceChip(
-                                key: const ValueKey('exp-chip-30d'),
-                                label: 'you_exp_30d'.tr(),
-                                selected: _isPreset(30),
-                                onTap: () {
-                                  final n = DateTime.now();
-                                  setState(
-                                    () => _range = DateTimeRange(
-                                      start: n.subtract(
-                                        const Duration(days: 30),
-                                      ),
-                                      end: n,
-                                    ),
-                                  );
-                                },
-                              ),
-                              V3ChoiceChip(
-                                key: const ValueKey('exp-chip-year'),
-                                label: 'you_exp_year'.tr(),
-                                selected: _isPreset(-1),
-                                onTap: () {
-                                  final n = DateTime.now();
-                                  setState(
-                                    () => _range = DateTimeRange(
-                                      start: DateTime(n.year),
-                                      end: n,
-                                    ),
-                                  );
-                                },
-                              ),
-                              V3ChoiceChip(
-                                key: const ValueKey('exp-chip-custom'),
-                                label: 'you_exp_custom'.tr(),
-                                selected:
-                                    _range != null &&
-                                    !_isPreset(30) &&
-                                    !_isPreset(-1),
-                                onTap: _pickRange,
-                              ),
-                            ],
+                      ),
+                    ] else
+                      V3RadioTile(
+                        key: const ValueKey('exp-scope-all'),
+                        selected: _scope == ExportScope.all,
+                        onTap: () => setState(() => _scope = ExportScope.all),
+                        child: Text(
+                          'exp_all_bills'.tr(),
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: p.textPrimary,
+                            fontSize: 15,
                           ),
-                        ],
-                        if (_scope == ExportScope.range)
-                          Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: TextButton(
-                              onPressed: _pickRange,
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                              ),
-                              child: Text(rangeText),
+                        ),
+                      ),
+                    const SizedBox(height: 10),
+                    V3RadioTile(
+                      key: const ValueKey('exp-scope-range'),
+                      selected: _scope == ExportScope.range,
+                      onTap: () {
+                        setState(() => _scope = ExportScope.range);
+                        if (_range == null) _pickRange();
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'exp_range'.tr(),
+                            style: AppTypography.bodyLarge.copyWith(
+                              color: p.textPrimary,
+                              fontSize: 15,
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _caption('exp_format'.tr()),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _FormatCard(
-                          key: const ValueKey('exp-format-pdf'),
-                          title: 'exp_pdf'.tr(),
-                          subtitle: 'exp_pdf_sub'.tr(),
-                          selected: _format == ExportFormat.pdf,
-                          onTap: () =>
-                              setState(() => _format = ExportFormat.pdf),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _FormatCard(
-                          key: const ValueKey('exp-format-csv'),
-                          title: 'exp_csv'.tr(),
-                          subtitle: 'exp_csv_sub'.tr(),
-                          selected: _format == ExportFormat.csv,
-                          onTap: () =>
-                              setState(() => _format = ExportFormat.csv),
-                        ),
-                      ),
-                    ],
-                  ),
-                  AnimatedSwitcher(
-                    duration: AppMotion.durationFor(context, AppMotion.medium),
-                    child: _format == ExportFormat.pdf
-                        ? Padding(
-                            key: const ValueKey('exp-receipts'),
-                            padding: const EdgeInsets.only(top: 18),
-                            child: SettingsCard(
-                              margin: EdgeInsets.zero,
+                          if (_scope == ExportScope.range) ...[
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
                               children: [
-                                SettingsSwitchRow(
-                                  title: 'exp_receipts_toggle'.tr(),
-                                  subtitle: 'exp_receipts_note'.tr(),
-                                  value: _includeReceipts,
-                                  onChanged: (v) =>
-                                      setState(() => _includeReceipts = v),
+                                V3ChoiceChip(
+                                  key: const ValueKey('exp-chip-30d'),
+                                  label: 'you_exp_30d'.tr(),
+                                  selected: _isPreset(30),
+                                  onTap: () {
+                                    final n = DateTime.now();
+                                    setState(
+                                      () => _range = DateTimeRange(
+                                        start: n.subtract(
+                                          const Duration(days: 30),
+                                        ),
+                                        end: n,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                V3ChoiceChip(
+                                  key: const ValueKey('exp-chip-year'),
+                                  label: 'you_exp_year'.tr(),
+                                  selected: _isPreset(-1),
+                                  onTap: () {
+                                    final n = DateTime.now();
+                                    setState(
+                                      () => _range = DateTimeRange(
+                                        start: DateTime(n.year),
+                                        end: n,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                V3ChoiceChip(
+                                  key: const ValueKey('exp-chip-custom'),
+                                  label: 'you_exp_custom'.tr(),
+                                  selected:
+                                      _range != null &&
+                                      !_isPreset(30) &&
+                                      !_isPreset(-1),
+                                  onTap: _pickRange,
                                 ),
                               ],
                             ),
-                          )
-                        : const SizedBox.shrink(),
-                  ),
-                  if (_isPro == false) ...[
-                    const SizedBox(height: 16),
-                    Text(
-                      'exp_pro_note'.tr(),
-                      style: AppTypography.bodySmall.copyWith(
-                        color: p.textSecondary,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_busy) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        minHeight: 4,
-                        color: p.accent,
-                        backgroundColor: p.hairline,
-                        semanticsLabel: 'exp_creating'.tr(),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                  FilledButton(
-                    key: const ValueKey('exp-create'),
-                    onPressed: _busy ? null : _create,
-                    child: _busy
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: p.onInverseSurface,
+                          ],
+                          if (_scope == ExportScope.range)
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: TextButton(
+                                onPressed: _pickRange,
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
                                 ),
+                                child: Text(rangeText),
                               ),
-                              const SizedBox(width: 10),
-                              Text('exp_creating'.tr()),
-                            ],
-                          )
-                        : Text(
-                            _format == ExportFormat.pdf
-                                ? 'exp_create_pdf'.tr()
-                                : 'exp_create_csv'.tr(),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _caption('exp_format'.tr()),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _FormatCard(
+                            key: const ValueKey('exp-format-pdf'),
+                            title: 'exp_pdf'.tr(),
+                            subtitle: 'exp_pdf_sub'.tr(),
+                            selected: _format == ExportFormat.pdf,
+                            onTap: () =>
+                                setState(() => _format = ExportFormat.pdf),
                           ),
-                  ),
-                ],
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _FormatCard(
+                            key: const ValueKey('exp-format-csv'),
+                            title: 'exp_csv'.tr(),
+                            subtitle: 'exp_csv_sub'.tr(),
+                            selected: _format == ExportFormat.csv,
+                            onTap: () =>
+                                setState(() => _format = ExportFormat.csv),
+                          ),
+                        ),
+                      ],
+                    ),
+                    AnimatedSwitcher(
+                      duration: AppMotion.durationFor(
+                        context,
+                        AppMotion.medium,
+                      ),
+                      child: _format == ExportFormat.pdf
+                          ? Padding(
+                              key: const ValueKey('exp-receipts'),
+                              padding: const EdgeInsets.only(top: 18),
+                              child: SettingsCard(
+                                margin: EdgeInsets.zero,
+                                children: [
+                                  SettingsSwitchRow(
+                                    title: 'exp_receipts_toggle'.tr(),
+                                    subtitle: 'exp_receipts_note'.tr(),
+                                    value: _includeReceipts,
+                                    onChanged: (v) =>
+                                        setState(() => _includeReceipts = v),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    if (_isPro == false) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        'exp_pro_note'.tr(),
+                        style: AppTypography.bodySmall.copyWith(
+                          color: p.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_busy) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          minHeight: 4,
+                          color: p.accent,
+                          backgroundColor: p.hairline,
+                          semanticsLabel: 'exp_creating'.tr(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    FilledButton(
+                      key: const ValueKey('exp-create'),
+                      onPressed: _busy ? null : _create,
+                      child: _busy
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: p.onInverseSurface,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text('exp_creating'.tr()),
+                              ],
+                            )
+                          : Text(
+                              _format == ExportFormat.pdf
+                                  ? 'exp_create_pdf'.tr()
+                                  : 'exp_create_csv'.tr(),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

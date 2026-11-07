@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart'
@@ -196,16 +197,18 @@ class _RemindersScreenState extends State<RemindersScreen> {
     final p = context.palette;
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            V3TopBar(
-              title: 'rem_title'.tr(),
-              leading: V3IconButton.back(context),
-            ),
-            Expanded(child: _body(context)),
-          ],
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              V3TopBar(
+                title: 'rem_title'.tr(),
+                leading: V3IconButton.back(context),
+              ),
+              Expanded(child: _body(context)),
+            ],
+          ),
         ),
       ),
     );

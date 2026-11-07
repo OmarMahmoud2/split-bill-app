@@ -1,6 +1,7 @@
 /// Friend: everything between you two, across groups, bills and IOUs.
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/ledger_math.dart';
@@ -39,8 +40,14 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
     super.didChangeDependencies();
     _me ??= LedgerMe.current();
     if (_stream == null && _me != null) {
-      _stream = widget.state ??
-          watchHomeLedger(LedgerRepository.instance, _me!.uid, fallbackCurrency: preferredCurrency(context), looseLabel: 'friend_direct_label'.tr());
+      _stream =
+          widget.state ??
+          watchHomeLedger(
+            LedgerRepository.instance,
+            _me!.uid,
+            fallbackCurrency: preferredCurrency(context),
+            looseLabel: 'friend_direct_label'.tr(),
+          );
     }
   }
 
@@ -49,51 +56,96 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
     final p = context.palette;
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: StreamBuilder<HomeLedgerState>(
-          stream: _stream,
-          builder: (context, snap) {
-            if (snap.hasError) {
-              return Column(children: [const LedgerTopBar(), Expanded(child: ErrorState(onRetry: () => setState(() { _stream = null; didChangeDependencies(); })))]);
-            }
-            if (!snap.hasData) {
-              return Column(
-                children: const [
-                  LedgerTopBar(),
-                  SizedBox(height: 20),
-                  SkeletonShimmer(child: Column(children: [Skeleton.circle(size: 72), SizedBox(height: 16), Skeleton.line(width: 120), SizedBox(height: 24), Padding(padding: EdgeInsets.all(20), child: SkeletonCard())])),
-                ],
-              );
-            }
-            final state = snap.data!;
-            final friend = state.summary.person(widget.friendId);
-            if (friend == null) {
-              return Column(
-                children: [
-                  const LedgerTopBar(),
-                  Expanded(child: EmptyState(icon: AppIcons.you, title: 'friend_nothing_title'.tr(), message: 'friend_nothing_body'.tr())),
-                ],
-              );
-            }
-            return _body(context, state, friend);
-          },
+      body: AdaptiveBody(
+        child: SafeArea(
+          child: StreamBuilder<HomeLedgerState>(
+            stream: _stream,
+            builder: (context, snap) {
+              if (snap.hasError) {
+                return Column(
+                  children: [
+                    const LedgerTopBar(),
+                    Expanded(
+                      child: ErrorState(
+                        onRetry: () => setState(() {
+                          _stream = null;
+                          didChangeDependencies();
+                        }),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              if (!snap.hasData) {
+                return Column(
+                  children: const [
+                    LedgerTopBar(),
+                    SizedBox(height: 20),
+                    SkeletonShimmer(
+                      child: Column(
+                        children: [
+                          Skeleton.circle(size: 72),
+                          SizedBox(height: 16),
+                          Skeleton.line(width: 120),
+                          SizedBox(height: 24),
+                          Padding(
+                            padding: EdgeInsets.all(20),
+                            child: SkeletonCard(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }
+              final state = snap.data!;
+              final friend = state.summary.person(widget.friendId);
+              if (friend == null) {
+                return Column(
+                  children: [
+                    const LedgerTopBar(),
+                    Expanded(
+                      child: EmptyState(
+                        icon: AppIcons.you,
+                        title: 'friend_nothing_title'.tr(),
+                        message: 'friend_nothing_body'.tr(),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return _body(context, state, friend);
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _body(BuildContext context, HomeLedgerState state, Counterparty friend) {
+  Widget _body(
+    BuildContext context,
+    HomeLedgerState state,
+    Counterparty friend,
+  ) {
     final p = context.palette;
     final headline = friend.primary(preferredCurrency(context));
     final owesMe = (headline?.value ?? 0) > 0;
-    final bills = [...state.recentBills, for (final g in state.groupInputs) ...g.bills];
-    final groupContexts = friend.contexts.where((c) => c.groupId != null).length;
+    final bills = [
+      ...state.recentBills,
+      for (final g in state.groupInputs) ...g.bills,
+    ];
+    final groupContexts = friend.contexts
+        .where((c) => c.groupId != null)
+        .length;
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 32),
       children: [
         const LedgerTopBar(),
-        FriendBalanceHeader(friend: friend, preferred: preferredCurrency(context)),
+        FriendBalanceHeader(
+          friend: friend,
+          preferred: preferredCurrency(context),
+        ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
           child: Row(
@@ -102,7 +154,12 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
                 child: FilledButton(
                   onPressed: headline == null
                       ? null
-                      : () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => SettleUpScreen.friend(friendId: friend.id))),
+                      : () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                SettleUpScreen.friend(friendId: friend.id),
+                          ),
+                        ),
                   child: Text('settle_up_title'.tr()),
                 ),
               ),
@@ -121,7 +178,11 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
                       : () => showQuickIouSheet(
                           context,
                           people: const [],
-                          initialPerson: GroupMember(id: friend.id, name: friend.name, photoUrl: friend.photoUrl),
+                          initialPerson: GroupMember(
+                            id: friend.id,
+                            name: friend.name,
+                            photoUrl: friend.photoUrl,
+                          ),
                         ),
                   child: Text(owesMe ? 'friend_nudge'.tr() : 'iou_title'.tr()),
                 ),
@@ -134,7 +195,9 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
               ? 'friend_history'.tr()
               : groupContexts == 1
               ? 'friend_across_one_group'.tr()
-              : 'friend_across_groups'.tr(namedArgs: {'count': '$groupContexts'}),
+              : 'friend_across_groups'.tr(
+                  namedArgs: {'count': '$groupContexts'},
+                ),
         ),
         LedgerCard(
           margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -144,43 +207,83 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
                 InkWell(
                   onTap: c.groupId == null
                       ? null
-                      : () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupDetailScreen(groupId: c.groupId!))),
+                      : () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                GroupDetailScreen(groupId: c.groupId!),
+                          ),
+                        ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: MergeSemantics(
                       child: Row(
                         children: [
                           Container(
                             width: 40,
                             height: 40,
-                            decoration: BoxDecoration(color: p.raised, borderRadius: AppRadii.rowRadius),
-                            child: Icon(c.groupId == null ? AppIcons.receipt : AppIcons.people, size: 20, color: p.textSecondary),
+                            decoration: BoxDecoration(
+                              color: p.raised,
+                              borderRadius: AppRadii.rowRadius,
+                            ),
+                            child: Icon(
+                              c.groupId == null
+                                  ? AppIcons.receipt
+                                  : AppIcons.people,
+                              size: 20,
+                              color: p.textSecondary,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(c.label.isEmpty ? 'friend_direct_label'.tr() : c.label, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+                                Text(
+                                  c.label.isEmpty
+                                      ? 'friend_direct_label'.tr()
+                                      : c.label,
+                                  style: AppTypography.titleSmall.copyWith(
+                                    color: p.textPrimary,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                                 Text(
                                   c.billCount == 0
-                                      ? (c.lastBillTitle ?? 'friend_iou_only'.tr())
+                                      ? (c.lastBillTitle ??
+                                            'friend_iou_only'.tr())
                                       : c.billCount == 1
                                       ? 'groups_one_bill'.tr()
-                                      : 'groups_n_bills'.tr(namedArgs: {'count': '${c.billCount}'}),
-                                  style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
+                                      : 'groups_n_bills'.tr(
+                                          namedArgs: {
+                                            'count': '${c.billCount}',
+                                          },
+                                        ),
+                                  style: AppTypography.bodySmall.copyWith(
+                                    color: p.textSecondary,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          if (c.net.isEmpty || c.net.values.every((v) => v == 0))
+                          if (c.net.isEmpty ||
+                              c.net.values.every((v) => v == 0))
                             const _StatusPill(owed: null)
                           else
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                for (final e in c.net.entries.where((e) => e.value != 0)) ...[
-                                  MoneyText(minor: e.value, currency: e.key, sign: MoneySign.always),
+                                for (final e in c.net.entries.where(
+                                  (e) => e.value != 0,
+                                )) ...[
+                                  MoneyText(
+                                    minor: e.value,
+                                    currency: e.key,
+                                    sign: MoneySign.always,
+                                  ),
                                   _StatusPill(owed: e.value > 0),
                                 ],
                               ],
@@ -199,7 +302,11 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
             onPressed: () => showQuickIouSheet(
               context,
               people: const [],
-              initialPerson: GroupMember(id: friend.id, name: friend.name, photoUrl: friend.photoUrl),
+              initialPerson: GroupMember(
+                id: friend.id,
+                name: friend.name,
+                photoUrl: friend.photoUrl,
+              ),
             ),
             icon: const Icon(AppIcons.add),
             label: Text('friend_add_iou'.tr(namedArgs: {'name': friend.name})),
@@ -212,7 +319,11 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
 
 /// Big avatar, who owes whom in words, and the net balance counting up.
 class FriendBalanceHeader extends StatelessWidget {
-  const FriendBalanceHeader({super.key, required this.friend, required this.preferred});
+  const FriendBalanceHeader({
+    super.key,
+    required this.friend,
+    required this.preferred,
+  });
 
   final Counterparty friend;
   final String preferred;
@@ -227,28 +338,54 @@ class FriendBalanceHeader extends StatelessWidget {
         : owesMe
         ? 'friend_owes_you'.tr(namedArgs: {'name': friend.name})
         : 'friend_you_owe'.tr(namedArgs: {'name': friend.name});
-    final others = friend.net.entries.where((e) => e.key != headline?.key && e.value != 0).toList();
+    final others = friend.net.entries
+        .where((e) => e.key != headline?.key && e.value != 0)
+        .toList();
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
       child: Column(
         children: [
-          PalAvatar(seed: friend.id.isEmpty ? friend.name.toLowerCase() : friend.id, photoUrl: friend.photoUrl, size: 88),
+          PalAvatar(
+            seed: friend.id.isEmpty ? friend.name.toLowerCase() : friend.id,
+            photoUrl: friend.photoUrl,
+            size: 88,
+          ),
           const SizedBox(height: 12),
           Semantics(
             header: true,
-            child: Text(friend.name, style: AppTypography.titleLarge.copyWith(color: p.textPrimary, fontSize: 22, fontWeight: FontWeight.w800)),
+            child: Text(
+              friend.name,
+              style: AppTypography.titleLarge.copyWith(
+                color: p.textPrimary,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ),
           const SizedBox(height: 4),
-          Text(label, style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
+          Text(
+            label,
+            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+          ),
           if (headline != null)
             CountUpMoney(
               minor: headline.value,
               currency: headline.key,
               sign: MoneySign.always,
               size: MoneySize.large,
-              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: -1),
+              style: const TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -1,
+              ),
             ),
-          for (final e in others) MoneyText(minor: e.value, currency: e.key, sign: MoneySign.always, size: MoneySize.small),
+          for (final e in others)
+            MoneyText(
+              minor: e.value,
+              currency: e.key,
+              sign: MoneySign.always,
+              size: MoneySize.small,
+            ),
         ],
       ),
     );
@@ -272,7 +409,14 @@ class _StatusPill extends StatelessWidget {
       margin: const EdgeInsets.only(top: 2),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: bg, borderRadius: AppRadii.chipRadius),
-      child: Text(key.tr(), style: AppTypography.labelSmall.copyWith(color: ink, fontWeight: FontWeight.w600, fontSize: 12)),
+      child: Text(
+        key.tr(),
+        style: AppTypography.labelSmall.copyWith(
+          color: ink,
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+      ),
     );
   }
 }

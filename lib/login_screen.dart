@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:io' show Platform;
 
 import 'dart:ui' as ui;
@@ -205,21 +206,23 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: p.canvas,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 520),
-            child: LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 28, 24, 24),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 52,
-                  ),
-                  child: IntrinsicHeight(
-                    child: AutofillGroup(child: _buildForm(context)),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 28, 24, 24),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 52,
+                    ),
+                    child: IntrinsicHeight(
+                      child: AutofillGroup(child: _buildForm(context)),
+                    ),
                   ),
                 ),
               ),

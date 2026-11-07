@@ -19,7 +19,8 @@ class LedgerMe {
   final String name;
   final String? photoUrl;
 
-  GroupMember get asMember => GroupMember(id: uid, name: name, photoUrl: photoUrl);
+  GroupMember get asMember =>
+      GroupMember(id: uid, name: name, photoUrl: photoUrl);
 
   /// Test hook.
   static LedgerMe? debugOverride;
@@ -45,7 +46,10 @@ class LedgerMe {
 /// The user's default currency from settings ("USD" when unavailable).
 String preferredCurrency(BuildContext context) {
   try {
-    return Provider.of<AppSettingsProvider>(context, listen: false).currencyCode;
+    return Provider.of<AppSettingsProvider>(
+      context,
+      listen: false,
+    ).currencyCode;
   } catch (_) {
     return 'USD';
   }
@@ -61,8 +65,18 @@ String? localeTag(BuildContext context) {
 }
 
 /// Formats an amount for use inside a sentence ("Ali owes me $20.00").
-String moneyLabel(BuildContext context, int minor, String currency, {MoneySign sign = MoneySign.none}) {
-  return formatMoneyMinor(minor, currency, sign: sign, locale: localeTag(context));
+String moneyLabel(
+  BuildContext context,
+  int minor,
+  String currency, {
+  MoneySign sign = MoneySign.none,
+}) {
+  return formatMoneyMinor(
+    minor,
+    currency,
+    sign: sign,
+    locale: localeTag(context),
+  );
 }
 
 /// Display name for a person id: "You" for the user.
@@ -72,7 +86,13 @@ String personName(String id, String name, String me) {
 }
 
 /// Opens a bill the way the rest of the app does (host vs participant).
-void openBill(BuildContext context, {required String billId, required String hostId, required String title, required String me}) {
+void openBill(
+  BuildContext context, {
+  required String billId,
+  required String hostId,
+  required String title,
+  required String me,
+}) {
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (_) => hostId == me

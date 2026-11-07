@@ -61,7 +61,7 @@ class GuestPill extends StatelessWidget {
     final style = ButtonStyle(
       minimumSize: const WidgetStatePropertyAll(Size(44, 44)),
       padding: const WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: 14),
+        EdgeInsets.symmetric(horizontal: 12),
       ),
       textStyle: WidgetStatePropertyAll(
         AppTypography.labelLarge.copyWith(fontSize: 14),

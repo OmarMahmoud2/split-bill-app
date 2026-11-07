@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/utils/display_name.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -200,65 +201,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        bottom: false,
-        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          key: ValueKey(_streamKey),
-          stream: _userStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return ErrorState(onRetry: _retry);
-            }
-            if (!snapshot.hasData) {
-              return const _ProfileSkeleton();
-            }
-            final data = snapshot.data!.data() ?? <String, dynamic>{};
-            final isPro = RevenueCatService.isUserActivePremium(data);
-            final planKind = planKindForProductId(
-              data['premiumProductId']?.toString(),
-            );
-            final ledger = HomeBalances.latest;
-            final year = DateTime.now().year;
-            final settled = ledger == null
-                ? 0
-                : [
-                    ...ledger.directPayments,
-                    for (final g in ledger.groupInputs) ...g.payments,
-                  ].where((x) => x.createdAt?.year == year).length;
-            final view = ProfileViewData(
-              billsSplit: ledger?.recentBills.length ?? 0,
-              peopleCount: ledger?.summary.people.length ?? 0,
-              settledThisYear: settled,
-              name: firstNonBlank([
-                data['displayName'] as String?,
-                _user.displayName,
-              ], fallback: 'user'.tr()),
-              photoUrl: data['photoUrl'] as String?,
-              isPro: isPro,
-              planLabel: planKind == null
-                  ? null
-                  : 'pw_plan_${planKind.name}'.tr(),
-              points: (data['points'] as num?)?.toInt() ?? 0,
-              paymentMethodCount: parseStoredPaymentMethods(data).length,
-              monthlyPrice: _monthlyPrice,
-              appearanceLabel: themeModeLabelKey(settings.themeMode).tr(),
-              languageLabel: findLocaleOption(
-                settings.locale.languageCode,
-              ).nativeName,
-              currencyCode: settings.currencyCode,
-              hapticsEnabled: settings.hapticsEnabled,
-              remindersSummary: ReminderPrefs.fromUserDoc(
-                data,
-              ).summary(offLabel: 'rem_off'.tr(), locale: locale),
-              isAdmin: data['isAdmin'] == true,
-              showDeveloper: kDebugMode,
-            );
-            return ProfileContent(
-              data: view,
-              onAction: (action) => _onAction(action, data, isPro),
-              onHapticsChanged: settings.updateHapticsEnabled,
-            );
-          },
+      body: AdaptiveBody(
+        child: SafeArea(
+          bottom: false,
+          child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            key: ValueKey(_streamKey),
+            stream: _userStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return ErrorState(onRetry: _retry);
+              }
+              if (!snapshot.hasData) {
+                return const _ProfileSkeleton();
+              }
+              final data = snapshot.data!.data() ?? <String, dynamic>{};
+              final isPro = RevenueCatService.isUserActivePremium(data);
+              final planKind = planKindForProductId(
+                data['premiumProductId']?.toString(),
+              );
+              final ledger = HomeBalances.latest;
+              final year = DateTime.now().year;
+              final settled = ledger == null
+                  ? 0
+                  : [
+                      ...ledger.directPayments,
+                      for (final g in ledger.groupInputs) ...g.payments,
+                    ].where((x) => x.createdAt?.year == year).length;
+              final view = ProfileViewData(
+                billsSplit: ledger?.recentBills.length ?? 0,
+                peopleCount: ledger?.summary.people.length ?? 0,
+                settledThisYear: settled,
+                name: firstNonBlank([
+                  data['displayName'] as String?,
+                  _user.displayName,
+                ], fallback: 'user'.tr()),
+                photoUrl: data['photoUrl'] as String?,
+                isPro: isPro,
+                planLabel: planKind == null
+                    ? null
+                    : 'pw_plan_${planKind.name}'.tr(),
+                points: (data['points'] as num?)?.toInt() ?? 0,
+                paymentMethodCount: parseStoredPaymentMethods(data).length,
+                monthlyPrice: _monthlyPrice,
+                appearanceLabel: themeModeLabelKey(settings.themeMode).tr(),
+                languageLabel: findLocaleOption(
+                  settings.locale.languageCode,
+                ).nativeName,
+                currencyCode: settings.currencyCode,
+                hapticsEnabled: settings.hapticsEnabled,
+                remindersSummary: ReminderPrefs.fromUserDoc(
+                  data,
+                ).summary(offLabel: 'rem_off'.tr(), locale: locale),
+                isAdmin: data['isAdmin'] == true,
+                showDeveloper: kDebugMode,
+              );
+              return ProfileContent(
+                data: view,
+                onAction: (action) => _onAction(action, data, isPro),
+                onHapticsChanged: settings.updateHapticsEnabled,
+              );
+            },
+          ),
         ),
       ),
     );

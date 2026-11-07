@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:io';
 
@@ -863,9 +864,11 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
     return Scaffold(
       backgroundColor: p.canvas,
       appBar: appBar,
-      body: AnimatedSwitcher(
-        duration: AppMotion.durationFor(context, AppMotion.slow),
-        child: body,
+      body: AdaptiveBody(
+        child: AnimatedSwitcher(
+          duration: AppMotion.durationFor(context, AppMotion.slow),
+          child: body,
+        ),
       ),
     );
   }

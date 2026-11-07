@@ -13,23 +13,41 @@ import 'package:split_bill_app/utils/plural_text.dart';
 import 'package:split_bill_app/utils/wallet_status.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 
-typedef BillEntry = void Function(BuildContext context, {List<GroupMember>? members, String? groupId});
+typedef BillEntry =
+    void Function(
+      BuildContext context, {
+      List<GroupMember>? members,
+      String? groupId,
+    });
 
 /// How ledger screens start a bill. [groupId] (with [members]) is carried
 /// scan/manual -> assign -> summary -> the bill's `groupId`.
 class BillEntryPoints {
   BillEntryPoints._();
 
-  static List<Map<String, dynamic>>? _participants(List<GroupMember>? members) =>
-      members?.map((m) => m.toMap()).toList();
+  static List<Map<String, dynamic>>? _participants(
+    List<GroupMember>? members,
+  ) => members?.map((m) => m.toMap()).toList();
 
-  static BillEntry scan = (context, {members, groupId}) => Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => ScanReceiptScreen(participants: _participants(members), groupId: groupId)),
-  );
+  static BillEntry scan = (context, {members, groupId}) =>
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ScanReceiptScreen(
+            participants: _participants(members),
+            groupId: groupId,
+          ),
+        ),
+      );
 
-  static BillEntry manual = (context, {members, groupId}) => Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => ManualEntryScreen(participants: _participants(members), groupId: groupId)),
-  );
+  static BillEntry manual = (context, {members, groupId}) =>
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ManualEntryScreen(
+            participants: _participants(members),
+            groupId: groupId,
+          ),
+        ),
+      );
 
   /// "Say it": hidden (null) until a standalone voice expense exists. Voice
   /// assign needs items, so opening Scan under this name would mislead.
@@ -77,13 +95,18 @@ Future<void> showNewSheet(
       title: 'new_scan_title'.tr(),
       subtitle: 'new_scan_sub'.tr(),
       cost: FeatureCosts.receiptScanPoints,
-      onTap: () => after(() => BillEntryPoints.scan(context, members: members, groupId: groupId)),
+      onTap: () => after(
+        () => BillEntryPoints.scan(context, members: members, groupId: groupId),
+      ),
     ),
     NewSheetOption(
       icon: AppIcons.edit,
       title: 'new_type_title'.tr(),
       subtitle: 'new_expense_sub'.tr(),
-      onTap: () => after(() => BillEntryPoints.manual(context, members: members, groupId: groupId)),
+      onTap: () => after(
+        () =>
+            BillEntryPoints.manual(context, members: members, groupId: groupId),
+      ),
     ),
     // Hidden until a standalone voice expense exists (voice assign needs items).
     if (voice != null)
@@ -92,14 +115,25 @@ Future<void> showNewSheet(
         title: 'new_say_title'.tr(),
         subtitle: 'new_say_sub'.tr(),
         cost: FeatureCosts.voiceCommandPoints,
-        onTap: () => after(() => voice(context, members: members, groupId: groupId)),
+        onTap: () =>
+            after(() => voice(context, members: members, groupId: groupId)),
       ),
   ];
   final more = [
     if (groupId == null)
-      NewSheetOption(icon: AppIcons.iou, title: 'iou_title'.tr(), subtitle: 'new_iou_sub'.tr(), onTap: () => after(onQuickIou)),
+      NewSheetOption(
+        icon: AppIcons.iou,
+        title: 'iou_title'.tr(),
+        subtitle: 'new_iou_sub'.tr(),
+        onTap: () => after(onQuickIou),
+      ),
     if (groupId == null)
-      NewSheetOption(icon: AppIcons.groups, title: 'new_group_title'.tr(), subtitle: 'new_group_sub'.tr(), onTap: () => after(onStartGroup)),
+      NewSheetOption(
+        icon: AppIcons.groups,
+        title: 'new_group_title'.tr(),
+        subtitle: 'new_group_sub'.tr(),
+        onTap: () => after(onStartGroup),
+      ),
   ];
   return showLedgerSheet<void>(
     context,
@@ -139,7 +173,9 @@ class _NewSheetState extends State<NewSheet> {
                   children: [
                     for (final (i, o) in widget.methods.indexed) ...[
                       if (i > 0) const SizedBox(width: 10),
-                      Expanded(child: _MethodTile(option: o, pro: pro)),
+                      Expanded(
+                        child: _MethodTile(option: o, pro: pro),
+                      ),
                     ],
                   ],
                 ),
@@ -155,27 +191,52 @@ class _NewSheetState extends State<NewSheet> {
                         o.onTap();
                       },
                       semanticsLabel: '${o.title}. ${o.subtitle}',
-                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 14, vertical: 12),
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                       child: ExcludeSemantics(
                         child: Row(
                           children: [
                             Container(
                               width: 36,
                               height: 36,
-                              decoration: BoxDecoration(color: p.surfaceVariant, borderRadius: AppRadii.rowRadius),
-                              child: Icon(o.icon, size: 20, color: p.textPrimary),
+                              decoration: BoxDecoration(
+                                color: p.surfaceVariant,
+                                borderRadius: AppRadii.rowRadius,
+                              ),
+                              child: Icon(
+                                o.icon,
+                                size: 20,
+                                color: p.textPrimary,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(o.title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontWeight: FontWeight.w600)),
-                                  Text(o.subtitle, style: AppTypography.bodySmall.copyWith(color: p.textSecondary)),
+                                  Text(
+                                    o.title,
+                                    style: AppTypography.titleSmall.copyWith(
+                                      color: p.textPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    o.subtitle,
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: p.textSecondary,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                            Icon(AppIcons.chevronRight, size: 18, color: p.textTertiary),
+                            Icon(
+                              AppIcons.chevronRight,
+                              size: 18,
+                              color: p.textTertiary,
+                            ),
                           ],
                         ),
                       ),
@@ -217,7 +278,10 @@ class _MethodTile extends StatelessWidget {
             Container(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(color: p.accentSoft, borderRadius: AppRadii.rowRadius),
+              decoration: BoxDecoration(
+                color: p.accentSoft,
+                borderRadius: AppRadii.rowRadius,
+              ),
               child: Icon(option.icon, size: 24, color: p.onAccentSoft),
             ),
             const SizedBox(height: 10),
@@ -226,14 +290,22 @@ class _MethodTile extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 14, fontWeight: FontWeight.w700),
+              style: AppTypography.titleSmall.copyWith(
+                color: p.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const Spacer(),
             const SizedBox(height: 4),
             Text(
               costText,
               textAlign: TextAlign.center,
-              style: AppTypography.bodySmall.copyWith(color: cost == null || pro ? p.accent : p.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+              style: AppTypography.bodySmall.copyWith(
+                color: cost == null || pro ? p.accent : p.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

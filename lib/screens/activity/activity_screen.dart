@@ -2,6 +2,7 @@
 /// time (see [LedgerRepository.fetchActivity]).
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -440,15 +441,17 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (!widget.embedded) const LedgerTopBar(),
-            ScreenTitle('activity_title'.tr()),
-            Expanded(child: body),
-          ],
+      body: AdaptiveBody(
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (!widget.embedded) const LedgerTopBar(),
+              ScreenTitle('activity_title'.tr()),
+              Expanded(child: body),
+            ],
+          ),
         ),
       ),
     );

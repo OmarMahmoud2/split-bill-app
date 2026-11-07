@@ -1,6 +1,7 @@
 /// Group or trip: balances, bills and totals, with the budget bar.
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -239,54 +240,56 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     final p = context.palette;
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: StreamBuilder<GroupLedgerInput?>(
-          stream: _stream,
-          builder: (context, snap) {
-            if (snap.hasError) {
-              return Column(
-                children: [
-                  const LedgerTopBar(),
-                  Expanded(child: ErrorState(onRetry: _retry)),
-                ],
-              );
-            }
-            if (snap.connectionState == ConnectionState.waiting &&
-                !snap.hasData) {
-              return Column(
-                children: const [
-                  LedgerTopBar(),
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: SkeletonShimmer(
-                      child: Column(
-                        children: [
-                          SkeletonCard(),
-                          SizedBox(height: 12),
-                          SkeletonCard(),
-                        ],
+      body: AdaptiveBody(
+        child: SafeArea(
+          child: StreamBuilder<GroupLedgerInput?>(
+            stream: _stream,
+            builder: (context, snap) {
+              if (snap.hasError) {
+                return Column(
+                  children: [
+                    const LedgerTopBar(),
+                    Expanded(child: ErrorState(onRetry: _retry)),
+                  ],
+                );
+              }
+              if (snap.connectionState == ConnectionState.waiting &&
+                  !snap.hasData) {
+                return Column(
+                  children: const [
+                    LedgerTopBar(),
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: SkeletonShimmer(
+                        child: Column(
+                          children: [
+                            SkeletonCard(),
+                            SizedBox(height: 12),
+                            SkeletonCard(),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            }
-            final g = snap.data;
-            if (g == null) {
-              return Column(
-                children: [
-                  const LedgerTopBar(),
-                  Expanded(
-                    child: ErrorState(
-                      title: 'groups_not_found'.tr(),
-                      message: 'groups_not_found_body'.tr(),
+                  ],
+                );
+              }
+              final g = snap.data;
+              if (g == null) {
+                return Column(
+                  children: [
+                    const LedgerTopBar(),
+                    Expanded(
+                      child: ErrorState(
+                        title: 'groups_not_found'.tr(),
+                        message: 'groups_not_found_body'.tr(),
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }
-            return _body(context, g);
-          },
+                  ],
+                );
+              }
+              return _body(context, g);
+            },
+          ),
         ),
       ),
     );
@@ -377,7 +380,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                         borderRadius: AppRadii.cardRadius,
                       ),
                       child: Icon(
-                        group.type == GroupType.trip ? AppIcons.trip : AppIcons.groups,
+                        group.type == GroupType.trip
+                            ? AppIcons.trip
+                            : AppIcons.groups,
                         color: p.accent,
                         size: 28,
                       ),

@@ -2,6 +2,7 @@
 /// category (or by group when bills carry no category), and payback speed.
 library;
 
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/insights.dart';
@@ -24,7 +25,8 @@ class InsightsScreen extends StatefulWidget {
 
 class _InsightsScreenState extends State<InsightsScreen> {
   Stream<HomeLedgerState>? _stream;
-  late DateTime _month = widget.month ?? DateTime(DateTime.now().year, DateTime.now().month);
+  late DateTime _month =
+      widget.month ?? DateTime(DateTime.now().year, DateTime.now().month);
   LedgerMe? _me;
 
   @override
@@ -32,8 +34,13 @@ class _InsightsScreenState extends State<InsightsScreen> {
     super.didChangeDependencies();
     _me ??= LedgerMe.current();
     if (_stream == null && _me != null) {
-      _stream = widget.state ??
-          watchHomeLedger(LedgerRepository.instance, _me!.uid, fallbackCurrency: preferredCurrency(context));
+      _stream =
+          widget.state ??
+          watchHomeLedger(
+            LedgerRepository.instance,
+            _me!.uid,
+            fallbackCurrency: preferredCurrency(context),
+          );
     }
   }
 
@@ -51,37 +58,60 @@ class _InsightsScreenState extends State<InsightsScreen> {
     final rtl = Directionality.of(context) == TextDirection.rtl;
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            LedgerTopBar(
-              title: title,
-              actions: [
-                IconButton(
-                  tooltip: 'insights_previous_month'.tr(),
-                  icon: Icon(rtl ? AppIcons.chevronRight : AppIcons.chevronLeft),
-                  onPressed: () => _shift(-1),
-                ),
-                IconButton(
-                  tooltip: 'insights_next_month'.tr(),
-                  icon: Icon(rtl ? AppIcons.chevronLeft : AppIcons.chevronRight),
-                  onPressed: isCurrent ? null : () => _shift(1),
-                ),
-              ],
-            ),
-            Expanded(
-              child: StreamBuilder<HomeLedgerState>(
-                stream: _stream,
-                builder: (context, snap) {
-                  if (snap.hasError) return ErrorState(onRetry: () => setState(() { _stream = null; didChangeDependencies(); }));
-                  if (!snap.hasData) {
-                    return const Padding(padding: EdgeInsets.all(20), child: SkeletonShimmer(child: Column(children: [SkeletonCard(), SizedBox(height: 12), SkeletonCard()])));
-                  }
-                  return _content(context, snap.data!);
-                },
+      body: AdaptiveBody(
+        child: SafeArea(
+          child: Column(
+            children: [
+              LedgerTopBar(
+                title: title,
+                actions: [
+                  IconButton(
+                    tooltip: 'insights_previous_month'.tr(),
+                    icon: Icon(
+                      rtl ? AppIcons.chevronRight : AppIcons.chevronLeft,
+                    ),
+                    onPressed: () => _shift(-1),
+                  ),
+                  IconButton(
+                    tooltip: 'insights_next_month'.tr(),
+                    icon: Icon(
+                      rtl ? AppIcons.chevronLeft : AppIcons.chevronRight,
+                    ),
+                    onPressed: isCurrent ? null : () => _shift(1),
+                  ),
+                ],
               ),
-            ),
-          ],
+              Expanded(
+                child: StreamBuilder<HomeLedgerState>(
+                  stream: _stream,
+                  builder: (context, snap) {
+                    if (snap.hasError)
+                      return ErrorState(
+                        onRetry: () => setState(() {
+                          _stream = null;
+                          didChangeDependencies();
+                        }),
+                      );
+                    if (!snap.hasData) {
+                      return const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: SkeletonShimmer(
+                          child: Column(
+                            children: [
+                              SkeletonCard(),
+                              SizedBox(height: 12),
+                              SkeletonCard(),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return _content(context, snap.data!);
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -96,7 +126,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
         for (final b in g.bills)
           if (b.share(me) != null) b.id: b,
     };
-    final payments = [...state.directPayments, for (final g in state.groupInputs) ...g.payments];
+    final payments = [
+      ...state.directPayments,
+      for (final g in state.groupInputs) ...g.payments,
+    ];
     final i = computeInsights(
       me: me,
       month: _month,
@@ -112,29 +145,43 @@ class _InsightsScreenState extends State<InsightsScreen> {
         title: 'insights_empty_title'.tr(),
         message: i.otherCurrencies.isEmpty
             ? 'insights_empty_body'.tr()
-            : 'insights_other_currencies'.tr(namedArgs: {'codes': i.otherCurrencies.join(', ')}),
+            : 'insights_other_currencies'.tr(
+                namedArgs: {'codes': i.otherCurrencies.join(', ')},
+              ),
       );
     }
     final change = i.changeVsPrevious;
-    final bills = i.billCount == 1 ? 'groups_one_bill'.tr() : 'groups_n_bills'.tr(namedArgs: {'count': '${i.billCount}'});
+    final bills = i.billCount == 1
+        ? 'groups_one_bill'.tr()
+        : 'groups_n_bills'.tr(namedArgs: {'count': '${i.billCount}'});
     final changeText = change == null
         ? null
         : change < 0
-        ? 'insights_less_than_last'.tr(namedArgs: {'percent': '${(-change * 100).round()}'})
-        : 'insights_more_than_last'.tr(namedArgs: {'percent': '${(change * 100).round()}'});
+        ? 'insights_less_than_last'.tr(
+            namedArgs: {'percent': '${(-change * 100).round()}'},
+          )
+        : 'insights_more_than_last'.tr(
+            namedArgs: {'percent': '${(change * 100).round()}'},
+          );
 
     String sliceName(InsightSlice s) {
-      if (i.byCategory) return s.key.isEmpty ? 'insights_uncategorized'.tr() : s.key;
-      return s.key.isEmpty ? 'insights_no_group'.tr() : (groupNames[s.key] ?? 'insights_no_group'.tr());
+      if (i.byCategory)
+        return s.key.isEmpty ? 'insights_uncategorized'.tr() : s.key;
+      return s.key.isEmpty
+          ? 'insights_no_group'.tr()
+          : (groupNames[s.key] ?? 'insights_no_group'.tr());
     }
 
     String? payback;
     if (i.paybackDays != null) {
       final days = i.paybackDays!.round().clamp(0, 365);
-      payback = days <= 1 ? 'insights_payback_fast'.tr() : 'insights_payback_days'.tr(namedArgs: {'count': '$days'});
+      payback = days <= 1
+          ? 'insights_payback_fast'.tr()
+          : 'insights_payback_days'.tr(namedArgs: {'count': '$days'});
       final slow = i.slowestPayer;
       if (slow != null && slow.days.round() > days) {
-        payback = '$payback ${'insights_payback_slowest'.tr(namedArgs: {'name': slow.name, 'count': '${slow.days.round()}'})}';
+        payback =
+            '$payback ${'insights_payback_slowest'.tr(namedArgs: {'name': slow.name, 'count': '${slow.days.round()}'})}';
       }
     }
 
@@ -146,13 +193,41 @@ class _InsightsScreenState extends State<InsightsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('insights_your_share'.tr(), style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
-              MoneyText(minor: i.totalMinor, currency: i.currency, tone: MoneyTone.neutral, size: MoneySize.large, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: -1), animate: true),
-              Text([bills, ?changeText].join(' · '), style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
+              Text(
+                'insights_your_share'.tr(),
+                style: AppTypography.bodyMedium.copyWith(
+                  color: p.textSecondary,
+                ),
+              ),
+              MoneyText(
+                minor: i.totalMinor,
+                currency: i.currency,
+                tone: MoneyTone.neutral,
+                size: MoneySize.large,
+                style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -1,
+                ),
+                animate: true,
+              ),
+              Text(
+                [bills, ?changeText].join(' · '),
+                style: AppTypography.bodyMedium.copyWith(
+                  color: p.textSecondary,
+                ),
+              ),
               if (i.otherCurrencies.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
-                  child: Text('insights_other_currencies'.tr(namedArgs: {'codes': i.otherCurrencies.join(', ')}), style: AppTypography.bodySmall.copyWith(color: p.textSecondary)),
+                  child: Text(
+                    'insights_other_currencies'.tr(
+                      namedArgs: {'codes': i.otherCurrencies.join(', ')},
+                    ),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: p.textSecondary,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -169,7 +244,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
               children: [
                 for (final (idx, s) in i.slices.indexed)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: MergeSemantics(
                       child: Column(
                         children: [
@@ -178,14 +256,45 @@ class _InsightsScreenState extends State<InsightsScreen> {
                               Container(
                                 width: 10,
                                 height: 10,
-                                decoration: BoxDecoration(color: [p.accent, p.coral, p.sky][idx % 3], shape: BoxShape.circle),
+                                decoration: BoxDecoration(
+                                  color: [p.accent, p.coral, p.sky][idx % 3],
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                               const SizedBox(width: 10),
-                              Expanded(child: Text(sliceName(s), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w500))),
-                              Text('${(s.amountMinor * 100 / i.totalMinor).round()}%', style: AppTypography.bodySmall.copyWith(color: p.textSecondary, fontFeatures: const [FontFeature.tabularFigures()])),
+                              Expanded(
+                                child: Text(
+                                  sliceName(s),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.bodyMedium.copyWith(
+                                    color: p.textPrimary,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '${(s.amountMinor * 100 / i.totalMinor).round()}%',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: p.textSecondary,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
+                              ),
                               SizedBox(
                                 width: 96,
-                                child: MoneyText(minor: s.amountMinor, currency: i.currency, tone: MoneyTone.neutral, textAlign: TextAlign.end, size: MoneySize.small, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                child: MoneyText(
+                                  minor: s.amountMinor,
+                                  currency: i.currency,
+                                  tone: MoneyTone.neutral,
+                                  textAlign: TextAlign.end,
+                                  size: MoneySize.small,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -193,7 +302,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
                           ClipRRect(
                             borderRadius: AppRadii.chipRadius,
                             child: LinearProgressIndicator(
-                              value: (s.amountMinor / i.totalMinor).clamp(0.0, 1.0),
+                              value: (s.amountMinor / i.totalMinor).clamp(
+                                0.0,
+                                1.0,
+                              ),
                               minHeight: 6,
                               backgroundColor: p.raised,
                               color: [p.accent, p.coral, p.sky][idx % 3],
@@ -210,12 +322,24 @@ class _InsightsScreenState extends State<InsightsScreen> {
           Container(
             margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(color: p.accentSoft, borderRadius: AppRadii.rowRadius),
+            decoration: BoxDecoration(
+              color: p.accentSoft,
+              borderRadius: AppRadii.rowRadius,
+            ),
             child: Row(
               children: [
                 Icon(AppIcons.success, size: 20, color: p.onAccentSoft),
                 const SizedBox(width: 10),
-                Expanded(child: Text(payback, style: AppTypography.labelMedium.copyWith(color: p.onAccentSoft, fontSize: 13, fontWeight: FontWeight.w600))),
+                Expanded(
+                  child: Text(
+                    payback,
+                    style: AppTypography.labelMedium.copyWith(
+                      color: p.onAccentSoft,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -250,19 +374,34 @@ class WeeklyBars extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TweenAnimationBuilder<double>(
-                        tween: Tween(begin: 0, end: max == 0 ? 0 : weeks[w] / max),
-                        duration: AppMotion.durationFor(context, AppMotion.money),
+                        tween: Tween(
+                          begin: 0,
+                          end: max == 0 ? 0 : weeks[w] / max,
+                        ),
+                        duration: AppMotion.durationFor(
+                          context,
+                          AppMotion.money,
+                        ),
                         curve: AppMotion.quiet,
                         builder: (context, v, _) => Container(
                           height: 4 + 106 * v,
                           decoration: BoxDecoration(
-                            color: w == peak && weeks[w] > 0 ? p.accent : p.raised,
+                            color: w == peak && weeks[w] > 0
+                                ? p.accent
+                                : p.raised,
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text('insights_week_short'.tr(namedArgs: {'n': '${w + 1}'}), style: AppTypography.caption.copyWith(color: p.textSecondary, fontSize: 12, fontFeatures: const [FontFeature.tabularFigures()])),
+                      Text(
+                        'insights_week_short'.tr(namedArgs: {'n': '${w + 1}'}),
+                        style: AppTypography.caption.copyWith(
+                          color: p.textSecondary,
+                          fontSize: 12,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
                     ],
                   ),
                 ),

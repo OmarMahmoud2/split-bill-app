@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/bill_flow/bill_calculator.dart';
@@ -138,123 +139,128 @@ class _EditSplitScreenState extends State<EditSplitScreen> {
     final p = context.palette;
     return Scaffold(
       backgroundColor: p.background,
-      body: SafeArea(
-        child: ListenableBuilder(
-          listenable: c,
-          builder: (context, _) {
-            final comp = c.computation;
-            final draft = c.draft;
-            final issues = c.issueMessages;
-            final names = {
-              for (final info in c.participantInfos) info.id: info.name,
-            };
-            return Column(
-              children: [
-                EditBillHeader(
-                  title: 'bf_edit_row_items'.tr(),
-                  leadingIcon: AppIcons.back,
-                  leadingTooltip: 'bf_edit_back'.tr(),
-                  onLeading: () => Navigator.of(context).pop(),
-                  actionLabel: 'bf_edit_done'.tr(),
-                  onAction: () => Navigator.of(context).pop(),
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      AppSpacing.xl,
-                      AppSpacing.lg,
-                      AppSpacing.xl,
-                      AppSpacing.huge,
-                    ),
-                    children: [
-                      _MethodPicker(
-                        method: draft.method,
-                        original: c.originalDraft.method,
-                        onChanged: (m) {
-                          AppHaptics.selection();
-                          c.setMethod(m);
-                        },
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: ListenableBuilder(
+            listenable: c,
+            builder: (context, _) {
+              final comp = c.computation;
+              final draft = c.draft;
+              final issues = c.issueMessages;
+              final names = {
+                for (final info in c.participantInfos) info.id: info.name,
+              };
+              return Column(
+                children: [
+                  EditBillHeader(
+                    title: 'bf_edit_row_items'.tr(),
+                    leadingIcon: AppIcons.back,
+                    leadingTooltip: 'bf_edit_back'.tr(),
+                    onLeading: () => Navigator.of(context).pop(),
+                    actionLabel: 'bf_edit_done'.tr(),
+                    onAction: () => Navigator.of(context).pop(),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.xl,
+                        AppSpacing.lg,
+                        AppSpacing.xl,
+                        AppSpacing.huge,
                       ),
-                      if (issues.isNotEmpty) ...[
-                        const SizedBox(height: AppSpacing.lg),
-                        EditIssuesBanner(messages: issues),
-                      ],
-                      _SectionHeader(
-                        label: 'bf_edit_section_people'.tr(),
-                        action: _addingPeople
-                            ? const _SmallSpinner()
-                            : TextButton.icon(
-                                onPressed: _addPeople,
-                                icon: const Icon(AppIcons.personAdd, size: 18),
-                                label: Text('bf_edit_add_people'.tr()),
-                              ),
-                      ),
-                      ParticipantList(
-                        participants: c.participantInfos,
-                        sharesMinor: comp.totals,
-                        currency: draft.currency,
-                        paidIds: {
-                          for (final info in c.participantInfos)
-                            if (c.isPaid(info.id)) info.id,
-                        },
-                        hostId: c.hostUid,
-                        currentUid: c.currentUid,
-                        onParticipantTap: _personOptions,
-                      ),
-                      _SectionHeader(
-                        label: 'bf_edit_section_items'.tr(),
-                        action: TextButton.icon(
-                          onPressed: _addItem,
-                          icon: const Icon(AppIcons.add, size: 18),
-                          label: Text('bf_edit_add_item'.tr()),
+                      children: [
+                        _MethodPicker(
+                          method: draft.method,
+                          original: c.originalDraft.method,
+                          onChanged: (m) {
+                            AppHaptics.selection();
+                            c.setMethod(m);
+                          },
                         ),
-                      ),
-                      BillItemsList(
-                        draft: draft,
-                        names: names,
-                        showAssignments: draft.method == SplitMethod.items,
-                        onAssign: _assign,
-                        onEdit: _editItem,
-                      ),
-                      if (draft.method == SplitMethod.items &&
-                          draft.items.isNotEmpty &&
-                          c.participantInfos.length > 1) ...[
-                        const SizedBox(height: AppSpacing.sm),
-                        Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: TextButton(
-                            onPressed: _everyoneSharesAll,
-                            child: Text('bf_edit_share_all'.tr()),
+                        if (issues.isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.lg),
+                          EditIssuesBanner(messages: issues),
+                        ],
+                        _SectionHeader(
+                          label: 'bf_edit_section_people'.tr(),
+                          action: _addingPeople
+                              ? const _SmallSpinner()
+                              : TextButton.icon(
+                                  onPressed: _addPeople,
+                                  icon: const Icon(
+                                    AppIcons.personAdd,
+                                    size: 18,
+                                  ),
+                                  label: Text('bf_edit_add_people'.tr()),
+                                ),
+                        ),
+                        ParticipantList(
+                          participants: c.participantInfos,
+                          sharesMinor: comp.totals,
+                          currency: draft.currency,
+                          paidIds: {
+                            for (final info in c.participantInfos)
+                              if (c.isPaid(info.id)) info.id,
+                          },
+                          hostId: c.hostUid,
+                          currentUid: c.currentUid,
+                          onParticipantTap: _personOptions,
+                        ),
+                        _SectionHeader(
+                          label: 'bf_edit_section_items'.tr(),
+                          action: TextButton.icon(
+                            onPressed: _addItem,
+                            icon: const Icon(AppIcons.add, size: 18),
+                            label: Text('bf_edit_add_item'.tr()),
                           ),
                         ),
-                      ],
-                      const SizedBox(height: AppSpacing.lg),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'bf_edit_total'.tr(),
-                              style: AppTypography.titleMedium.copyWith(
-                                color: p.textPrimary,
-                              ),
+                        BillItemsList(
+                          draft: draft,
+                          names: names,
+                          showAssignments: draft.method == SplitMethod.items,
+                          onAssign: _assign,
+                          onEdit: _editItem,
+                        ),
+                        if (draft.method == SplitMethod.items &&
+                            draft.items.isNotEmpty &&
+                            c.participantInfos.length > 1) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: TextButton(
+                              onPressed: _everyoneSharesAll,
+                              child: Text('bf_edit_share_all'.tr()),
                             ),
                           ),
-                          MoneyText(
-                            minor: comp.grandTotalMinor,
-                            currency: draft.currency,
-                            tone: MoneyTone.neutral,
-                            size: MoneySize.large,
-                            animate: true,
-                            animateFromZero: false,
-                          ),
                         ],
-                      ),
-                    ],
+                        const SizedBox(height: AppSpacing.lg),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'bf_edit_total'.tr(),
+                                style: AppTypography.titleMedium.copyWith(
+                                  color: p.textPrimary,
+                                ),
+                              ),
+                            ),
+                            MoneyText(
+                              minor: comp.grandTotalMinor,
+                              currency: draft.currency,
+                              tone: MoneyTone.neutral,
+                              size: MoneySize.large,
+                              animate: true,
+                              animateFromZero: false,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

@@ -268,95 +268,105 @@ class _TabBar extends StatelessWidget {
     return SafeArea(
       top: false,
       minimum: const EdgeInsets.only(bottom: 24),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SizedBox(
-          height: _pillHeight + _raise,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                top: _raise,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: p.softShadow,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: p.surface.withValues(alpha: 0.78),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: p.border),
-                        ),
-                        child: Row(
-                          children: [
-                            item(
-                              0,
-                              AppIcons.home,
-                              AppIcons.homeFill,
-                              'home_tab_home'.tr(),
+      child: Center(
+        heightFactor: 1,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              height: _pillHeight + _raise,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    top: _raise,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: p.softShadow,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: p.surface.withValues(alpha: 0.78),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: p.border),
                             ),
-                            item(
-                              1,
-                              AppIcons.activity,
-                              AppIcons.activityFill,
-                              'activity_title'.tr(),
+                            child: Row(
+                              children: [
+                                item(
+                                  0,
+                                  AppIcons.home,
+                                  AppIcons.homeFill,
+                                  'home_tab_home'.tr(),
+                                ),
+                                item(
+                                  1,
+                                  AppIcons.activity,
+                                  AppIcons.activityFill,
+                                  'activity_title'.tr(),
+                                ),
+                                const Spacer(),
+                                item(
+                                  2,
+                                  AppIcons.groups,
+                                  AppIcons.groupsFill,
+                                  'groups'.tr(),
+                                ),
+                                item(
+                                  3,
+                                  AppIcons.you,
+                                  AppIcons.youFill,
+                                  'home_tab_you'.tr(),
+                                ),
+                              ],
                             ),
-                            const Spacer(),
-                            item(
-                              2,
-                              AppIcons.groups,
-                              AppIcons.groupsFill,
-                              'groups'.tr(),
-                            ),
-                            item(
-                              3,
-                              AppIcons.you,
-                              AppIcons.youFill,
-                              'home_tab_you'.tr(),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Semantics(
-                    button: true,
-                    label: 'new_title'.tr(),
-                    onLongPressHint: 'home_scan_receipt'.tr(),
-                    child: Pressable(
-                      haptic: true,
-                      onTap: onNew,
-                      onLongPress: onScan,
-                      child: Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: p.accent,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: p.softShadow,
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Semantics(
+                        button: true,
+                        label: 'new_title'.tr(),
+                        onLongPressHint: 'home_scan_receipt'.tr(),
+                        child: Pressable(
+                          haptic: true,
+                          onTap: onNew,
+                          onLongPress: onScan,
+                          child: Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: p.accent,
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: p.softShadow,
+                            ),
+                            child: Icon(
+                              AppIcons.add,
+                              color: p.onMint,
+                              size: 28,
+                            ),
+                          ),
                         ),
-                        child: Icon(AppIcons.add, color: p.onMint, size: 28),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -222,68 +223,70 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     return Scaffold(
       backgroundColor: p.canvas,
       appBar: ScanTopBar(title: 'bf_scan_manual_title'.tr(), close: true),
-      body: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 24),
-            children: [
-              _buildAmountHero(p, currencyCode),
-              const SizedBox(height: AppSpacing.xxl),
-              AppTextField(
-                key: const ValueKey('manual-what-for'),
-                controller: _storeController,
-                label: 'bf_scan_manual_what_for'.tr(),
-                hint: 'bf_scan_manual_what_for_hint'.tr(),
-                errorText: _whatError,
-                textCapitalization: TextCapitalization.sentences,
-                textInputAction: TextInputAction.next,
-                onChanged: (_) {
-                  if (_whatError != null) setState(() => _whatError = null);
-                },
-              ),
-              const SizedBox(height: 14),
-              _label(p, 'bf_scan_manual_date'.tr()),
-              Semantics(
-                button: true,
-                label: '${'bf_scan_manual_date'.tr()}: ${_dateText()}',
-                excludeSemantics: true,
-                child: Material(
-                  color: p.surface,
-                  shape: AppRadii.rowShape(p.border),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: _pickDate,
-                    child: Container(
-                      height: 48,
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: 14,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              _dateText(),
-                              style: AppTypography.bodyLarge.copyWith(
-                                color: p.textPrimary,
+      body: AdaptiveBody.form(
+        child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 24),
+              children: [
+                _buildAmountHero(p, currencyCode),
+                const SizedBox(height: AppSpacing.xxl),
+                AppTextField(
+                  key: const ValueKey('manual-what-for'),
+                  controller: _storeController,
+                  label: 'bf_scan_manual_what_for'.tr(),
+                  hint: 'bf_scan_manual_what_for_hint'.tr(),
+                  errorText: _whatError,
+                  textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.next,
+                  onChanged: (_) {
+                    if (_whatError != null) setState(() => _whatError = null);
+                  },
+                ),
+                const SizedBox(height: 14),
+                _label(p, 'bf_scan_manual_date'.tr()),
+                Semantics(
+                  button: true,
+                  label: '${'bf_scan_manual_date'.tr()}: ${_dateText()}',
+                  excludeSemantics: true,
+                  child: Material(
+                    color: p.surface,
+                    shape: AppRadii.rowShape(p.border),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: _pickDate,
+                      child: Container(
+                        height: 48,
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 14,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _dateText(),
+                                style: AppTypography.bodyLarge.copyWith(
+                                  color: p.textPrimary,
+                                ),
                               ),
                             ),
-                          ),
-                          Icon(
-                            AppIcons.calendar,
-                            size: 18,
-                            color: p.textSecondary,
-                          ),
-                        ],
+                            Icon(
+                              AppIcons.calendar,
+                              size: 18,
+                              color: p.textSecondary,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.xxl),
-              _buildItemsSection(p, currencyCode),
-            ],
+                const SizedBox(height: AppSpacing.xxl),
+                _buildItemsSection(p, currencyCode),
+              ],
+            ),
           ),
         ),
       ),

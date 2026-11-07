@@ -155,10 +155,14 @@ class GuestMessageView extends StatelessWidget {
 
 /// First paint while the bill loads: the page's shape in skeletons.
 class GuestLoadingSkeleton extends StatelessWidget {
-  const GuestLoadingSkeleton({super.key});
+  const GuestLoadingSkeleton({super.key, this.personal = false});
+
+  /// Personal link: shaped like the share card (no name picker).
+  final bool personal;
 
   @override
   Widget build(BuildContext context) {
+    if (personal) return const _PersonalSkeleton();
     return SkeletonShimmer(
       child: Semantics(
         label: 'feedback_loading'.tr(),
@@ -231,4 +235,81 @@ class _ChipSkeleton extends StatelessWidget {
     height: 48,
     borderRadius: BorderRadius.all(Radius.circular(14)),
   );
+}
+
+/// Receipt-shaped skeleton: host line, big amount, 4 item rows, pay button.
+class _PersonalSkeleton extends StatelessWidget {
+  const _PersonalSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SkeletonShimmer(
+      child: Semantics(
+        label: 'feedback_loading'.tr(),
+        container: true,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Skeleton.circle(size: 48),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Skeleton.line(width: 220),
+                              SizedBox(height: 8),
+                              Skeleton.line(width: 150, height: 12),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    GuestCard(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Skeleton.line(width: 140, height: 12),
+                          const SizedBox(height: 10),
+                          const Skeleton.line(width: 190, height: 34),
+                          const SizedBox(height: 22),
+                          for (var i = 0; i < 4; i++) ...[
+                            const Row(
+                              children: [
+                                Expanded(child: Skeleton.line(width: 160)),
+                                SizedBox(width: 24),
+                                Skeleton.line(width: 56),
+                              ],
+                            ),
+                            if (i < 3) const SizedBox(height: 14),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(20, 12, 20, 24),
+              child: Skeleton(
+                width: double.infinity,
+                height: 56,
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

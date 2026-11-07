@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:split_bill_app/guest_bill_screen.dart';
 import 'package:split_bill_app/payments/payments.dart';
 import 'package:split_bill_app/screens/guest_bill/widgets/guest_share.dart';
+import 'package:split_bill_app/screens/guest_bill/widgets/guest_status_views.dart';
 import 'package:split_bill_app/screens/guest_bill/guest_bill_repository.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/pal_avatar.dart';
@@ -197,9 +198,7 @@ void main() {
     expect(repo.notices.single.withProof, isTrue);
   });
 
-  testWidgets('a failed payment keeps the guest on the page', (
-    tester,
-  ) async {
+  testWidgets('a failed payment keeps the guest on the page', (tester) async {
     repo.failSubmit = true;
     await pumpGuest(tester, participant: 'mona');
     await emit(tester, seaBreeze());
@@ -228,6 +227,33 @@ void main() {
     // A later snapshot does not re-apply the link.
     await emit(tester, seaBreeze());
     expect(find.text('guest_which_one'), findsOneWidget);
+  });
+
+  testWidgets(
+    'personal link: receipt skeleton, then the share card with no picker',
+    (tester) async {
+      await pumpGuest(tester, participant: 'mona');
+      expect(find.byType(GuestLoadingSkeleton), findsOneWidget);
+      expect(find.text('guest_which_one'), findsNothing);
+      await emit(tester, seaBreeze());
+      expect(find.byType(GuestLoadingSkeleton), findsNothing);
+      expect(find.byType(GuestShareCard), findsOneWidget);
+      expect(find.text('guest_which_one'), findsNothing);
+    },
+  );
+
+  testWidgets('personal link with an unknown participant shows the picker', (
+    tester,
+  ) async {
+    await pumpGuest(tester, participant: 'nobody');
+    await emit(tester, seaBreeze());
+    expect(find.text('guest_which_one'), findsOneWidget);
+  });
+
+  testWidgets('share card and pay tiles fit 320px wide', (tester) async {
+    await pumpGuest(tester, participant: 'mona', size: const Size(320, 568));
+    await emit(tester, seaBreeze());
+    expect(find.byType(GuestShareCard), findsOneWidget);
   });
 
   testWidgets('a personal link for someone who already paid shows confirmed', (

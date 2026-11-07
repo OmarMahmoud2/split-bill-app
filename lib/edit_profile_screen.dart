@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -146,124 +147,127 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: Column(
-          children: [
-            V3TopBar(
-              title: 'prof_edit_profile'.tr(),
-              leading: V3IconButton.close(context),
-              trailing: _saving
-                  ? const SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2.4),
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            children: [
+              V3TopBar(
+                title: 'prof_edit_profile'.tr(),
+                leading: V3IconButton.close(context),
+                trailing: _saving
+                    ? const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2.4),
+                          ),
+                        ),
+                      )
+                    : TextButton(
+                        key: const ValueKey('edit-profile-save'),
+                        onPressed: _save,
+                        child: Text(
+                          'prof_save'.tr(),
+                          style: AppTypography.titleMedium.copyWith(
+                            color: p.accent,
+                          ),
                         ),
                       ),
-                    )
-                  : TextButton(
-                      key: const ValueKey('edit-profile-save'),
-                      onPressed: _save,
-                      child: Text(
-                        'prof_save'.tr(),
-                        style: AppTypography.titleMedium.copyWith(
-                          color: p.accent,
-                        ),
-                      ),
-                    ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 40),
-                children: [
-                  Center(
-                    child: Semantics(
-                      button: true,
-                      label: 'prof_change_photo'.tr(),
-                      excludeSemantics: true,
-                      child: GestureDetector(
-                        onTap: _saving ? null : _pickImage,
-                        child: _newImage != null
-                            ? ClipOval(
-                                child: Image.file(
-                                  _newImage!,
-                                  width: 88,
-                                  height: 88,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : V3Avatar(
-                                name: name,
-                                size: 88,
-                                photoUrl: _removePhoto
-                                    ? null
-                                    : widget.currentData['photoUrl'] as String?,
-                              ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Center(
-                    child: TextButton(
-                      onPressed: _saving ? null : _pickImage,
-                      child: Text(
-                        'prof_change_photo'.tr(),
-                        style: AppTypography.labelMedium.copyWith(
-                          color: p.accent,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  V3FieldLabel('prof_name_label'.tr()),
-                  TextField(
-                    key: const ValueKey('edit-profile-name'),
-                    controller: _nameController,
-                    textCapitalization: TextCapitalization.words,
-                    autofillHints: const [AutofillHints.name],
-                    textInputAction: TextInputAction.next,
-                    onChanged: (_) => setState(() => _nameError = null),
-                    decoration: InputDecoration(errorText: _nameError),
-                  ),
-                  const SizedBox(height: 14),
-                  V3FieldLabel('prof_email_label'.tr()),
-                  TextField(
-                    controller: _emailController,
-                    readOnly: true,
-                    enabled: false,
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: p.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  V3FieldLabel('prof_phone_optional'.tr()),
-                  TextField(
-                    key: const ValueKey('edit-profile-phone'),
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    autofillHints: const [AutofillHints.telephoneNumber],
-                    textDirection: ui.TextDirection.ltr,
-                    onChanged: (_) => setState(() => _phoneError = null),
-                    decoration: InputDecoration(
-                      hintText: 'prof_phone_hint'.tr(),
-                      errorText: _phoneError,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'prof_privacy_caption'.tr(),
-                    style: AppTypography.bodySmall.copyWith(
-                      color: p.textSecondary,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
               ),
-            ),
-          ],
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 40),
+                  children: [
+                    Center(
+                      child: Semantics(
+                        button: true,
+                        label: 'prof_change_photo'.tr(),
+                        excludeSemantics: true,
+                        child: GestureDetector(
+                          onTap: _saving ? null : _pickImage,
+                          child: _newImage != null
+                              ? ClipOval(
+                                  child: Image.file(
+                                    _newImage!,
+                                    width: 88,
+                                    height: 88,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : V3Avatar(
+                                  name: name,
+                                  size: 88,
+                                  photoUrl: _removePhoto
+                                      ? null
+                                      : widget.currentData['photoUrl']
+                                            as String?,
+                                ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Center(
+                      child: TextButton(
+                        onPressed: _saving ? null : _pickImage,
+                        child: Text(
+                          'prof_change_photo'.tr(),
+                          style: AppTypography.labelMedium.copyWith(
+                            color: p.accent,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    V3FieldLabel('prof_name_label'.tr()),
+                    TextField(
+                      key: const ValueKey('edit-profile-name'),
+                      controller: _nameController,
+                      textCapitalization: TextCapitalization.words,
+                      autofillHints: const [AutofillHints.name],
+                      textInputAction: TextInputAction.next,
+                      onChanged: (_) => setState(() => _nameError = null),
+                      decoration: InputDecoration(errorText: _nameError),
+                    ),
+                    const SizedBox(height: 14),
+                    V3FieldLabel('prof_email_label'.tr()),
+                    TextField(
+                      controller: _emailController,
+                      readOnly: true,
+                      enabled: false,
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: p.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    V3FieldLabel('prof_phone_optional'.tr()),
+                    TextField(
+                      key: const ValueKey('edit-profile-phone'),
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      autofillHints: const [AutofillHints.telephoneNumber],
+                      textDirection: ui.TextDirection.ltr,
+                      onChanged: (_) => setState(() => _phoneError = null),
+                      decoration: InputDecoration(
+                        hintText: 'prof_phone_hint'.tr(),
+                        errorText: _phoneError,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'prof_privacy_caption'.tr(),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: p.textSecondary,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

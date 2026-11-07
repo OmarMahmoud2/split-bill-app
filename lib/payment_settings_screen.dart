@@ -1,3 +1,4 @@
+import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -353,15 +354,17 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
 
     return Scaffold(
       backgroundColor: p.canvas,
-      body: SafeArea(
-        child: Column(
-          children: [
-            V3TopBar(
-              leading: V3IconButton.back(context),
-              title: 'payment_methods'.tr(),
-            ),
-            Expanded(child: body),
-          ],
+      body: AdaptiveBody.form(
+        child: SafeArea(
+          child: Column(
+            children: [
+              V3TopBar(
+                leading: V3IconButton.back(context),
+                title: 'payment_methods'.tr(),
+              ),
+              Expanded(child: body),
+            ],
+          ),
         ),
       ),
     );
