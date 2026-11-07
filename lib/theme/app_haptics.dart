@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 /// |-------------|--------------------------------------------------|---------|
 /// | [light]     | lightImpact                                      | taps on important controls |
 /// | [selection] | selectionClick                                   | avatar hop, picker ticks, toggles |
+/// | [tick]      | selectionClick                                   | roulette slice passing the pointer |
+/// | [heavy]     | heavyImpact                                      | roulette landing |
 /// | [success]   | mediumImpact                                     | bill saved, balance settled |
 /// | [warning]   | heavyImpact                                      | destructive confirm, limits |
 /// | [error]     | heavyImpact (iOS) / vibrate (Android)            | failed action |
@@ -38,6 +40,16 @@ class AppHaptics {
 
   static Future<void> selection() async {
     if (_supported) await HapticFeedback.selectionClick();
+  }
+
+  /// One tick of a spinning wheel or slider.
+  static Future<void> tick() async {
+    if (_supported) await HapticFeedback.selectionClick();
+  }
+
+  /// A heavy thud, e.g. the roulette landing on a person.
+  static Future<void> heavy() async {
+    if (_supported) await HapticFeedback.heavyImpact();
   }
 
   static Future<void> success() async {
