@@ -227,7 +227,7 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     expect(
-      find.text('Watch a short ad for 2 points · 2 left today'),
+      find.text('Watch a short ad for 1 point · 2 left today'),
       findsOneWidget,
     );
   });

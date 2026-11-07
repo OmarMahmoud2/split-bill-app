@@ -2287,7 +2287,7 @@
   "you_exp_30d": "Letzte 30 Tage",
   "you_exp_year": "Dieses Jahr",
   "you_exp_custom": "Benutzerdefiniert",
-  "pw_ad_offer": "Kurze Werbung ansehen für 2 Punkte · heute noch {left}",
+  "pw_ad_offer": "Kurze Werbung ansehen für 1 Punkt · heute noch {left}",
   "exp_done_sub": "{name} ist bereit zum Teilen.",
   "exp_share_file": "Datei teilen"
 }

@@ -2287,7 +2287,7 @@
   "you_exp_30d": "過去30日",
   "you_exp_year": "今年",
   "you_exp_custom": "カスタム",
-  "pw_ad_offer": "短い広告を見て2ポイント獲得 · 今日はあと{left}回",
+  "pw_ad_offer": "短い広告を見て1ポイント獲得 · 今日はあと{left}回",
   "exp_done_sub": "{name} を共有できます。",
   "exp_share_file": "ファイルを共有"
 }

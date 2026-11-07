@@ -2287,7 +2287,7 @@
   "you_exp_30d": "최근 30일",
   "you_exp_year": "올해",
   "you_exp_custom": "직접 설정",
-  "pw_ad_offer": "짧은 광고를 보고 2포인트 받기 · 오늘 {left}회 남음",
+  "pw_ad_offer": "짧은 광고를 보고 1포인트 받기 · 오늘 {left}회 남음",
   "exp_done_sub": "{name} 파일을 공유할 수 있어요.",
   "exp_share_file": "파일 공유"
 }

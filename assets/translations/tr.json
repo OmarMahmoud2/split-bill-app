@@ -2287,7 +2287,7 @@
   "you_exp_30d": "Son 30 gün",
   "you_exp_year": "Bu yıl",
   "you_exp_custom": "Özel",
-  "pw_ad_offer": "Kısa bir reklam izle, 2 puan kazan · bugün {left} hakkın kaldı",
+  "pw_ad_offer": "Kısa bir reklam izle, 1 puan kazan · bugün {left} hakkın kaldı",
   "exp_done_sub": "{name} paylaşıma hazır.",
   "exp_share_file": "Dosyayı paylaş"
 }

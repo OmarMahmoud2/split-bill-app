@@ -2287,7 +2287,7 @@
   "you_exp_30d": "Laatste 30 dagen",
   "you_exp_year": "Dit jaar",
   "you_exp_custom": "Aangepast",
-  "pw_ad_offer": "Bekijk een korte advertentie voor 2 punten · nog {left} vandaag",
+  "pw_ad_offer": "Bekijk een korte advertentie voor 1 punt · nog {left} vandaag",
   "exp_done_sub": "{name} staat klaar om te delen.",
   "exp_share_file": "Bestand delen"
 }

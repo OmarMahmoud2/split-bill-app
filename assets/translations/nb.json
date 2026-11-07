@@ -2287,7 +2287,7 @@
   "you_exp_30d": "Siste 30 dager",
   "you_exp_year": "I år",
   "you_exp_custom": "Egendefinert",
-  "pw_ad_offer": "Se en kort reklame for 2 poeng · {left} igjen i dag",
+  "pw_ad_offer": "Se en kort reklame for 1 poeng · {left} igjen i dag",
   "exp_done_sub": "{name} er klar til deling.",
   "exp_share_file": "Del fil"
 }

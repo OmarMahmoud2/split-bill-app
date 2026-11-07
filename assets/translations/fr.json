@@ -2287,7 +2287,7 @@
   "you_exp_30d": "30 derniers jours",
   "you_exp_year": "Cette année",
   "you_exp_custom": "Personnalisé",
-  "pw_ad_offer": "Regardez une courte pub pour 2 points · {left} restantes aujourd'hui",
+  "pw_ad_offer": "Regardez une courte pub pour 1 point · {left} restantes aujourd'hui",
   "exp_done_sub": "{name} est prêt à être partagé.",
   "exp_share_file": "Partager le fichier"
 }

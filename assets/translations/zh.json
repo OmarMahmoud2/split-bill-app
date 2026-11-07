@@ -2287,7 +2287,7 @@
   "you_exp_30d": "最近 30 天",
   "you_exp_year": "今年",
   "you_exp_custom": "自定义",
-  "pw_ad_offer": "观看短广告获得 2 积分 · 今天还剩 {left} 次",
+  "pw_ad_offer": "观看短广告获得 1 积分 · 今天还剩 {left} 次",
   "exp_done_sub": "{name} 已可分享。",
   "exp_share_file": "分享文件"
 }

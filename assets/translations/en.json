@@ -2287,7 +2287,7 @@
   "you_exp_30d": "Last 30 days",
   "you_exp_year": "This year",
   "you_exp_custom": "Custom",
-  "pw_ad_offer": "Watch a short ad for 2 points · {left} left today",
+  "pw_ad_offer": "Watch a short ad for 1 point · {left} left today",
   "exp_done_sub": "{name} is ready to share.",
   "exp_share_file": "Share file"
 }

@@ -2287,7 +2287,7 @@
   "you_exp_30d": "Senaste 30 dagarna",
   "you_exp_year": "I år",
   "you_exp_custom": "Anpassat",
-  "pw_ad_offer": "Titta på en kort annons för 2 poäng · {left} kvar idag",
+  "pw_ad_offer": "Titta på en kort annons för 1 poäng · {left} kvar idag",
   "exp_done_sub": "{name} är redo att delas.",
   "exp_share_file": "Dela fil"
 }

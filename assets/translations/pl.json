@@ -2287,7 +2287,7 @@
   "you_exp_30d": "Ostatnie 30 dni",
   "you_exp_year": "Ten rok",
   "you_exp_custom": "Własny",
-  "pw_ad_offer": "Obejrzyj krótką reklamę za 2 punkty · dziś zostało {left}",
+  "pw_ad_offer": "Obejrzyj krótką reklamę za 1 punkt · dziś zostało {left}",
   "exp_done_sub": "Plik {name} jest gotowy do udostępnienia.",
   "exp_share_file": "Udostępnij plik"
 }

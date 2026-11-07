@@ -2287,7 +2287,7 @@
   "you_exp_30d": "30 hari terakhir",
   "you_exp_year": "Tahun ini",
   "you_exp_custom": "Kustom",
-  "pw_ad_offer": "Tonton iklan singkat untuk 2 poin · sisa {left} hari ini",
+  "pw_ad_offer": "Tonton iklan singkat untuk 1 poin · sisa {left} hari ini",
   "exp_done_sub": "{name} siap dibagikan.",
   "exp_share_file": "Bagikan file"
 }
