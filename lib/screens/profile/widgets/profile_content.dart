@@ -203,17 +203,8 @@ class ProfileContent extends StatelessWidget {
                                 fg: p.gold,
                                 star: true,
                               )
-                            : _Pill(
-                                key: const ValueKey('profile-go-pro'),
-                                label: 'prof_go_pro'.tr(),
-                                bg: p.hero,
-                                fg: p.gold,
-                                star: true,
-                                onTap: () {
-                                  AppHaptics.light();
-                                  onAction(ProfileAction.goPro);
-                                },
-                              ),
+                            // Free users get the Pro card below, not a second pill.
+                            : const SizedBox.shrink(),
                       ],
                     ),
                   ),

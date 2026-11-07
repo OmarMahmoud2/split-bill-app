@@ -138,12 +138,12 @@ void main() {
         expect(tester.takeException(), isNull);
         expect(find.text('Omar M'), findsOneWidget);
         expect(find.text('3 ways to get paid'), findsOneWidget);
-        expect(find.text('Go Pro'), findsOneWidget);
+        expect(find.byKey(const ValueKey('profile-pro-card')), findsOneWidget);
         expect(find.byKey(const ValueKey('profile-pro-badge')), findsNothing);
         await tester.scrollUntilVisible(find.text('How people pay you'), 200);
-        await tester.scrollUntilVisible(find.byKey(const ValueKey('profile-go-pro')), -200);
+        await tester.scrollUntilVisible(find.byKey(const ValueKey('profile-pro-card')), -200);
 
-        await tester.tap(find.byKey(const ValueKey('profile-go-pro')));
+        await tester.tap(find.byKey(const ValueKey('profile-pro-card')));
         await tester.tap(find.byKey(const ValueKey('profile-subscription')));
         await tester.scrollUntilVisible(
           find.byKey(const ValueKey('profile-appearance')),
@@ -195,7 +195,7 @@ void main() {
         ),
       );
       expect(find.text('Evens Pro · Yearly'), findsOneWidget);
-      expect(find.byKey(const ValueKey('profile-go-pro')), findsNothing);
+      expect(find.byKey(const ValueKey('profile-pro-card')), findsNothing);
       await tester.scrollUntilVisible(
         find.byKey(const ValueKey('profile-admin')),
         200,
