@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} 人",
   "iou_delete_title": "删除这笔欠条？",
   "iou_delete_body": "你们双方都将看不到它，且无法撤销。",
-  "iou_deleted": "欠条已删除"
+  "iou_deleted": "欠条已删除",
+  "guest2_your_share": "你的份额",
+  "guest2_already_paid": "已付",
+  "guest2_left_to_pay": "待付"
 }

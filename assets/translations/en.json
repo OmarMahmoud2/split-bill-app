@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} people",
   "iou_delete_title": "Delete this IOU?",
   "iou_delete_body": "It disappears for both of you. This can't be undone.",
-  "iou_deleted": "IOU deleted"
+  "iou_deleted": "IOU deleted",
+  "guest2_your_share": "Your share",
+  "guest2_already_paid": "Already paid",
+  "guest2_left_to_pay": "Left to pay"
 }

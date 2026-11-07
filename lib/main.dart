@@ -12,6 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/screens/guest_bill/guest_platform.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'firebase_options.dart';
@@ -306,6 +307,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // Web: drop the HTML skeleton once real UI has painted (see index.html).
+    if (kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => hideHtmlSplash());
+    }
     // Web guest links are handled from Uri.base in build().
     if (!kIsWeb) {
       _initDeepLinks();

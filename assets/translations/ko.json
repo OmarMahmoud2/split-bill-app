@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count}명",
   "iou_delete_title": "이 IOU를 삭제할까요?",
   "iou_delete_body": "두 사람 모두에게서 사라집니다. 되돌릴 수 없습니다.",
-  "iou_deleted": "IOU를 삭제했습니다"
+  "iou_deleted": "IOU를 삭제했습니다",
+  "guest2_your_share": "내 몫",
+  "guest2_already_paid": "이미 낸 금액",
+  "guest2_left_to_pay": "남은 금액"
 }

@@ -102,8 +102,10 @@ class GuestLanguageButton extends StatelessWidget {
     final current = findLocaleOption(
       Localizations.localeOf(context).languageCode,
     );
+    // Short code on the pill ("EN", "AR"): the full native name did not fit
+    // next to "Get the app" on a phone and was cut to "E…".
     return GuestPill(
-      label: current.nativeName,
+      label: Localizations.localeOf(context).languageCode.toUpperCase(),
       icon: AppIcons.language,
       semanticsLabel: '${'guest_language'.tr()}: ${current.nativeName}',
       onPressed: () => showGuestLanguagePicker(context),

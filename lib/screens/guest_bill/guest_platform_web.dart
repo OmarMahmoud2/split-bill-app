@@ -20,3 +20,14 @@ bool get isIosSafari {
       (ua.contains('Macintosh') && (_maxTouchPoints ?? 0) > 1);
   return ios && ua.contains('Safari') && !_otherIosBrowsers.hasMatch(ua);
 }
+
+@JS('removeSplashFromWeb')
+external void _removeSplashFromWeb();
+
+/// Fades out the HTML skeleton in web/index.html. Called once the app has
+/// painted real UI (translations loaded), so there is no blank gap.
+void hideHtmlSplash() {
+  try {
+    _removeSplashFromWeb();
+  } catch (_) {}
+}

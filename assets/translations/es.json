@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} personas",
   "iou_delete_title": "¿Eliminar este pagaré?",
   "iou_delete_body": "Desaparece para los dos. No se puede deshacer.",
-  "iou_deleted": "Pagaré eliminado"
+  "iou_deleted": "Pagaré eliminado",
+  "guest2_your_share": "Tu parte",
+  "guest2_already_paid": "Ya pagado",
+  "guest2_left_to_pay": "Falta pagar"
 }

@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} افراد",
   "iou_delete_title": "یہ قرض نوٹ حذف کریں؟",
   "iou_delete_body": "یہ آپ دونوں کے لیے ختم ہو جائے گا۔ اسے واپس نہیں کیا جا سکتا۔",
-  "iou_deleted": "قرض نوٹ حذف ہو گیا"
+  "iou_deleted": "قرض نوٹ حذف ہو گیا",
+  "guest2_your_share": "آپ کا حصہ",
+  "guest2_already_paid": "پہلے ادا کیا",
+  "guest2_left_to_pay": "باقی"
 }

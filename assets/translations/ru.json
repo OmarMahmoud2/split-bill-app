@@ -2314,5 +2314,8 @@
   "bfx_people_two": "{count} человек",
   "iou_delete_title": "Удалить эту расписку?",
   "iou_delete_body": "Она исчезнет у вас обоих. Это нельзя отменить.",
-  "iou_deleted": "Расписка удалена"
+  "iou_deleted": "Расписка удалена",
+  "guest2_your_share": "Ваша доля",
+  "guest2_already_paid": "Уже оплачено",
+  "guest2_left_to_pay": "Осталось"
 }

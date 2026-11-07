@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} คน",
   "iou_delete_title": "ลบ IOU นี้ไหม",
   "iou_delete_body": "จะหายไปจากทั้งสองฝ่าย และย้อนกลับไม่ได้",
-  "iou_deleted": "ลบ IOU แล้ว"
+  "iou_deleted": "ลบ IOU แล้ว",
+  "guest2_your_share": "ส่วนของคุณ",
+  "guest2_already_paid": "จ่ายแล้ว",
+  "guest2_left_to_pay": "คงเหลือ"
 }

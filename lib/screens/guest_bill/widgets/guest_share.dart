@@ -198,8 +198,10 @@ class _DashedLine extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) =>
-      CustomPaint(size: const Size(double.infinity, 1), painter: _Dashes(color));
+  Widget build(BuildContext context) => CustomPaint(
+    size: const Size(double.infinity, 1),
+    painter: _Dashes(color),
+  );
 }
 
 class _Dashes extends CustomPainter {
@@ -385,6 +387,29 @@ class GuestShareCard extends StatelessWidget {
               label: lines[i].$1,
               amount: guestAmount(lines[i].$2, breakdown.currency),
               muted: lines[i].$3,
+            ),
+          ],
+          // Part already paid (e.g. the bill grew after they paid): show the
+          // sum, so "you owe" matches the lines above it.
+          if (status == GuestPayStatus.pending && me.paidMinor > 0) ...[
+            const SizedBox(height: 12),
+            _DashedLine(color: p.borderStrong),
+            const SizedBox(height: 12),
+            GuestAmountRow(
+              label: 'guest2_your_share'.tr(),
+              amount: guestAmount(breakdown.totalMinor, breakdown.currency),
+            ),
+            const SizedBox(height: 8),
+            GuestAmountRow(
+              label: 'guest2_already_paid'.tr(),
+              amount: '−${guestAmount(me.paidMinor, breakdown.currency)}',
+              muted: true,
+            ),
+            const SizedBox(height: 8),
+            GuestAmountRow(
+              label: 'guest2_left_to_pay'.tr(),
+              amount: guestAmount(amount, breakdown.currency),
+              bold: true,
             ),
           ],
         ],

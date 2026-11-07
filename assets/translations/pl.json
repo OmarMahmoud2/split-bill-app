@@ -2314,5 +2314,8 @@
   "bfx_people_two": "{count} osób",
   "iou_delete_title": "Usunąć ten dług?",
   "iou_delete_body": "Zniknie dla was obojga. Tego nie można cofnąć.",
-  "iou_deleted": "Dług usunięty"
+  "iou_deleted": "Dług usunięty",
+  "guest2_your_share": "Twoja część",
+  "guest2_already_paid": "Już zapłacono",
+  "guest2_left_to_pay": "Do zapłaty"
 }

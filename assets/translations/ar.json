@@ -2314,5 +2314,8 @@
   "bfx_charges_none": "لا شيء",
   "iou_delete_title": "حذف هذا الدين؟",
   "iou_delete_body": "سيختفي لديكما معًا. لا يمكن التراجع عن ذلك.",
-  "iou_deleted": "تم حذف الدين"
+  "iou_deleted": "تم حذف الدين",
+  "guest2_your_share": "حصتك",
+  "guest2_already_paid": "مدفوع مسبقًا",
+  "guest2_left_to_pay": "المتبقي للدفع"
 }

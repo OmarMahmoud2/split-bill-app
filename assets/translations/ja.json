@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count}人",
   "iou_delete_title": "このIOUを削除しますか？",
   "iou_delete_body": "お二人の両方から消えます。元に戻せません。",
-  "iou_deleted": "IOUを削除しました"
+  "iou_deleted": "IOUを削除しました",
+  "guest2_your_share": "あなたの分",
+  "guest2_already_paid": "支払い済み",
+  "guest2_left_to_pay": "残り"
 }

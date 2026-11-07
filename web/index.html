@@ -117,16 +117,18 @@
   <noscript><p>Evens needs JavaScript to show your bill. Please enable it and reload this page.</p></noscript>
 
   <script id="splash-screen-script">
-    // Flutter's own skeleton has the same shape, so fade the HTML one out
-    // on the first Flutter frame. (flutter_native_splash may also call
-    // removeSplashFromWeb.)
+    // The app calls removeSplashFromWeb() after its first real frame
+    // (translations loaded); Flutter's first frame can still be blank. The
+    // timer is only a fallback if that call never comes.
     function removeSplashFromWeb() {
       var splash = document.getElementById("splash");
       if (!splash) return;
       splash.classList.add("gone");
       setTimeout(function () { splash.remove(); }, 200);
     }
-    window.addEventListener("flutter-first-frame", removeSplashFromWeb, { once: true });
+    window.addEventListener("flutter-first-frame", function () {
+      setTimeout(removeSplashFromWeb, 8000);
+    }, { once: true });
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

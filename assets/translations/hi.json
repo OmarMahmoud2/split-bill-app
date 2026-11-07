@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} लोग",
   "iou_delete_title": "यह IOU हटाएँ?",
   "iou_delete_body": "यह आप दोनों के लिए हट जाएगा। इसे वापस नहीं किया जा सकता।",
-  "iou_deleted": "IOU हटाया गया"
+  "iou_deleted": "IOU हटाया गया",
+  "guest2_your_share": "आपका हिस्सा",
+  "guest2_already_paid": "पहले ही चुकाया",
+  "guest2_left_to_pay": "बाकी"
 }

@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} kişi",
   "iou_delete_title": "Bu borç notu silinsin mi?",
   "iou_delete_body": "İkiniz için de kaybolur. Geri alınamaz.",
-  "iou_deleted": "Borç notu silindi"
+  "iou_deleted": "Borç notu silindi",
+  "guest2_your_share": "Senin payın",
+  "guest2_already_paid": "Ödenen",
+  "guest2_left_to_pay": "Kalan"
 }

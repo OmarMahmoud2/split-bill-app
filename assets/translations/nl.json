@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} personen",
   "iou_delete_title": "Deze schuld verwijderen?",
   "iou_delete_body": "Hij verdwijnt voor jullie allebei. Dit kan niet ongedaan worden.",
-  "iou_deleted": "Schuld verwijderd"
+  "iou_deleted": "Schuld verwijderd",
+  "guest2_your_share": "Jouw deel",
+  "guest2_already_paid": "Al betaald",
+  "guest2_left_to_pay": "Nog te betalen"
 }

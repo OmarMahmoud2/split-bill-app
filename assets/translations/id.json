@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} orang",
   "iou_delete_title": "Hapus IOU ini?",
   "iou_delete_body": "IOU hilang untuk kalian berdua. Tidak bisa dibatalkan.",
-  "iou_deleted": "IOU dihapus"
+  "iou_deleted": "IOU dihapus",
+  "guest2_your_share": "Bagianmu",
+  "guest2_already_paid": "Sudah dibayar",
+  "guest2_left_to_pay": "Sisa bayar"
 }

@@ -36,7 +36,12 @@ class VersionedTranslationsLoader extends AssetLoader {
     if (isWeb) {
       final c = client ?? http.Client();
       try {
-        final res = await c.get(translationsUrl(Uri.base, path, locale));
+        // no-cache = revalidate every load (a cheap 304 when unchanged): a
+        // redeploy that keeps the same version must not serve stale strings.
+        final res = await c.get(
+          translationsUrl(Uri.base, path, locale),
+          headers: const {'Cache-Control': 'no-cache'},
+        );
         if (res.statusCode == 200) {
           return jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
         }

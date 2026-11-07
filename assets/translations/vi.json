@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} người",
   "iou_delete_title": "Xoá khoản nợ này?",
   "iou_delete_body": "Nó sẽ biến mất với cả hai bạn. Không thể hoàn tác.",
-  "iou_deleted": "Đã xoá khoản nợ"
+  "iou_deleted": "Đã xoá khoản nợ",
+  "guest2_your_share": "Phần của bạn",
+  "guest2_already_paid": "Đã trả",
+  "guest2_left_to_pay": "Còn lại"
 }

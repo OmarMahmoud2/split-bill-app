@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} personer",
   "iou_delete_title": "Radera den här skulden?",
   "iou_delete_body": "Den försvinner för er båda. Det går inte att ångra.",
-  "iou_deleted": "Skulden raderad"
+  "iou_deleted": "Skulden raderad",
+  "guest2_your_share": "Din andel",
+  "guest2_already_paid": "Redan betalt",
+  "guest2_left_to_pay": "Kvar att betala"
 }

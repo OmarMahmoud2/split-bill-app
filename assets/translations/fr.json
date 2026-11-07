@@ -2314,5 +2314,8 @@
   "bfx_people_many": "{count} personnes",
   "iou_delete_title": "Supprimer cette reconnaissance de dette ?",
   "iou_delete_body": "Elle disparaît pour vous deux. Action irréversible.",
-  "iou_deleted": "Reconnaissance supprimée"
+  "iou_deleted": "Reconnaissance supprimée",
+  "guest2_your_share": "Votre part",
+  "guest2_already_paid": "Déjà payé",
+  "guest2_left_to_pay": "Reste à payer"
 }

@@ -3,3 +3,6 @@ library;
 
 /// Whether the page runs in Safari on an iPhone or iPad.
 bool get isIosSafari => false;
+
+/// No HTML splash off the web.
+void hideHtmlSplash() {}
