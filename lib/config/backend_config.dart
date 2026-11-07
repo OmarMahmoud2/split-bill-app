@@ -15,6 +15,12 @@ class BackendConfig {
   static Uri get notificationUri =>
       Uri.parse('$baseUrl/api/split-bill/notifications/send/');
 
+  static Uri get billAddedUri =>
+      Uri.parse('$baseUrl/api/split-bill/notifications/bill-added/');
+
+  static Uri get iouAddedUri =>
+      Uri.parse('$baseUrl/api/split-bill/notifications/iou-added/');
+
   static Uri get receiptScanUri =>
       Uri.parse('$baseUrl/api/split-bill/receipts/scan/');
 

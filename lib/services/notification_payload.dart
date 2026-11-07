@@ -73,7 +73,7 @@ enum NotificationTapTarget { bill, notifications, none }
 NotificationTapTarget notificationTapTarget(Map<String, dynamic> data) {
   final billId = data['billId'];
   if (billId is String && billId.isNotEmpty) return NotificationTapTarget.bill;
-  if (data['type'] == 'engagement_reminder') {
+  if (data['type'] == 'engagement_reminder' || data['type'] == 'new_iou') {
     return NotificationTapTarget.notifications;
   }
   return NotificationTapTarget.none;
