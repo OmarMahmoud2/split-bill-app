@@ -17,8 +17,9 @@ import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/home/home_dashboard.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/home/new_sheet.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 
-/// The signed-in shell: Home, Groups, a raised Scan action, Activity, You.
+/// The signed-in shell: Home, Groups, a raised New action, Activity, You.
 ///
 /// One [watchHomeLedger] stream feeds Home, Groups and the friend screens,
 /// and is published to [HomeBalances] for the home screen widgets.
@@ -44,7 +45,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    if (widget.showAds) unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
+    if (widget.showAds)
+      unawaited(RevenueCatService.syncPremiumStatusIfNeeded());
     AnalyticsService.instance.screen(_tabNames[0]);
   }
 
@@ -67,9 +69,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ).shareReplay(maxSize: 1);
     _unread = repo.watchHasUnread(me.uid).shareReplay(maxSize: 1);
     _publish?.cancel();
-    _publish = _ledger!.listen(HomeBalances.publish, onError: (Object e) {
-      if (kDebugMode) debugPrint('home ledger error: $e');
-    });
+    _publish = _ledger!.listen(
+      HomeBalances.publish,
+      onError: (Object e) {
+        if (kDebugMode) debugPrint('home ledger error: $e');
+      },
+    );
   }
 
   @override
@@ -97,14 +102,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _quickIou() {
     final s = HomeBalances.latest;
-    showQuickIouSheet(context, people: s == null ? const [] : peopleAsMembers(s.summary));
+    showQuickIouSheet(
+      context,
+      people: s == null ? const [] : peopleAsMembers(s.summary),
+    );
   }
 
   void _startGroup() => Navigator.of(context).push(
-    MaterialPageRoute(fullscreenDialog: true, builder: (_) => const CreateGroupScreen()),
+    MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (_) => const CreateGroupScreen(),
+    ),
   );
 
-  void _openNew() => showNewSheet(context, onQuickIou: _quickIou, onStartGroup: _startGroup);
+  void _openNew() =>
+      showNewSheet(context, onQuickIou: _quickIou, onStartGroup: _startGroup);
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +131,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       onOpenGroups: () => _select(1),
       onOpenActivity: () => _select(2),
       onOpenProfile: () => _select(3),
-      onOpenNotifications: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+      onOpenNotifications: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const NotificationsScreen())),
     );
     final pages = [
       HomeDashboard(
@@ -134,27 +148,41 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ];
     return Scaffold(
       backgroundColor: p.background,
-      extendBody: true,
       body: IndexedStack(index: _tab, children: pages),
       bottomNavigationBar: _TabBar(
         index: _tab,
         onSelect: _select,
+        onNew: _openNew,
         onScan: () {
           AppHaptics.light();
           BillEntryPoints.scan(context);
         },
-        onScanLongPress: _openNew,
       ),
     );
   }
 }
 
+/// The floating pill nav: 16 from the sides, 24 from the bottom, radius 24,
+/// 68 high, hairline and soft shadow, with a raised mint "+" in the middle.
+/// Tap opens the new-bill sheet; long-press starts a receipt scan.
+///
+/// The body ends above the bar (no `extendBody`), so nothing scrolls under
+/// it; that is also why the pill is a plain translucent surface, not a blur.
 class _TabBar extends StatelessWidget {
-  const _TabBar({required this.index, required this.onSelect, required this.onScan, required this.onScanLongPress});
+  const _TabBar({
+    required this.index,
+    required this.onSelect,
+    required this.onNew,
+    required this.onScan,
+  });
+
   final int index;
   final ValueChanged<int> onSelect;
+  final VoidCallback onNew;
   final VoidCallback onScan;
-  final VoidCallback onScanLongPress;
+
+  static const double _pillHeight = 68;
+  static const double _raise = 26;
 
   @override
   Widget build(BuildContext context) {
@@ -166,19 +194,38 @@ class _TabBar extends StatelessWidget {
           selected: on,
           button: true,
           label: label,
-          child: InkWell(
+          child: Pressable(
             onTap: () => onSelect(i),
             child: ExcludeSemantics(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 6),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(on ? active : icon, size: 22, color: on ? p.textPrimary : p.textTertiary),
-                    const SizedBox(height: 4),
-                    Text(label, maxLines: 1, style: AppTypography.labelSmall.copyWith(fontSize: 11, fontWeight: FontWeight.w600, color: on ? p.textPrimary : p.textTertiary)),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedContainer(
+                    duration: AppMotion.durationFor(context, AppMotion.fast),
+                    width: 52,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: on ? p.accentSoft : Colors.transparent,
+                      borderRadius: AppRadii.fullRadius,
+                    ),
+                    child: Icon(
+                      on ? active : icon,
+                      size: 22,
+                      color: on ? p.textPrimary : p.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelSmall.copyWith(
+                      fontSize: 11,
+                      fontWeight: on ? FontWeight.w600 : FontWeight.w500,
+                      color: on ? p.textPrimary : p.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -186,50 +233,87 @@ class _TabBar extends StatelessWidget {
       );
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: p.background.withValues(alpha: 0.94),
-        border: Border(top: BorderSide(color: p.border)),
-      ),
-      child: SafeArea(
-        top: false,
+    return SafeArea(
+      top: false,
+      minimum: const EdgeInsets.only(bottom: 24),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SizedBox(
-          height: 64,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          height: _pillHeight + _raise,
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              item(0, AppIcons.home, AppIcons.home, 'home_tab_home'.tr()),
-              item(1, AppIcons.people, AppIcons.people, 'groups'.tr()),
-              Expanded(
+              Positioned(
+                top: _raise,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: p.surface.withValues(alpha: 0.96),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: p.border),
+                    boxShadow: p.softShadow,
+                  ),
+                  child: Row(
+                    children: [
+                      item(
+                        0,
+                        AppIcons.home,
+                        AppIcons.homeFill,
+                        'home_tab_home'.tr(),
+                      ),
+                      item(
+                        1,
+                        AppIcons.groups,
+                        AppIcons.groupsFill,
+                        'groups'.tr(),
+                      ),
+                      const Spacer(),
+                      item(
+                        2,
+                        AppIcons.activity,
+                        AppIcons.activityFill,
+                        'activity_title'.tr(),
+                      ),
+                      item(
+                        3,
+                        AppIcons.you,
+                        AppIcons.youFill,
+                        'home_tab_you'.tr(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
                 child: Center(
-                  child: Transform.translate(
-                    offset: const Offset(0, -14),
-                    child: Semantics(
-                      button: true,
-                      label: 'home_scan_receipt'.tr(),
-                      onLongPressHint: 'new_title'.tr(),
-                      child: GestureDetector(
-                        onLongPress: onScanLongPress,
-                        child: Material(
+                  child: Semantics(
+                    button: true,
+                    label: 'new_title'.tr(),
+                    onLongPressHint: 'home_scan_receipt'.tr(),
+                    child: Pressable(
+                      haptic: true,
+                      onTap: onNew,
+                      onLongPress: onScan,
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
                           color: p.accent,
-                          shape: const CircleBorder(),
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
-                            onTap: onScan,
-                            child: SizedBox(
-                              width: 58,
-                              height: 58,
-                              child: Icon(AppIcons.scan, color: p.onAccent, size: 26),
-                            ),
-                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: p.background, width: 4),
+                          boxShadow: p.softShadow,
                         ),
+                        child: Icon(AppIcons.add, color: p.onMint, size: 28),
                       ),
                     ),
                   ),
                 ),
               ),
-              item(2, AppIcons.chart, AppIcons.chart, 'activity_title'.tr()),
-              item(3, AppIcons.you, AppIcons.you, 'home_tab_you'.tr()),
             ],
           ),
         ),
