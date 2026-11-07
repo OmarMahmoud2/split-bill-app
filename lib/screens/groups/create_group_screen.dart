@@ -15,6 +15,7 @@ import 'package:split_bill_app/screens/groups/group_detail_screen.dart';
 import 'package:split_bill_app/screens/groups/member_picker.dart';
 import 'package:split_bill_app/screens/settle/quick_iou_sheet.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
@@ -141,6 +142,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             Expanded(
               child: ListView(
                 padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 20),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 children: [
                   _label('groups_type'.tr()),
                   Row(
@@ -153,14 +155,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                               AppHaptics.selection();
                               setState(() => _type = t);
                             },
-                            borderColor: t == _type ? p.textPrimary : p.border,
+                            color: t == _type ? p.accentSoft : null,
+                            borderColor: t == _type ? p.accent : p.border,
                             borderWidth: t == _type ? 2 : AppRadii.hairline,
                             semanticsLabel: t.labelKey.tr(),
                             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
                             child: ExcludeSemantics(
                               child: Column(
                                 children: [
-                                  Icon(groupTypeIcon(t), size: 20, color: p.textPrimary),
+                                  Icon(groupTypeIcon(t), size: 22, color: t == _type ? p.onAccentSoft : p.textSecondary),
                                   const SizedBox(height: 4),
                                   Text(t.labelKey.tr(), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTypography.labelMedium.copyWith(color: p.textPrimary, fontWeight: FontWeight.w600)),
                                 ],
@@ -172,12 +175,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  _label('groups_name'.tr()),
-                  TextField(
+                  AppTextField(
                     controller: _name,
+                    label: 'groups_name'.tr(),
+                    hint: 'groups_name_hint_${_type.name}'.tr(),
                     maxLength: 120,
                     textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(hintText: 'groups_name_hint_${_type.name}'.tr(), counterText: ''),
                     onChanged: (_) => setState(() {}),
                   ),
                   const SizedBox(height: 16),
@@ -210,12 +213,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _label('groups_budget_optional'.tr()),
-                            TextField(
+                            AppTextField(
                               controller: _budget,
+                              label: 'groups_budget_optional'.tr(),
+                              hint: '0',
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-                              decoration: const InputDecoration(hintText: '0'),
                             ),
                           ],
                         ),

@@ -15,6 +15,8 @@ import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
+import 'package:split_bill_app/widgets/motion/count_up_money.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 class FriendDetailScreen extends StatefulWidget {
   const FriendDetailScreen({super.key, required this.friendId, this.state});
@@ -84,12 +86,6 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
     final p = context.palette;
     final headline = friend.primary(preferredCurrency(context));
     final owesMe = (headline?.value ?? 0) > 0;
-    final label = headline == null
-        ? 'friend_all_square'.tr(namedArgs: {'name': friend.name})
-        : owesMe
-        ? 'friend_owes_you'.tr(namedArgs: {'name': friend.name})
-        : 'friend_you_owe'.tr(namedArgs: {'name': friend.name});
-    final others = friend.net.entries.where((e) => e.key != headline?.key && e.value != 0).toList();
     final bills = [...state.recentBills, for (final g in state.groupInputs) ...g.bills];
     final groupContexts = friend.contexts.where((c) => c.groupId != null).length;
 
@@ -97,22 +93,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
       padding: const EdgeInsets.only(bottom: 32),
       children: [
         const LedgerTopBar(),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
-          child: Column(
-            children: [
-              LedgerAvatar(id: friend.id, name: friend.name, photoUrl: friend.photoUrl, size: 72),
-              const SizedBox(height: 8),
-              Semantics(header: true, child: Text(friend.name, style: AppTypography.titleLarge.copyWith(color: p.textPrimary, fontSize: 20, fontWeight: FontWeight.w600))),
-              const SizedBox(height: 4),
-              Text(label, style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
-              if (headline != null)
-                MoneyText(minor: headline.value, currency: headline.key, sign: MoneySign.always, size: MoneySize.large, style: const TextStyle(fontSize: 40), animate: true),
-              for (final e in others)
-                MoneyText(minor: e.value, currency: e.key, sign: MoneySign.always, size: MoneySize.small),
-            ],
-          ),
-        ),
+        FriendBalanceHeader(friend: friend, preferred: preferredCurrency(context)),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
           child: Row(
@@ -169,6 +150,13 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
                     child: MergeSemantics(
                       child: Row(
                         children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(color: p.raised, borderRadius: AppRadii.rowRadius),
+                            child: Icon(c.groupId == null ? AppIcons.receipt : AppIcons.people, size: 20, color: p.textSecondary),
+                          ),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,12 +173,17 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
                               ],
                             ),
                           ),
-                          if (c.net.isEmpty)
-                            MoneyText(minor: 0, currency: headline?.key ?? preferredCurrency(context), tone: MoneyTone.neutral)
+                          if (c.net.isEmpty || c.net.values.every((v) => v == 0))
+                            const _StatusPill(owed: null)
                           else
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [for (final e in c.net.entries) MoneyText(minor: e.value, currency: e.key, sign: MoneySign.always)],
+                              children: [
+                                for (final e in c.net.entries.where((e) => e.value != 0)) ...[
+                                  MoneyText(minor: e.value, currency: e.key, sign: MoneySign.always),
+                                  _StatusPill(owed: e.value > 0),
+                                ],
+                              ],
                             ),
                         ],
                       ),
@@ -213,6 +206,73 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Big avatar, who owes whom in words, and the net balance counting up.
+class FriendBalanceHeader extends StatelessWidget {
+  const FriendBalanceHeader({super.key, required this.friend, required this.preferred});
+
+  final Counterparty friend;
+  final String preferred;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final headline = friend.primary(preferred);
+    final owesMe = (headline?.value ?? 0) > 0;
+    final label = headline == null
+        ? 'friend_all_square'.tr(namedArgs: {'name': friend.name})
+        : owesMe
+        ? 'friend_owes_you'.tr(namedArgs: {'name': friend.name})
+        : 'friend_you_owe'.tr(namedArgs: {'name': friend.name});
+    final others = friend.net.entries.where((e) => e.key != headline?.key && e.value != 0).toList();
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
+      child: Column(
+        children: [
+          PalAvatar(seed: friend.id.isEmpty ? friend.name.toLowerCase() : friend.id, photoUrl: friend.photoUrl, size: 88),
+          const SizedBox(height: 12),
+          Semantics(
+            header: true,
+            child: Text(friend.name, style: AppTypography.titleLarge.copyWith(color: p.textPrimary, fontSize: 22, fontWeight: FontWeight.w800)),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
+          if (headline != null)
+            CountUpMoney(
+              minor: headline.value,
+              currency: headline.key,
+              sign: MoneySign.always,
+              size: MoneySize.large,
+              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: -1),
+            ),
+          for (final e in others) MoneyText(minor: e.value, currency: e.key, sign: MoneySign.always, size: MoneySize.small),
+        ],
+      ),
+    );
+  }
+}
+
+/// Owed to you (mint), you owe (coral) or settled (neutral).
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.owed});
+  final bool? owed;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final (bg, ink, key) = switch (owed) {
+      true => (p.accentSoft, p.onAccentSoft, 'owed_to_you'),
+      false => (p.coralSoft, p.coralText, 'you_owe'),
+      null => (p.raised, p.textSecondary, 'groups_settled'),
+    };
+    return Container(
+      margin: const EdgeInsets.only(top: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: bg, borderRadius: AppRadii.chipRadius),
+      child: Text(key.tr(), style: AppTypography.labelSmall.copyWith(color: ink, fontWeight: FontWeight.w600, fontSize: 12)),
     );
   }
 }

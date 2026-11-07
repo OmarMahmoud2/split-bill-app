@@ -2,67 +2,34 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 import 'screens/guest_bill/widgets/guest_chrome.dart';
 
-/// The web root without a bill link: send people to the stores (v3 style).
+/// The web root without a bill link: send people to the stores. One centred
+/// column (max 480) on every width, light and dark.
 class WebDownloadScreen extends StatelessWidget {
   const WebDownloadScreen({super.key});
+
+  static const _pals = ['mona', 'omar', 'sara', 'ali', 'nour'];
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final width = MediaQuery.sizeOf(context).width;
-    final desktop = width >= 900;
-
-    final copy = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Semantics(
-          header: true,
-          child: Text(
-            'web_download_headline'.tr(),
-            style:
-                (desktop
-                        ? AppTypography.displayLarge
-                        : AppTypography.displaySmall)
-                    .copyWith(color: p.textPrimary),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'web_download_body'.tr(),
-          style: AppTypography.bodyLarge.copyWith(
-            fontSize: 16,
-            height: 1.5,
-            color: p.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 24),
-        const GuestStoreButtons(),
-        const SizedBox(height: 20),
-        Text(
-          'web_download_guest_note'.tr(),
-          style: AppTypography.bodyMedium.copyWith(
-            height: 1.5,
-            color: p.textSecondary,
-          ),
-        ),
-      ],
-    );
-
-    final preview = ExcludeSemantics(
-      child: Container(
-        constraints: BoxConstraints(maxWidth: desktop ? 340 : 260),
-        decoration: BoxDecoration(
-          color: p.surfaceVariant,
-          borderRadius: AppRadii.cardRadius,
-          border: Border.all(color: p.border),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Image.asset(
-          'assets/onboarding/onboarding_scan_receipt_1767296144198-removebg-preview.png',
-          fit: BoxFit.contain,
+    const size = 64.0;
+    const step = 44.0;
+    final cluster = ExcludeSemantics(
+      child: SizedBox(
+        width: step * (_pals.length - 1) + size,
+        height: size,
+        child: Stack(
+          children: [
+            for (var i = 0; i < _pals.length; i++)
+              PositionedDirectional(
+                start: i * step,
+                child: PalAvatar(seed: _pals[i], size: size, ringColor: p.background),
+              ),
+          ],
         ),
       ),
     );
@@ -70,64 +37,58 @@ class WebDownloadScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: p.background,
       body: SafeArea(
-        child: Column(
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: desktop ? p.surface : p.background,
-                border: desktop
-                    ? Border(bottom: BorderSide(color: p.border))
-                    : null,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1080),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: desktop ? 24 : 20,
-                      vertical: 14,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(children: [GuestBrand(large: true), Spacer(), GuestLanguageButton()]),
+                  const SizedBox(height: 40),
+                  Center(child: cluster),
+                  const SizedBox(height: 32),
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      'web_download_headline'.tr(),
+                      style: AppTypography.displaySmall.copyWith(color: p.textPrimary, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'web_download_body'.tr(),
+                    style: AppTypography.bodyLarge.copyWith(fontSize: 16, height: 1.5, color: p.textSecondary),
+                  ),
+                  const SizedBox(height: 24),
+                  const GuestStoreButtons(),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: p.surface,
+                      borderRadius: AppRadii.cardRadius,
+                      border: Border.all(color: p.border),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GuestBrand(large: desktop),
-                        const Spacer(),
-                        const GuestLanguageButton(),
+                        Icon(AppIcons.receipt, size: 22, color: p.accent),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'web_download_guest_note'.tr(),
+                            style: AppTypography.bodyMedium.copyWith(height: 1.5, color: p.textSecondary),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: desktop ? 24 : 20,
-                  vertical: desktop ? 56 : 28,
-                ),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1080),
-                    child: desktop
-                        ? Row(
-                            children: [
-                              Expanded(flex: 6, child: copy),
-                              const SizedBox(width: 56),
-                              Expanded(flex: 5, child: Center(child: preview)),
-                            ],
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              copy,
-                              const SizedBox(height: 36),
-                              Center(child: preview),
-                            ],
-                          ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

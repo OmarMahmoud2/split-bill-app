@@ -8,6 +8,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:split_bill_app/data/models.dart';
+import 'package:split_bill_app/screens/split_bill/widgets/add_people_screen.dart'
+    show PersonGrid, PersonTile, GuestTile;
 import 'package:split_bill_app/screens/split_bill/widgets/add_members_sheet.dart'
     show AddGuestSheet;
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_logic.dart'
@@ -124,8 +126,8 @@ Future<GroupMember?> scanMemberQr(BuildContext context) async {
   );
 }
 
-/// Chips of the chosen people with remove buttons, plus "Contacts",
-/// "Scan QR" and "Add guest" buttons.
+/// Selectable pal avatars of the chosen people (tap to remove), a dashed
+/// Guest tile, plus "Contacts" and "Scan QR" buttons.
 class MemberPickerField extends StatelessWidget {
   const MemberPickerField({
     super.key,
@@ -148,33 +150,35 @@ class MemberPickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        PersonGrid(
           children: [
             for (final m in members)
-              InputChip(
-                avatar: LedgerAvatar(
-                  id: m.id,
-                  name: m.name,
-                  photoUrl: m.photoUrl,
-                  size: 24,
-                ),
-                label: Text(m.name.isEmpty ? 'someone_label'.tr() : m.name),
-                onDeleted: lockedIds.contains(m.id)
+              PersonTile(
+                key: ValueKey('member-${m.id}'),
+                person: m.toMap(),
+                selected: true,
+                isYou: lockedIds.contains(m.id),
+                onTap: lockedIds.contains(m.id)
                     ? null
-                    : () => onChanged(
-                        members.where((x) => x.id != m.id).toList(),
-                      ),
-                deleteButtonTooltipMessage: 'groups_remove_member'.tr(),
-                backgroundColor: p.surface,
-                side: BorderSide(color: p.border),
-                shape: const StadiumBorder(),
+                    : () {
+                        AppHaptics.selection();
+                        onChanged(members.where((x) => x.id != m.id).toList());
+                      },
               ),
+            // Name-only people (no account yet), same as on a bill.
+            KeyedSubtree(
+              key: const ValueKey('group-add-guest'),
+              child: GuestTile(
+                onTap: () async {
+                  final name = await AddGuestSheet.show(context, ctaKey: 'add');
+                  if (name == null || name.trim().isEmpty) return;
+                  _add(GroupMember.fromMap(guestParticipant(name)));
+                },
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 10),
@@ -197,21 +201,6 @@ class MemberPickerField extends StatelessWidget {
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 10),
-        // Name-only people (no account yet), same as on a bill.
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            key: const ValueKey('group-add-guest'),
-            onPressed: () async {
-              final name = await AddGuestSheet.show(context, ctaKey: 'add');
-              if (name == null || name.trim().isEmpty) return;
-              _add(GroupMember.fromMap(guestParticipant(name)));
-            },
-            icon: const Icon(AppIcons.personAdd, size: 18),
-            label: Text('bf_assign_add_guest'.tr()),
-          ),
         ),
       ],
     );

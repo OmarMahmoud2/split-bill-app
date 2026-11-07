@@ -20,7 +20,7 @@ import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
 import 'package:split_bill_app/widgets/bill_details/participant_bill_view.dart';
 import 'package:split_bill_app/widgets/bill_details/pay_methods_list.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart' show showLedgerSheet;
 
 import 'services/notification_service.dart';
 
@@ -179,43 +179,37 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
 
   void _showPaidSheet(Map<String, dynamic> bill) {
     AppHaptics.selection();
-    final p = context.palette;
-    PremiumBottomSheet.show(
-      context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'bf_bill_paid_sheet_title'.tr(),
-            style: AppTypography.titleLarge.copyWith(color: p.textPrimary),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'bf_bill_paid_sheet_message'.tr(
-              namedArgs: {'host': _hostName(bill)},
+    showLedgerSheet<void>(
+      context,
+      title: 'bf_bill_paid_sheet_title'.tr(),
+      subtitle: 'bf_bill_paid_sheet_message'.tr(
+        namedArgs: {'host': _hostName(bill)},
+      ),
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BillPillButton(
+              label: 'bf_bill_paid_add_proof'.tr(),
+              icon: AppIcons.gallery,
+              onPressed: () {
+                Navigator.of(sheetContext).pop();
+                _submitPaid(bill, withProof: true);
+              },
             ),
-            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          BillPillButton(
-            label: 'bf_bill_paid_add_proof'.tr(),
-            icon: AppIcons.gallery,
-            onPressed: () {
-              Navigator.of(context).pop();
-              _submitPaid(bill, withProof: true);
-            },
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          BillPillButton(
-            label: 'bf_bill_paid_no_proof'.tr(),
-            ghost: true,
-            onPressed: () {
-              Navigator.of(context).pop();
-              _submitPaid(bill, withProof: false);
-            },
-          ),
-        ],
+            const SizedBox(height: AppSpacing.sm),
+            BillPillButton(
+              label: 'bf_bill_paid_no_proof'.tr(),
+              ghost: true,
+              onPressed: () {
+                Navigator.of(sheetContext).pop();
+                _submitPaid(bill, withProof: false);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

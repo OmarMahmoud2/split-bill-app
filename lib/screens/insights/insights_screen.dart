@@ -108,6 +108,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
     if (i.billCount == 0) {
       return EmptyState(
         icon: AppIcons.insights,
+        palSeeds: const ['mona', 'sara', 'ali'],
         title: 'insights_empty_title'.tr(),
         message: i.otherCurrencies.isEmpty
             ? 'insights_empty_body'.tr()
@@ -146,7 +147,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('insights_your_share'.tr(), style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
-              MoneyText(minor: i.totalMinor, currency: i.currency, tone: MoneyTone.neutral, size: MoneySize.large, style: const TextStyle(fontSize: 40), animate: true),
+              MoneyText(minor: i.totalMinor, currency: i.currency, tone: MoneyTone.neutral, size: MoneySize.large, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: -1), animate: true),
               Text([bills, ?changeText].join(' · '), style: AppTypography.bodyMedium.copyWith(color: p.textSecondary)),
               if (i.otherCurrencies.isNotEmpty)
                 Padding(
@@ -158,7 +159,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
         ),
         LedgerCard(
           margin: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: WeeklyBars(weekly: i.weekly, peak: i.peakWeek),
         ),
         if (i.slices.isNotEmpty)
@@ -166,17 +167,37 @@ class _InsightsScreenState extends State<InsightsScreen> {
             margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
             child: LedgerRows(
               children: [
-                for (final s in i.slices)
+                for (final (idx, s) in i.slices.indexed)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: MergeSemantics(
-                      child: Row(
+                      child: Column(
                         children: [
-                          Expanded(child: Text(sliceName(s), style: AppTypography.bodyMedium.copyWith(color: p.textPrimary, fontSize: 15))),
-                          Text('${(s.amountMinor * 100 / i.totalMinor).round()}%', style: AppTypography.bodySmall.copyWith(color: p.textSecondary)),
-                          SizedBox(
-                            width: 96,
-                            child: MoneyText(minor: s.amountMinor, currency: i.currency, tone: MoneyTone.neutral, textAlign: TextAlign.end, size: MoneySize.small, style: const TextStyle(fontWeight: FontWeight.w700)),
+                          Row(
+                            children: [
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(color: [p.accent, p.coral, p.sky][idx % 3], shape: BoxShape.circle),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(child: Text(sliceName(s), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTypography.bodyMedium.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w500))),
+                              Text('${(s.amountMinor * 100 / i.totalMinor).round()}%', style: AppTypography.bodySmall.copyWith(color: p.textSecondary, fontFeatures: const [FontFeature.tabularFigures()])),
+                              SizedBox(
+                                width: 96,
+                                child: MoneyText(minor: s.amountMinor, currency: i.currency, tone: MoneyTone.neutral, textAlign: TextAlign.end, size: MoneySize.small, style: const TextStyle(fontWeight: FontWeight.w700)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: AppRadii.chipRadius,
+                            child: LinearProgressIndicator(
+                              value: (s.amountMinor / i.totalMinor).clamp(0.0, 1.0),
+                              minHeight: 6,
+                              backgroundColor: p.raised,
+                              color: [p.accent, p.coral, p.sky][idx % 3],
+                            ),
                           ),
                         ],
                       ),
@@ -190,7 +211,13 @@ class _InsightsScreenState extends State<InsightsScreen> {
             margin: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(color: p.accentSoft, borderRadius: AppRadii.rowRadius),
-            child: Text(payback, style: AppTypography.labelMedium.copyWith(color: p.onAccentSoft, fontSize: 13, fontWeight: FontWeight.w600)),
+            child: Row(
+              children: [
+                Icon(AppIcons.success, size: 20, color: p.onAccentSoft),
+                const SizedBox(width: 10),
+                Expanded(child: Text(payback, style: AppTypography.labelMedium.copyWith(color: p.onAccentSoft, fontSize: 13, fontWeight: FontWeight.w600))),
+              ],
+            ),
           ),
       ],
     );
@@ -229,13 +256,13 @@ class WeeklyBars extends StatelessWidget {
                         builder: (context, v, _) => Container(
                           height: 4 + 106 * v,
                           decoration: BoxDecoration(
-                            color: w == peak && weeks[w] > 0 ? p.accent : p.borderStrong,
-                            borderRadius: BorderRadius.circular(6),
+                            color: w == peak && weeks[w] > 0 ? p.accent : p.raised,
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text('insights_week_short'.tr(namedArgs: {'n': '${w + 1}'}), style: AppTypography.caption.copyWith(color: p.textSecondary, fontSize: 11)),
+                      Text('insights_week_short'.tr(namedArgs: {'n': '${w + 1}'}), style: AppTypography.caption.copyWith(color: p.textSecondary, fontSize: 12, fontFeatures: const [FontFeature.tabularFigures()])),
                     ],
                   ),
                 ),

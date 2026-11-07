@@ -258,10 +258,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                   IconButton(
                     tooltip: 'back'.tr(),
                     onPressed: () => Navigator.of(context).maybePop(),
-                    icon: Icon(
-                      AppIcons.back,
-                      color: p.textPrimary,
-                    ),
+                    icon: Icon(AppIcons.back, color: p.textPrimary),
                   ),
                   const SizedBox(width: 4),
                   Expanded(
@@ -289,10 +286,10 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                     prefix: Icon(AppIcons.search, color: p.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  _PersonGrid(
+                  PersonGrid(
                     children: [
                       for (final person in _selected)
-                        _PersonTile(
+                        PersonTile(
                           key: ValueKey('bf_assign_selected_${_id(person)}'),
                           person: person,
                           selected: true,
@@ -301,7 +298,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                               ? null
                               : () => _toggle(person),
                         ),
-                      _GuestTile(onTap: _addGuest),
+                      GuestTile(onTap: _addGuest),
                     ],
                   ),
                   const SizedBox(height: 18),
@@ -375,12 +372,14 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                           ],
                         ),
                       ),
-                      _PersonGrid(
+                      PersonGrid(
                         children: [
                           for (final m in section.people)
                             if (!_isSelected(_id(m)))
-                              _PersonTile(
-                                key: ValueKey('bf_assign_person_row_${m['id']}'),
+                              PersonTile(
+                                key: ValueKey(
+                                  'bf_assign_person_row_${m['id']}',
+                                ),
                                 person: m,
                                 selected: false,
                                 onTap: () => _toggle(m),
@@ -474,8 +473,8 @@ class _AddQueryAsGuest extends StatelessWidget {
   }
 }
 
-class _PersonGrid extends StatelessWidget {
-  const _PersonGrid({required this.children});
+class PersonGrid extends StatelessWidget {
+  const PersonGrid({super.key, required this.children});
   final List<Widget> children;
 
   @override
@@ -484,8 +483,8 @@ class _PersonGrid extends StatelessWidget {
 }
 
 /// Selectable pal avatar: mint ring and a check badge when selected.
-class _PersonTile extends StatelessWidget {
-  const _PersonTile({
+class PersonTile extends StatelessWidget {
+  const PersonTile({
     super.key,
     required this.person,
     required this.selected,
@@ -564,8 +563,8 @@ class _PersonTile extends StatelessWidget {
 }
 
 /// Dashed "Guest" add tile.
-class _GuestTile extends StatelessWidget {
-  const _GuestTile({required this.onTap});
+class GuestTile extends StatelessWidget {
+  const GuestTile({super.key, required this.onTap});
   final VoidCallback onTap;
 
   @override

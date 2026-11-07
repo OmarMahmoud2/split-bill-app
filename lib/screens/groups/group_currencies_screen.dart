@@ -73,7 +73,11 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
                           children: [
                             ChoiceChip(
                               label: Text('fx_original'.tr()),
+                              avatar: Icon(AppIcons.check, size: 16, color: p.onAccentSoft),
                               selected: true,
+                              selectedColor: p.accentSoft,
+                              labelStyle: AppTypography.labelMedium.copyWith(color: p.onAccentSoft, fontWeight: FontWeight.w600),
+                              side: BorderSide.none,
                               onSelected: (_) {},
                               showCheckmark: false,
                               shape: const RoundedRectangleBorder(borderRadius: AppRadii.chipRadius),
@@ -99,12 +103,13 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
                               child: MergeSemantics(
                                 child: Row(
                                   children: [
+                                    _CodeTile(b.currency),
+                                    const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(b.title.isEmpty ? 'bill'.tr() : b.title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontWeight: FontWeight.w600)),
-                                          Text(b.currency, style: AppTypography.bodySmall.copyWith(color: p.textSecondary)),
                                         ],
                                       ),
                                     ),
@@ -128,6 +133,8 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
                               child: MergeSemantics(
                                 child: Row(
                                   children: [
+                                    _CodeTile(e.key),
+                                    const SizedBox(width: 12),
                                     Expanded(child: Text(e.key, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontWeight: FontWeight.w600))),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -169,6 +176,24 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
           },
         ),
       ),
+    );
+  }
+}
+
+/// Rounded-square tile with the currency code (no flags are bundled).
+class _CodeTile extends StatelessWidget {
+  const _CodeTile(this.code);
+  final String code;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Container(
+      width: 44,
+      height: 44,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: p.raised, borderRadius: AppRadii.rowRadius),
+      child: Text(code, style: AppTypography.labelMedium.copyWith(color: p.textPrimary, fontWeight: FontWeight.w700, fontSize: 12)),
     );
   }
 }

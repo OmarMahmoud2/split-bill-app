@@ -325,6 +325,30 @@ void main() {
   });
 
   group('Friend detail', () {
+    testWidgets('header words: owes you, you owe, all square', (tester) async {
+      Counterparty friend(int net) {
+        final c = Counterparty(id: 'sara', name: 'Sara');
+        if (net != 0) c.net['USD'] = net;
+        return c;
+      }
+
+      for (final (net, key) in [
+        (6200, 'friend_owes_you'),
+        (-4000, 'friend_you_owe'),
+        (0, 'friend_all_square'),
+      ]) {
+        await tester.pumpWidget(testApp(Scaffold(body: FriendBalanceHeader(friend: friend(net), preferred: 'USD'))));
+        await tester.pumpAndSettle();
+        expect(find.text(key), findsOneWidget, reason: 'net $net');
+        expect(find.text('Sara'), findsOneWidget);
+        if (net == 0) {
+          expect(textPlain('+\$62.00'), findsNothing);
+        } else {
+          expect(find.textContaining(net > 0 ? '62.00' : '40.00'), findsWidgets);
+        }
+      }
+    });
+
     testWidgets('shows the balance across contexts and nudges once a week', (tester) async {
       repo = tripRepo();
       LedgerRepository.instance = repo;
