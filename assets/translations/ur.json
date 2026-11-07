@@ -2317,5 +2317,8 @@
   "iou_deleted": "قرض نوٹ حذف ہو گیا",
   "guest2_your_share": "آپ کا حصہ",
   "guest2_already_paid": "پہلے ادا کیا",
-  "guest2_left_to_pay": "باقی"
+  "guest2_left_to_pay": "باقی",
+  "guest3_show_all": "تمام {count} آئٹمز دکھائیں",
+  "guest3_show_less": "کم دکھائیں",
+  "guest3_amount_due": "واجب الادا رقم"
 }

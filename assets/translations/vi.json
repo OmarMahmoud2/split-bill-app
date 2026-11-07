@@ -2317,5 +2317,8 @@
   "iou_deleted": "Đã xoá khoản nợ",
   "guest2_your_share": "Phần của bạn",
   "guest2_already_paid": "Đã trả",
-  "guest2_left_to_pay": "Còn lại"
+  "guest2_left_to_pay": "Còn lại",
+  "guest3_show_all": "Xem cả {count} mục",
+  "guest3_show_less": "Thu gọn",
+  "guest3_amount_due": "Số tiền cần trả"
 }

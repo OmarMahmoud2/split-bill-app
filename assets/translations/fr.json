@@ -2317,5 +2317,8 @@
   "iou_deleted": "Reconnaissance supprimée",
   "guest2_your_share": "Votre part",
   "guest2_already_paid": "Déjà payé",
-  "guest2_left_to_pay": "Reste à payer"
+  "guest2_left_to_pay": "Reste à payer",
+  "guest3_show_all": "Afficher les {count} articles",
+  "guest3_show_less": "Afficher moins",
+  "guest3_amount_due": "Montant dû"
 }

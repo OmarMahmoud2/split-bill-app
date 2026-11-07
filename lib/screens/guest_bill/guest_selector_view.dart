@@ -13,7 +13,11 @@ class GuestSelectorView extends StatelessWidget {
     super.key,
     required this.bill,
     required this.onParticipantSelected,
+    this.large = false,
   });
+
+  /// Desktop: bigger chips.
+  final bool large;
 
   final GuestBill bill;
   final ValueChanged<String> onParticipantSelected;
@@ -21,9 +25,8 @@ class GuestSelectorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return SingleChildScrollView(
+    return KeyedSubtree(
       key: const ValueKey('SelectorView'),
-      padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -32,6 +35,7 @@ class GuestSelectorView extends StatelessWidget {
           GuestChips(
             bill: bill,
             selectedId: null,
+            large: large,
             onSelect: onParticipantSelected,
           ),
           const SizedBox(height: 16),

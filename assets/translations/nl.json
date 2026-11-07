@@ -2317,5 +2317,8 @@
   "iou_deleted": "Schuld verwijderd",
   "guest2_your_share": "Jouw deel",
   "guest2_already_paid": "Al betaald",
-  "guest2_left_to_pay": "Nog te betalen"
+  "guest2_left_to_pay": "Nog te betalen",
+  "guest3_show_all": "Alle {count} items tonen",
+  "guest3_show_less": "Minder tonen",
+  "guest3_amount_due": "Te betalen"
 }

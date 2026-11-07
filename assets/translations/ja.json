@@ -2317,5 +2317,8 @@
   "iou_deleted": "IOUを削除しました",
   "guest2_your_share": "あなたの分",
   "guest2_already_paid": "支払い済み",
-  "guest2_left_to_pay": "残り"
+  "guest2_left_to_pay": "残り",
+  "guest3_show_all": "{count}件すべて表示",
+  "guest3_show_less": "表示を減らす",
+  "guest3_amount_due": "お支払い額"
 }

@@ -2317,5 +2317,8 @@
   "iou_deleted": "Vale excluído",
   "guest2_your_share": "Sua parte",
   "guest2_already_paid": "Já pago",
-  "guest2_left_to_pay": "Falta pagar"
+  "guest2_left_to_pay": "Falta pagar",
+  "guest3_show_all": "Ver todos os {count} itens",
+  "guest3_show_less": "Ver menos",
+  "guest3_amount_due": "Valor a pagar"
 }

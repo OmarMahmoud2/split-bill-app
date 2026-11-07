@@ -2317,5 +2317,8 @@
   "iou_deleted": "تم حذف الدين",
   "guest2_your_share": "حصتك",
   "guest2_already_paid": "مدفوع مسبقًا",
-  "guest2_left_to_pay": "المتبقي للدفع"
+  "guest2_left_to_pay": "المتبقي للدفع",
+  "guest3_show_all": "عرض كل العناصر ({count})",
+  "guest3_show_less": "عرض أقل",
+  "guest3_amount_due": "المبلغ المستحق"
 }

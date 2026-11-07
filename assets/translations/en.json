@@ -2317,5 +2317,8 @@
   "iou_deleted": "IOU deleted",
   "guest2_your_share": "Your share",
   "guest2_already_paid": "Already paid",
-  "guest2_left_to_pay": "Left to pay"
+  "guest2_left_to_pay": "Left to pay",
+  "guest3_show_all": "Show all {count} items",
+  "guest3_show_less": "Show fewer",
+  "guest3_amount_due": "Amount due"
 }

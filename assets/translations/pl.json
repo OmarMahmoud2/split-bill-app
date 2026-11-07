@@ -2317,5 +2317,8 @@
   "iou_deleted": "Dług usunięty",
   "guest2_your_share": "Twoja część",
   "guest2_already_paid": "Już zapłacono",
-  "guest2_left_to_pay": "Do zapłaty"
+  "guest2_left_to_pay": "Do zapłaty",
+  "guest3_show_all": "Pokaż wszystkie pozycje ({count})",
+  "guest3_show_less": "Pokaż mniej",
+  "guest3_amount_due": "Do zapłaty"
 }

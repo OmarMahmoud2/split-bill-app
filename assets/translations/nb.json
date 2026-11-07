@@ -2317,5 +2317,8 @@
   "iou_deleted": "Gjeld slettet",
   "guest2_your_share": "Din andel",
   "guest2_already_paid": "Allerede betalt",
-  "guest2_left_to_pay": "Gjenstår"
+  "guest2_left_to_pay": "Gjenstår",
+  "guest3_show_all": "Vis alle {count} varer",
+  "guest3_show_less": "Vis færre",
+  "guest3_amount_due": "Skyldig beløp"
 }

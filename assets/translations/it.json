@@ -2317,5 +2317,8 @@
   "iou_deleted": "Pagherò eliminato",
   "guest2_your_share": "La tua quota",
   "guest2_already_paid": "Già pagato",
-  "guest2_left_to_pay": "Da pagare"
+  "guest2_left_to_pay": "Da pagare",
+  "guest3_show_all": "Mostra tutti i {count} articoli",
+  "guest3_show_less": "Mostra meno",
+  "guest3_amount_due": "Importo dovuto"
 }

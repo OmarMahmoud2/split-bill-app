@@ -2317,5 +2317,8 @@
   "iou_deleted": "Borç notu silindi",
   "guest2_your_share": "Senin payın",
   "guest2_already_paid": "Ödenen",
-  "guest2_left_to_pay": "Kalan"
+  "guest2_left_to_pay": "Kalan",
+  "guest3_show_all": "{count} kalemin tümünü göster",
+  "guest3_show_less": "Daha az göster",
+  "guest3_amount_due": "Ödenecek tutar"
 }

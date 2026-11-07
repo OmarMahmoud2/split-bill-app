@@ -2317,5 +2317,8 @@
   "iou_deleted": "Skulden raderad",
   "guest2_your_share": "Din andel",
   "guest2_already_paid": "Redan betalt",
-  "guest2_left_to_pay": "Kvar att betala"
+  "guest2_left_to_pay": "Kvar att betala",
+  "guest3_show_all": "Visa alla {count} poster",
+  "guest3_show_less": "Visa färre",
+  "guest3_amount_due": "Belopp att betala"
 }

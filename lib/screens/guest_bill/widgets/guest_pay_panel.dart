@@ -187,7 +187,9 @@ class _GuestPayMethodsState extends State<GuestPayMethods> {
         const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, c) {
-            final cols = options.length >= 3 ? 3 : options.length;
+            // Two per row on phones and in the desktop side panel.
+            final maxCols = c.maxWidth < 420 ? 2 : 3;
+            final cols = options.length < maxCols ? options.length : maxCols;
             final w = (c.maxWidth - 8 * (cols - 1)) / cols;
             return Wrap(
               spacing: 8,
@@ -231,9 +233,7 @@ class _GuestPayMethodsState extends State<GuestPayMethods> {
                   setState(() => _qrOpen = _qrOpen == index ? null : index),
               icon: Icon(_qrOpen == index ? AppIcons.close : AppIcons.qr),
               label: Text(
-                _qrOpen == index
-                    ? 'guest_hide_qr'.tr()
-                    : 'guest_show_qr'.tr(),
+                _qrOpen == index ? 'guest_hide_qr'.tr() : 'guest_show_qr'.tr(),
               ),
             ),
           ),
@@ -452,11 +452,7 @@ class GuestProofZone extends StatelessWidget {
               child: Column(
                 children: [
                   if (!desktop) ...[
-                    Icon(
-                      AppIcons.upload,
-                      size: 26,
-                      color: p.textSecondary,
-                    ),
+                    Icon(AppIcons.upload, size: 26, color: p.textSecondary),
                     const SizedBox(height: 8),
                   ],
                   Text(

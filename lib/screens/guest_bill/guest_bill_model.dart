@@ -226,11 +226,12 @@ class GuestBill {
     Map<String, dynamic> data, {
     String? countryCode,
   }) {
-    final stored = (data['currency'] ??
-            data['currencyCode'] ??
-            data['currency_code'] ??
-            '')
-        .toString();
+    final stored =
+        (data['currency'] ??
+                data['currencyCode'] ??
+                data['currency_code'] ??
+                '')
+            .toString();
     final currency = normalizeCurrency(
       stored.trim().isNotEmpty
           ? stored

@@ -2317,5 +2317,8 @@
   "iou_deleted": "欠条已删除",
   "guest2_your_share": "你的份额",
   "guest2_already_paid": "已付",
-  "guest2_left_to_pay": "待付"
+  "guest2_left_to_pay": "待付",
+  "guest3_show_all": "显示全部 {count} 项",
+  "guest3_show_less": "收起",
+  "guest3_amount_due": "应付金额"
 }

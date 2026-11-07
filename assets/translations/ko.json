@@ -2317,5 +2317,8 @@
   "iou_deleted": "IOU를 삭제했습니다",
   "guest2_your_share": "내 몫",
   "guest2_already_paid": "이미 낸 금액",
-  "guest2_left_to_pay": "남은 금액"
+  "guest2_left_to_pay": "남은 금액",
+  "guest3_show_all": "{count}개 항목 모두 보기",
+  "guest3_show_less": "간단히 보기",
+  "guest3_amount_due": "결제할 금액"
 }
