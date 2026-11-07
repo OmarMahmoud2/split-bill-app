@@ -223,8 +223,7 @@ void main() {
         }),
       ),
     );
-    expect(find.text('PRO YEARLY'), findsOneWidget);
-    expect(find.text('Pro yearly'), findsOneWidget);
+    expect(find.text('Pro yearly'), findsNWidgets(2));
     expect(_textContaining('Renews Nov 5, 2099 · App Store'), findsOneWidget);
     expect(find.text('Unlimited'), findsNWidgets(2));
     expect(find.byKey(const ValueKey('subscription-manage')), findsOneWidget);

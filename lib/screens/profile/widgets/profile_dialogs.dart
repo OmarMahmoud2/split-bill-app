@@ -6,6 +6,7 @@ import 'package:split_bill_app/config/app_links.dart';
 import 'package:split_bill_app/services/auth_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -254,11 +255,7 @@ class ProfileDialogs {
   }
 
   static void showDeleteAccount(BuildContext context) {
-    PremiumBottomSheet.show<void>(
-      context: context,
-      isScrollable: true,
-      child: const _DeleteAccountSheet(),
-    );
+    showLedgerSheet<void>(context, builder: (_) => const _DeleteAccountSheet());
   }
 }
 
@@ -326,58 +323,94 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
         !providers.contains('google.com') &&
         !providers.contains('apple.com');
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ProfileDialogs._title(context, 'prof_delete_title'.tr()),
-        const SizedBox(height: 8),
-        ProfileDialogs._body(context, 'prof_delete_body'.tr()),
-        if (requiresPassword) ...[
-          const SizedBox(height: 16),
-          Text(
-            'delete_account_requires_password'.tr(),
-            style: AppTypography.titleMedium.copyWith(color: p.textPrimary),
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: p.errorSoft,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(AppIcons.delete, color: p.error),
           ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _passwordController,
-            obscureText: _hidePassword,
-            autofocus: true,
-            autofillHints: const [AutofillHints.password],
-            decoration: InputDecoration(
-              labelText: 'current_password'.tr(),
-              errorText: _passwordError,
-              suffixIcon: IconButton(
-                tooltip: _hidePassword
-                    ? 'prof_show_password'.tr()
-                    : 'prof_hide_password'.tr(),
-                onPressed: () => setState(() => _hidePassword = !_hidePassword),
-                icon: Icon(
-                  _hidePassword
-                      ? AppIcons.eyeOff
-                      : AppIcons.eye,
+          const SizedBox(height: 14),
+          ProfileDialogs._title(context, 'prof_delete_title'.tr()),
+          const SizedBox(height: 8),
+          ProfileDialogs._body(context, 'prof_delete_body'.tr()),
+          const SizedBox(height: 14),
+          for (final k in const [
+            'you_del_c1',
+            'you_del_c2',
+            'you_del_c3',
+            'you_del_c4',
+          ])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(AppIcons.warning, size: 18, color: p.error),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      k.tr(),
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: p.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (requiresPassword) ...[
+            const SizedBox(height: 16),
+            Text(
+              'delete_account_requires_password'.tr(),
+              style: AppTypography.titleMedium.copyWith(color: p.textPrimary),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _passwordController,
+              obscureText: _hidePassword,
+              autofocus: true,
+              autofillHints: const [AutofillHints.password],
+              decoration: InputDecoration(
+                labelText: 'current_password'.tr(),
+                errorText: _passwordError,
+                suffixIcon: IconButton(
+                  tooltip: _hidePassword
+                      ? 'prof_show_password'.tr()
+                      : 'prof_hide_password'.tr(),
+                  onPressed: () =>
+                      setState(() => _hidePassword = !_hidePassword),
+                  icon: Icon(_hidePassword ? AppIcons.eyeOff : AppIcons.eye),
                 ),
               ),
             ),
+          ],
+          const SizedBox(height: 20),
+          FilledButton(
+            key: const ValueKey('confirm-delete-account'),
+            style: FilledButton.styleFrom(
+              backgroundColor: p.error,
+              foregroundColor: p.onError,
+            ),
+            onPressed: () => _delete(requiresPassword),
+            child: Text('prof_delete_confirm'.tr()),
+          ),
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('prof_keep_account'.tr()),
           ),
         ],
-        const SizedBox(height: 20),
-        FilledButton(
-          key: const ValueKey('confirm-delete-account'),
-          style: FilledButton.styleFrom(
-            backgroundColor: p.error,
-            foregroundColor: p.onError,
-          ),
-          onPressed: () => _delete(requiresPassword),
-          child: Text('prof_delete_confirm'.tr()),
-        ),
-        const SizedBox(height: 10),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text('prof_keep_account'.tr()),
-        ),
-      ],
+      ),
     );
   }
 }

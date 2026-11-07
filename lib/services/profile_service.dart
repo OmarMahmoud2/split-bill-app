@@ -34,32 +34,44 @@ class ProfileService {
     await PublicProfileService.syncFromUserDoc(force: true);
   }
 
-  // NEW: Save Avatar as Text (Base64)
-  // NEW: Save Avatar as Text (Base64) - FIRESTORE ONLY
+  /// Largest stored photo (the data URL lives in the user doc).
+  static const int maxAvatarBytes = 150 * 1024;
+
+  /// Stores [imageFile] (already cropped, <= 512 px JPEG) as a base64 data
+  /// URL in `users/{uid}.photoUrl`. Returns null on failure or if too big.
   Future<String?> saveAvatarAsBase64(File imageFile) async {
     final user = _auth.currentUser;
     if (user == null) return null;
 
     try {
-      // 1. Convert Image Bytes to Base64 String
-      List<int> imageBytes = await imageFile.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
-
-      String finalString = "data:image/jpeg;base64,$base64Image";
-
-      // 2. Save ONLY to Firestore (This works fine)
+      final bytes = await imageFile.readAsBytes();
+      if (bytes.length > maxAvatarBytes) return null;
+      final dataUrl = 'data:image/jpeg;base64,${base64Encode(bytes)}';
+      // Firestore only: Auth's photoURL is too short for a data URL.
       await _firestore.collection('users').doc(user.uid).update({
-        'photoUrl': finalString,
+        'photoUrl': dataUrl,
       });
       await PublicProfileService.syncFromUserDoc(force: true);
-
-      // REMOVED: await user.updatePhotoURL(finalString);
-      // ^ This was causing the crash because the text is too long for Auth.
-
-      return finalString;
+      return dataUrl;
     } catch (e) {
-      debugPrint("Error saving avatar: $e");
+      debugPrint('Error saving avatar: $e');
       return null;
+    }
+  }
+
+  /// Clears the photo so the pal avatar shows again.
+  Future<bool> removeAvatar() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    try {
+      await _firestore.collection('users').doc(user.uid).update({
+        'photoUrl': FieldValue.delete(),
+      });
+      await PublicProfileService.syncFromUserDoc(force: true);
+      return true;
+    } catch (e) {
+      debugPrint('Error removing avatar: $e');
+      return false;
     }
   }
 }

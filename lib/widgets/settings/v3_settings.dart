@@ -1,7 +1,7 @@
 /// v3 "Quiet ledger" building blocks for settings-style screens (Profile,
 /// Payment methods, Reminders, Subscription, Admin, Export).
 ///
-/// Cards with hairline borders, 44 pt round icon buttons, uppercase section
+/// Cards with hairline borders, 44 pt round icon buttons, sentence-case section
 /// labels and rows that are at least 52 pt tall. Colors come from
 /// `context.palette` only.
 library;
@@ -111,7 +111,7 @@ class V3TopBar extends StatelessWidget {
   }
 }
 
-/// Muted uppercase section caption ("ACCOUNT", "APP").
+/// Muted sentence-case section caption ("Account", "App").
 class SettingsSectionLabel extends StatelessWidget {
   const SettingsSectionLabel(this.text, {super.key});
 
@@ -124,13 +124,37 @@ class SettingsSectionLabel extends StatelessWidget {
       child: Semantics(
         header: true,
         child: Text(
-          text.toUpperCase(),
+          text,
           style: AppTypography.titleSmall.copyWith(
             color: context.palette.textSecondary,
-            letterSpacing: 0.4,
           ),
         ),
       ),
+    );
+  }
+}
+
+/// 34 pt rounded-square icon tile with a soft tint, the leading of a
+/// grouped settings row.
+class SettingsIconTile extends StatelessWidget {
+  const SettingsIconTile(this.icon, {super.key, this.tint, this.ink});
+
+  final IconData icon;
+  final Color? tint;
+  final Color? ink;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: tint ?? p.raised,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      alignment: Alignment.center,
+      child: Icon(icon, size: 18, color: ink ?? p.textPrimary),
     );
   }
 }

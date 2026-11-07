@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:split_bill_app/screens/profile/widgets/photo_sheet.dart';
 import 'package:split_bill_app/services/profile_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
@@ -34,6 +34,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _phoneController;
   late final TextEditingController _emailController;
   File? _newImage;
+  bool _removePhoto = false;
   bool _saving = false;
   String? _nameError;
   String? _phoneError;
@@ -67,21 +68,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    try {
-      final img = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 25,
-        maxWidth: 400,
-      );
-      if (img != null) setState(() => _newImage = File(img.path));
-    } catch (_) {
-      if (!mounted) return;
-      AppToast.show(
-        context,
-        message: 'prof_photo_failed'.tr(),
-        type: AppToastType.error,
-      );
-    }
+    final hasPhoto =
+        _newImage != null ||
+        ((widget.currentData['photoUrl'] as String?)?.isNotEmpty ?? false);
+    final res = await choosePhoto(
+      context,
+      hasPhoto: hasPhoto && !_removePhoto,
+      failed: () {
+        if (!mounted) return;
+        AppToast.show(
+          context,
+          message: 'prof_photo_failed'.tr(),
+          type: AppToastType.error,
+        );
+      },
+    );
+    if (res == null || !mounted) return;
+    setState(() {
+      _removePhoto = res.removed;
+      _newImage = res.file;
+    });
   }
 
   Future<void> _save() async {
@@ -98,6 +104,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     setState(() => _saving = true);
     try {
+      if (_removePhoto && !await _profileService.removeAvatar()) {
+        throw const _PhotoSaveFailed();
+      }
       if (_newImage != null) {
         final saved = await _profileService.saveAvatarAsBase64(_newImage!);
         if (saved == null) throw const _PhotoSaveFailed();
@@ -189,8 +198,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             : V3Avatar(
                                 name: name,
                                 size: 88,
-                                photoUrl:
-                                    widget.currentData['photoUrl'] as String?,
+                                photoUrl: _removePhoto
+                                    ? null
+                                    : widget.currentData['photoUrl'] as String?,
                               ),
                       ),
                     ),

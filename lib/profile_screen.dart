@@ -25,7 +25,12 @@ import 'package:split_bill_app/screens/profile/reminders_screen.dart';
 import 'package:split_bill_app/screens/profile/subscription_screen.dart';
 import 'package:split_bill_app/screens/profile/widgets/debug_seed.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_content.dart';
+import 'package:split_bill_app/screens/profile/widgets/photo_sheet.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
+import 'package:split_bill_app/screens/settle/quick_iou_sheet.dart';
+import 'package:split_bill_app/services/profile_service.dart';
+import 'package:split_bill_app/data/ledger_repository.dart';
+import 'package:split_bill_app/widgets/home/home_dashboard.dart';
 import 'package:split_bill_app/screens/recurring/recurring_bill_screen.dart';
 import 'package:split_bill_app/services/reminder_prefs.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
@@ -146,7 +151,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await _push(const NewOnboardingScreen());
       case ProfileAction.seedTransactions:
         await _seed();
+      case ProfileAction.changePhoto:
+        await _changePhoto(data['photoUrl'] as String?);
+      case ProfileAction.addIou:
+        final s = HomeBalances.latest;
+        await showQuickIouSheet(
+          context,
+          people: s == null ? const [] : peopleAsMembers(s.summary),
+        );
+      case ProfileAction.deleteAccount:
+        ProfileDialogs.showDeleteAccount(context);
     }
+  }
+
+  Future<void> _changePhoto(String? current) async {
+    final result = await choosePhoto(
+      context,
+      hasPhoto: current != null && current.isNotEmpty,
+      failed: () {
+        if (mounted) {
+          AppToast.show(
+            context,
+            message: 'prof_photo_failed'.tr(),
+            type: AppToastType.error,
+          );
+        }
+      },
+    );
+    if (result == null || !mounted) return;
+    final service = ProfileService();
+    final ok = result.removed
+        ? await service.removeAvatar()
+        : await service.saveAvatarAsBase64(result.file!) != null;
+    if (!mounted) return;
+    AppToast.show(
+      context,
+      message: ok ? 'prof_saved'.tr() : 'prof_photo_failed'.tr(),
+      type: ok ? AppToastType.success : AppToastType.error,
+    );
   }
 
   @override
@@ -175,7 +217,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             final planKind = planKindForProductId(
               data['premiumProductId']?.toString(),
             );
+            final ledger = HomeBalances.latest;
+            final year = DateTime.now().year;
+            final settled = ledger == null
+                ? 0
+                : [
+                    ...ledger.directPayments,
+                    for (final g in ledger.groupInputs) ...g.payments,
+                  ].where((x) => x.createdAt?.year == year).length;
             final view = ProfileViewData(
+              billsSplit: ledger?.recentBills.length ?? 0,
+              peopleCount: ledger?.summary.people.length ?? 0,
+              settledThisYear: settled,
               name: firstNonBlank([
                 data['displayName'] as String?,
                 _user.displayName,

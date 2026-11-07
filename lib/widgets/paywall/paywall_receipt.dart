@@ -4,14 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
 
-/// Paper colours of the receipt. The paper stays light in dark mode, so its
-/// ink is fixed too (these are the only non-palette colours of the paywall).
-const Color _paperDark = Color(0xFFF4F6F5);
-const Color _ink = Color(0xFF2B3330);
-const Color _muted = Color(0xFF75807B);
-const Color _rule = Color(0xFFC6CECA);
-const Color _teal = Color(0xFF0F766E);
-
 const double _toothWidth = 12;
 const double _toothHeight = 8;
 
@@ -80,18 +72,18 @@ class _PaywallReceiptState extends State<PaywallReceipt>
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final paper = p.isDark ? _paperDark : p.surface;
+    final paper = p.surface;
     final head = TextStyle(
       fontFamily: _mono,
       fontSize: 12.5,
       height: 1.6,
-      color: _muted,
+      color: p.textSecondary,
     );
     final line = TextStyle(
       fontFamily: _mono,
       fontSize: 14,
       height: 1.7,
-      color: _ink,
+      color: p.textPrimary,
     );
     final reveal = _interval(Duration.zero, _reveal, const _Steps(14));
 
@@ -140,7 +132,7 @@ class _PaywallReceiptState extends State<PaywallReceipt>
               Curves.easeOut,
             ),
             CustomPaint(
-              painter: _DashedRulePainter(),
+              painter: _DashedRulePainter(p.border),
               child: Padding(
                 padding: const EdgeInsets.only(top: 11),
                 child: Text(
@@ -204,10 +196,12 @@ class _PerkLine extends StatelessWidget {
             start: 0,
             end: 0,
             bottom: scaler.scale(style.fontSize! * style.height! * 0.28),
-            child: const ExcludeSemantics(
+            child: ExcludeSemantics(
               child: SizedBox(
                 height: 2,
-                child: CustomPaint(painter: _DottedLeaderPainter()),
+                child: CustomPaint(
+                  painter: _DottedLeaderPainter(context.palette.border),
+                ),
               ),
             ),
           ),
@@ -232,7 +226,7 @@ class _PerkLine extends StatelessWidget {
                     value,
                     style: style.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: _teal,
+                      color: context.palette.accent,
                     ),
                   ),
                 ),
@@ -311,24 +305,27 @@ class _PaperPainter extends CustomPainter {
 }
 
 class _DottedLeaderPainter extends CustomPainter {
-  const _DottedLeaderPainter();
+  const _DottedLeaderPainter(this.rule);
+  final Color rule;
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = _rule;
+    final paint = Paint()..color = rule;
     for (var x = 0.75; x < size.width; x += 4) {
       canvas.drawCircle(Offset(x, size.height / 2), 0.9, paint);
     }
   }
 
   @override
-  bool shouldRepaint(_DottedLeaderPainter old) => false;
+  bool shouldRepaint(_DottedLeaderPainter old) => old.rule != rule;
 }
 
 class _DashedRulePainter extends CustomPainter {
+  const _DashedRulePainter(this.rule);
+  final Color rule;
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = _rule
+      ..color = rule
       ..strokeWidth = 1.5;
     for (var x = 0.0; x < size.width; x += 8) {
       canvas.drawLine(
@@ -340,5 +337,5 @@ class _DashedRulePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_DashedRulePainter old) => false;
+  bool shouldRepaint(_DashedRulePainter old) => old.rule != rule;
 }

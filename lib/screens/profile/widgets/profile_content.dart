@@ -25,6 +25,9 @@ enum ProfileAction {
   admin,
   showOnboarding,
   seedTransactions,
+  changePhoto,
+  addIou,
+  deleteAccount,
 }
 
 /// What the "You" screen shows. Pure data so the screen is testable.
@@ -46,6 +49,9 @@ class ProfileViewData {
     this.isAdmin = false,
     this.showDeveloper = false,
     this.showGroups = true,
+    this.billsSplit = 0,
+    this.peopleCount = 0,
+    this.settledThisYear = 0,
   });
 
   final String name;
@@ -67,9 +73,12 @@ class ProfileViewData {
   final bool isAdmin;
   final bool showDeveloper;
   final bool showGroups;
+  final int billsSplit;
+  final int peopleCount;
+  final int settledThisYear;
 }
 
-/// The v3 "You" screen body (Profile.dc.html).
+/// The v3 "You" screen body (You.dc.html).
 class ProfileContent extends StatelessWidget {
   const ProfileContent({
     super.key,
@@ -88,30 +97,73 @@ class ProfileContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final subtitle = data.isPro
-        ? 'prof_pro_plan'.tr(
-            namedArgs: {'plan': data.planLabel ?? 'prof_plan_pro'.tr()},
-          )
+    final line = data.paymentMethodCount > 0
+        ? 'you_pay_methods'.tr(namedArgs: {'n': '${data.paymentMethodCount}'})
         : 'prof_free_plan_points'.tr(namedArgs: {'points': '${data.points}'});
+
+    SettingsIconTile tile(IconData i, Color tint, Color ink) =>
+        SettingsIconTile(i, tint: tint, ink: ink);
+
+    Widget group(String title, List<Widget> rows) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsSectionLabel(title),
+        SettingsCard(children: rows),
+      ],
+    );
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 140),
       children: [
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
-          child: Semantics(
-            button: true,
-            label: '${data.name}, $subtitle',
-            excludeSemantics: true,
-            child: InkWell(
-              key: const ValueKey('profile-header'),
-              borderRadius: AppRadii.cardRadius,
-              onTap: _tap(ProfileAction.editProfile),
-              child: Row(
-                children: [
-                  _ProfileAvatar(name: data.name, photoUrl: data.photoUrl),
-                  const SizedBox(width: 14),
-                  Expanded(
+          child: Row(
+            children: [
+              Semantics(
+                button: true,
+                label: 'prof_change_photo'.tr(),
+                excludeSemantics: true,
+                child: GestureDetector(
+                  key: const ValueKey('profile-photo'),
+                  onTap: _tap(ProfileAction.changePhoto),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      V3Avatar(
+                        name: data.name,
+                        photoUrl: data.photoUrl,
+                        size: 76,
+                      ),
+                      PositionedDirectional(
+                        end: -4,
+                        bottom: -2,
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: p.inverseSurface,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: p.canvas, width: 3),
+                          ),
+                          child: Icon(
+                            AppIcons.camera,
+                            size: 14,
+                            color: p.onInverseSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Semantics(
+                  button: true,
+                  child: InkWell(
+                    key: const ValueKey('profile-header'),
+                    borderRadius: AppRadii.cardRadius,
+                    onTap: _tap(ProfileAction.editProfile),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -121,166 +173,273 @@ class ProfileContent extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.headlineMedium.copyWith(
                             color: p.textPrimary,
-                            fontFamily: AppTypography.bodyFamily,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
+                        const SizedBox(height: 2),
                         Text(
-                          subtitle,
-                          style: AppTypography.bodyMedium.copyWith(
+                          line,
+                          style: AppTypography.bodySmall.copyWith(
                             color: p.textSecondary,
                           ),
                         ),
+                        const SizedBox(height: 6),
+                        data.isPro
+                            ? _Pill(
+                                key: const ValueKey('profile-pro-badge'),
+                                label: 'you_pro_pill'.tr(
+                                  namedArgs: {
+                                    'plan':
+                                        data.planLabel ?? 'prof_plan_pro'.tr(),
+                                  },
+                                ),
+                                bg: p.inverseSurface,
+                                fg: p.gold,
+                                star: true,
+                              )
+                            : _Pill(
+                                key: const ValueKey('profile-go-pro'),
+                                label: 'prof_go_pro'.tr(),
+                                bg: p.inverseSurface,
+                                fg: p.gold,
+                                star: true,
+                                onTap: () {
+                                  AppHaptics.light();
+                                  onAction(ProfileAction.goPro);
+                                },
+                              ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        if (!data.isPro)
-          _GoProCard(
-            price: data.monthlyPrice,
-            onTap: _tap(ProfileAction.goPro),
-          ),
-        SettingsSectionLabel('prof_section_account'.tr()),
-        SettingsCard(
-          children: [
-            SettingsRow(
-              key: const ValueKey('profile-edit'),
-              title: 'prof_edit_profile'.tr(),
-              onTap: _tap(ProfileAction.editProfile),
-            ),
-            SettingsRow(
-              key: const ValueKey('profile-payment-methods'),
-              title: 'prof_payment_methods'.tr(),
-              value: data.paymentMethodCount > 0
-                  ? '${data.paymentMethodCount}'
-                  : null,
-              onTap: _tap(ProfileAction.paymentMethods),
-            ),
-            SettingsRow(
-              key: const ValueKey('profile-subscription'),
-              title: 'prof_subscription'.tr(),
-              value: data.isPro ? 'prof_plan_pro'.tr() : 'prof_plan_free'.tr(),
-              onTap: _tap(ProfileAction.subscription),
-            ),
-            if (data.showGroups)
-              SettingsRow(
-                key: const ValueKey('profile-groups'),
-                title: 'prof_my_groups'.tr(),
-                onTap: _tap(ProfileAction.groups),
-              ),
-            SettingsRow(
-              key: const ValueKey('profile-privacy'),
-              title: 'prof_privacy_data'.tr(),
-              onTap: _tap(ProfileAction.privacyAndData),
-            ),
-          ],
-        ),
-        SettingsSectionLabel('prof_section_app'.tr()),
-        SettingsCard(
-          children: [
-            SettingsRow(
-              key: const ValueKey('profile-appearance'),
-              title: 'prof_appearance'.tr(),
-              value: data.appearanceLabel,
-              onTap: _tap(ProfileAction.appearance),
-            ),
-            SettingsRow(
-              key: const ValueKey('profile-language'),
-              title: 'prof_language'.tr(),
-              value: data.languageLabel,
-              onTap: _tap(ProfileAction.language),
-            ),
-            SettingsRow(
-              key: const ValueKey('profile-currency'),
-              title: 'prof_default_currency'.tr(),
-              value: data.currencyCode,
-              onTap: _tap(ProfileAction.currency),
-            ),
-            SettingsSwitchRow(
-              key: const ValueKey('profile-haptics'),
-              title: 'settings_haptics'.tr(),
-              subtitle: 'settings_haptics_subtitle'.tr(),
-              value: data.hapticsEnabled,
-              onChanged: onHapticsChanged,
-            ),
-            SettingsRow(
-              key: const ValueKey('profile-reminders'),
-              title: 'prof_reminders'.tr(),
-              value: data.remindersSummary,
-              onTap: _tap(ProfileAction.reminders),
-            ),
-            SettingsRow(
-              key: const ValueKey('profile-help'),
-              title: 'prof_help_contact'.tr(),
-              onTap: _tap(ProfileAction.help),
-            ),
-            SettingsRow(
-              title: 'prof_share_app'.tr(),
-              onTap: _tap(ProfileAction.shareApp),
-            ),
-            SettingsRow(
-              title: 'prof_rate_app'.tr(),
-              onTap: _tap(ProfileAction.rateApp),
-            ),
-          ],
-        ),
-        SettingsSectionLabel('prof_section_pro_tools'.tr()),
-        SettingsCard(
-          children: [
-            SettingsRow(
-              key: const ValueKey('profile-export'),
-              title: 'prof_export'.tr(),
-              subtitle: 'prof_export_sub'.tr(),
-              trailing: data.isPro ? null : const ProBadge(),
-              onTap: _tap(ProfileAction.export),
-            ),
-            SettingsRow(
-              key: const ValueKey('profile-recurring'),
-              title: 'prof_recurring'.tr(),
-              subtitle: 'prof_recurring_sub'.tr(),
-              trailing: data.isPro ? null : const ProBadge(),
-              onTap: _tap(ProfileAction.recurring),
-            ),
-            if (!data.isPro)
-              SettingsRow(
-                key: const ValueKey('profile-watch-ad'),
-                title: 'prof_watch_ad'.tr(),
-                subtitle: 'prof_watch_ad_sub'.tr(),
-                onTap: _tap(ProfileAction.watchAd),
-              ),
-          ],
-        ),
-        if (data.isAdmin) ...[
-          SettingsSectionLabel('prof_section_admin'.tr()),
-          SettingsCard(
-            children: [
-              SettingsRow(
-                key: const ValueKey('profile-admin'),
-                title: 'prof_admin_dashboard'.tr(),
-                onTap: _tap(ProfileAction.admin),
+                ),
               ),
             ],
           ),
-        ],
-        if (data.showDeveloper) ...[
-          SettingsSectionLabel('prof_section_developer'.tr()),
-          SettingsCard(
+        ),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
+          child: Row(
             children: [
-              SettingsRow(
-                title: 'show_onboarding'.tr(),
-                onTap: _tap(ProfileAction.showOnboarding),
-              ),
-              SettingsRow(
-                title: 'seed_transactions'.tr(),
-                onTap: _tap(ProfileAction.seedTransactions),
-              ),
+              _Stat('${data.billsSplit}', 'you_stat_bills'.tr()),
+              const SizedBox(width: 10),
+              _Stat('${data.peopleCount}', 'you_stat_people'.tr()),
+              const SizedBox(width: 10),
+              _Stat('${data.settledThisYear}', 'you_stat_settled'.tr()),
             ],
           ),
-        ],
+        ),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
+          child: Container(
+            key: const ValueKey('profile-iou'),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: p.accentSoft,
+              borderRadius: AppRadii.cardRadius,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: p.accent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(AppIcons.iou, size: 20, color: p.onAccent),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'you_iou_title'.tr(),
+                        style: AppTypography.titleSmall.copyWith(
+                          color: p.onAccentSoft,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'you_iou_body'.tr(),
+                        style: AppTypography.bodySmall.copyWith(
+                          color: p.onAccentSoft,
+                          height: 1.45,
+                        ),
+                      ),
+                      InkWell(
+                        key: const ValueKey('profile-add-iou'),
+                        onTap: _tap(ProfileAction.addIou),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 44),
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Text(
+                              'you_iou_cta'.tr(),
+                              style: AppTypography.titleSmall.copyWith(
+                                color: p.onAccentSoft,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        group('prof_section_account'.tr(), [
+          SettingsRow(
+            key: const ValueKey('profile-edit'),
+            leading: tile(AppIcons.edit, p.raised, p.textPrimary),
+            title: 'prof_edit_profile'.tr(),
+            onTap: _tap(ProfileAction.editProfile),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-subscription'),
+            leading: tile(AppIcons.crown, p.warningSoft, p.warningStrong),
+            title: 'prof_subscription'.tr(),
+            value: data.isPro ? 'prof_plan_pro'.tr() : 'prof_plan_free'.tr(),
+            onTap: _tap(ProfileAction.subscription),
+          ),
+          if (data.showGroups)
+            SettingsRow(
+              key: const ValueKey('profile-groups'),
+              leading: tile(AppIcons.groups, p.skySoft, p.sky),
+              title: 'prof_my_groups'.tr(),
+              onTap: _tap(ProfileAction.groups),
+            ),
+        ]),
+        group('you_group_money'.tr(), [
+          SettingsRow(
+            key: const ValueKey('profile-payment-methods'),
+            leading: tile(AppIcons.wallet, p.accentSoft, p.accent),
+            title: 'you_pay_you'.tr(),
+            value: data.paymentMethodCount > 0
+                ? '${data.paymentMethodCount}'
+                : null,
+            onTap: _tap(ProfileAction.paymentMethods),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-currency'),
+            leading: tile(AppIcons.currency, p.warningSoft, p.warningStrong),
+            title: 'prof_default_currency'.tr(),
+            value: data.currencyCode,
+            onTap: _tap(ProfileAction.currency),
+          ),
+        ]),
+        group('prof_section_app'.tr(), [
+          SettingsRow(
+            key: const ValueKey('profile-language'),
+            leading: tile(AppIcons.language, p.skySoft, p.sky),
+            title: 'prof_language'.tr(),
+            value: data.languageLabel,
+            onTap: _tap(ProfileAction.language),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-appearance'),
+            leading: tile(AppIcons.appearance, p.infoSoft, p.infoStrong),
+            title: 'prof_appearance'.tr(),
+            value: data.appearanceLabel,
+            onTap: _tap(ProfileAction.appearance),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-reminders'),
+            leading: tile(AppIcons.bell, p.coralSoft, p.coralText),
+            title: 'prof_reminders'.tr(),
+            value: data.remindersSummary,
+            onTap: _tap(ProfileAction.reminders),
+          ),
+          SettingsSwitchRow(
+            key: const ValueKey('profile-haptics'),
+            title: 'settings_haptics'.tr(),
+            subtitle: 'settings_haptics_subtitle'.tr(),
+            value: data.hapticsEnabled,
+            onChanged: onHapticsChanged,
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-help'),
+            leading: tile(AppIcons.help, p.raised, p.textPrimary),
+            title: 'prof_help_contact'.tr(),
+            onTap: _tap(ProfileAction.help),
+          ),
+          SettingsRow(
+            leading: tile(AppIcons.share, p.raised, p.textPrimary),
+            title: 'prof_share_app'.tr(),
+            onTap: _tap(ProfileAction.shareApp),
+          ),
+          SettingsRow(
+            leading: tile(AppIcons.heart, p.coralSoft, p.coralText),
+            title: 'prof_rate_app'.tr(),
+            onTap: _tap(ProfileAction.rateApp),
+          ),
+        ]),
+        group('prof_section_pro_tools'.tr(), [
+          SettingsRow(
+            key: const ValueKey('profile-export'),
+            leading: tile(AppIcons.export, p.raised, p.textPrimary),
+            title: 'prof_export'.tr(),
+            subtitle: 'prof_export_sub'.tr(),
+            trailing: data.isPro ? null : const ProBadge(),
+            onTap: _tap(ProfileAction.export),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-recurring'),
+            leading: tile(AppIcons.refresh, p.accentSoft, p.accent),
+            title: 'prof_recurring'.tr(),
+            subtitle: 'prof_recurring_sub'.tr(),
+            trailing: data.isPro ? null : const ProBadge(),
+            onTap: _tap(ProfileAction.recurring),
+          ),
+          if (!data.isPro)
+            SettingsRow(
+              key: const ValueKey('profile-watch-ad'),
+              leading: tile(AppIcons.play, p.skySoft, p.sky),
+              title: 'prof_watch_ad'.tr(),
+              subtitle: 'prof_watch_ad_sub'.tr(),
+              onTap: _tap(ProfileAction.watchAd),
+            ),
+        ]),
+        group('you_group_data'.tr(), [
+          SettingsRow(
+            key: const ValueKey('profile-privacy'),
+            leading: tile(AppIcons.lock, p.raised, p.textPrimary),
+            title: 'prof_privacy_data'.tr(),
+            onTap: _tap(ProfileAction.privacyAndData),
+          ),
+          SettingsRow(
+            key: const ValueKey('profile-delete-account'),
+            leading: tile(AppIcons.delete, p.errorSoft, p.error),
+            title: 'prof_delete_account'.tr(),
+            destructive: true,
+            onTap: _tap(ProfileAction.deleteAccount),
+          ),
+        ]),
+        if (data.isAdmin)
+          group('prof_section_admin'.tr(), [
+            SettingsRow(
+              key: const ValueKey('profile-admin'),
+              leading: tile(AppIcons.settings, p.raised, p.textPrimary),
+              title: 'prof_admin_dashboard'.tr(),
+              onTap: _tap(ProfileAction.admin),
+            ),
+          ]),
+        if (data.showDeveloper)
+          group('prof_section_developer'.tr(), [
+            SettingsRow(
+              title: 'show_onboarding'.tr(),
+              onTap: _tap(ProfileAction.showOnboarding),
+            ),
+            SettingsRow(
+              title: 'seed_transactions'.tr(),
+              onTap: _tap(ProfileAction.seedTransactions),
+            ),
+          ]),
         const SizedBox(height: 32),
         const VersionInfo(),
       ],
@@ -288,71 +447,100 @@ class ProfileContent extends StatelessWidget {
   }
 }
 
-class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar({required this.name, this.photoUrl});
+class _Pill extends StatelessWidget {
+  const _Pill({
+    super.key,
+    required this.label,
+    required this.bg,
+    required this.fg,
+    this.star = false,
+    this.onTap,
+  });
 
-  final String name;
-  final String? photoUrl;
+  final String label;
+  final Color bg;
+  final Color fg;
+  final bool star;
+  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) =>
-      V3Avatar(name: name, photoUrl: photoUrl, size: 64);
+  Widget build(BuildContext context) {
+    final pill = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(color: bg, borderRadius: AppRadii.chipRadius),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (star) ...[
+            Icon(AppIcons.star, size: 12, color: fg),
+            const SizedBox(width: 6),
+          ],
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.labelSmall.copyWith(
+                color: fg,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (onTap == null) return pill;
+    return Semantics(
+      button: true,
+      child: InkWell(
+        borderRadius: AppRadii.chipRadius,
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 44),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            widthFactor: 1,
+            child: pill,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _GoProCard extends StatelessWidget {
-  const _GoProCard({required this.price, required this.onTap});
+class _Stat extends StatelessWidget {
+  const _Stat(this.value, this.label);
 
-  final String? price;
-  final VoidCallback onTap;
+  final String value;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final title = price == null
-        ? 'prof_go_pro'.tr()
-        : 'prof_go_pro_price'.tr(namedArgs: {'price': price!});
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
-      child: Semantics(
-        button: true,
-        child: Material(
-          key: const ValueKey('profile-go-pro'),
-          color: p.inverseSurface,
-          borderRadius: AppRadii.cardRadius,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () {
-              AppHaptics.light();
-              onTap();
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: AppTypography.titleMedium.copyWith(
-                            color: p.onInverseSurface,
-                          ),
-                        ),
-                        Text(
-                          'prof_go_pro_sub'.tr(),
-                          style: AppTypography.bodySmall.copyWith(
-                            color: p.onInverseSurface.withValues(alpha: 0.75),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(AppIcons.chevronRight, color: p.onInverseSurface),
-                ],
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: p.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: p.hairline),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              value,
+              style: AppTypography.titleLarge.copyWith(
+                color: p.textPrimary,
+                fontWeight: FontWeight.w800,
+                fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
-          ),
+            Text(
+              label,
+              style: AppTypography.bodySmall.copyWith(color: p.textSecondary),
+            ),
+          ],
         ),
       ),
     );
