@@ -11,7 +11,9 @@ import 'package:split_bill_app/edit_profile_screen.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/screens/profile/appearance_screen.dart';
 import 'package:split_bill_app/screens/profile/reminders_screen.dart';
+import 'package:split_bill_app/screens/profile/widgets/photo_sheet.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_content.dart';
+import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 import 'package:split_bill_app/services/reminder_prefs.dart';
 import 'package:split_bill_app/theme/theme.dart';
 
@@ -135,14 +137,22 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         expect(find.text('Omar M'), findsOneWidget);
-        expect(find.text('Free plan · points: 3'), findsOneWidget);
-        expect(find.text(r'Go Pro, $2.99 a month'), findsOneWidget);
-        expect(find.text('Payment methods'), findsOneWidget);
-        expect(find.text('Fri, 7 PM'), findsOneWidget);
-        expect(find.text('EGP'), findsOneWidget);
+        expect(find.text('3 ways to get paid'), findsOneWidget);
+        expect(find.text('Go Pro'), findsOneWidget);
+        expect(find.byKey(const ValueKey('profile-pro-badge')), findsNothing);
+        expect(find.text('How people pay you'), findsOneWidget);
+        
 
         await tester.tap(find.byKey(const ValueKey('profile-go-pro')));
         await tester.tap(find.byKey(const ValueKey('profile-subscription')));
+        await tester.scrollUntilVisible(
+          find.byKey(const ValueKey('profile-appearance')),
+          200,
+        );
+        await tester.ensureVisible(
+          find.byKey(const ValueKey('profile-appearance')),
+        );
+        await tester.pump();
         await tester.tap(find.byKey(const ValueKey('profile-appearance')));
         expect(actions, [
           ProfileAction.goPro,
@@ -184,7 +194,7 @@ void main() {
           ),
         ),
       );
-      expect(find.text('Pro · Yearly'), findsOneWidget);
+      expect(find.text('Evens Pro · Yearly'), findsOneWidget);
       expect(find.byKey(const ValueKey('profile-go-pro')), findsNothing);
       await tester.scrollUntilVisible(
         find.byKey(const ValueKey('profile-admin')),
@@ -210,6 +220,8 @@ void main() {
         find.byKey(const ValueKey('profile-haptics')),
         200,
       );
+      await tester.ensureVisible(find.byType(Switch).first);
+      await tester.pump();
       await tester.tap(find.byType(Switch).first);
       expect(changed, isFalse);
     });
@@ -232,25 +244,111 @@ void main() {
     });
   });
 
+  group('You page extras', () {
+    testWidgets('Pro shows the badge, free shows Go Pro; avatar and IOU tap', (
+      tester,
+    ) async {
+      final actions = <ProfileAction>[];
+      await _mount(
+        tester,
+        Scaffold(
+          body: ProfileContent(
+            data: _view,
+            onAction: actions.add,
+            onHapticsChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.tap(find.byKey(const ValueKey('profile-photo')));
+      await tester.tap(find.byKey(const ValueKey('profile-add-iou')));
+      expect(actions, [ProfileAction.changePhoto, ProfileAction.addIou]);
+    });
+
+    testWidgets('Pro user sees the Pro badge, not Go Pro', (tester) async {
+      await _mount(
+        tester,
+        Scaffold(
+          body: ProfileContent(
+            data: const ProfileViewData(
+              name: 'Ali',
+              isPro: true,
+              planLabel: 'Yearly',
+              appearanceLabel: 'Dark',
+              languageLabel: 'English',
+              currencyCode: 'USD',
+              remindersSummary: 'Off',
+            ),
+            onAction: (_) {},
+            onHapticsChanged: (_) {},
+          ),
+        ),
+      );
+      expect(find.byKey(const ValueKey('profile-pro-badge')), findsOneWidget);
+      expect(find.text('Go Pro'), findsNothing);
+    });
+
+    for (final url in [null, 'data:image/png;base64,iVBORw0KGgo=']) {
+      testWidgets(
+        'photo sheet provider option only with a photo (${url != null})',
+        (tester) async {
+          await _mount(
+            tester,
+            Builder(
+              builder: (context) => Scaffold(
+                body: Center(
+                  child: TextButton(
+                    onPressed: () => showPhotoSheet(context, providerUrl: url),
+                    child: const Text('open'),
+                  ),
+                ),
+              ),
+            ),
+          );
+          await tester.tap(find.text('open'));
+          await tester.pumpAndSettle();
+          expect(find.byKey(const ValueKey('photo-take')), findsOneWidget);
+          expect(find.byKey(const ValueKey('photo-library')), findsOneWidget);
+          expect(
+            find.byKey(const ValueKey('photo-provider')),
+            url == null ? findsNothing : findsOneWidget,
+          );
+        },
+      );
+    }
+
+    testWidgets('SettingsSectionLabel keeps sentence case', (tester) async {
+      await _mount(
+        tester,
+        const Scaffold(body: SettingsSectionLabel('Your data')),
+      );
+      expect(find.text('Your data'), findsOneWidget);
+      expect(find.text('YOUR DATA'), findsNothing);
+    });
+  });
+
   group('AppearanceScreen', () {
     for (final mode in [ThemeMode.light, ThemeMode.dark]) {
-      testWidgets('three options; selecting calls the provider (${mode.name})', (
-        tester,
-      ) async {
-        final settings = await _mount(
-          tester,
-          const AppearanceScreen(),
-          mode: mode,
-        );
-        expect(tester.takeException(), isNull);
-        for (final m in ThemeMode.values) {
-          expect(find.byKey(ValueKey('appearance-${m.name}')), findsOneWidget);
-        }
-        await tester.tap(find.byKey(const ValueKey('appearance-dark')));
-        await tester.pump();
-        expect(settings.themeCalls, [ThemeMode.dark]);
-        expect(find.text('LANGUAGE · 22'), findsOneWidget);
-      });
+      testWidgets(
+        'three options; selecting calls the provider (${mode.name})',
+        (tester) async {
+          final settings = await _mount(
+            tester,
+            const AppearanceScreen(),
+            mode: mode,
+          );
+          expect(tester.takeException(), isNull);
+          for (final m in ThemeMode.values) {
+            expect(
+              find.byKey(ValueKey('appearance-${m.name}')),
+              findsOneWidget,
+            );
+          }
+          await tester.tap(find.byKey(const ValueKey('appearance-dark')));
+          await tester.pump();
+          expect(settings.themeCalls, [ThemeMode.dark]);
+          expect(find.text('Language · 22'), findsOneWidget);
+        },
+      );
     }
 
     testWidgets('tapping a language applies it', (tester) async {

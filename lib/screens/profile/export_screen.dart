@@ -276,6 +276,19 @@ class _ExportScreenState extends State<ExportScreen> {
     }
   }
 
+  /// Whether [_range] is the "last N days" (or, for -1, "this year") chip.
+  bool _isPreset(int days) {
+    final r = _range;
+    if (r == null) return false;
+    final n = DateTime.now();
+    if (days < 0) return r.start == DateTime(n.year) && _sameDay(r.end, n);
+    return _sameDay(r.end, n) &&
+        _sameDay(r.start, n.subtract(Duration(days: days)));
+  }
+
+  bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
   Widget _caption(String text) => Padding(
     padding: const EdgeInsets.only(bottom: 10, top: 8),
     child: Text(
@@ -358,6 +371,54 @@ class _ExportScreenState extends State<ExportScreen> {
                             fontSize: 15,
                           ),
                         ),
+                        if (_scope == ExportScope.range) ...[
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              V3ChoiceChip(
+                                key: const ValueKey('exp-chip-30d'),
+                                label: 'you_exp_30d'.tr(),
+                                selected: _isPreset(30),
+                                onTap: () {
+                                  final n = DateTime.now();
+                                  setState(
+                                    () => _range = DateTimeRange(
+                                      start: n.subtract(
+                                        const Duration(days: 30),
+                                      ),
+                                      end: n,
+                                    ),
+                                  );
+                                },
+                              ),
+                              V3ChoiceChip(
+                                key: const ValueKey('exp-chip-year'),
+                                label: 'you_exp_year'.tr(),
+                                selected: _isPreset(-1),
+                                onTap: () {
+                                  final n = DateTime.now();
+                                  setState(
+                                    () => _range = DateTimeRange(
+                                      start: DateTime(n.year),
+                                      end: n,
+                                    ),
+                                  );
+                                },
+                              ),
+                              V3ChoiceChip(
+                                key: const ValueKey('exp-chip-custom'),
+                                label: 'you_exp_custom'.tr(),
+                                selected:
+                                    _range != null &&
+                                    !_isPreset(30) &&
+                                    !_isPreset(-1),
+                                onTap: _pickRange,
+                              ),
+                            ],
+                          ),
+                        ],
                         if (_scope == ExportScope.range)
                           Align(
                             alignment: AlignmentDirectional.centerStart,

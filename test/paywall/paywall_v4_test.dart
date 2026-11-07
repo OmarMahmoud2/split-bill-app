@@ -225,7 +225,7 @@ void main() {
     );
     final reveal = tester.widget<ClipRect>(
       find
-          .ancestor(of: find.text('EVENS PRO'), matching: find.byType(ClipRect))
+          .ancestor(of: find.text('Evens Pro'), matching: find.byType(ClipRect))
           .first,
     );
     expect(

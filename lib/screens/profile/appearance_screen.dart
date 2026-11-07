@@ -110,18 +110,12 @@ class _ThemeOption extends StatelessWidget {
     final Widget preview = switch (mode) {
       ThemeMode.system => Row(
         children: [
-          Expanded(child: ColoredBox(color: light.canvas)),
-          Expanded(child: ColoredBox(color: dark.canvas)),
+          Expanded(child: _MiniScreen(light, clip: true)),
+          Expanded(child: _MiniScreen(dark, clip: true)),
         ],
       ),
-      ThemeMode.light => DecoratedBox(
-        decoration: BoxDecoration(
-          color: light.canvas,
-          border: Border.all(color: light.hairline),
-          borderRadius: AppRadii.rowRadius,
-        ),
-      ),
-      ThemeMode.dark => ColoredBox(color: dark.canvas),
+      ThemeMode.light => _MiniScreen(light),
+      ThemeMode.dark => _MiniScreen(dark),
     };
     return Semantics(
       button: true,
@@ -166,6 +160,58 @@ class _ThemeOption extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tiny live mock of a screen in [pal]: canvas, a card with a hairline and
+/// the mint accent, so the swatch always matches the real palette.
+class _MiniScreen extends StatelessWidget {
+  const _MiniScreen(this.pal, {this.clip = false});
+
+  final AppPalette pal;
+  final bool clip;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: pal.canvas,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 8,
+              width: clip ? 20 : 34,
+              decoration: BoxDecoration(
+                color: pal.textPrimary,
+                borderRadius: AppRadii.chipRadius,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: pal.surface,
+                  border: Border.all(color: pal.hairline),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.all(6),
+                alignment: AlignmentDirectional.bottomStart,
+                child: Container(
+                  height: 8,
+                  width: clip ? 16 : 28,
+                  decoration: BoxDecoration(
+                    color: pal.accent,
+                    borderRadius: AppRadii.chipRadius,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
