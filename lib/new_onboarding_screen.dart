@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/auth_wrapper.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
-import 'package:split_bill_app/screens/account/notification_permission_screen.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/currency_selection_sheet.dart';
@@ -147,7 +146,12 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 20),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      24,
+                      12,
+                      24,
+                      20,
+                    ),
                     child: SizedBox(
                       width: double.infinity,
                       child: FilledButton(
@@ -221,17 +225,63 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
     );
   }
 
-  Widget _settlePreview() => Column(
-    children: [
-      SampleNotificationCard(
-        title: 'acct_notif_sample_paid_title'.tr(
-          namedArgs: {'amount': formatMoneyMinor(3024, _currency)},
-        ),
-        body: 'acct_notif_sample_paid_body'.tr(),
-        elevated: true,
+  /// A pay-by-link card: who owes what, and a "Pay now" pill. Guests need no app.
+  Widget _settlePreview() {
+    final p = context.palette;
+    Widget row(String name, int minor, {bool paid = false}) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          V3Avatar(name: name, size: 34),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              name,
+              style: AppTypography.titleSmall.copyWith(color: p.textPrimary),
+            ),
+          ),
+          Text(
+            formatMoneyMinor(minor, _currency),
+            style: AppTypography.amount.copyWith(
+              color: paid ? p.accent : p.textPrimary,
+              fontSize: 15,
+            ),
+          ),
+          if (paid) ...[
+            const SizedBox(width: 6),
+            Icon(AppIcons.check, size: 16, color: p.accent),
+          ],
+        ],
       ),
-    ],
-  );
+    );
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: AppRadii.cardRadius,
+        border: Border.all(color: p.hairline),
+      ),
+      child: Column(
+        children: [
+          row('Sara', 3024, paid: true),
+          row('Omar', 3024),
+          const SizedBox(height: 10),
+          Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: p.accent,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              'fr_pay_now'.tr(),
+              style: AppTypography.titleSmall.copyWith(color: p.onAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildCurrencyCard() {
     final p = context.palette;
@@ -333,7 +383,7 @@ class _ProgressDashes extends StatelessWidget {
               height: 4,
               margin: const EdgeInsetsDirectional.only(end: 6),
               decoration: BoxDecoration(
-                color: i == current ? p.textPrimary : p.borderStrong,
+                color: i == current ? p.accent : p.borderStrong,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -428,7 +478,7 @@ class _SplitPreview extends StatelessWidget {
               padding: const EdgeInsetsDirectional.only(start: 4),
               child: AvatarHop(
                 duration: Duration(milliseconds: 350 + 80 * i),
-                child: V3Avatar(name: people[i], size: 30),
+                child: V3Avatar(name: people[i], size: 32),
               ),
             ),
         ],

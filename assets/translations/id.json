@@ -2213,5 +2213,7 @@
   "home_good_evening": "Selamat malam",
   "home_your_people": "Teman-temanmu",
   "home_recent_bills": "Tagihan terbaru",
-  "home_paid_progress": "{paid} dari {total} sudah bayar"
+  "home_paid_progress": "{paid} dari {total} sudah bayar",
+  "fr_tagline": "Bagi. Lunasi. Tetap impas.",
+  "fr_pay_now": "Bayar sekarang"
 }

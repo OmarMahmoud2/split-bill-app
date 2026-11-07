@@ -2213,5 +2213,7 @@
   "home_good_evening": "Добрый вечер",
   "home_your_people": "Ваши люди",
   "home_recent_bills": "Недавние счета",
-  "home_paid_progress": "Оплатили {paid} из {total}"
+  "home_paid_progress": "Оплатили {paid} из {total}",
+  "fr_tagline": "Раздели. Рассчитайся. Будьте квиты.",
+  "fr_pay_now": "Оплатить"
 }

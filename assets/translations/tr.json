@@ -2213,5 +2213,7 @@
   "home_good_evening": "İyi akşamlar",
   "home_your_people": "Kişilerin",
   "home_recent_bills": "Son hesaplar",
-  "home_paid_progress": "{total} kişiden {paid} öğdü"
+  "home_paid_progress": "{total} kişiden {paid} öğdü",
+  "fr_tagline": "Böl. Öde. Hesap denk kalsın.",
+  "fr_pay_now": "Şimdi öde"
 }

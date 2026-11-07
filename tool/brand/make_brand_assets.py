@@ -9,12 +9,12 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 OUT = Path('assets/brand')
-FONT = 'assets/fonts/InterTight/InterTight-Bold.ttf'
+FONT = 'assets/fonts/PlusJakartaSans/PlusJakartaSans-ExtraBold.ttf'
 
-TEAL = (15, 118, 110, 255)        # #0F766E
-TEAL_DARK = (52, 197, 176, 255)   # #34C5B0
-INK = (17, 19, 18, 255)           # #111312
-INK_DARK = (242, 243, 241, 255)   # #F2F3F1
+TEAL = (14, 124, 114, 255)        # #0E7C72 mint (light)
+TEAL_DARK = (52, 215, 192, 255)   # #34D7C0 mint (dark)
+INK = (14, 21, 38, 255)           # #0E1526
+INK_DARK = (232, 237, 247, 255)   # #E8EDF7
 WHITE = (255, 255, 255, 255)
 CLEAR = (0, 0, 0, 0)
 SS = 4  # supersampling for smooth edges

@@ -2213,5 +2213,7 @@
   "home_good_evening": "God kväll",
   "home_your_people": "Dina personer",
   "home_recent_bills": "Senaste notor",
-  "home_paid_progress": "{paid} av {total} har betalat"
+  "home_paid_progress": "{paid} av {total} har betalat",
+  "fr_tagline": "Dela. Gör upp. Håll det jämnt.",
+  "fr_pay_now": "Betala nu"
 }

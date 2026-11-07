@@ -2213,5 +2213,7 @@
   "home_good_evening": "Chào buổi tối",
   "home_your_people": "Mọi người của bạn",
   "home_recent_bills": "Hóa đơn gần đây",
-  "home_paid_progress": "{paid}/{total} đã trả"
+  "home_paid_progress": "{paid}/{total} đã trả",
+  "fr_tagline": "Chia. Thanh toán. Huề nhau.",
+  "fr_pay_now": "Thanh toán ngay"
 }

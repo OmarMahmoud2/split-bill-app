@@ -2213,5 +2213,7 @@
   "home_good_evening": "Guten Abend",
   "home_your_people": "Deine Leute",
   "home_recent_bills": "Letzte Rechnungen",
-  "home_paid_progress": "{paid} von {total} bezahlt"
+  "home_paid_progress": "{paid} von {total} bezahlt",
+  "fr_tagline": "Teilen. Begleichen. Quitt bleiben.",
+  "fr_pay_now": "Jetzt zahlen"
 }

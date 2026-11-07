@@ -2213,5 +2213,7 @@
   "home_good_evening": "God aften",
   "home_your_people": "Dine folk",
   "home_recent_bills": "Seneste regninger",
-  "home_paid_progress": "{paid} af {total} har betalt"
+  "home_paid_progress": "{paid} af {total} har betalt",
+  "fr_tagline": "Del den. Afgør den. Hold den lige.",
+  "fr_pay_now": "Betal nu"
 }

@@ -2213,5 +2213,7 @@
   "home_good_evening": "こんばんは",
   "home_your_people": "あなたの仲間",
   "home_recent_bills": "最近の請求",
-  "home_paid_progress": "{total}人中{paid}人が支払い済み"
+  "home_paid_progress": "{total}人中{paid}人が支払い済み",
+  "fr_tagline": "割り勘して、精算して、貸し借りなしに。",
+  "fr_pay_now": "今すぐ支払う"
 }

@@ -2213,5 +2213,7 @@
   "home_good_evening": "Dobry wieczór",
   "home_your_people": "Twoi ludzie",
   "home_recent_bills": "Ostatnie rachunki",
-  "home_paid_progress": "{paid} z {total} zapłaciło"
+  "home_paid_progress": "{paid} z {total} zapłaciło",
+  "fr_tagline": "Podziel. Rozlicz. Bądźcie kwita.",
+  "fr_pay_now": "Zapłać teraz"
 }

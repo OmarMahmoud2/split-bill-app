@@ -2213,5 +2213,7 @@
   "home_good_evening": "شام بخیر",
   "home_your_people": "آپ کے لوگ",
   "home_recent_bills": "حالیہ بل",
-  "home_paid_progress": "{total} میں سے {paid} نے ادا کیا"
+  "home_paid_progress": "{total} میں سے {paid} نے ادا کیا",
+  "fr_tagline": "تقسیم کریں۔ حساب چکائیں۔ برابر رہیں۔",
+  "fr_pay_now": "ابھی ادا کریں"
 }

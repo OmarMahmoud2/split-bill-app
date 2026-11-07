@@ -2213,5 +2213,7 @@
   "home_good_evening": "Bonsoir",
   "home_your_people": "Vos proches",
   "home_recent_bills": "Notes récentes",
-  "home_paid_progress": "{paid} sur {total} ont payé"
+  "home_paid_progress": "{paid} sur {total} ont payé",
+  "fr_tagline": "Partagez. Réglez. Restez quittes.",
+  "fr_pay_now": "Payer"
 }

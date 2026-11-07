@@ -2213,5 +2213,7 @@
   "home_good_evening": "Buonasera",
   "home_your_people": "Le tue persone",
   "home_recent_bills": "Conti recenti",
-  "home_paid_progress": "{paid} su {total} hanno pagato"
+  "home_paid_progress": "{paid} su {total} hanno pagato",
+  "fr_tagline": "Dividi. Salda. Restate pari.",
+  "fr_pay_now": "Paga ora"
 }

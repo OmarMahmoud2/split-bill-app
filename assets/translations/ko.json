@@ -2213,5 +2213,7 @@
   "home_good_evening": "좋은 저녁이에요",
   "home_your_people": "내 사람들",
   "home_recent_bills": "최근 청구서",
-  "home_paid_progress": "{total}명 중 {paid}명 결제"
+  "home_paid_progress": "{total}명 중 {paid}명 결제",
+  "fr_tagline": "나누고, 정산하고, 깔끔하게 끝.",
+  "fr_pay_now": "지금 결제"
 }

@@ -102,7 +102,7 @@ class UpdateDialogContent extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: p.surface,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
               color: p.shadow.withValues(alpha: 0.2),
@@ -118,11 +118,7 @@ class UpdateDialogContent extends StatelessWidget {
               child: SizedBox(
                 height: 140,
                 child: reduce
-                    ? Icon(
-                        AppIcons.rocket,
-                        size: 100,
-                        color: p.infoAccent,
-                      )
+                    ? Icon(AppIcons.rocket, size: 100, color: p.infoAccent)
                     : Lottie.asset(
                         'assets/animations/update_rocket.json',
                         errorBuilder: (c, e, s) => Icon(
@@ -151,9 +147,7 @@ class UpdateDialogContent extends StatelessWidget {
                   : 'update_version_available'.tr(
                       namedArgs: {'version': version!},
                     ),
-              style: AppTypography.titleSmall.copyWith(
-                color: p.textSecondary,
-              ),
+              style: AppTypography.titleSmall.copyWith(color: p.textSecondary),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -180,7 +174,7 @@ class UpdateDialogContent extends StatelessWidget {
               child: Text(
                 'later'.tr(),
                 style: AppTypography.labelLarge.copyWith(
-                  color: p.textTertiary,
+                  color: p.textSecondary,
                 ),
               ),
             ),
@@ -203,7 +197,7 @@ class UpdateDialogContent extends StatelessWidget {
               : ScaleTransition(
                   scale: CurvedAnimation(
                     parent: animation,
-                    curve: Curves.elasticOut,
+                    curve: Curves.easeOutCubic,
                   ),
                   child: card,
                 ),

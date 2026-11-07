@@ -2213,5 +2213,7 @@
   "home_good_evening": "晚上好",
   "home_your_people": "你的朋友",
   "home_recent_bills": "最近账单",
-  "home_paid_progress": "{total}人中{paid}人已付"
+  "home_paid_progress": "{total}人中{paid}人已付",
+  "fr_tagline": "分摊,结清,两不相欠。",
+  "fr_pay_now": "立即支付"
 }

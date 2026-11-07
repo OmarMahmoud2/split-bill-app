@@ -12,7 +12,9 @@ import 'package:split_bill_app/screens/profile/widgets/profile_dialogs.dart';
 import 'package:split_bill_app/services/auth_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
-import 'package:split_bill_app/widgets/loading_state_widget.dart';
+import 'package:split_bill_app/widgets/brand/brand_intro.dart' show EvensMark;
+import 'package:split_bill_app/widgets/motion/shake_on_error.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 import 'package:split_bill_app/widgets/sign_up_modal.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -58,7 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
   AuthService? _authServiceInstance;
   AuthService get _authService => _authServiceInstance ??= AuthService();
   bool _isLoading = false;
+  String? _loadingKey; // which button shows the spinner
   bool _hidePassword = true;
+  final _shake = ShakeController();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -68,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    _shake.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -89,10 +94,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _runSignIn(Future<Object?> Function() signIn) async {
+  Future<void> _runSignIn(
+    Future<Object?> Function() signIn, {
+    String key = 'email',
+  }) async {
+    if (_isLoading) return;
     AppHaptics.light();
     FocusScope.of(context).unfocus();
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _loadingKey = key;
+    });
     try {
       final result = await signIn();
       if (result == null) return; // cancelled by the user
@@ -108,6 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInWithEmail() async {
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty) {
+      _shake.shake();
       AppToast.show(
         context,
         message: 'please_enter_email_and_password'.tr(),
@@ -187,9 +200,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(body: LoadingStateWidget(message: 'signing_in'.tr()));
-    }
     final p = context.palette;
 
     return Scaffold(
@@ -201,10 +211,12 @@ class _LoginScreenState extends State<LoginScreen> {
             constraints: const BoxConstraints(maxWidth: 520),
             child: LayoutBuilder(
               builder: (context, constraints) => SingleChildScrollView(
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 48, 24, 24),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsetsDirectional.fromSTEB(24, 28, 24, 24),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 72,
+                    minHeight: constraints.maxHeight - 52,
                   ),
                   child: IntrinsicHeight(
                     child: AutofillGroup(child: _buildForm(context)),
@@ -223,13 +235,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const _LoginHero(),
+        const SizedBox(height: 28),
         Semantics(
           header: true,
           child: Text(
             'acct_welcome'.tr(),
             style: AppTypography.displaySmall.copyWith(
               color: p.textPrimary,
-              fontSize: 34,
+              fontSize: 30,
             ),
           ),
         ),
@@ -238,28 +252,29 @@ class _LoginScreenState extends State<LoginScreen> {
           'acct_welcome_sub'.tr(),
           style: AppTypography.bodyLarge.copyWith(color: p.textSecondary),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
         if (_showApple) ...[
-          FilledButton.icon(
+          _ProviderButton(
             key: const ValueKey('sign-in-apple'),
-            onPressed: () => _runSignIn(_authService.signInWithApple),
-            icon: const Icon(AppIcons.apple, size: 20),
-            label: Text('acct_continue_apple'.tr()),
+            kind: _Provider.apple,
+            label: 'acct_continue_apple'.tr(),
+            loading: _loadingKey == 'apple',
+            onPressed: _isLoading
+                ? null
+                : () => _runSignIn(_authService.signInWithApple, key: 'apple'),
           ),
           const SizedBox(height: 12),
         ],
-        OutlinedButton.icon(
+        _ProviderButton(
           key: const ValueKey('sign-in-google'),
-          onPressed: () => _runSignIn(_authService.signInWithGoogle),
-          icon: Image.asset(
-            'assets/images/google_logo.png',
-            width: 18,
-            height: 18,
-            excludeFromSemantics: true,
-          ),
-          label: Text('acct_continue_google'.tr()),
+          kind: _Provider.google,
+          label: 'acct_continue_google'.tr(),
+          loading: _loadingKey == 'google',
+          onPressed: _isLoading
+              ? null
+              : () => _runSignIn(_authService.signInWithGoogle, key: 'google'),
         ),
-        const SizedBox(height: 26),
+        const SizedBox(height: 22),
         Row(
           children: [
             Expanded(child: Divider(color: p.hairline)),
@@ -280,40 +295,50 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
         const SizedBox(height: 18),
-        V3FieldLabel('acct_email_label'.tr()),
-        TextField(
-          key: const ValueKey('login-email'),
-          controller: _emailController,
-          keyboardType: TextInputType.emailAddress,
-          autofillHints: const [AutofillHints.email, AutofillHints.username],
-          textInputAction: TextInputAction.next,
-          autocorrect: false,
-          textDirection: ui.TextDirection.ltr,
-          decoration: const InputDecoration(hintText: 'you@example.com'),
-        ),
-        const SizedBox(height: 14),
-        V3FieldLabel('password'.tr()),
-        TextField(
-          key: const ValueKey('login-password'),
-          controller: _passwordController,
-          obscureText: _hidePassword,
-          autofillHints: const [AutofillHints.password],
-          textInputAction: TextInputAction.done,
-          autocorrect: false,
-          enableSuggestions: false,
-          onSubmitted: (_) => _signInWithEmail(),
-          decoration: InputDecoration(
-            suffixIcon: IconButton(
-              tooltip:
-                  (_hidePassword ? 'acct_show_password' : 'acct_hide_password')
-                      .tr(),
-              onPressed: () => setState(() => _hidePassword = !_hidePassword),
-              icon: Icon(
-                _hidePassword
-                    ? AppIcons.eyeOff
-                    : AppIcons.eye,
+        ShakeOnError(
+          controller: _shake,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              V3FieldLabel('acct_email_label'.tr()),
+              TextField(
+                key: const ValueKey('login-email'),
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [
+                  AutofillHints.email,
+                  AutofillHints.username,
+                ],
+                textInputAction: TextInputAction.next,
+                autocorrect: false,
+                textDirection: ui.TextDirection.ltr,
+                decoration: const InputDecoration(hintText: 'you@example.com'),
               ),
-            ),
+              const SizedBox(height: 14),
+              V3FieldLabel('password'.tr()),
+              TextField(
+                key: const ValueKey('login-password'),
+                controller: _passwordController,
+                obscureText: _hidePassword,
+                autofillHints: const [AutofillHints.password],
+                textInputAction: TextInputAction.done,
+                autocorrect: false,
+                enableSuggestions: false,
+                onSubmitted: (_) => _signInWithEmail(),
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    tooltip:
+                        (_hidePassword
+                                ? 'acct_show_password'
+                                : 'acct_hide_password')
+                            .tr(),
+                    onPressed: () =>
+                        setState(() => _hidePassword = !_hidePassword),
+                    icon: Icon(_hidePassword ? AppIcons.eyeOff : AppIcons.eye),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Align(
@@ -325,16 +350,18 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 4),
-        OutlinedButton(
+        FilledButton(
           key: const ValueKey('sign-in-email'),
-          onPressed: _signInWithEmail,
-          child: Text('acct_sign_in_email'.tr()),
+          onPressed: _isLoading ? null : _signInWithEmail,
+          child: _loadingKey == 'email'
+              ? const _BtnSpinner()
+              : Text('acct_sign_in_email'.tr()),
         ),
         const SizedBox(height: 8),
         TextButton(
           key: const ValueKey('sign-up'),
-          onPressed: _showSignUp,
-          style: TextButton.styleFrom(foregroundColor: p.textPrimary),
+          onPressed: _isLoading ? null : _showSignUp,
+          style: TextButton.styleFrom(foregroundColor: p.accent),
           child: Text('acct_new_here'.tr()),
         ),
         const Spacer(),
@@ -346,6 +373,145 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Text('need_help_reach_out_to_us'.tr()),
         ),
       ],
+    );
+  }
+}
+
+/// Wordmark and a cluster of pal avatars: the hero.
+class _LoginHero extends StatelessWidget {
+  const _LoginHero();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Row(
+      children: [
+        const ExcludeSemantics(child: EvensMark(size: 44)),
+        const SizedBox(width: 8),
+        Text(
+          'Evens',
+          style: AppTypography.amountLarge.copyWith(
+            color: p.textPrimary,
+            fontSize: 26,
+          ),
+        ),
+        const Spacer(),
+        ExcludeSemantics(
+          child: SizedBox(
+            width: 40 + 2 * 24.0,
+            height: 44,
+            child: Stack(
+              children: [
+                for (var i = 0; i < 3; i++)
+                  PositionedDirectional(
+                    start: i * 24.0,
+                    child: PalAvatar(
+                      seed: const ['ali', 'sara', 'omar'][i],
+                      size: 40,
+                      ringColor: p.canvas,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BtnSpinner extends StatelessWidget {
+  const _BtnSpinner({this.color});
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 22,
+    height: 22,
+    child: CircularProgressIndicator(strokeWidth: 2, color: color),
+  );
+}
+
+enum _Provider { apple, google }
+
+/// Apple (HIG: black with white text, white with black text in dark mode)
+/// and Google (branding: white / #131314 with a neutral outline).
+class _ProviderButton extends StatelessWidget {
+  const _ProviderButton({
+    super.key,
+    required this.kind,
+    required this.label,
+    required this.onPressed,
+    this.loading = false,
+  });
+
+  final _Provider kind;
+  final String label;
+  final VoidCallback? onPressed;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final apple = kind == _Provider.apple;
+    final bg = apple
+        ? (dark ? Colors.white : Colors.black)
+        : (dark ? const Color(0xFF131314) : Colors.white);
+    final fg = apple
+        ? (dark ? Colors.black : Colors.white)
+        : (dark ? const Color(0xFFE3E3E3) : const Color(0xFF1F1F1F));
+    final side = apple
+        ? BorderSide.none
+        : BorderSide(
+            color: dark ? const Color(0xFF8E918F) : const Color(0xFF747775),
+          );
+    return SizedBox(
+      height: 54,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: bg,
+          foregroundColor: fg,
+          disabledBackgroundColor: bg.withValues(alpha: 0.6),
+          disabledForegroundColor: fg.withValues(alpha: 0.6),
+          minimumSize: const Size.fromHeight(54),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          side: side,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: loading
+            ? _BtnSpinner(color: fg)
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (apple)
+                    Icon(AppIcons.apple, size: 22, color: fg)
+                  else
+                    Image.asset(
+                      'assets/images/google_logo.png',
+                      width: 18,
+                      height: 18,
+                      excludeFromSemantics: true,
+                    ),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.titleSmall.copyWith(
+                        color: fg,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }

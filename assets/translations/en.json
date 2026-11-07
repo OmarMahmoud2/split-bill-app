@@ -2213,5 +2213,7 @@
   "home_good_evening": "Good evening",
   "home_your_people": "Your people",
   "home_recent_bills": "Recent bills",
-  "home_paid_progress": "{paid} of {total} paid"
+  "home_paid_progress": "{paid} of {total} paid",
+  "fr_tagline": "Split it. Settle it. Stay even.",
+  "fr_pay_now": "Pay now"
 }

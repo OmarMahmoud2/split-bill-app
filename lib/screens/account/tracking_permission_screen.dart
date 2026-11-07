@@ -42,12 +42,20 @@ class _TrackingPermissionScreenState extends State<TrackingPermissionScreen> {
   Widget build(BuildContext context) {
     final p = context.palette;
     Widget point(IconData icon, String text) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: p.accent),
-          const SizedBox(width: 10),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: p.accentSoft,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 20, color: p.onAccentSoft),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
@@ -69,10 +77,7 @@ class _TrackingPermissionScreenState extends State<TrackingPermissionScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            point(
-              AppIcons.playCircle,
-              'acct_att_point_optional'.tr(),
-            ),
+            point(AppIcons.playCircle, 'acct_att_point_optional'.tr()),
             point(AppIcons.lock, 'acct_att_point_data'.tr()),
           ],
         ),
@@ -82,7 +87,16 @@ class _TrackingPermissionScreenState extends State<TrackingPermissionScreen> {
       primary: FilledButton(
         key: const ValueKey('att-continue'),
         onPressed: _busy ? null : _continue,
-        child: Text('common_continue'.tr()),
+        child: _busy
+            ? SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: p.onInverseSurface,
+                ),
+              )
+            : Text('common_continue'.tr()),
       ),
     );
   }
