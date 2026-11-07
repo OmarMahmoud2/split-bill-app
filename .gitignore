@@ -66,3 +66,8 @@ app.*.map.json
 # Firestore rules tests
 firestore-tests/node_modules/
 firestore-debug.log
+
+# Store screenshots 2.0: generated (tool/store/run_store_screenshots.sh + frame_screenshots.py), ~145 MB, not versioned
+fastlane/screenshots_2_0/
+fastlane/metadata_v2/android/*/images/phoneScreenshots_2_0/
+build/store_raw/

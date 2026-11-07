@@ -1,0 +1,3 @@
+tags:
+  store:
+    skip: "store screenshots: flutter test --run-skipped --tags store --concurrency=1 test/store_screenshots"

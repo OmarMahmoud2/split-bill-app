@@ -1,0 +1,245 @@
+{
+ "en-US / en-CA": [
+  "Scan it",
+  "Say who had what",
+  "Every cent accounted for",
+  "Friends pay from a link",
+  "Settle in fewer payments",
+  "Any currency, 22 languages",
+  "Free, no daily limits"
+ ],
+ "en-GB / en-AU": [
+  "Scan it",
+  "Say who had what",
+  "Every penny accounted for",
+  "Mates pay from a link",
+  "Settle in fewer payments",
+  "Any currency, 22 languages",
+  "Free, no daily limits"
+ ],
+ "de-DE": [
+  "Scannen",
+  "Sagen, wer was hatte",
+  "Jeder Cent nachvollziehbar",
+  "Freunde zahlen per Link",
+  "Mit weniger Zahlungen ausgleichen",
+  "Jede Währung, 22 Sprachen",
+  "Kostenlos, ohne Tageslimit"
+ ],
+ "nl-NL": [
+  "Scan de bon",
+  "Zeg wie wat had",
+  "Elke cent verantwoord",
+  "Vrienden betalen via een link",
+  "Verrekenen met minder betalingen",
+  "Elke valuta, 22 talen",
+  "Gratis, zonder daglimiet"
+ ],
+ "sv": [
+  "Skanna",
+  "Säg vem som tog vad",
+  "Varje öre redovisat",
+  "Vänner betalar via en länk",
+  "Gör upp med färre betalningar",
+  "Alla valutor, 22 språk",
+  "Gratis, utan dagsgräns"
+ ],
+ "da": [
+  "Scan",
+  "Sig hvem der fik hvad",
+  "Hver øre gjort op",
+  "Venner betaler via et link",
+  "Afregn med færre betalinger",
+  "Alle valutaer, 22 sprog",
+  "Gratis, uden dagligt loft"
+ ],
+ "no": [
+  "Skann",
+  "Si hvem som fikk hva",
+  "Hvert øre gjort rede for",
+  "Venner betaler via en lenke",
+  "Gjør opp med færre betalinger",
+  "Alle valutaer, 22 språk",
+  "Gratis, uten dagsgrense"
+ ],
+ "fr-FR": [
+  "Scannez",
+  "Dites qui a pris quoi",
+  "Chaque centime justifié",
+  "Vos amis paient depuis un lien",
+  "Réglez en moins de paiements",
+  "Toutes les devises, 22 langues",
+  "Gratuit, sans limite quotidienne"
+ ],
+ "fr-CA": [
+  "Scannez",
+  "Dites qui a pris quoi",
+  "Chaque cent justifié",
+  "Vos amis paient depuis un lien",
+  "Réglez en moins de paiements",
+  "Toutes les devises, 22 langues",
+  "Gratuit, sans limite quotidienne"
+ ],
+ "es-ES": [
+  "Escanéalo",
+  "Di quién pidió qué",
+  "Cada céntimo justificado",
+  "Tus amigos pagan desde un enlace",
+  "Salda con menos pagos",
+  "Cualquier moneda, 22 idiomas",
+  "Gratis, sin límite diario"
+ ],
+ "es-MX / es-419": [
+  "Escanéalo",
+  "Di quién pidió qué",
+  "Cada centavo justificado",
+  "Tus amigos pagan desde un enlace",
+  "Salda con menos pagos",
+  "Cualquier moneda, 22 idiomas",
+  "Gratis, sin límite diario"
+ ],
+ "it": [
+  "Scansiona",
+  "Di' chi ha preso cosa",
+  "Ogni centesimo giustificato",
+  "Gli amici pagano da un link",
+  "Salda con meno pagamenti",
+  "Qualsiasi valuta, 22 lingue",
+  "Gratis, senza limite giornaliero"
+ ],
+ "pt-BR": [
+  "Escaneie",
+  "Diga quem pediu o quê",
+  "Cada centavo justificado",
+  "Seus amigos pagam por um link",
+  "Acerte com menos pagamentos",
+  "Qualquer moeda, 22 idiomas",
+  "Grátis, sem limite diário"
+ ],
+ "pt-PT": [
+  "Digitaliza",
+  "Diz quem pediu o quê",
+  "Cada cêntimo justificado",
+  "Os amigos pagam por um link",
+  "Acerta com menos pagamentos",
+  "Qualquer moeda, 22 idiomas",
+  "Grátis, sem limite diário"
+ ],
+ "pl": [
+  "Zeskanuj",
+  "Powiedz, kto co zamówił",
+  "Każdy grosz rozliczony",
+  "Znajomi płacą z linku",
+  "Rozlicz mniejszą liczbą przelewów",
+  "Każda waluta, 22 języki",
+  "Za darmo, bez dziennego limitu"
+ ],
+ "ru": [
+  "Сканируйте",
+  "Скажите, кто что брал",
+  "Каждая копейка учтена",
+  "Друзья платят по ссылке",
+  "Меньше переводов при расчёте",
+  "Любая валюта, 22 языка",
+  "Бесплатно, без дневного лимита"
+ ],
+ "tr": [
+  "Tara",
+  "Kim ne aldı söyle",
+  "Her kuruşun hesabı belli",
+  "Arkadaşların bağlantıdan öder",
+  "Daha az ödemeyle hesaplaş",
+  "Her para birimi, 22 dil",
+  "Ücretsiz, günlük sınır yok"
+ ],
+ "ar-SA / ar": [
+  "امسح الإيصال",
+  "قل من أخذ ماذا",
+  "كل قرش محسوب",
+  "أصدقاؤك يدفعون من رابط",
+  "سوّي الحساب بتحويلات أقل",
+  "أي عملة، 22 لغة",
+  "مجاني، بلا حد يومي"
+ ],
+ "hi / hi-IN": [
+  "स्कैन करें",
+  "बोलें किसने क्या लिया",
+  "हर पैसे का हिसाब",
+  "दोस्त लिंक से चुकाते हैं",
+  "कम पेमेंट में हिसाब चुकता",
+  "कोई भी करेंसी, 22 भाषाएं",
+  "मुफ़्त, कोई दैनिक सीमा नहीं"
+ ],
+ "ur (Play)": [
+  "اسکین کریں",
+  "بولیں کس نے کیا لیا",
+  "ہر پیسے کا حساب",
+  "دوست لنک سے ادا کرتے ہیں",
+  "کم ادائیگیوں میں حساب برابر",
+  "کوئی بھی کرنسی، 22 زبانیں",
+  "مفت، کوئی روزانہ حد نہیں"
+ ],
+ "id": [
+  "Pindai",
+  "Sebut siapa makan apa",
+  "Tiap rupiah jelas",
+  "Teman bayar lewat tautan",
+  "Lunasi dengan lebih sedikit transfer",
+  "Mata uang apa pun, 22 bahasa",
+  "Gratis, tanpa batas harian"
+ ],
+ "ja": [
+  "レシートを撮る",
+  "誰が何を食べたか話す",
+  "1円まで明細に",
+  "友達はリンクから支払い",
+  "最少回数で精算",
+  "あらゆる通貨、22言語",
+  "無料、1日の上限なし"
+ ],
+ "ko": [
+  "영수증 스캔",
+  "누가 뭘 먹었는지 말하기",
+  "1원까지 정확하게",
+  "친구는 링크에서 송금",
+  "더 적은 송금으로 정산",
+  "모든 통화, 22개 언어",
+  "무료, 하루 제한 없음"
+ ],
+ "th": [
+  "สแกน",
+  "บอกว่าใครกินอะไร",
+  "ทุกสตางค์มีที่มา",
+  "เพื่อนจ่ายจากลิงก์",
+  "เคลียร์ด้วยการโอนที่น้อยลง",
+  "ทุกสกุลเงิน 22 ภาษา",
+  "ฟรี ไม่จำกัดต่อวัน"
+ ],
+ "vi": [
+  "Quét",
+  "Nói ai ăn gì",
+  "Từng đồng rõ ràng",
+  "Bạn bè trả qua link",
+  "Thanh toán với ít lần chuyển hơn",
+  "Mọi loại tiền, 22 ngôn ngữ",
+  "Miễn phí, không giới hạn mỗi ngày"
+ ],
+ "zh-Hans / zh-CN": [
+  "扫小票",
+  "说一句谁吃了什么",
+  "每一分钱都有去向",
+  "朋友点开链接付款",
+  "用更少的转账结清",
+  "任何货币，22 种语言",
+  "免费，不限每日次数"
+ ],
+ "zh-Hant / zh-TW": [
+  "掃收據",
+  "說一句誰吃了什麼",
+  "每一塊錢都有去向",
+  "朋友點開連結付款",
+  "用更少的轉帳結清",
+  "任何貨幣，22 種語言",
+  "免費，不限每日次數"
+ ]
+}
