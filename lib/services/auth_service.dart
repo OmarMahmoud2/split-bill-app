@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -84,6 +85,7 @@ class AuthService {
 
   // 4. Sign Out
   Future<void> signOut() async {
+    MyPhoto.reset();
     await _runBestEffortCleanup(
       NotificationService().clearStoredTokenForCurrentUser,
     );

@@ -2,6 +2,7 @@
 /// time (see [LedgerRepository.fetchActivity]).
 library;
 
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:async';
 
@@ -94,14 +95,17 @@ class ActivityRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LedgerAvatar(
-                id: item.actorId,
-                name: who,
-                // Your own rows show your photo, like Home's header.
-                photoUrl: item.actorId == me
-                    ? LedgerMe.current()?.photoUrl
-                    : null,
-              ),
+              // Your own rows show your chosen photo, like Home's header.
+              item.actorId == me
+                  ? ValueListenableBuilder<String?>(
+                      valueListenable: MyPhoto.notifier,
+                      builder: (_, photo, _) => LedgerAvatar(
+                        id: item.actorId,
+                        name: who,
+                        photoUrl: photo,
+                      ),
+                    )
+                  : LedgerAvatar(id: item.actorId, name: who),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

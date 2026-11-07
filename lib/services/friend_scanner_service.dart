@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,7 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
         final user = FirebaseAuth.instance.currentUser;
         _myUid = user?.uid;
         _myName ??= user?.displayName;
-        _myPhotoUrl ??= user?.photoURL;
+        _myPhotoUrl ??= MyPhoto.notifier.value;
       } catch (_) {
         // Firebase not ready: the "Your code" card is hidden.
       }

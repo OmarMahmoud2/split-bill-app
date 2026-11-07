@@ -1,3 +1,4 @@
+import 'package:split_bill_app/services/my_photo.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,6 +53,7 @@ class ProfileService {
         'photoUrl': dataUrl,
       });
       await PublicProfileService.syncFromUserDoc(force: true);
+      MyPhoto.set(dataUrl);
       return dataUrl;
     } catch (e) {
       debugPrint('Error saving avatar: $e');
@@ -67,6 +69,7 @@ class ProfileService {
       await _firestore.collection('users').doc(user.uid).update({
         'photoUrl': FieldValue.delete(),
       });
+      MyPhoto.set(null);
       await PublicProfileService.syncFromUserDoc(force: true);
       return true;
     } catch (e) {

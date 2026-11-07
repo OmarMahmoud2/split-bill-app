@@ -1,6 +1,8 @@
 /// Who is signed in and which currency they think in, for ledger screens.
 library;
 
+import 'dart:async';
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,7 @@ class LedgerMe {
     if (debugOverride != null) return debugOverride;
     final uid = LedgerRepository.instance.currentUid;
     if (uid == null) return null;
+    unawaited(MyPhoto.load(uid));
     User? user;
     try {
       user = FirebaseAuth.instance.currentUser;
@@ -38,7 +41,7 @@ class LedgerMe {
     return LedgerMe(
       uid: uid,
       name: user?.displayName ?? '',
-      photoUrl: user?.photoURL,
+      photoUrl: MyPhoto.notifier.value,
     );
   }
 }

@@ -48,7 +48,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     Map<String, dynamic>? existing,
     String localeCode,
   ) => {
-    'photoUrl': user.photoURL,
+    'photoUrl': null,
     'displayName': user.displayName ?? '',
     'email': user.email,
     // Welcome grant: 7 points, once, never reset.

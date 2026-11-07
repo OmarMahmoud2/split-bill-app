@@ -2,6 +2,7 @@
 /// recent activity, and the first-day empty state.
 library;
 
+import 'package:split_bill_app/services/my_photo.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
@@ -230,12 +231,16 @@ class _Header extends StatelessWidget {
                 width: 48,
                 height: 48,
                 child: Center(
-                  child: LedgerAvatar(
-                    id: me.uid,
-                    name: me.name,
-                    photoUrl: me.photoUrl,
-                    size: 44,
-                    selected: true,
+                  // Only the photo they chose in Evens, never the sign-in one.
+                  child: ValueListenableBuilder<String?>(
+                    valueListenable: MyPhoto.notifier,
+                    builder: (_, photo, _) => LedgerAvatar(
+                      id: me.uid,
+                      name: me.name,
+                      photoUrl: photo,
+                      size: 44,
+                      selected: true,
+                    ),
                   ),
                 ),
               ),
