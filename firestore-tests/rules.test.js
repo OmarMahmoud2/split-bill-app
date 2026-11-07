@@ -680,11 +680,35 @@ describe('account tombstones (delete + recreate)', () => {
     return batch.commit();
   };
 
-  it('owner delete needs the tombstone in the same batch', async () => {
-    await seedUser(T, { displayName: 'T', points: 1 });
+  it('a suspended owner can only delete together with the tombstone', async () => {
+    await seedUser(T, { displayName: 'T', suspended: true });
     await assertFails(deleteDoc(doc(google(T), 'users', T)));
     await assertFails(deleteAccount(T, { tombstone: false }));
     await assertSucceeds(deleteAccount(T));
+  });
+
+  // Stage A: the 1.2.0 app (in the stores) deletes without a tombstone.
+  it('1.2.0 account deletion batch still works', async () => {
+    const U = 'old-app-uid';
+    await seedUser(U, { displayName: 'U', points: 3 });
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const f = ctx.firestore();
+      await setDoc(doc(f, 'bills', 'ob1'), { ...bill, hostId: U, participants_uids: [U] });
+      await setDoc(doc(f, 'groups', 'og1'), { name: 'G', ownerId: U, memberIds: [U, FRIEND] });
+      await setDoc(doc(f, 'users', U, 'notifications', 'n1'), { title: 't', body: 'b', read: false });
+    });
+    const db = google(U);
+    const hostBills = await assertSucceeds(getDocs(query(collection(db, 'bills'), where('hostId', '==', U))));
+    const groups = await assertSucceeds(getDocs(query(collection(db, 'groups'), where('ownerId', '==', U))));
+    const notes = await assertSucceeds(getDocs(collection(db, 'users', U, 'notifications')));
+    const batch = writeBatch(db);
+    for (const d of [...hostBills.docs, ...groups.docs, ...notes.docs]) batch.delete(d.ref);
+    batch.delete(doc(db, 'users', U));
+    await assertSucceeds(batch.commit());
+  });
+
+  it('strangers cannot list groups by someone else\'s ownerId', async () => {
+    await assertFails(getDocs(query(collection(google(STRANGER), 'groups'), where('ownerId', '==', HOST))));
   });
 
   it('exploit: delete + recreate cannot reset points', async () => {

@@ -404,7 +404,10 @@ service cloud.firestore {
       // Queries ("my groups") must be provable from the query itself, so the
       // list rule reads memberIds directly instead of through keys() helpers.
       allow list: if isAdmin()
-        || (signedIn() && request.auth.uid in resource.data.memberIds);
+        || (signedIn() && request.auth.uid in resource.data.memberIds)
+        // 1.2.0 account deletion queries its groups by ownerId.
+        || (signedIn() && resource.data.ownerId == request.auth.uid)
+        || (signedIn() && resource.data.createdBy == request.auth.uid);
 
       // The owner edits everything; members may update the ledger settings
       // (budget, dates, simplify, archive) but not membership or the name.
@@ -589,11 +592,13 @@ service cloud.firestore {
       allow update: if isAdmin()
         || (isOwner(userId) && validOwnerUserUpdate());
 
-      // Owners may delete their own doc only together with the tombstone
-      // written in the same batch.
+      // Owners delete their doc together with a tombstone (2.0). The 1.2.0
+      // app deletes without one, so that stays allowed while not suspended.
+      // shortcut: a non-suspended user can reset to the 7-point grant this way; require the tombstone in Stage B.
       allow delete: if isAdmin()
         || (isOwner(userId)
-            && existsAfter(/databases/$(database)/documents/accountTombstones/$(userId)));
+            && (existsAfter(/databases/$(database)/documents/accountTombstones/$(userId))
+                || resource.data.get('suspended', false) != true));
 
       // --- USER NOTIFICATIONS ---
       match /notifications/{notificationId} {
