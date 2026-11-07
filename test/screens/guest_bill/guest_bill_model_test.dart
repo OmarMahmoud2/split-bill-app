@@ -123,12 +123,17 @@ void main() {
         'EGP',
       );
       // Nothing to go on: the browser's country, then USD.
-      expect(GuestBill.fromMap('b', old({}), countryCode: 'SA').currency, 'SAR');
+      expect(
+        GuestBill.fromMap('b', old({}), countryCode: 'SA').currency,
+        'SAR',
+      );
       expect(GuestBill.fromMap('b', old({})).currency, 'USD');
       // A saved currency always wins.
       expect(
-        GuestBill.fromMap('b', old({'InstaPay': 'x'})..['currency'] = 'eur')
-            .currency,
+        GuestBill.fromMap(
+          'b',
+          old({'InstaPay': 'x'})..['currency'] = 'eur',
+        ).currency,
         'EUR',
       );
     });

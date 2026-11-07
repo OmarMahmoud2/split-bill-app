@@ -100,6 +100,7 @@
   <div id="splash" class="sp-shimmer" aria-busy="true" aria-label="Loading">
     <div class="sp-wrap">
       <div class="sp-col"><div class="sp-brand">evens<i>.</i></div></div>
+      <div id="sp-picker">
       <div class="sp-col" aria-hidden="true" style="padding-top: 0">
         <div class="sp-host"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 70%"></div><div class="sp-line" style="width: 45%; height: 12px"></div></span></div>
         <div class="sp-line" style="width: 120px; margin-top: 24px"></div>
@@ -112,11 +113,31 @@
           <div class="sp-line" style="width: 60%"></div>
         </div>
       </div>
+      </div>
+      <div id="sp-personal" hidden>
+      <div class="sp-col" aria-hidden="true" style="padding-top: 0">
+        <div class="sp-host"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 70%"></div><div class="sp-line" style="width: 45%; height: 12px"></div></span></div>
+        <div class="sp-card" style="margin-top: 16px">
+          <div class="sp-line" style="width: 140px; height: 12px; margin-top: 0"></div>
+          <div class="sp-line" style="width: 190px; height: 34px"></div>
+          <div class="sp-line" style="margin-top: 22px; width: 75%"></div>
+          <div class="sp-line" style="margin-top: 14px; width: 60%"></div>
+          <div class="sp-line" style="margin-top: 14px; width: 70%"></div>
+          <div class="sp-line" style="margin-top: 14px; width: 50%"></div>
+        </div>
+        <div class="sp-line" style="height: 56px; border-radius: 16px; margin-top: 24px"></div>
+      </div>
+      </div>
     </div>
   </div>
   <noscript><p>Evens needs JavaScript to show your bill. Please enable it and reload this page.</p></noscript>
 
   <script id="splash-screen-script">
+    // Personal link (?p= or legacy ?uid=): show the receipt-shaped skeleton.
+    if (/[?&](p|uid)=[^&]/.test(location.search)) {
+      document.getElementById("sp-picker").hidden = true;
+      document.getElementById("sp-personal").hidden = false;
+    }
     // The app calls removeSplashFromWeb() after its first real frame
     // (translations loaded); Flutter's first frame can still be blank. The
     // timer is only a fallback if that call never comes.

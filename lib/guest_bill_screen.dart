@@ -427,7 +427,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
         Spacer(),
         Flexible(child: GuestLanguageButton()),
         SizedBox(width: 8),
-        GuestGetAppPill(),
+        Flexible(child: GuestGetAppPill()),
       ],
     ),
   );
@@ -437,7 +437,9 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     final me = bill?.participant(_selectedId);
     switch (view) {
       case _GuestView.loading:
-        return const GuestLoadingSkeleton();
+        return GuestLoadingSkeleton(
+          personal: widget.initialParticipantId != null,
+        );
       case _GuestView.error:
         return _errorView();
       case _GuestView.notFound:
@@ -502,11 +504,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
                 GuestHostLine(bill: bill),
                 const SizedBox(height: 16),
                 if (!fromLink && bill.guests.length > 1) ...[
-                  GuestChips(
-                    bill: bill,
-                    selectedId: me.id,
-                    onSelect: _select,
-                  ),
+                  GuestChips(bill: bill, selectedId: me.id, onSelect: _select),
                   const SizedBox(height: 16),
                 ],
                 GuestShareCard(bill: bill, me: me),
