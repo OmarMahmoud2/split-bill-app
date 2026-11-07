@@ -218,7 +218,6 @@ class AssigneeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final id = participant['id'].toString();
     final name = firstNameOf(participant['name']);
     final label = (units ?? 0) > 1
         ? 'bf_assign_chip_units'.tr(
@@ -226,21 +225,30 @@ class AssigneeChip extends StatelessWidget {
           )
         : name;
     return Container(
-      height: 28,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      alignment: Alignment.center,
+      height: 30,
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 10, 0),
       decoration: BoxDecoration(
-        color: p.avatarTintFor(id),
+        color: p.accentSoft,
         borderRadius: AppRadii.fullRadius,
       ),
-      child: Text(
-        label,
-        style: AppTypography.labelSmall.copyWith(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: p.textPrimary,
-          letterSpacing: 0,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PersonAvatar(participant: participant, size: 22),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.labelSmall.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: p.onAccentSoft,
+                letterSpacing: 0,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

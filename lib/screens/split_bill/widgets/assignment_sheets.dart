@@ -45,9 +45,12 @@ class AssignPillButton extends StatelessWidget {
           foregroundColor: fg,
           disabledBackgroundColor: p.border,
           disabledForegroundColor: p.textSecondary,
-          shape: secondary
-              ? StadiumBorder(side: BorderSide(color: p.borderStrong))
-              : const StadiumBorder(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: secondary
+                ? BorderSide(color: p.borderStrong, width: 1.5)
+                : BorderSide.none,
+          ),
           elevation: 0,
           textStyle: AppTypography.labelLarge.copyWith(
             fontSize: 16,
@@ -336,9 +339,7 @@ class AssignCheckbox extends StatelessWidget {
           width: 1.5,
         ),
       ),
-      child: checked
-          ? Icon(AppIcons.check, size: 16, color: p.onAccent)
-          : null,
+      child: checked ? Icon(AppIcons.check, size: 16, color: p.onAccent) : null,
     );
   }
 }
