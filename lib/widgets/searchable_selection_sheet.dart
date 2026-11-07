@@ -184,7 +184,15 @@ class _SearchableSelectionSheetState<T>
             if (selected)
               Icon(AppIcons.successFill, color: p.accent)
             else
-              Icon(AppIcons.chevronRight, size: 14, color: p.textTertiary),
+              // An empty ring, not a chevron: this is a choice, not navigation.
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: p.borderStrong, width: 1.5),
+                ),
+              ),
           ],
         ),
       ),
