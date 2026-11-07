@@ -528,7 +528,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
           Text(
             'guest2_paid_helper'.tr(namedArgs: {'host': guestHostName(bill)}),
             textAlign: TextAlign.center,
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: AppTypography.bodySmall.copyWith(
               fontSize: 12,
