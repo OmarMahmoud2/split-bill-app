@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "ยอดนิยม",
   "yx_cur_all": "สกุลเงินทั้งหมด {n} สกุล",
   "yx_cur_continue": "ดำเนินการต่อด้วย {currency}",
-  "yx_ob_paid": "ชำระแล้ว"
+  "yx_ob_paid": "ชำระแล้ว",
+  "guest3_show_all": "แสดงทั้งหมด {count} รายการ",
+  "guest3_show_less": "แสดงน้อยลง",
+  "guest3_amount_due": "ยอดที่ต้องชำระ"
 }

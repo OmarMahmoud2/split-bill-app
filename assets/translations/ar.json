@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "شائعة",
   "yx_cur_all": "كل العملات ({n})",
   "yx_cur_continue": "متابعة بعملة {currency}",
-  "yx_ob_paid": "مدفوع"
+  "yx_ob_paid": "مدفوع",
+  "guest3_show_all": "عرض كل العناصر ({count})",
+  "guest3_show_less": "عرض أقل",
+  "guest3_amount_due": "المبلغ المستحق"
 }

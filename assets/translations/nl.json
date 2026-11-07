@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Populair",
   "yx_cur_all": "Alle {n} valuta's",
   "yx_cur_continue": "Doorgaan met {currency}",
-  "yx_ob_paid": "Betaald"
+  "yx_ob_paid": "Betaald",
+  "guest3_show_all": "Alle {count} items tonen",
+  "guest3_show_less": "Minder tonen",
+  "guest3_amount_due": "Te betalen"
 }

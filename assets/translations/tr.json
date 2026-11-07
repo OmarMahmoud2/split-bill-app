@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Popüler",
   "yx_cur_all": "Tüm para birimleri ({n})",
   "yx_cur_continue": "{currency} ile devam et",
-  "yx_ob_paid": "Ödendi"
+  "yx_ob_paid": "Ödendi",
+  "guest3_show_all": "{count} kalemin tümünü göster",
+  "guest3_show_less": "Daha az göster",
+  "guest3_amount_due": "Ödenecek tutar"
 }

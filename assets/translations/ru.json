@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Популярные",
   "yx_cur_all": "Все валюты ({n})",
   "yx_cur_continue": "Продолжить с {currency}",
-  "yx_ob_paid": "Оплачено"
+  "yx_ob_paid": "Оплачено",
+  "guest3_show_all": "Показать все позиции ({count})",
+  "guest3_show_less": "Свернуть",
+  "guest3_amount_due": "К оплате"
 }

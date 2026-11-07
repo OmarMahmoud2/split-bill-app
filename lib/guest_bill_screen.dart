@@ -17,6 +17,7 @@ import 'screens/guest_bill/guest_bill_repository.dart';
 import 'screens/guest_bill/guest_selector_view.dart';
 import 'screens/guest_bill/widgets/guest_breakdown.dart';
 import 'screens/guest_bill/widgets/guest_chrome.dart';
+import 'screens/guest_bill/widgets/guest_layout.dart';
 import 'screens/guest_bill/widgets/guest_pay_panel.dart';
 import 'screens/guest_bill/widgets/guest_share.dart';
 import 'screens/guest_bill/widgets/guest_status_views.dart';
@@ -65,6 +66,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       widget.repository ?? FirestoreGuestBillRepository();
   StreamSubscription<Map<String, dynamic>?>? _sub;
   Timer? _firstLoadTimer;
+  final _scroll = ScrollController();
 
   GuestBill? _bill;
   bool _loading = true;
@@ -102,6 +104,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   void dispose() {
     _sub?.cancel();
     _firstLoadTimer?.cancel();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -368,77 +371,183 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final size = GuestSize.of(MediaQuery.sizeOf(context).width);
+    final view = _view;
+    final personal = widget.initialParticipantId != null;
+    final pageView =
+        view == _GuestView.share ||
+        view == _GuestView.waiting ||
+        view == _GuestView.confirmed;
+    // Two columns only where there is a share to pay; the picker and the
+    // message views stay a single centred column.
+    final twoColumn =
+        size == GuestSize.desktop &&
+        (pageView || (view == _GuestView.loading && personal));
+    final maxWidth = twoColumn ? kGuestDesktopMax : kGuestColumnMax;
+    final fill =
+        view == _GuestView.error ||
+        view == _GuestView.notFound ||
+        view == _GuestView.expired ||
+        view == _GuestView.settled;
+
+    Widget bar;
+    final bill = _bill;
+    final me = bill?.participant(_selectedId);
+    if (size != GuestSize.desktop &&
+        view == _GuestView.share &&
+        bill != null &&
+        me != null) {
+      bar = _payBar(bill, me, size);
+    } else if (size != GuestSize.desktop &&
+        view == _GuestView.loading &&
+        personal) {
+      bar = _barShell(size, const GuestPayBarSkeleton());
+    } else {
+      bar = const SizedBox.shrink();
+    }
+
+    final content = AnimatedSwitcher(
+      duration: AppMotion.durationFor(context, AppMotion.medium),
+      switchInCurve: AppMotion.quiet,
+      switchOutCurve: AppMotion.quiet,
+      layoutBuilder: (current, previous) => Stack(
+        fit: StackFit.passthrough,
+        alignment: Alignment.topCenter,
+        children: [...previous, ?current],
+      ),
+      child: KeyedSubtree(
+        key: ValueKey((view, twoColumn)),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(
+                size.hPad,
+                24,
+                size.hPad,
+                32,
+              ),
+              child: _body(view, size, twoColumn),
+            ),
+          ),
+        ),
+      ),
+    );
+
     return Scaffold(
-      // Wide screens: the canvas sits around a centred 480px card.
-      backgroundColor: MediaQuery.sizeOf(context).width >= 600
-          ? p.surfaceVariant
-          : p.background,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final view = _view;
-            final page = Column(
+      backgroundColor: p.background,
+      body: Stack(
+        children: [
+          const GuestOrbs(),
+          FocusTraversalGroup(
+            policy: OrderedTraversalPolicy(),
+            child: Column(
               children: [
-                _header(),
-                Expanded(child: _switcher(view, _body(view))),
-              ],
-            );
-            if (constraints.maxWidth < 600) return page;
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 480),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: p.background,
-                      borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: p.border),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(28),
-                      child: page,
-                    ),
+                Expanded(
+                  // One scroll for the whole page (no inner scroll areas).
+                  child: CustomScrollView(
+                    controller: _scroll,
+                    slivers: [
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: GuestTopBar(
+                          maxWidth: maxWidth,
+                          hPad: size.hPad,
+                          top: MediaQuery.paddingOf(context).top,
+                        ),
+                      ),
+                      fill
+                          ? SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: content,
+                            )
+                          : SliverToBoxAdapter(
+                              child: FocusTraversalOrder(
+                                order: const NumericFocusOrder(1),
+                                child: content,
+                              ),
+                            ),
+                    ],
                   ),
                 ),
+                FocusTraversalOrder(
+                  order: const NumericFocusOrder(2),
+                  child: bar,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// The sticky bottom bar (phone / tablet). It sits below the scroll view,
+  /// so it can never cover content.
+  Widget _barShell(GuestSize size, Widget child) {
+    final p = context.palette;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: p.surface.withValues(alpha: 0.96),
+        border: Border(top: BorderSide(color: p.border)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: kGuestColumnMax),
+            child: Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(
+                size.hPad,
+                12,
+                size.hPad,
+                12,
               ),
-            );
-          },
+              child: child,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _switcher(_GuestView view, Widget child) => AnimatedSwitcher(
-    duration: AppMotion.durationFor(context, AppMotion.medium),
-    switchInCurve: AppMotion.quiet,
-    switchOutCurve: AppMotion.quiet,
-    // Fill the space so views lay out top-down instead of centered.
-    layoutBuilder: (current, previous) =>
-        Stack(fit: StackFit.expand, children: [...previous, ?current]),
-    child: KeyedSubtree(key: ValueKey(view), child: child),
-  );
+  Widget _payBar(GuestBill bill, GuestParticipant me, GuestSize size) {
+    final p = context.palette;
+    return _barShell(
+      size,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          GuestPaidButton(
+            amount: guestAmount(bill.dueMinorFor(me.id), bill.currency),
+            sending: _sending,
+            onPressed: () => _submit(bill, me),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'guest2_paid_helper'.tr(namedArgs: {'host': guestHostName(bill)}),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodySmall.copyWith(
+              fontSize: 12,
+              color: p.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _header() => const Padding(
-    padding: EdgeInsetsDirectional.fromSTEB(20, 14, 20, 0),
-    child: Row(
-      children: [
-        GuestBrand(),
-        Spacer(),
-        Flexible(child: GuestLanguageButton()),
-        SizedBox(width: 8),
-        Flexible(child: GuestGetAppPill()),
-      ],
-    ),
-  );
-
-  Widget _body(_GuestView view) {
+  Widget _body(_GuestView view, GuestSize size, bool twoColumn) {
     final bill = _bill;
     final me = bill?.participant(_selectedId);
     switch (view) {
       case _GuestView.loading:
         return GuestLoadingSkeleton(
           personal: widget.initialParticipantId != null,
+          twoColumn: twoColumn,
         );
       case _GuestView.error:
         return _errorView();
@@ -449,18 +558,17 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
       case _GuestView.settled:
         return _settledView(bill!);
       case _GuestView.picker:
-        return GuestSelectorView(bill: bill!, onParticipantSelected: _select);
+        return GuestSelectorView(
+          bill: bill!,
+          onParticipantSelected: _select,
+          large: size == GuestSize.desktop,
+        );
       case _GuestView.share:
       case _GuestView.waiting:
       case _GuestView.confirmed:
-        return _page(bill!, me!);
+        return _page(bill!, me!, size);
     }
   }
-
-  Widget _bottomAction(Widget child) => Padding(
-    padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 24),
-    child: child,
-  );
 
   Widget _notMeLink(GuestParticipant me) {
     final p = context.palette;
@@ -484,117 +592,209 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
     );
   }
 
-  /// The single page: host line, chips, share card, then pay (pending) or
-  /// the status note (sent / paid).
-  Widget _page(GuestBill bill, GuestParticipant me) {
+  /// The page: host line, chips, share card, then pay (pending) or the
+  /// status note (sent / paid). Desktop moves the pay part into a sticky
+  /// right-hand panel.
+  Widget _page(GuestBill bill, GuestParticipant me, GuestSize size) {
     final p = context.palette;
     final pending = me.status == GuestPayStatus.pending;
+    final desktop = size == GuestSize.desktop;
     final host = guestHostName(bill);
     final due = bill.dueMinorFor(me.id);
     final fromLink = widget.initialParticipantId != null && !_declinedLink;
     final waiting = me.status == GuestPayStatus.review;
-    return Column(
+
+    final left = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                GuestHostLine(bill: bill),
-                const SizedBox(height: 16),
-                if (!fromLink && bill.guests.length > 1) ...[
-                  GuestChips(bill: bill, selectedId: me.id, onSelect: _select),
-                  const SizedBox(height: 16),
-                ],
-                GuestShareCard(bill: bill, me: me),
-                if (fromLink) _notMeLink(me),
-                if (bill.items.isNotEmpty)
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: p.primary,
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(44, 44),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        textStyle: AppTypography.labelLarge.copyWith(
-                          fontSize: 14,
-                        ),
-                      ),
-                      onPressed: () => showGuestReceipt(context, bill),
-                      child: Text('guest2_see_bill'.tr()),
-                    ),
-                  ),
-                const SizedBox(height: 12),
-                if (pending) ...[
-                  GuestPayMethods(
-                    bill: bill,
-                    options: guestPayOptions(bill, due),
-                    launcher: widget.launcher,
-                  ),
-                  const SizedBox(height: 14),
-                  GuestProofZone(
-                    bill: bill,
-                    proof: _proof,
-                    onPick: _pickProof,
-                    onRemove: () => setState(() => _proof = null),
-                  ),
-                ] else ...[
-                  GuestStatusNote(
-                    confirmed: !waiting,
-                    title: waiting
-                        ? 'guest_waiting_title'.tr(namedArgs: {'host': host})
-                        : 'guest_confirmed_title'.tr(
-                            namedArgs: {
-                              'host': host,
-                              'amount': guestAmount(
-                                bill.breakdownFor(me.id).totalMinor,
-                                bill.currency,
-                              ),
-                            },
-                          ),
-                    message: waiting
-                        ? 'guest_waiting_message'.tr(
-                            namedArgs: {
-                              'host': host,
-                              'amount': guestAmount(due, bill.currency),
-                            },
-                          )
-                        : 'guest_confirmed_message'.tr(
-                            namedArgs: {'store': guestStoreName(bill)},
-                          ),
-                  ),
-                  const SizedBox(height: 16),
-                  const GuestGetAppCard(),
-                ],
-              ],
-            ),
+        GuestHostLine(bill: bill),
+        const SizedBox(height: 16),
+        if (!fromLink && bill.guests.length > 1) ...[
+          GuestChips(
+            bill: bill,
+            selectedId: me.id,
+            onSelect: _select,
+            horizontal: size == GuestSize.phone,
           ),
+          const SizedBox(height: 16),
+        ],
+        GuestShareCard(
+          bill: bill,
+          me: me,
+          collapseAfter: desktop ? null : 6,
+          showAmount: !desktop,
         ),
-        if (pending)
-          _bottomAction(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                GuestPaidButton(
-                  amount: guestAmount(due, bill.currency),
-                  sending: _sending,
-                  onPressed: () => _submit(bill, me),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'guest2_paid_helper'.tr(namedArgs: {'host': host}),
-                  textAlign: TextAlign.center,
-                  style: AppTypography.bodySmall.copyWith(
-                    fontSize: 12,
-                    color: p.textSecondary,
-                  ),
-                ),
-              ],
+        if (fromLink) _notMeLink(me),
+        if (bill.items.isNotEmpty)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: p.primary,
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(44, 44),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: AppTypography.labelLarge.copyWith(fontSize: 14),
+              ),
+              onPressed: () => showGuestReceipt(context, bill),
+              child: Text('guest2_see_bill'.tr()),
             ),
           ),
       ],
+    );
+
+    final payStuff = <Widget>[
+      GuestPayMethods(
+        bill: bill,
+        options: guestPayOptions(bill, due),
+        launcher: widget.launcher,
+      ),
+      const SizedBox(height: 14),
+      GuestProofZone(
+        bill: bill,
+        proof: _proof,
+        onPick: _pickProof,
+        onRemove: () => setState(() => _proof = null),
+        desktop: desktop,
+      ),
+    ];
+    final statusStuff = <Widget>[
+      GuestStatusNote(
+        confirmed: !waiting,
+        title: waiting
+            ? 'guest_waiting_title'.tr(namedArgs: {'host': host})
+            : 'guest_confirmed_title'.tr(
+                namedArgs: {
+                  'host': host,
+                  'amount': guestAmount(
+                    bill.breakdownFor(me.id).totalMinor,
+                    bill.currency,
+                  ),
+                },
+              ),
+        message: waiting
+            ? 'guest_waiting_message'.tr(
+                namedArgs: {
+                  'host': host,
+                  'amount': guestAmount(due, bill.currency),
+                },
+              )
+            : 'guest_confirmed_message'.tr(
+                namedArgs: {'store': guestStoreName(bill)},
+              ),
+      ),
+      const SizedBox(height: 16),
+      const GuestGetAppCard(),
+    ];
+
+    if (!desktop) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          left,
+          const SizedBox(height: 12),
+          ...(pending ? payStuff : statusStuff),
+        ],
+      );
+    }
+
+    final amount = pending ? due : bill.breakdownFor(me.id).totalMinor;
+    final panel = GuestCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'guest3_amount_due'.tr(),
+                  style: AppTypography.bodySmall.copyWith(
+                    fontSize: 13,
+                    color: p.textSecondary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: GuestStatusPill(status: me.status, host: host),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              guestAmount(amount, bill.currency),
+              textDirection: TextDirection.ltr,
+              style: AppTypography.amountHero.copyWith(
+                fontSize: 44,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -1,
+                color: guestAmountColor(context, me.status),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          if (pending) ...[
+            ...payStuff,
+            const SizedBox(height: 16),
+            GuestPaidButton(
+              amount: guestAmount(due, bill.currency),
+              sending: _sending,
+              onPressed: () => _submit(bill, me),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'guest2_paid_helper'.tr(namedArgs: {'host': host}),
+              textAlign: TextAlign.center,
+              style: AppTypography.bodySmall.copyWith(
+                fontSize: 12,
+                color: p.textSecondary,
+              ),
+            ),
+          ] else
+            ...statusStuff,
+        ],
+      ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, c) {
+        const gap = 32.0;
+        final panelWidth = (c.maxWidth - gap) * 0.4;
+        return Stack(
+          children: [
+            // shortcut: the sticky panel can't grow the page, so the left
+            // column keeps a minimum height; raise it if a taller panel clips.
+            Padding(
+              padding: EdgeInsetsDirectional.only(end: panelWidth + gap),
+              child: FocusTraversalOrder(
+                order: const NumericFocusOrder(1),
+                child: FocusTraversalGroup(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 640),
+                    child: left,
+                  ),
+                ),
+              ),
+            ),
+            PositionedDirectional(
+              top: 0,
+              bottom: 0,
+              end: 0,
+              width: panelWidth,
+              child: FocusTraversalOrder(
+                order: const NumericFocusOrder(2),
+                child: FocusTraversalGroup(
+                  child: GuestSticky(controller: _scroll, child: panel),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

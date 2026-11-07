@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Popularne",
   "yx_cur_all": "Wszystkie waluty ({n})",
   "yx_cur_continue": "Kontynuuj z {currency}",
-  "yx_ob_paid": "Zapłacono"
+  "yx_ob_paid": "Zapłacono",
+  "guest3_show_all": "Pokaż wszystkie pozycje ({count})",
+  "guest3_show_less": "Pokaż mniej",
+  "guest3_amount_due": "Do zapłaty"
 }

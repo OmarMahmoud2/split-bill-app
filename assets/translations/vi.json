@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Phổ biến",
   "yx_cur_all": "Tất cả {n} loại tiền tệ",
   "yx_cur_continue": "Tiếp tục với {currency}",
-  "yx_ob_paid": "Đã thanh toán"
+  "yx_ob_paid": "Đã thanh toán",
+  "guest3_show_all": "Xem cả {count} mục",
+  "guest3_show_less": "Thu gọn",
+  "guest3_amount_due": "Số tiền cần trả"
 }

@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "مقبول",
   "yx_cur_all": "تمام {n} کرنسیاں",
   "yx_cur_continue": "{currency} کے ساتھ جاری رکھیں",
-  "yx_ob_paid": "ادا شدہ"
+  "yx_ob_paid": "ادا شدہ",
+  "guest3_show_all": "تمام {count} آئٹمز دکھائیں",
+  "guest3_show_less": "کم دکھائیں",
+  "guest3_amount_due": "واجب الادا رقم"
 }

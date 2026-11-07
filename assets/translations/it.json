@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Popolari",
   "yx_cur_all": "Tutte le {n} valute",
   "yx_cur_continue": "Continua con {currency}",
-  "yx_ob_paid": "Pagato"
+  "yx_ob_paid": "Pagato",
+  "guest3_show_all": "Mostra tutti i {count} articoli",
+  "guest3_show_less": "Mostra meno",
+  "guest3_amount_due": "Importo dovuto"
 }

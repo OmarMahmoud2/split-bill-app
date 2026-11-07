@@ -7,6 +7,7 @@ import 'package:split_bill_app/guest_bill_screen.dart';
 import 'package:split_bill_app/payments/payments.dart';
 import 'package:split_bill_app/screens/guest_bill/widgets/guest_share.dart';
 import 'package:split_bill_app/screens/guest_bill/widgets/guest_status_views.dart';
+import 'package:split_bill_app/screens/guest_bill/guest_bill_model.dart';
 import 'package:split_bill_app/screens/guest_bill/guest_bill_repository.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/pal_avatar.dart';
@@ -298,14 +299,103 @@ void main() {
     expect(find.text('guest_which_one'), findsOneWidget);
   });
 
-  testWidgets('desktop: one centred card of at most 480px', (tester) async {
-    await pumpGuest(tester, participant: 'mona', size: const Size(1280, 980));
+  testWidgets('desktop: two columns, sticky pay panel on the right', (
+    tester,
+  ) async {
+    await pumpGuest(tester, participant: 'mona', size: const Size(1440, 900));
     await emit(tester, seaBreeze());
     expect(find.text('guest2_you_owe'), findsOneWidget);
     expect(find.text('guest2_paid_amount'), findsOneWidget);
     expect(find.text('guest_get_app'), findsOneWidget);
-    expect(tester.getSize(find.byType(GuestShareCard)).width, lessThan(480));
+    final card = tester.getRect(find.byType(GuestShareCard));
+    final pay = tester.getRect(find.text('guest2_paid_amount'));
+    expect(pay.left, greaterThan(card.right));
+    expect(card.width, lessThan(1120 * 0.62));
     expect(tester.takeException(), isNull);
+  });
+
+  group('layout', () {
+    int verticalScrollables(WidgetTester tester) => tester
+        .widgetList<Scrollable>(find.byType(Scrollable))
+        .where((s) => s.axis == Axis.vertical)
+        .length;
+
+    for (final size in const [
+      Size(375, 812),
+      Size(820, 1180),
+      Size(1440, 900),
+    ]) {
+      testWidgets(
+        'personal link at ${size.width.toInt()}x${size.height.toInt()}',
+        (tester) async {
+          await pumpGuest(tester, participant: 'mona', size: size);
+          await emit(tester, seaBreeze());
+          expect(tester.takeException(), isNull);
+          expect(verticalScrollables(tester), 1);
+
+          final payFinder = find.text('guest2_paid_amount');
+          expect(payFinder, findsOneWidget);
+          final pay = tester.getRect(payFinder);
+          expect(pay.bottom, lessThanOrEqualTo(size.height));
+          expect(pay.top, greaterThanOrEqualTo(0));
+
+          final bill = find.text('guest2_see_bill');
+          if (size.width >= 1024) {
+            // Right panel next to the share card; no bottom bar.
+            final card = tester.getRect(find.byType(GuestShareCard));
+            expect(pay.left, greaterThan(card.right));
+            expect(find.text('guest3_amount_due'), findsOneWidget);
+          } else {
+            // The bar sits below the scroll view: scroll to the end and the
+            // link is still clear of the button.
+            await tester.drag(
+              find.byType(CustomScrollView),
+              const Offset(0, -2000),
+            );
+            await tester.pump();
+            final link = tester.getRect(bill);
+            expect(link.overlaps(tester.getRect(payFinder)), isFalse);
+            expect(link.bottom, lessThanOrEqualTo(pay.top));
+          }
+        },
+      );
+    }
+
+    testWidgets('long item lists fold after 6 lines on a phone', (
+      tester,
+    ) async {
+      await pumpGuest(tester, participant: 'mona', size: const Size(375, 812));
+      final data = seaBreeze();
+      await emit(tester, data);
+      final lines = GuestShareCard.rows(
+        GuestBill.fromMap('b1', data),
+        GuestBill.fromMap('b1', data).breakdownFor('mona'),
+      ).length;
+      if (lines > 6) {
+        expect(find.text('guest3_show_all'), findsOneWidget);
+        await tester.ensureVisible(find.text('guest3_show_all'));
+        await tester.tap(find.text('guest3_show_all'));
+        await tester.pump();
+        expect(find.text('guest3_show_less'), findsOneWidget);
+      } else {
+        expect(find.text('guest3_show_all'), findsNothing);
+      }
+    });
+
+    testWidgets('picker on desktop is a single centred column', (tester) async {
+      await pumpGuest(tester, size: const Size(1440, 900));
+      await emit(tester, seaBreeze());
+      expect(find.text('guest_which_one'), findsOneWidget);
+      final left = tester.getRect(find.byType(GuestChips)).left;
+      expect(left, greaterThan(300));
+      expect(verticalScrollables(tester), 1);
+    });
+
+    testWidgets('skeleton matches the layout without overflow', (tester) async {
+      await pumpGuest(tester, participant: 'mona', size: const Size(1440, 900));
+      expect(find.byType(GuestLoadingSkeleton), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   });
 
   testWidgets('guest chips render pal avatars, not initials', (tester) async {

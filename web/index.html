@@ -66,31 +66,50 @@
       font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
     #splash {
-      position: fixed; inset: 0; display: flex; flex-direction: column;
-      align-items: center; overflow: hidden; background: var(--canvas);
+      position: fixed; inset: 0; overflow: hidden; background: var(--canvas);
       transition: opacity 150ms ease-out;
     }
     #splash.gone { opacity: 0; }
-    .sp-wrap { width: 100%; max-width: 480px; }
-    .sp-col { width: 100%; max-width: 480px; box-sizing: border-box; padding: 14px 20px 0; }
-    .sp-brand { font-weight: 800; font-size: 20px; letter-spacing: -0.4px; height: 44px; display: flex; align-items: center; }
+    /* Same shell as the app: full-width bar with a hairline, then the body. */
+    .sp-bar { height: 60px; box-sizing: border-box; border-bottom: 1px solid var(--hairline); background: color-mix(in srgb, var(--canvas) 78%, transparent); }
+    .sp-bar > div, .sp-body { width: 100%; max-width: 640px; margin: 0 auto; box-sizing: border-box; padding: 0 20px; }
+    .sp-bar > div { height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .sp-body { padding-top: 24px; }
+    .sp-brand { font-weight: 800; font-size: 20px; letter-spacing: -0.4px; }
     .sp-brand i { font-style: normal; color: var(--mint); }
+    .sp-pills { display: flex; gap: 8px; }
+    .sp-pill { width: 64px; height: 44px; border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface); }
+    .sp-pill.w { width: 104px; }
     .sp-line { height: 14px; border-radius: 6px; margin-top: 10px; background: var(--skeleton); }
-    .sp-card { margin-top: 18px; border: 1px solid var(--hairline); border-radius: 24px; background: var(--surface); padding: 16px; }
-    .sp-host { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+    .sp-card { margin-top: 16px; border: 1px solid var(--hairline); border-radius: 24px; background: var(--surface); padding: 16px; }
+    .sp-host { display: flex; align-items: center; gap: 12px; }
     .sp-host .sp-line { margin-top: 0; }
     .sp-dot { width: 48px; height: 48px; border-radius: 50%; background: var(--skeleton); flex: none; }
     .sp-chips { display: flex; gap: 10px; margin-top: 10px; }
     .sp-chip { width: 96px; height: 48px; border-radius: 14px; background: var(--skeleton); }
-    @media (min-width: 600px) {
-      .sp-wrap { margin-top: 24px; max-width: 480px; width: 100%; border: 1px solid var(--hairline); border-radius: 28px; background: var(--canvas); padding-bottom: 24px; }
-      body, #splash { background: var(--outer); }
+    .sp-tiles { display: flex; gap: 8px; margin-top: 10px; }
+    .sp-tile { flex: 1; height: 64px; border-radius: 16px; background: var(--skeleton); }
+    .sp-btn { height: 56px; border-radius: 16px; background: var(--skeleton); margin-top: 16px; }
+    /* Phone/tablet personal link: the pay bar sits at the bottom. */
+    .sp-paybar { position: absolute; left: 0; right: 0; bottom: 0; border-top: 1px solid var(--hairline); background: var(--surface); padding: 12px 20px; }
+    .sp-paybar > div { max-width: 640px; margin: 0 auto; }
+    .sp-paybar .sp-btn { margin: 0; }
+    .sp-cols, .sp-panel, .sp-desk { display: none; }
+    /* Desktop personal link: two columns in a 1120 container. */
+    @media (min-width: 1024px) {
+      .sp-personal .sp-bar > div, .sp-personal .sp-body { max-width: 1120px; padding: 0 24px; }
+      .sp-personal .sp-cols { display: flex; gap: 32px; align-items: flex-start; }
+      .sp-personal .sp-left { flex: 3; min-width: 0; }
+      .sp-personal .sp-panel { display: block; flex: 2; min-width: 0; margin-top: 0; padding: 20px; }
+      .sp-personal .sp-mob { display: none; }
+      .sp-personal .sp-paybar { display: none; }
     }
+    @media (max-width: 1023.98px) { .sp-personal .sp-cols { display: block; } }
     /* No heavy animation on the web: a light fade only. */
-    .sp-shimmer .sp-line, .sp-shimmer .sp-dot, .sp-shimmer .sp-chip { animation: sp-pulse 1.4s ease-in-out infinite; }
+    .sp-shimmer .sp-line, .sp-shimmer .sp-dot, .sp-shimmer .sp-chip, .sp-shimmer .sp-tile, .sp-shimmer .sp-btn { animation: sp-pulse 1.4s ease-in-out infinite; }
     @keyframes sp-pulse { 50% { opacity: 0.55; } }
     @media (prefers-reduced-motion: reduce) {
-      .sp-shimmer .sp-line, .sp-shimmer .sp-dot, .sp-shimmer .sp-chip { animation: none; }
+      .sp-shimmer .sp-line, .sp-shimmer .sp-dot, .sp-shimmer .sp-chip, .sp-shimmer .sp-tile, .sp-shimmer .sp-btn { animation: none; }
       #splash { transition: none; }
     }
     noscript p { max-width: 520px; margin: 40px auto; padding: 0 20px; color: var(--muted); }
@@ -98,37 +117,44 @@
 </head>
 <body>
   <div id="splash" class="sp-shimmer" aria-busy="true" aria-label="Loading">
-    <div class="sp-wrap">
-      <div class="sp-col"><div class="sp-brand">evens<i>.</i></div></div>
+    <div class="sp-bar"><div>
+      <div class="sp-brand">evens<i>.</i></div>
+      <div class="sp-pills" aria-hidden="true"><span class="sp-pill"></span><span class="sp-pill w"></span></div>
+    </div></div>
+    <div class="sp-body" aria-hidden="true">
       <div id="sp-picker">
-      <div class="sp-col" aria-hidden="true" style="padding-top: 0">
         <div class="sp-host"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 70%"></div><div class="sp-line" style="width: 45%; height: 12px"></div></span></div>
         <div class="sp-line" style="width: 120px; margin-top: 24px"></div>
         <div class="sp-chips"><span class="sp-chip"></span><span class="sp-chip"></span><span class="sp-chip"></span></div>
-        <div class="sp-card">
-          <div class="sp-line" style="width: 140px; height: 12px; margin-top: 0"></div>
-          <div class="sp-line" style="width: 190px; height: 34px"></div>
-          <div class="sp-line" style="margin-top: 22px"></div>
-          <div class="sp-line"></div>
-          <div class="sp-line" style="width: 60%"></div>
-        </div>
-      </div>
       </div>
       <div id="sp-personal" hidden>
-      <div class="sp-col" aria-hidden="true" style="padding-top: 0">
-        <div class="sp-host"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 70%"></div><div class="sp-line" style="width: 45%; height: 12px"></div></span></div>
-        <div class="sp-card" style="margin-top: 16px">
-          <div class="sp-line" style="width: 140px; height: 12px; margin-top: 0"></div>
-          <div class="sp-line" style="width: 190px; height: 34px"></div>
-          <div class="sp-line" style="margin-top: 22px; width: 75%"></div>
-          <div class="sp-line" style="margin-top: 14px; width: 60%"></div>
-          <div class="sp-line" style="margin-top: 14px; width: 70%"></div>
-          <div class="sp-line" style="margin-top: 14px; width: 50%"></div>
+        <div class="sp-cols">
+          <div class="sp-left">
+            <div class="sp-host"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 70%"></div><div class="sp-line" style="width: 45%; height: 12px"></div></span></div>
+            <div class="sp-card">
+              <div class="sp-line" style="width: 140px; height: 12px; margin-top: 0"></div>
+              <div class="sp-line" style="width: 190px; height: 34px"></div>
+              <div class="sp-line" style="margin-top: 22px; width: 75%"></div>
+              <div class="sp-line" style="margin-top: 14px; width: 60%"></div>
+              <div class="sp-line" style="margin-top: 14px; width: 70%"></div>
+              <div class="sp-line" style="margin-top: 14px; width: 50%"></div>
+            </div>
+            <div class="sp-mob">
+              <div class="sp-line" style="width: 120px; margin-top: 20px"></div>
+              <div class="sp-tiles"><span class="sp-tile"></span><span class="sp-tile"></span></div>
+            </div>
+          </div>
+          <div class="sp-card sp-panel">
+            <div class="sp-line" style="width: 100px; height: 12px; margin-top: 0"></div>
+            <div class="sp-line" style="width: 180px; height: 40px"></div>
+            <div class="sp-tiles" style="margin-top: 20px"><span class="sp-tile"></span><span class="sp-tile"></span></div>
+            <div class="sp-tiles"><span class="sp-tile"></span><span class="sp-tile"></span></div>
+            <div class="sp-btn"></div>
+          </div>
         </div>
-        <div class="sp-line" style="height: 56px; border-radius: 16px; margin-top: 24px"></div>
-      </div>
       </div>
     </div>
+    <div class="sp-paybar" id="sp-paybar" hidden aria-hidden="true"><div><div class="sp-btn"></div></div></div>
   </div>
   <noscript><p>Evens needs JavaScript to show your bill. Please enable it and reload this page.</p></noscript>
 
@@ -137,6 +163,8 @@
     if (/[?&](p|uid)=[^&]/.test(location.search)) {
       document.getElementById("sp-picker").hidden = true;
       document.getElementById("sp-personal").hidden = false;
+      document.getElementById("sp-paybar").hidden = false;
+      document.getElementById("splash").classList.add("sp-personal");
     }
     // The app calls removeSplashFromWeb() after its first real frame
     // (translations loaded); Flutter's first frame can still be blank. The

@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Populares",
   "yx_cur_all": "Todas as {n} moedas",
   "yx_cur_continue": "Continuar com {currency}",
-  "yx_ob_paid": "Pago"
+  "yx_ob_paid": "Pago",
+  "guest3_show_all": "Ver todos os {count} itens",
+  "guest3_show_less": "Ver menos",
+  "guest3_amount_due": "Valor a pagar"
 }

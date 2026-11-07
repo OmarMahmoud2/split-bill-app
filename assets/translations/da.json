@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Populære",
   "yx_cur_all": "Alle {n} valutaer",
   "yx_cur_continue": "Fortsæt med {currency}",
-  "yx_ob_paid": "Betalt"
+  "yx_ob_paid": "Betalt",
+  "guest3_show_all": "Vis alle {count} poster",
+  "guest3_show_less": "Vis færre",
+  "guest3_amount_due": "Skyldigt beløb"
 }

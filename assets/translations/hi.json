@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "लोकप्रिय",
   "yx_cur_all": "सभी {n} मुद्राएँ",
   "yx_cur_continue": "{currency} के साथ जारी रखें",
-  "yx_ob_paid": "भुगतान हो गया"
+  "yx_ob_paid": "भुगतान हो गया",
+  "guest3_show_all": "सभी {count} आइटम दिखाएँ",
+  "guest3_show_less": "कम दिखाएँ",
+  "guest3_amount_due": "देय राशि"
 }

@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "人気",
   "yx_cur_all": "すべての通貨（{n}）",
   "yx_cur_continue": "{currency}で続ける",
-  "yx_ob_paid": "支払い済み"
+  "yx_ob_paid": "支払い済み",
+  "guest3_show_all": "{count}件すべて表示",
+  "guest3_show_less": "表示を減らす",
+  "guest3_amount_due": "お支払い額"
 }

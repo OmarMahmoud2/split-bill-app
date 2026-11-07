@@ -25,7 +25,12 @@ class GuestBrand extends StatelessWidget {
       child: Text.rich(
         TextSpan(
           text: 'evens',
-          children: [TextSpan(text: '.', style: TextStyle(color: p.primary))],
+          children: [
+            TextSpan(
+              text: '.',
+              style: TextStyle(color: p.primary),
+            ),
+          ],
         ),
         style: AppTypography.headlineMedium.copyWith(
           fontSize: large ? 22 : 20,
@@ -81,7 +86,9 @@ class GuestPill extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: 6)],
-        Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
+        Flexible(
+          child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
       ],
     );
     return Semantics(

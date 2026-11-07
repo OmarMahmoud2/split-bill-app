@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "热门",
   "yx_cur_all": "全部 {n} 种货币",
   "yx_cur_continue": "使用 {currency} 继续",
-  "yx_ob_paid": "已付款"
+  "yx_ob_paid": "已付款",
+  "guest3_show_all": "显示全部 {count} 项",
+  "guest3_show_less": "收起",
+  "guest3_amount_due": "应付金额"
 }

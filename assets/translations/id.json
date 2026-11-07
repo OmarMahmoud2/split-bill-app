@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Populer",
   "yx_cur_all": "Semua {n} mata uang",
   "yx_cur_continue": "Lanjutkan dengan {currency}",
-  "yx_ob_paid": "Lunas"
+  "yx_ob_paid": "Lunas",
+  "guest3_show_all": "Tampilkan semua {count} item",
+  "guest3_show_less": "Tampilkan lebih sedikit",
+  "guest3_amount_due": "Jumlah yang harus dibayar"
 }

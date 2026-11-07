@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "인기",
   "yx_cur_all": "전체 {n}개 통화",
   "yx_cur_continue": "{currency}(으)로 계속",
-  "yx_ob_paid": "결제 완료"
+  "yx_ob_paid": "결제 완료",
+  "guest3_show_all": "{count}개 항목 모두 보기",
+  "guest3_show_less": "간단히 보기",
+  "guest3_amount_due": "결제할 금액"
 }

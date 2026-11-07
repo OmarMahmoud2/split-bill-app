@@ -2349,5 +2349,8 @@
   "yx_cur_popular": "Populära",
   "yx_cur_all": "Alla {n} valutor",
   "yx_cur_continue": "Fortsätt med {currency}",
-  "yx_ob_paid": "Betald"
+  "yx_ob_paid": "Betald",
+  "guest3_show_all": "Visa alla {count} poster",
+  "guest3_show_less": "Visa färre",
+  "guest3_amount_due": "Belopp att betala"
 }
