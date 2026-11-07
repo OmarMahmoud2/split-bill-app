@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/manual_entry_screen.dart';
 import 'package:split_bill_app/scan_receipt_screen.dart';
+import 'package:split_bill_app/config/feature_costs.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/plural_text.dart';
+import 'package:split_bill_app/utils/wallet_status.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 
 typedef BillEntry = void Function(BuildContext context, {List<GroupMember>? members, String? groupId});
@@ -33,17 +36,27 @@ class BillEntryPoints {
   static BillEntry? voice;
 }
 
+/// One way to start a bill (a method tile) or a secondary row (IOU, group).
 class NewSheetOption {
-  const NewSheetOption({required this.badge, required this.title, required this.subtitle, required this.onTap, this.accent = false, this.soft = false});
-  final String badge;
+  const NewSheetOption({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.cost,
+  });
+  final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  final bool accent;
-  final bool soft;
+
+  /// Points a free user pays for this method; null = always free.
+  final int? cost;
 }
 
-/// Shows the "New" sheet. Every callback runs after the sheet closes.
+/// Shows the "Split a bill" sheet. Every callback runs after the sheet closes.
+/// People are picked later in the flow (after the items), so this sheet is
+/// just the method choice: one tap starts, no extra confirm.
 Future<void> showNewSheet(
   BuildContext context, {
   required VoidCallback onQuickIou,
@@ -58,103 +71,172 @@ Future<void> showNewSheet(
   }
 
   final voice = BillEntryPoints.voice;
-  final options = [
+  final methods = [
     NewSheetOption(
-      badge: 'new_badge_scan'.tr(),
+      icon: AppIcons.scan,
       title: 'new_scan_title'.tr(),
       subtitle: 'new_scan_sub'.tr(),
-      accent: true,
+      cost: FeatureCosts.receiptScanPoints,
       onTap: () => after(() => BillEntryPoints.scan(context, members: members, groupId: groupId)),
     ),
-    if (voice != null)
-      NewSheetOption(
-        badge: 'new_badge_say'.tr(),
-        title: 'new_say_title'.tr(),
-        subtitle: 'new_say_sub'.tr(),
-        soft: true,
-        onTap: () => after(() => voice(context, members: members, groupId: groupId)),
-      ),
     NewSheetOption(
-      badge: '+',
-      title: 'new_expense_title'.tr(),
+      icon: AppIcons.edit,
+      title: 'new_type_title'.tr(),
       subtitle: 'new_expense_sub'.tr(),
       onTap: () => after(() => BillEntryPoints.manual(context, members: members, groupId: groupId)),
     ),
-    if (groupId == null)
-      NewSheetOption(badge: 'new_badge_iou'.tr(), title: 'iou_title'.tr(), subtitle: 'new_iou_sub'.tr(), onTap: () => after(onQuickIou)),
-    if (groupId == null)
-      NewSheetOption(badge: 'new_badge_trip'.tr(), title: 'new_group_title'.tr(), subtitle: 'new_group_sub'.tr(), onTap: () => after(onStartGroup)),
+    // Hidden until a standalone voice expense exists (voice assign needs items).
+    if (voice != null)
+      NewSheetOption(
+        icon: AppIcons.mic,
+        title: 'new_say_title'.tr(),
+        subtitle: 'new_say_sub'.tr(),
+        cost: FeatureCosts.voiceCommandPoints,
+        onTap: () => after(() => voice(context, members: members, groupId: groupId)),
+      ),
   ];
-  return showLedgerSheet<void>(context, builder: (_) => NewSheet(options: options));
+  final more = [
+    if (groupId == null)
+      NewSheetOption(icon: AppIcons.iou, title: 'iou_title'.tr(), subtitle: 'new_iou_sub'.tr(), onTap: () => after(onQuickIou)),
+    if (groupId == null)
+      NewSheetOption(icon: AppIcons.groups, title: 'new_group_title'.tr(), subtitle: 'new_group_sub'.tr(), onTap: () => after(onStartGroup)),
+  ];
+  return showLedgerSheet<void>(
+    context,
+    title: 'new_split_title'.tr(),
+    subtitle: 'new_split_sub'.tr(),
+    builder: (_) => NewSheet(methods: methods, more: more),
+  );
 }
 
-class NewSheet extends StatelessWidget {
-  const NewSheet({super.key, required this.options});
-  final List<NewSheetOption> options;
+class NewSheet extends StatefulWidget {
+  const NewSheet({super.key, required this.methods, this.more = const []});
+  final List<NewSheetOption> methods;
+  final List<NewSheetOption> more;
+
+  @override
+  State<NewSheet> createState() => _NewSheetState();
+}
+
+class _NewSheetState extends State<NewSheet> {
+  late final Future<({bool pro, int points})?> _wallet = loadWalletStatus();
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
     return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Semantics(
-            header: true,
-            child: Text('new_title'.tr(), style: AppTypography.headlineSmall.copyWith(color: p.textPrimary, fontSize: 22, fontWeight: FontWeight.w700)),
-          ),
-          const SizedBox(height: 14),
-          for (final (i, o) in options.indexed)
-            StaggeredEntrance(
-              index: i,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: LedgerCard(
-                  onTap: () {
-                    AppHaptics.light();
-                    o.onTap();
-                  },
-                  semanticsLabel: '${o.title}. ${o.subtitle}',
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: ExcludeSemantics(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: o.accent ? p.accent : (o.soft ? p.accentSoft : p.surfaceVariant),
-                            borderRadius: AppRadii.rowRadius,
-                          ),
-                          child: Text(
-                            o.badge,
-                            maxLines: 1,
-                            style: AppTypography.labelSmall.copyWith(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: o.accent ? p.onAccent : (o.soft ? p.onAccentSoft : p.textPrimary),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 20),
+      child: FutureBuilder(
+        future: _wallet,
+        builder: (context, snap) {
+          final pro = snap.data?.pro ?? false;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final (i, o) in widget.methods.indexed) ...[
+                      if (i > 0) const SizedBox(width: 10),
+                      Expanded(child: _MethodTile(option: o, pro: pro)),
+                    ],
+                  ],
+                ),
+              ),
+              for (final (i, o) in widget.more.indexed)
+                StaggeredEntrance(
+                  index: i,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.only(top: i == 0 ? 16 : 8),
+                    child: LedgerCard(
+                      onTap: () {
+                        AppHaptics.light();
+                        o.onTap();
+                      },
+                      semanticsLabel: '${o.title}. ${o.subtitle}',
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 14, vertical: 12),
+                      child: ExcludeSemantics(
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(color: p.surfaceVariant, borderRadius: AppRadii.rowRadius),
+                              child: Icon(o.icon, size: 20, color: p.textPrimary),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(o.title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontWeight: FontWeight.w600)),
+                                  Text(o.subtitle, style: AppTypography.bodySmall.copyWith(color: p.textSecondary)),
+                                ],
+                              ),
+                            ),
+                            Icon(AppIcons.chevronRight, size: 18, color: p.textTertiary),
+                          ],
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(o.title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
-                              Text(o.subtitle, style: AppTypography.bodySmall.copyWith(color: p.textSecondary, fontSize: 13)),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MethodTile extends StatelessWidget {
+  const _MethodTile({required this.option, required this.pro});
+  final NewSheetOption option;
+  final bool pro;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final cost = option.cost;
+    final costText = cost == null
+        ? 'new_cost_free'.tr()
+        : pro
+        ? 'new_cost_pro'.tr()
+        : pluralText('new_cost_points', cost);
+    return LedgerCard(
+      onTap: () {
+        AppHaptics.light();
+        option.onTap();
+      },
+      semanticsLabel: '${option.title}. $costText',
+      padding: const EdgeInsetsDirectional.fromSTEB(10, 14, 10, 12),
+      child: ExcludeSemantics(
+        child: Column(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(color: p.accentSoft, borderRadius: AppRadii.rowRadius),
+              child: Icon(option.icon, size: 24, color: p.onAccentSoft),
             ),
-        ],
+            const SizedBox(height: 10),
+            Text(
+              option.title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 14, fontWeight: FontWeight.w700),
+            ),
+            const Spacer(),
+            const SizedBox(height: 4),
+            Text(
+              costText,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodySmall.copyWith(color: cost == null || pro ? p.accent : p.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }

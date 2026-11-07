@@ -213,6 +213,8 @@ void main() {
 
   testWidgets('roulette picks and confirms a winner', (tester) async {
     String? winner;
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       _app(
         Builder(

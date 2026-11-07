@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
 
 /// One of the "Scan QR / Contacts / Add guest" cards (People board 1).
@@ -192,32 +193,15 @@ class _AddGuestSheetState extends State<AddGuestSheet> {
           style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
         ),
         const SizedBox(height: AppSpacing.lg),
-        TextField(
+        AppTextField(
           controller: _controller,
           autofocus: true,
+          hint: 'bf_assign_guest_name_hint'.tr(),
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _submit(),
           onChanged: (_) => setState(() {}),
           maxLength: 40,
-          decoration: InputDecoration(
-            hintText: 'bf_assign_guest_name_hint'.tr(),
-            counterText: '',
-            filled: true,
-            fillColor: p.surface,
-            border: OutlineInputBorder(
-              borderRadius: AppRadii.rowRadius,
-              borderSide: BorderSide(color: p.borderStrong),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: AppRadii.rowRadius,
-              borderSide: BorderSide(color: p.borderStrong),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: AppRadii.rowRadius,
-              borderSide: BorderSide(color: p.accent, width: 1.5),
-            ),
-          ),
         ),
         const SizedBox(height: AppSpacing.xl),
         AssignPillButton(

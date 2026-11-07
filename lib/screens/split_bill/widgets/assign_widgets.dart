@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:split_bill_app/bill_flow/bill_calculator.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_logic.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/utils/image_utils.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
 
@@ -18,34 +18,13 @@ class PersonAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    final id = (participant['id'] ?? participant['name'] ?? '').toString();
-    final image = ImageUtils.getAvatarImage(
-      participant['photoUrl']?.toString(),
-    );
-    return ExcludeSemantics(
-      child: Container(
-        width: size,
-        height: size,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: p.avatarTintFor(id),
-          shape: BoxShape.circle,
-          image: image == null
-              ? null
-              : DecorationImage(image: image, fit: BoxFit.cover),
-        ),
-        child: image == null
-            ? Text(
-                initialOf(participant['name']),
-                style: AppTypography.titleSmall.copyWith(
-                  color: p.textPrimary,
-                  fontSize: size * 0.36,
-                  fontWeight: FontWeight.w600,
-                ),
-              )
-            : null,
-      ),
+    return PalAvatar(
+      seed: (participant['id'] ?? participant['name'] ?? '')
+          .toString()
+          .toLowerCase(),
+      name: participant['name']?.toString(),
+      photoUrl: participant['photoUrl']?.toString(),
+      size: size,
     );
   }
 }

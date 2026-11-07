@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/add_members_sheet.dart';
-import 'package:split_bill_app/screens/split_bill/widgets/assign_widgets.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_logic.dart';
 import 'package:split_bill_app/screens/split_bill/widgets/assignment_sheets.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/utils/plural_text.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 
 /// A group the host belongs to, as offered on the add-people step.
 class AddPeopleGroup {
@@ -243,16 +245,6 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
       ));
     }
 
-    String subtitleFor(Map<String, dynamic> person) {
-      if (person['isGuest'] == true) return 'bf_assign_guest_no_app'.tr();
-      final n = groupCounts[_id(person)] ?? 0;
-      if (n == 1) return 'bf_assign_in_one_group'.tr();
-      if (n > 1) {
-        return 'bf_assign_in_groups'.tr(namedArgs: {'count': '$n'});
-      }
-      return (person['phoneNumber'] ?? '').toString();
-    }
-
     return Scaffold(
       backgroundColor: p.background,
       body: SafeArea(
@@ -288,47 +280,28 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
               child: ListView(
                 padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 20),
                 children: [
-                  TextField(
+                  AppTextField(
                     key: const ValueKey('bf_assign_people_search'),
                     controller: _search,
                     onChanged: (_) => setState(() {}),
                     textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      hintText: 'bf_assign_search_hint'.tr(),
-                      prefixIcon: Icon(
-                        AppIcons.search,
-                        color: p.textSecondary,
-                      ),
-                      filled: true,
-                      fillColor: p.surface,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                      border: OutlineInputBorder(
-                        borderRadius: AppRadii.rowRadius,
-                        borderSide: BorderSide(color: p.borderStrong),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: AppRadii.rowRadius,
-                        borderSide: BorderSide(color: p.borderStrong),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: AppRadii.rowRadius,
-                        borderSide: BorderSide(color: p.accent, width: 1.5),
-                      ),
-                    ),
+                    hint: 'bf_assign_search_hint'.tr(),
+                    prefix: Icon(AppIcons.search, color: p.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  Wrap(
-                    spacing: AppSpacing.sm,
-                    runSpacing: AppSpacing.sm,
+                  _PersonGrid(
                     children: [
                       for (final person in _selected)
-                        _SelectedChip(
+                        _PersonTile(
                           key: ValueKey('bf_assign_selected_${_id(person)}'),
-                          participant: person,
-                          onRemove: person['isHost'] == true
+                          person: person,
+                          selected: true,
+                          isYou: person['isHost'] == true,
+                          onTap: person['isHost'] == true
                               ? null
                               : () => _toggle(person),
                         ),
+                      _GuestTile(onTap: _addGuest),
                     ],
                   ),
                   const SizedBox(height: 18),
@@ -355,13 +328,6 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                         ),
                         const SizedBox(width: AppSpacing.sm),
                       ],
-                      Expanded(
-                        child: AddSourceCard(
-                          icon: AppIcons.personAdd,
-                          label: 'bf_assign_add_guest'.tr(),
-                          onTap: _addGuest,
-                        ),
-                      ),
                     ],
                   ),
                   if (_busy) ...[
@@ -380,23 +346,48 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                         onTap: () => _addGuest(query),
                       ),
                     ),
-                  for (final section in sections) ...[
-                    Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(0, 16, 0, 8),
-                      child: Text(
-                        section.title.toUpperCase(),
-                        style: AppTypography.overline.copyWith(
-                          color: p.textSecondary,
+                  for (final section in sections)
+                    if (section.people.any((m) => !_isSelected(_id(m)))) ...[
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          0,
+                          20,
+                          0,
+                          10,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                section.title,
+                                style: AppTypography.titleSmall.copyWith(
+                                  color: p.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            _UseGroupChip(
+                              onTap: () => _addPeople([
+                                for (final m in section.people)
+                                  if (!_isSelected(_id(m))) m,
+                              ]),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    _PeopleCard(
-                      people: section.people,
-                      isSelected: (m) => _isSelected(_id(m)),
-                      subtitleFor: subtitleFor,
-                      onToggle: _toggle,
-                    ),
-                  ],
+                      _PersonGrid(
+                        children: [
+                          for (final m in section.people)
+                            if (!_isSelected(_id(m)))
+                              _PersonTile(
+                                key: ValueKey('bf_assign_person_row_${m['id']}'),
+                                person: m,
+                                selected: false,
+                                onTap: () => _toggle(m),
+                              ),
+                        ],
+                      ),
+                    ],
                   if (widget.groups != null &&
                       _groups == null &&
                       !_groupsFailed) ...[
@@ -429,9 +420,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
               padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 16),
               child: AssignPillButton(
                 key: const ValueKey('bf_assign_people_continue'),
-                label: 'bf_assign_continue_with'.tr(
-                  namedArgs: {'count': '${_selected.length}'},
-                ),
+                label: pluralText('bf_continue_people', _selected.length),
                 onPressed: () {
                   AppHaptics.light();
                   Navigator.of(
@@ -441,68 +430,6 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SelectedChip extends StatelessWidget {
-  const _SelectedChip({super.key, required this.participant, this.onRemove});
-
-  final Map<String, dynamic> participant;
-
-  /// Null for the host.
-  final VoidCallback? onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final isHost = onRemove == null;
-    final name = firstNameOf(participant['name']);
-    final label = isHost
-        ? 'bf_assign_you_chip'.tr(namedArgs: {'name': name})
-        : name;
-    final chip = Container(
-      height: 34,
-      padding: EdgeInsetsDirectional.only(start: 12, end: isHost ? 12 : 6),
-      decoration: BoxDecoration(
-        color: isHost
-            ? p.inverseSurface
-            : p.avatarTintFor(participant['id'].toString()),
-        borderRadius: AppRadii.fullRadius,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: AppTypography.labelMedium.copyWith(
-              fontWeight: FontWeight.w600,
-              color: isHost ? p.onInverseSurface : p.textPrimary,
-            ),
-          ),
-          if (!isHost) ...[
-            const SizedBox(width: 2),
-            Icon(AppIcons.close, size: 16, color: p.textPrimary),
-          ],
-        ],
-      ),
-    );
-    if (isHost) return chip;
-    return Semantics(
-      button: true,
-      label: 'bf_assign_remove_person'.tr(
-        namedArgs: {'name': (participant['name'] ?? '').toString()},
-      ),
-      excludeSemantics: true,
-      child: InkWell(
-        onTap: onRemove,
-        borderRadius: AppRadii.fullRadius,
-        child: Padding(
-          // Keeps the 44 pt touch target around the 34 pt chip.
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          child: chip,
         ),
       ),
     );
@@ -547,79 +474,193 @@ class _AddQueryAsGuest extends StatelessWidget {
   }
 }
 
-class _PeopleCard extends StatelessWidget {
-  const _PeopleCard({
-    required this.people,
-    required this.isSelected,
-    required this.subtitleFor,
-    required this.onToggle,
+class _PersonGrid extends StatelessWidget {
+  const _PersonGrid({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) =>
+      Wrap(spacing: 8, runSpacing: 14, children: children);
+}
+
+/// Selectable pal avatar: mint ring and a check badge when selected.
+class _PersonTile extends StatelessWidget {
+  const _PersonTile({
+    super.key,
+    required this.person,
+    required this.selected,
+    required this.onTap,
+    this.isYou = false,
   });
 
-  final List<Map<String, dynamic>> people;
-  final bool Function(Map<String, dynamic>) isSelected;
-  final String Function(Map<String, dynamic>) subtitleFor;
-  final ValueChanged<Map<String, dynamic>> onToggle;
+  final Map<String, dynamic> person;
+  final bool selected;
+  final bool isYou;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Material(
-      color: p.surface,
-      shape: AppRadii.cardShape(p.border),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          for (var i = 0; i < people.length; i++)
-            Semantics(
-              checked: isSelected(people[i]),
-              button: true,
-              child: InkWell(
-                key: ValueKey('bf_assign_person_row_${people[i]['id']}'),
-                onTap: () => onToggle(people[i]),
-                child: Container(
-                  constraints: const BoxConstraints(minHeight: 62),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 11,
+    final first = firstNameOf(person['name']);
+    final name = isYou
+        ? 'bf_assign_you_chip'.tr(namedArgs: {'name': first})
+        : first;
+    return Semantics(
+      button: onTap != null,
+      selected: selected,
+      label: (person['name'] ?? '').toString(),
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
+          width: 72,
+          child: Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  PalAvatar(
+                    seed: (person['id'] ?? person['name'] ?? '')
+                        .toString()
+                        .toLowerCase(),
+                    photoUrl: person['photoUrl']?.toString(),
+                    size: 56,
+                    ringColor: selected ? p.accent : null,
                   ),
-                  decoration: BoxDecoration(
-                    border: i > 0
-                        ? Border(top: BorderSide(color: p.borderSubtle))
-                        : null,
-                  ),
-                  child: Row(
-                    children: [
-                      PersonAvatar(participant: people[i]),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              (people[i]['name'] ?? '').toString(),
-                              style: AppTypography.titleMedium.copyWith(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: p.textPrimary,
-                              ),
-                            ),
-                            if (subtitleFor(people[i]).isNotEmpty)
-                              Text(
-                                subtitleFor(people[i]),
-                                style: AppTypography.caption.copyWith(
-                                  color: p.textSecondary,
-                                ),
-                              ),
-                          ],
+                  if (selected)
+                    PositionedDirectional(
+                      end: -2,
+                      bottom: -2,
+                      child: Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: p.accent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: p.background, width: 2),
                         ),
+                        child: Icon(AppIcons.check, size: 12, color: p.onMint),
                       ),
-                      AssignCheckbox(checked: isSelected(people[i])),
-                    ],
-                  ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelMedium.copyWith(
+                  color: p.textPrimary,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),
-            ),
-        ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Dashed "Guest" add tile.
+class _GuestTile extends StatelessWidget {
+  const _GuestTile({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Semantics(
+      button: true,
+      label: 'bf_assign_add_guest'.tr(),
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () {
+          AppHaptics.light();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
+          width: 72,
+          child: Column(
+            children: [
+              CustomPaint(
+                painter: _DashedCirclePainter(p.borderStrong),
+                child: SizedBox.square(
+                  dimension: 56,
+                  child: Icon(AppIcons.add, color: p.textSecondary),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'bf_assign_guest_tile'.tr(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelMedium.copyWith(
+                  color: p.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedCirclePainter extends CustomPainter {
+  _DashedCirclePainter(this.color);
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    final r = size.width / 2 - 1;
+    const dashes = 18;
+    for (var i = 0; i < dashes; i++) {
+      canvas.drawArc(
+        Rect.fromCircle(center: size.center(Offset.zero), radius: r),
+        i * 2 * 3.14159265 / dashes,
+        3.14159265 / dashes,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedCirclePainter old) => old.color != color;
+}
+
+class _UseGroupChip extends StatelessWidget {
+  const _UseGroupChip({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: AppRadii.fullRadius,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 36),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: p.accentSoft,
+          borderRadius: AppRadii.fullRadius,
+        ),
+        child: Text(
+          'bf_assign_use_group'.tr(),
+          style: AppTypography.labelMedium.copyWith(
+            color: p.onAccentSoft,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
