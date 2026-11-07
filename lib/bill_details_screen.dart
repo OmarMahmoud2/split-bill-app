@@ -426,6 +426,21 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
   Future<void> _sharePdf(Map<String, dynamic> bill) async {
     AppHaptics.light();
     final rtl = Directionality.of(context) == ui.TextDirection.rtl;
+    // Fonts can take a few seconds to load: show a spinner meanwhile.
+    final nav = Navigator.of(context, rootNavigator: true);
+    var spinnerUp = true;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    ).whenComplete(() => spinnerUp = false);
+    void hideSpinner() {
+      if (spinnerUp) {
+        spinnerUp = false;
+        nav.pop();
+      }
+    }
+
     try {
       final reader = BillReader(bill);
       final cur = reader.currency;
@@ -493,13 +508,21 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         rtl: rtl,
       );
       final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/evens-bill-${widget.billId}.pdf');
+      // Readable file name in the share sheet and Files.
+      final safe = receipt.title
+          .replaceAll(RegExp(r'[\\/:*?"<>|]'), ' ')
+          .trim();
+      final file = File(
+        '${dir.path}/${safe.isEmpty ? 'Evens' : '$safe · Evens'}.pdf',
+      );
       await file.writeAsBytes(bytes);
+      hideSpinner();
       if (!mounted) return;
       await SharePlus.instance.share(
         ShareParams(files: [XFile(file.path)], subject: receipt.title),
       );
     } catch (e) {
+      hideSpinner();
       debugPrint('Bill PDF failed: $e');
       if (mounted) {
         AppToast.show(

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/utils/plural_text.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
@@ -543,15 +544,21 @@ class _EditBillScreenState extends State<EditBillScreen> {
           children: [
             _SummaryRow(
               label: 'bf_edit_row_items'.tr(),
-              value: '${draft.items.length} · ${_c.participants.length}',
+              value:
+                  '${pluralText('bfx_items', draft.items.length)} · '
+                  '${pluralText('bfx_people', _c.participants.length)}',
               needsAttention: issues.isNotEmpty,
               onTap: _openSplit,
             ),
             _SummaryRow(
               label: 'bf_edit_row_charges'.tr(),
               value:
-                  '${pct(draft.taxMinor, serviceMinor: draft.serviceMinor)} · ${pct(draft.serviceMinor)} · '
-                  '${pct(draft.tipMinor)}',
+                  draft.taxMinor == 0 &&
+                      draft.serviceMinor == 0 &&
+                      draft.tipMinor == 0
+                  ? 'bfx_charges_none'.tr()
+                  : '${pct(draft.taxMinor, serviceMinor: draft.serviceMinor)} · ${pct(draft.serviceMinor)} · '
+                        '${pct(draft.tipMinor)}',
               onTap: _openCharges,
             ),
             _SummaryRow(label: 'bf_edit_row_paid_by'.tr(), value: paidBy),
@@ -691,26 +698,34 @@ class _SummaryRow extends StatelessWidget {
         padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
         child: Row(
           children: [
+            // Value sits under the label so long values never squeeze it.
             Expanded(
-              child: Text(
-                label,
-                style: AppTypography.bodyLarge.copyWith(
-                  fontSize: 15,
-                  color: p.textPrimary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: AppTypography.bodyLarge.copyWith(
+                      fontSize: 15,
+                      color: p.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: p.textSecondary,
+                      fontFeatures: AppTypography.tabularFigures,
+                    ),
+                  ),
+                ],
               ),
             ),
             if (needsAttention) ...[
               Icon(AppIcons.error, size: 16, color: p.owe),
               const SizedBox(width: 6),
             ],
-            Text(
-              value,
-              style: AppTypography.bodyMedium.copyWith(
-                color: p.textSecondary,
-                fontFeatures: AppTypography.tabularFigures,
-              ),
-            ),
             if (onTap != null) ...[
               const SizedBox(width: 4),
               Icon(AppIcons.chevronRight, size: 20, color: p.textTertiary),

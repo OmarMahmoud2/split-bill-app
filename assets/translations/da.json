@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "Gem og del · {count} personer",
   "bf_summary_save_people_few": "Gem og del · {count} personer",
   "bf_summary_save_people_many": "Gem og del · {count} personer",
-  "bf_summary_save_people_other": "Gem og del · {count} personer"
+  "bf_summary_save_people_other": "Gem og del · {count} personer",
+  "bfx_items_one": "1 vare",
+  "bfx_items_other": "{count} varer",
+  "bfx_people_one": "1 person",
+  "bfx_people_other": "{count} personer",
+  "bfx_charges_none": "Ingen",
+  "bfx_items_two": "{count} varer",
+  "bfx_items_few": "{count} varer",
+  "bfx_items_many": "{count} varer",
+  "bfx_people_two": "{count} personer",
+  "bfx_people_few": "{count} personer",
+  "bfx_people_many": "{count} personer"
 }

@@ -92,7 +92,14 @@ class ActivityRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LedgerAvatar(id: item.actorId, name: who),
+              LedgerAvatar(
+                id: item.actorId,
+                name: who,
+                // Your own rows show your photo, like Home's header.
+                photoUrl: item.actorId == me
+                    ? LedgerMe.current()?.photoUrl
+                    : null,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -160,18 +167,38 @@ class _StatusPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final (String label, Color bg, Color fg) = switch (item.kind) {
-      ActivityKind.payment => ('groups_settled'.tr(), p.surfaceVariant, p.textSecondary),
+      ActivityKind.payment => (
+        'groups_settled'.tr(),
+        p.surfaceVariant,
+        p.textSecondary,
+      ),
       ActivityKind.iou => ('bf_bill_status_waiting'.tr(), p.skySoft, p.sky),
       ActivityKind.billAdded => switch (item.tone) {
-        ActivityTone.owed => ('home_owed_to_you'.tr(), p.accentSoft, p.onAccentSoft),
+        ActivityTone.owed => (
+          'home_owed_to_you'.tr(),
+          p.accentSoft,
+          p.onAccentSoft,
+        ),
         ActivityTone.owe => ('home_you_owe'.tr(), p.coralSoft, p.owe),
-        ActivityTone.neutral => ('groups_settled'.tr(), p.surfaceVariant, p.textSecondary),
+        ActivityTone.neutral => (
+          'groups_settled'.tr(),
+          p.surfaceVariant,
+          p.textSecondary,
+        ),
       },
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(color: bg, borderRadius: AppRadii.fullRadius),
-      child: Text(label, maxLines: 1, style: AppTypography.caption.copyWith(color: fg, fontSize: 11, fontWeight: FontWeight.w600)),
+      child: Text(
+        label,
+        maxLines: 1,
+        style: AppTypography.caption.copyWith(
+          color: fg,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
@@ -318,7 +345,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
         child: ListView(
           controller: _scroll,
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 16),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.paddingOf(context).bottom + 16,
+          ),
           children: [
             for (final (day, items) in days) ...[
               OverlineLabel(_dayLabel(context, day)),

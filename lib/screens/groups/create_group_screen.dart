@@ -244,6 +244,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   LedgerCard(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: SwitchListTile.adaptive(
+                      activeTrackColor: context.palette.accent,
                       contentPadding: EdgeInsets.zero,
                       value: _simplify,
                       onChanged: (v) {
@@ -282,14 +283,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   Widget _label(String text) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
-    child: Text(text, style: AppTypography.labelMedium.copyWith(color: context.palette.textPrimary, fontSize: 13, fontWeight: FontWeight.w600)),
+    child: Text(text, style: AppTypography.labelMedium.copyWith(color: context.palette.textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
   );
 }
 
 IconData groupTypeIcon(GroupType t) => switch (t) {
   GroupType.trip => AppIcons.trip,
   GroupType.home => AppIcons.home,
-  GroupType.couple => AppIcons.heartFill,
+  GroupType.couple => AppIcons.heart,
   GroupType.other => AppIcons.people,
 };
 

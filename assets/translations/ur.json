@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "محفوظ کریں اور شیئر کریں · {count} افراد",
   "bf_summary_save_people_few": "محفوظ کریں اور شیئر کریں · {count} افراد",
   "bf_summary_save_people_many": "محفوظ کریں اور شیئر کریں · {count} افراد",
-  "bf_summary_save_people_other": "محفوظ کریں اور شیئر کریں · {count} افراد"
+  "bf_summary_save_people_other": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bfx_items_one": "1 آئٹم",
+  "bfx_items_other": "{count} آئٹمز",
+  "bfx_people_one": "1 شخص",
+  "bfx_people_other": "{count} افراد",
+  "bfx_charges_none": "کوئی نہیں",
+  "bfx_items_two": "{count} آئٹمز",
+  "bfx_items_few": "{count} آئٹمز",
+  "bfx_items_many": "{count} آئٹمز",
+  "bfx_people_two": "{count} افراد",
+  "bfx_people_few": "{count} افراد",
+  "bfx_people_many": "{count} افراد"
 }

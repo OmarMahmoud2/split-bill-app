@@ -109,7 +109,7 @@ class _AppTextFieldState extends State<AppTextField> {
     final field = AnimatedContainer(
       duration: const Duration(milliseconds: 120),
       height: 52,
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 14),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: widget.enabled ? p.surface : p.surfaceMuted,
         borderRadius: BorderRadius.circular(14),
@@ -152,6 +152,9 @@ class _AppTextFieldState extends State<AppTextField> {
               cursorColor: p.accent,
               decoration: InputDecoration(
                 isCollapsed: true,
+                // The theme's contentPadding would be added on top of the
+                // container's inset.
+                contentPadding: EdgeInsets.zero,
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -180,8 +183,9 @@ class _AppTextFieldState extends State<AppTextField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: AppTypography.labelLarge.copyWith(
+            style: AppTypography.labelMedium.copyWith(
               color: p.textSecondary,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
           ),

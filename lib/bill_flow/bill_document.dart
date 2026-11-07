@@ -289,14 +289,18 @@ Map<String, int> breakdownToMap(PersonBreakdown p) => {
 
 /// Reads bill documents written by 1.x or 2.0 clients.
 class BillReader {
-  BillReader(this.data, {String fallbackCurrency = 'USD'})
+  BillReader(this.data, {String? fallbackCurrency})
     : currency = normalizeCurrency(
         _str(data['currency']).isNotEmpty
             ? _str(data['currency'])
             : _str(data['currencyCode']).isNotEmpty
             ? _str(data['currencyCode'])
-            : fallbackCurrency,
+            : fallbackCurrency ?? defaultFallbackCurrency,
       );
+
+  /// Currency for old bills saved without one: the user's preferred currency,
+  /// kept in sync by AppSettingsProvider so every screen agrees with Home.
+  static String defaultFallbackCurrency = 'USD';
 
   final Map<String, dynamic> data;
   final String currency;

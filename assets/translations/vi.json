@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "Lưu và chia sẻ · {count} người",
   "bf_summary_save_people_few": "Lưu và chia sẻ · {count} người",
   "bf_summary_save_people_many": "Lưu và chia sẻ · {count} người",
-  "bf_summary_save_people_other": "Lưu và chia sẻ · {count} người"
+  "bf_summary_save_people_other": "Lưu và chia sẻ · {count} người",
+  "bfx_items_one": "1 món",
+  "bfx_items_other": "{count} món",
+  "bfx_people_one": "1 người",
+  "bfx_people_other": "{count} người",
+  "bfx_charges_none": "Không có",
+  "bfx_items_two": "{count} món",
+  "bfx_items_few": "{count} món",
+  "bfx_items_many": "{count} món",
+  "bfx_people_two": "{count} người",
+  "bfx_people_few": "{count} người",
+  "bfx_people_many": "{count} người"
 }

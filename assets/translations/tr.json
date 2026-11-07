@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "Kaydet ve paylaş · {count} kişi",
   "bf_summary_save_people_few": "Kaydet ve paylaş · {count} kişi",
   "bf_summary_save_people_many": "Kaydet ve paylaş · {count} kişi",
-  "bf_summary_save_people_other": "Kaydet ve paylaş · {count} kişi"
+  "bf_summary_save_people_other": "Kaydet ve paylaş · {count} kişi",
+  "bfx_items_one": "1 ürün",
+  "bfx_items_other": "{count} ürün",
+  "bfx_people_one": "1 kişi",
+  "bfx_people_other": "{count} kişi",
+  "bfx_charges_none": "Yok",
+  "bfx_items_two": "{count} ürün",
+  "bfx_items_few": "{count} ürün",
+  "bfx_items_many": "{count} ürün",
+  "bfx_people_two": "{count} kişi",
+  "bfx_people_few": "{count} kişi",
+  "bfx_people_many": "{count} kişi"
 }

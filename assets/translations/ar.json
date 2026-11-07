@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "حفظ ومشاركة · شخصان ({count})",
   "bf_summary_save_people_few": "حفظ ومشاركة · {count} أشخاص",
   "bf_summary_save_people_many": "حفظ ومشاركة · {count} شخصًا",
-  "bf_summary_save_people_other": "حفظ ومشاركة · {count} شخص"
+  "bf_summary_save_people_other": "حفظ ومشاركة · {count} شخص",
+  "bfx_items_one": "عنصر واحد",
+  "bfx_items_other": "{count} عنصر",
+  "bfx_people_one": "شخص واحد",
+  "bfx_people_other": "{count} شخص",
+  "bfx_items_two": "{count} عنصر",
+  "bfx_items_few": "{count} عناصر",
+  "bfx_items_many": "{count} عنصرًا",
+  "bfx_people_two": "{count} شخص",
+  "bfx_people_few": "{count} أشخاص",
+  "bfx_people_many": "{count} شخصًا",
+  "bfx_charges_none": "لا شيء"
 }

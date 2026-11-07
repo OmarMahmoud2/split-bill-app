@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "저장하고 공유 · {count}명",
   "bf_summary_save_people_few": "저장하고 공유 · {count}명",
   "bf_summary_save_people_many": "저장하고 공유 · {count}명",
-  "bf_summary_save_people_other": "저장하고 공유 · {count}명"
+  "bf_summary_save_people_other": "저장하고 공유 · {count}명",
+  "bfx_items_one": "1개 항목",
+  "bfx_items_other": "{count}개 항목",
+  "bfx_people_one": "1명",
+  "bfx_people_other": "{count}명",
+  "bfx_charges_none": "없음",
+  "bfx_items_two": "{count}개 항목",
+  "bfx_items_few": "{count}개 항목",
+  "bfx_items_many": "{count}개 항목",
+  "bfx_people_two": "{count}명",
+  "bfx_people_few": "{count}명",
+  "bfx_people_many": "{count}명"
 }

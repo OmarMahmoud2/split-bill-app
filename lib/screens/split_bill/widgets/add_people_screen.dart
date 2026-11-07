@@ -501,9 +501,8 @@ class PersonTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final first = firstNameOf(person['name']);
-    final name = isYou
-        ? 'bf_assign_you_chip'.tr(namedArgs: {'name': first})
-        : first;
+    // A 72 pt tile has no room for "Omar (you)": just "You".
+    final name = isYou ? 'home_tab_you'.tr() : first;
     return Semantics(
       button: onTap != null,
       selected: selected,

@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "Simpan dan bagikan · {count} orang",
   "bf_summary_save_people_few": "Simpan dan bagikan · {count} orang",
   "bf_summary_save_people_many": "Simpan dan bagikan · {count} orang",
-  "bf_summary_save_people_other": "Simpan dan bagikan · {count} orang"
+  "bf_summary_save_people_other": "Simpan dan bagikan · {count} orang",
+  "bfx_items_one": "1 item",
+  "bfx_items_other": "{count} item",
+  "bfx_people_one": "1 orang",
+  "bfx_people_other": "{count} orang",
+  "bfx_charges_none": "Tidak ada",
+  "bfx_items_two": "{count} item",
+  "bfx_items_few": "{count} item",
+  "bfx_items_many": "{count} item",
+  "bfx_people_two": "{count} orang",
+  "bfx_people_few": "{count} orang",
+  "bfx_people_many": "{count} orang"
 }

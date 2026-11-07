@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "บันทึกและแชร์ · {count} คน",
   "bf_summary_save_people_few": "บันทึกและแชร์ · {count} คน",
   "bf_summary_save_people_many": "บันทึกและแชร์ · {count} คน",
-  "bf_summary_save_people_other": "บันทึกและแชร์ · {count} คน"
+  "bf_summary_save_people_other": "บันทึกและแชร์ · {count} คน",
+  "bfx_items_one": "1 รายการ",
+  "bfx_items_other": "{count} รายการ",
+  "bfx_people_one": "1 คน",
+  "bfx_people_other": "{count} คน",
+  "bfx_charges_none": "ไม่มี",
+  "bfx_items_two": "{count} รายการ",
+  "bfx_items_few": "{count} รายการ",
+  "bfx_items_many": "{count} รายการ",
+  "bfx_people_two": "{count} คน",
+  "bfx_people_few": "{count} คน",
+  "bfx_people_many": "{count} คน"
 }

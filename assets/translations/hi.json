@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "सहेजें और साझा करें · {count} लोग",
   "bf_summary_save_people_few": "सहेजें और साझा करें · {count} लोग",
   "bf_summary_save_people_many": "सहेजें और साझा करें · {count} लोग",
-  "bf_summary_save_people_other": "सहेजें और साझा करें · {count} लोग"
+  "bf_summary_save_people_other": "सहेजें और साझा करें · {count} लोग",
+  "bfx_items_one": "1 आइटम",
+  "bfx_items_other": "{count} आइटम",
+  "bfx_people_one": "1 व्यक्ति",
+  "bfx_people_other": "{count} लोग",
+  "bfx_charges_none": "कोई नहीं",
+  "bfx_items_two": "{count} आइटम",
+  "bfx_items_few": "{count} आइटम",
+  "bfx_items_many": "{count} आइटम",
+  "bfx_people_two": "{count} लोग",
+  "bfx_people_few": "{count} लोग",
+  "bfx_people_many": "{count} लोग"
 }

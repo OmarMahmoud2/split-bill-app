@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "保存して共有 · {count}人",
   "bf_summary_save_people_few": "保存して共有 · {count}人",
   "bf_summary_save_people_many": "保存して共有 · {count}人",
-  "bf_summary_save_people_other": "保存して共有 · {count}人"
+  "bf_summary_save_people_other": "保存して共有 · {count}人",
+  "bfx_items_one": "1品目",
+  "bfx_items_other": "{count}品目",
+  "bfx_people_one": "1人",
+  "bfx_people_other": "{count}人",
+  "bfx_charges_none": "なし",
+  "bfx_items_two": "{count}品目",
+  "bfx_items_few": "{count}品目",
+  "bfx_items_many": "{count}品目",
+  "bfx_people_two": "{count}人",
+  "bfx_people_few": "{count}人",
+  "bfx_people_many": "{count}人"
 }

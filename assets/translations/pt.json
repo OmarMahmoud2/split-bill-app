@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "Guardar e partilhar · {count} pessoas",
   "bf_summary_save_people_few": "Guardar e partilhar · {count} pessoas",
   "bf_summary_save_people_many": "Guardar e partilhar · {count} pessoas",
-  "bf_summary_save_people_other": "Guardar e partilhar · {count} pessoas"
+  "bf_summary_save_people_other": "Guardar e partilhar · {count} pessoas",
+  "bfx_items_one": "1 item",
+  "bfx_items_other": "{count} itens",
+  "bfx_people_one": "1 pessoa",
+  "bfx_people_other": "{count} pessoas",
+  "bfx_charges_none": "Nenhum",
+  "bfx_items_two": "{count} itens",
+  "bfx_items_few": "{count} itens",
+  "bfx_items_many": "{count} itens",
+  "bfx_people_two": "{count} pessoas",
+  "bfx_people_few": "{count} pessoas",
+  "bfx_people_many": "{count} pessoas"
 }

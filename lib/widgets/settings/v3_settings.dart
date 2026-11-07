@@ -354,6 +354,9 @@ class SettingsSwitchRow extends StatelessWidget {
                 const SizedBox(width: 12),
                 Switch.adaptive(
                   value: value,
+                  // iOS draws the Cupertino switch, which ignores the
+                  // Material theme and would be system green.
+                  activeTrackColor: p.accent,
                   onChanged: onChanged == null
                       ? null
                       : (v) {

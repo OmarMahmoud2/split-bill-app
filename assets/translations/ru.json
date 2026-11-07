@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "Сохранить и поделиться · {count} человека",
   "bf_summary_save_people_few": "Сохранить и поделиться · {count} человека",
   "bf_summary_save_people_many": "Сохранить и поделиться · {count} человек",
-  "bf_summary_save_people_other": "Сохранить и поделиться · {count} человека"
+  "bf_summary_save_people_other": "Сохранить и поделиться · {count} человека",
+  "bfx_items_one": "1 позиция",
+  "bfx_items_other": "{count} позиций",
+  "bfx_people_one": "1 человек",
+  "bfx_people_other": "{count} человек",
+  "bfx_items_few": "{count} позиции",
+  "bfx_items_many": "{count} позиций",
+  "bfx_people_few": "{count} человека",
+  "bfx_people_many": "{count} человек",
+  "bfx_charges_none": "Нет",
+  "bfx_items_two": "{count} позиций",
+  "bfx_people_two": "{count} человек"
 }

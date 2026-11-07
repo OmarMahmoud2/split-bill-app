@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:split_bill_app/bill_flow/bill_document.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
@@ -43,6 +44,11 @@ class AppSettingsProvider extends ChangeNotifier {
 
   Locale get locale => _locale;
   String get currencyCode => _currencyCode;
+
+  set _currency(String code) {
+    _currencyCode = code;
+    BillReader.defaultFallbackCurrency = code;
+  }
   ThemeMode get themeMode => _themeMode;
 
   /// Whether [AppHaptics] fires. Device-local, defaults to on.
@@ -74,7 +80,7 @@ class AppSettingsProvider extends ChangeNotifier {
     _locale = savedLocaleCode == null
         ? resolveSupportedLocale(PlatformDispatcher.instance.locales)
         : findLocaleOption(savedLocaleCode).locale;
-    _currencyCode =
+    _currency =
         sanitizeCurrencyCode(prefs.getString('currencyCode')) ??
         UserPreferencesService.defaultCurrencyCode;
     _themeMode = themeModeFromName(prefs.getString(themeModePreferenceKey));
@@ -113,7 +119,7 @@ class AppSettingsProvider extends ChangeNotifier {
           _locale = findLocaleOption(
             (data['localeCode'] as String?) ?? _locale.languageCode,
           ).locale;
-          _currencyCode =
+          _currency =
               sanitizeCurrencyCode(data['currencyCode'] as String?) ??
               UserPreferencesService.defaultCurrencyCode;
           _saveLocalPreferences();
@@ -134,7 +140,7 @@ class AppSettingsProvider extends ChangeNotifier {
   }
 
   Future<void> updateCurrencyCode(String currencyCode) async {
-    _currencyCode =
+    _currency =
         sanitizeCurrencyCode(currencyCode) ??
         UserPreferencesService.defaultCurrencyCode;
     notifyListeners();

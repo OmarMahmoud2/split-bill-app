@@ -2300,5 +2300,16 @@
   "bf_summary_save_people_two": "Opslaan en delen · {count} personen",
   "bf_summary_save_people_few": "Opslaan en delen · {count} personen",
   "bf_summary_save_people_many": "Opslaan en delen · {count} personen",
-  "bf_summary_save_people_other": "Opslaan en delen · {count} personen"
+  "bf_summary_save_people_other": "Opslaan en delen · {count} personen",
+  "bfx_items_one": "1 item",
+  "bfx_items_other": "{count} items",
+  "bfx_people_one": "1 persoon",
+  "bfx_people_other": "{count} personen",
+  "bfx_charges_none": "Geen",
+  "bfx_items_two": "{count} items",
+  "bfx_items_few": "{count} items",
+  "bfx_items_many": "{count} items",
+  "bfx_people_two": "{count} personen",
+  "bfx_people_few": "{count} personen",
+  "bfx_people_many": "{count} personen"
 }

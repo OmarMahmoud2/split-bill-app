@@ -837,7 +837,7 @@ class BillTile extends StatelessWidget {
           };
     final meta = [
       if (dayText.isNotEmpty) dayText,
-      'bf_bills_people'.tr(namedArgs: {'count': '${bill.participants.length}'}),
+      // People count lives in the avatar stack and "x of y paid".
       if (mine) 'groups_paid_by_you'.tr(),
     ].join(' · ');
     final minor = mine
@@ -848,10 +848,10 @@ class BillTile extends StatelessWidget {
         : minor < 0
         ? 'home_you_owe'.tr()
         : 'groups_settled'.tr();
-    final paid = bill.participants
-        .where((x) => x.id == bill.hostId || x.isPaid)
-        .length;
-    final total = bill.participants.length;
+    // Same count as bill details: the people who owe the payer.
+    final debtors = bill.participants.where((x) => x.id != bill.hostId);
+    final paid = debtors.where((x) => x.isPaid).length;
+    final total = debtors.length;
     final tints = [
       (p.accentSoft, p.accent),
       (p.coralSoft, p.coral),

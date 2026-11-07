@@ -41,7 +41,7 @@ class BillSummaryWidget extends StatelessWidget {
     final owedText = formatMoneyMinor(
       summary.owedMinor,
       currency,
-      showSymbol: false,
+      showSymbol: true,
     );
     final Widget status;
     if (summary.owedMinor <= 0) {

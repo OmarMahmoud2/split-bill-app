@@ -84,7 +84,7 @@ void main() {
   ) async {
     final store = await _open(tester, _bill());
     expect(find.text('bf_edit_title'), findsOneWidget);
-    expect(find.text('1 · 2'), findsOneWidget);
+    expect(find.textContaining('bfx_items'), findsOneWidget); // "1 item · 2 people" when localized
     expect(find.text('14% · 12% · —'), findsOneWidget);
     expect(find.text('EGP'), findsOneWidget);
     expect(find.textContaining('bf_edit_history_you_created'), findsOneWidget);
