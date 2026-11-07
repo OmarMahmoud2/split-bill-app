@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:split_bill_app/payments/browse_all_sheet.dart';
 import 'package:split_bill_app/payments/payments.dart';
 import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
@@ -32,7 +33,7 @@ List<StoredPaymentMethod> moveMethodToDefault(
 List<PaymentMethodType> suggestedMethodsToAdd(
   List<PaymentMethodType> recommended,
   List<StoredPaymentMethod> saved, {
-  int limit = 8,
+  int limit = 5,
 }) {
   final savedIds = {for (final m in saved) m.type.id};
   final list = [
@@ -348,6 +349,34 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 20, 0),
+            child: OutlinedButton.icon(
+              key: const ValueKey('pm3-browse-all'),
+              onPressed: () async {
+                final picked = await showBrowseAllMethods(
+                  context,
+                  platform: currentPaymentPlatform(),
+                );
+                if (picked != null && mounted) _openEditor(type: picked);
+              },
+              icon: const Icon(AppIcons.search),
+              label: Text('yx_pay_browse'.tr()),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 0),
+            child: Text(
+              'yx_pay_coverage'.tr(
+                namedArgs: {
+                  'apps': roundedPlus(paymentCoverage().apps),
+                  'countries': roundedPlus(paymentCoverage().countries),
+                },
+              ),
+              textAlign: TextAlign.center,
+              style: AppTypography.bodySmall.copyWith(color: p.textTertiary),
+            ),
+          ),
         ],
       );
     }
@@ -389,7 +418,13 @@ class PaymentMethodLogo extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      color: brand,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [brand, Color.lerp(brand, Colors.black, 0.22)!],
+        ),
+      ),
       child: Text(
         type.initials,
         maxLines: 1,
