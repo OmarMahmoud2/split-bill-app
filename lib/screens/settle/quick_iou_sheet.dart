@@ -306,54 +306,62 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
             ),
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () => CurrencySelectionSheet.show(
-                  context: context,
-                  selectedCode: _code,
-                  onSelected: (c) =>
-                      setState(() => _currency = normalizeCurrency(c)),
-                ),
-                child: Text(
-                  _code,
-                  semanticsLabel: 'iou_change_currency'.tr(
-                    namedArgs: {'code': _code},
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              color: p.surface,
+              borderRadius: BorderRadius.circular(AppRadii.dialog),
+              border: Border.all(color: p.hairline),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => CurrencySelectionSheet.show(
+                    context: context,
+                    selectedCode: _code,
+                    onSelected: (c) =>
+                        setState(() => _currency = normalizeCurrency(c)),
                   ),
-                ),
-              ),
-              IntrinsicWidth(
-                child: TextField(
-                  controller: _amount,
-                  autofocus: false,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                  ],
-                  textAlign: TextAlign.center,
-                  style: AppTypography.amountHero.copyWith(
-                    color: p.textPrimary,
-                    fontSize: 48,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: '0',
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    filled: false,
-                    hintStyle: AppTypography.amountHero.copyWith(
-                      color: p.textDisabled,
-                      fontSize: 48,
+                  child: Text(
+                    _code,
+                    semanticsLabel: 'iou_change_currency'.tr(
+                      namedArgs: {'code': _code},
                     ),
-                    contentPadding: EdgeInsets.zero,
                   ),
-                  onChanged: (_) => setState(() {}),
                 ),
-              ),
-            ],
+                IntrinsicWidth(
+                  child: TextField(
+                    controller: _amount,
+                    autofocus: false,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                    ],
+                    textAlign: TextAlign.center,
+                    style: AppTypography.amountHero.copyWith(
+                      color: p.textPrimary,
+                      fontSize: 56,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: '0',
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                      hintStyle: AppTypography.amountHero.copyWith(
+                        color: p.textDisabled,
+                        fontSize: 56,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ),
+              ],
+            ),
           ),
           TextField(
             controller: _note,
