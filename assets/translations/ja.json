@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "スキャン1回で{count}ポイント",
   "bf_scan_cost_pro": "Pro: スキャン無制限",
   "fr_tagline": "割り勘して、精算して、貸し借りなしに。",
-  "fr_pay_now": "今すぐ支払う"
+  "fr_pay_now": "今すぐ支払う",
+  "scanx_step_1": "品目を探しています…",
+  "scanx_step_2": "価格を読み取っています…",
+  "scanx_step_3": "合計を計算しています…",
+  "bf_share_tile_message": "グループにメッセージ",
+  "bf_share_tile_qr": "QRコードを表示",
+  "bf_share_tile_each": "各自にリンクを送る",
+  "bf_summary_save_people_one": "保存して共有 · {count}人",
+  "bf_summary_save_people_two": "保存して共有 · {count}人",
+  "bf_summary_save_people_few": "保存して共有 · {count}人",
+  "bf_summary_save_people_many": "保存して共有 · {count}人",
+  "bf_summary_save_people_other": "保存して共有 · {count}人"
 }

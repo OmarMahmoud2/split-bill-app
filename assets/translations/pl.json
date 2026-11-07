@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Skan kosztuje {count} punktu",
   "bf_scan_cost_pro": "Pro: skanowanie bez limitu",
   "fr_tagline": "Podziel. Rozlicz. Bądźcie kwita.",
-  "fr_pay_now": "Zapłać teraz"
+  "fr_pay_now": "Zapłać teraz",
+  "scanx_step_1": "Szukam pozycji…",
+  "scanx_step_2": "Odczytuję ceny…",
+  "scanx_step_3": "Sumuję wszystko…",
+  "bf_share_tile_message": "Napisz do grupy",
+  "bf_share_tile_qr": "Pokaż kod QR",
+  "bf_share_tile_each": "Wyślij każdemu jego link",
+  "bf_summary_save_people_one": "Zapisz i udostępnij · {count} osoba",
+  "bf_summary_save_people_two": "Zapisz i udostępnij · {count} osoby",
+  "bf_summary_save_people_few": "Zapisz i udostępnij · {count} osoby",
+  "bf_summary_save_people_many": "Zapisz i udostępnij · {count} osób",
+  "bf_summary_save_people_other": "Zapisz i udostępnij · {count} osoby"
 }

@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "ایک اسکین کی قیمت {count} پوائنٹس ہے",
   "bf_scan_cost_pro": "پرو: لامحدود اسکین",
   "fr_tagline": "تقسیم کریں۔ حساب چکائیں۔ برابر رہیں۔",
-  "fr_pay_now": "ابھی ادا کریں"
+  "fr_pay_now": "ابھی ادا کریں",
+  "scanx_step_1": "آئٹمز تلاش کیے جا رہے ہیں…",
+  "scanx_step_2": "قیمتیں پڑھی جا رہی ہیں…",
+  "scanx_step_3": "سب کا مجموعہ نکالا جا رہا ہے…",
+  "bf_share_tile_message": "گروپ کو پیغام بھیجیں",
+  "bf_share_tile_qr": "QR کوڈ دکھائیں",
+  "bf_share_tile_each": "ہر شخص کو اس کا لنک بھیجیں",
+  "bf_summary_save_people_one": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_two": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_few": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_many": "محفوظ کریں اور شیئر کریں · {count} افراد",
+  "bf_summary_save_people_other": "محفوظ کریں اور شیئر کریں · {count} افراد"
 }

@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "每次扫描需 {count} 积分",
   "bf_scan_cost_pro": "Pro：无限次扫描",
   "fr_tagline": "分摊,结清,两不相欠。",
-  "fr_pay_now": "立即支付"
+  "fr_pay_now": "立即支付",
+  "scanx_step_1": "正在查找项目…",
+  "scanx_step_2": "正在读取价格…",
+  "scanx_step_3": "正在汇总…",
+  "bf_share_tile_message": "发消息给群组",
+  "bf_share_tile_qr": "显示二维码",
+  "bf_share_tile_each": "给每个人发送专属链接",
+  "bf_summary_save_people_one": "保存并分享 · {count}人",
+  "bf_summary_save_people_two": "保存并分享 · {count}人",
+  "bf_summary_save_people_few": "保存并分享 · {count}人",
+  "bf_summary_save_people_many": "保存并分享 · {count}人",
+  "bf_summary_save_people_other": "保存并分享 · {count}人"
 }

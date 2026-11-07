@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Ein Scan kostet {count} Punkte",
   "bf_scan_cost_pro": "Pro: unbegrenzt scannen",
   "fr_tagline": "Teilen. Begleichen. Quitt bleiben.",
-  "fr_pay_now": "Jetzt zahlen"
+  "fr_pay_now": "Jetzt zahlen",
+  "scanx_step_1": "Positionen werden gesucht…",
+  "scanx_step_2": "Preise werden gelesen…",
+  "scanx_step_3": "Alles wird zusammengerechnet…",
+  "bf_share_tile_message": "Gruppe benachrichtigen",
+  "bf_share_tile_qr": "QR-Code zeigen",
+  "bf_share_tile_each": "Jeder bekommt seinen Link",
+  "bf_summary_save_people_one": "Speichern und teilen · {count} Person",
+  "bf_summary_save_people_two": "Speichern und teilen · {count} Personen",
+  "bf_summary_save_people_few": "Speichern und teilen · {count} Personen",
+  "bf_summary_save_people_many": "Speichern und teilen · {count} Personen",
+  "bf_summary_save_people_other": "Speichern und teilen · {count} Personen"
 }

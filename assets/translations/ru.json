@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Сканирование стоит {count} балла",
   "bf_scan_cost_pro": "Pro: безлимитное сканирование",
   "fr_tagline": "Раздели. Рассчитайся. Будьте квиты.",
-  "fr_pay_now": "Оплатить"
+  "fr_pay_now": "Оплатить",
+  "scanx_step_1": "Ищем позиции…",
+  "scanx_step_2": "Считываем цены…",
+  "scanx_step_3": "Подсчитываем итог…",
+  "bf_share_tile_message": "Написать в группу",
+  "bf_share_tile_qr": "Показать QR-код",
+  "bf_share_tile_each": "Отправить каждому его ссылку",
+  "bf_summary_save_people_one": "Сохранить и поделиться · {count} человек",
+  "bf_summary_save_people_two": "Сохранить и поделиться · {count} человека",
+  "bf_summary_save_people_few": "Сохранить и поделиться · {count} человека",
+  "bf_summary_save_people_many": "Сохранить и поделиться · {count} человек",
+  "bf_summary_save_people_other": "Сохранить и поделиться · {count} человека"
 }

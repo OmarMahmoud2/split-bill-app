@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "एक स्कैन की क़ीमत {count} पॉइंट है",
   "bf_scan_cost_pro": "प्रो: असीमित स्कैन",
   "fr_tagline": "बाँटो। चुकाओ। हिसाब बराबर रखो।",
-  "fr_pay_now": "अभी भुगतान करें"
+  "fr_pay_now": "अभी भुगतान करें",
+  "scanx_step_1": "आइटम ढूंढे जा रहे हैं…",
+  "scanx_step_2": "कीमतें पढ़ी जा रही हैं…",
+  "scanx_step_3": "सब जोड़ा जा रहा है…",
+  "bf_share_tile_message": "ग्रुप को मैसेज करें",
+  "bf_share_tile_qr": "QR कोड दिखाएं",
+  "bf_share_tile_each": "हर व्यक्ति को उसका लिंक भेजें",
+  "bf_summary_save_people_one": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_two": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_few": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_many": "सहेजें और साझा करें · {count} लोग",
+  "bf_summary_save_people_other": "सहेजें और साझा करें · {count} लोग"
 }

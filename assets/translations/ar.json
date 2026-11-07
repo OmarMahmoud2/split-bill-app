@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "المسح يكلّف {count} نقطة",
   "bf_scan_cost_pro": "برو: مسح بلا حدود",
   "fr_tagline": "قسّمها. سوّها. ابقوا متعادلين.",
-  "fr_pay_now": "ادفع الآن"
+  "fr_pay_now": "ادفع الآن",
+  "scanx_step_1": "جارٍ العثور على الأصناف…",
+  "scanx_step_2": "جارٍ قراءة الأسعار…",
+  "scanx_step_3": "جارٍ جمع المجموع…",
+  "bf_share_tile_message": "راسل المجموعة",
+  "bf_share_tile_qr": "عرض رمز QR",
+  "bf_share_tile_each": "أرسل لكل شخص رابطه",
+  "bf_summary_save_people_one": "حفظ ومشاركة · شخص واحد",
+  "bf_summary_save_people_two": "حفظ ومشاركة · شخصان",
+  "bf_summary_save_people_few": "حفظ ومشاركة · {count} أشخاص",
+  "bf_summary_save_people_many": "حفظ ومشاركة · {count} شخصًا",
+  "bf_summary_save_people_other": "حفظ ومشاركة · {count} شخص"
 }

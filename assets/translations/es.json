@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Un escaneo cuesta {count} puntos",
   "bf_scan_cost_pro": "Pro: escaneos ilimitados",
   "fr_tagline": "Divídelo. Salda cuentas. Quedad en paz.",
-  "fr_pay_now": "Pagar ahora"
+  "fr_pay_now": "Pagar ahora",
+  "scanx_step_1": "Buscando los artículos…",
+  "scanx_step_2": "Leyendo los precios…",
+  "scanx_step_3": "Sumando todo…",
+  "bf_share_tile_message": "Escribir al grupo",
+  "bf_share_tile_qr": "Mostrar código QR",
+  "bf_share_tile_each": "Enviar a cada persona su enlace",
+  "bf_summary_save_people_one": "Guardar y compartir · {count} persona",
+  "bf_summary_save_people_two": "Guardar y compartir · {count} personas",
+  "bf_summary_save_people_few": "Guardar y compartir · {count} personas",
+  "bf_summary_save_people_many": "Guardar y compartir · {count} personas",
+  "bf_summary_save_people_other": "Guardar y compartir · {count} personas"
 }

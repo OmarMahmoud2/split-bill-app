@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "스캔 1회에 {count}포인트",
   "bf_scan_cost_pro": "Pro: 스캔 무제한",
   "fr_tagline": "나누고, 정산하고, 깔끔하게 끝.",
-  "fr_pay_now": "지금 결제"
+  "fr_pay_now": "지금 결제",
+  "scanx_step_1": "항목을 찾는 중…",
+  "scanx_step_2": "가격을 읽는 중…",
+  "scanx_step_3": "합계를 계산하는 중…",
+  "bf_share_tile_message": "그룹에 메시지 보내기",
+  "bf_share_tile_qr": "QR 코드 보기",
+  "bf_share_tile_each": "각자에게 링크 보내기",
+  "bf_summary_save_people_one": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_two": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_few": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_many": "저장하고 공유 · {count}명",
+  "bf_summary_save_people_other": "저장하고 공유 · {count}명"
 }

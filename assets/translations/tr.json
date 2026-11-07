@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Bir tarama {count} puan",
   "bf_scan_cost_pro": "Pro: sınırsız tarama",
   "fr_tagline": "Böl. Öde. Hesap denk kalsın.",
-  "fr_pay_now": "Şimdi öde"
+  "fr_pay_now": "Şimdi öde",
+  "scanx_step_1": "Kalemler bulunuyor…",
+  "scanx_step_2": "Fiyatlar okunuyor…",
+  "scanx_step_3": "Hepsi toplanıyor…",
+  "bf_share_tile_message": "Gruba mesaj gönder",
+  "bf_share_tile_qr": "QR kodu göster",
+  "bf_share_tile_each": "Herkese kendi bağlantısını gönder",
+  "bf_summary_save_people_one": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_two": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_few": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_many": "Kaydet ve paylaş · {count} kişi",
+  "bf_summary_save_people_other": "Kaydet ve paylaş · {count} kişi"
 }

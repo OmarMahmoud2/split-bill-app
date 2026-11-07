@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Een scan kost {count} punten",
   "bf_scan_cost_pro": "Pro: onbeperkt scannen",
   "fr_tagline": "Splits het. Reken af. Blijf quitte.",
-  "fr_pay_now": "Nu betalen"
+  "fr_pay_now": "Nu betalen",
+  "scanx_step_1": "Items zoeken…",
+  "scanx_step_2": "Prijzen lezen…",
+  "scanx_step_3": "Alles optellen…",
+  "bf_share_tile_message": "Bericht naar de groep",
+  "bf_share_tile_qr": "QR-code tonen",
+  "bf_share_tile_each": "Stuur ieder zijn link",
+  "bf_summary_save_people_one": "Opslaan en delen · {count} persoon",
+  "bf_summary_save_people_two": "Opslaan en delen · {count} personen",
+  "bf_summary_save_people_few": "Opslaan en delen · {count} personen",
+  "bf_summary_save_people_many": "Opslaan en delen · {count} personen",
+  "bf_summary_save_people_other": "Opslaan en delen · {count} personen"
 }

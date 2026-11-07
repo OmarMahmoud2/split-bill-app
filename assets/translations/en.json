@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "A scan costs {count} points",
   "bf_scan_cost_pro": "Pro: unlimited scans",
   "fr_tagline": "Split it. Settle it. Stay even.",
-  "fr_pay_now": "Pay now"
+  "fr_pay_now": "Pay now",
+  "scanx_step_1": "Finding the items…",
+  "scanx_step_2": "Reading the prices…",
+  "scanx_step_3": "Adding it all up…",
+  "bf_share_tile_message": "Message the group",
+  "bf_share_tile_qr": "Show QR code",
+  "bf_share_tile_each": "Send each person their link",
+  "bf_summary_save_people_one": "Save and share · {count} person",
+  "bf_summary_save_people_two": "Save and share · {count} people",
+  "bf_summary_save_people_few": "Save and share · {count} people",
+  "bf_summary_save_people_many": "Save and share · {count} people",
+  "bf_summary_save_people_other": "Save and share · {count} people"
 }

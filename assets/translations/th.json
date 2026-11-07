@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "สแกนหนึ่งครั้งใช้ {count} แต้ม",
   "bf_scan_cost_pro": "Pro: สแกนได้ไม่จำกัด",
   "fr_tagline": "หารกัน จ่ายกัน เจ๊ากัน",
-  "fr_pay_now": "จ่ายเลย"
+  "fr_pay_now": "จ่ายเลย",
+  "scanx_step_1": "กำลังหารายการ…",
+  "scanx_step_2": "กำลังอ่านราคา…",
+  "scanx_step_3": "กำลังรวมยอด…",
+  "bf_share_tile_message": "ส่งข้อความถึงกลุ่ม",
+  "bf_share_tile_qr": "แสดงคิวอาร์โค้ด",
+  "bf_share_tile_each": "ส่งลิงก์ให้แต่ละคน",
+  "bf_summary_save_people_one": "บันทึกและแชร์ · {count} คน",
+  "bf_summary_save_people_two": "บันทึกและแชร์ · {count} คน",
+  "bf_summary_save_people_few": "บันทึกและแชร์ · {count} คน",
+  "bf_summary_save_people_many": "บันทึกและแชร์ · {count} คน",
+  "bf_summary_save_people_other": "บันทึกและแชร์ · {count} คน"
 }

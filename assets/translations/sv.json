@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "En skanning kostar {count} poäng",
   "bf_scan_cost_pro": "Pro: obegränsad skanning",
   "fr_tagline": "Dela. Gör upp. Håll det jämnt.",
-  "fr_pay_now": "Betala nu"
+  "fr_pay_now": "Betala nu",
+  "scanx_step_1": "Hittar varorna…",
+  "scanx_step_2": "Läser priserna…",
+  "scanx_step_3": "Räknar ihop allt…",
+  "bf_share_tile_message": "Skriv till gruppen",
+  "bf_share_tile_qr": "Visa QR-kod",
+  "bf_share_tile_each": "Skicka var och en sin länk",
+  "bf_summary_save_people_one": "Spara och dela · {count} person",
+  "bf_summary_save_people_two": "Spara och dela · {count} personer",
+  "bf_summary_save_people_few": "Spara och dela · {count} personer",
+  "bf_summary_save_people_many": "Spara och dela · {count} personer",
+  "bf_summary_save_people_other": "Spara och dela · {count} personer"
 }

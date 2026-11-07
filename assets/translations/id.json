@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Satu pindaian butuh {count} poin",
   "bf_scan_cost_pro": "Pro: pindai tanpa batas",
   "fr_tagline": "Bagi. Lunasi. Tetap impas.",
-  "fr_pay_now": "Bayar sekarang"
+  "fr_pay_now": "Bayar sekarang",
+  "scanx_step_1": "Mencari item…",
+  "scanx_step_2": "Membaca harga…",
+  "scanx_step_3": "Menjumlahkan semuanya…",
+  "bf_share_tile_message": "Kirim pesan ke grup",
+  "bf_share_tile_qr": "Tampilkan kode QR",
+  "bf_share_tile_each": "Kirim tautan ke setiap orang",
+  "bf_summary_save_people_one": "Simpan dan bagikan · {count} orang",
+  "bf_summary_save_people_two": "Simpan dan bagikan · {count} orang",
+  "bf_summary_save_people_few": "Simpan dan bagikan · {count} orang",
+  "bf_summary_save_people_many": "Simpan dan bagikan · {count} orang",
+  "bf_summary_save_people_other": "Simpan dan bagikan · {count} orang"
 }
