@@ -1,1 +1,1 @@
-Escanea recibos y salda deudas
+Escanea recibos, salda deudas

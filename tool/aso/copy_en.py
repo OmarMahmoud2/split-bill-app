@@ -19,16 +19,19 @@ FRIENDS PAY FROM A LINK
 Send a personal link or a share card on WhatsApp or iMessage. Guests open it on the web, see their share, pay with {PAY}, and attach proof of payment. Payment methods match each friend's country, with the amount filled in where the app allows it.
 
 SETTLE IN FEWER PAYMENTS
-Groups keep a running balance across bills. Settle up with the fewest transfers, record payments, and get a gentle reminder for open balances, never more than one a week.
+Groups keep a running balance across bills. Settle up with the fewest transfers, record payments, and get a gentle reminder for open balances, never more than one a week. Can't decide who pays? Spin the who-pays roulette.
 
 ANY CURRENCY, 22 LANGUAGES
-Every world currency with the right decimals, right-to-left Arabic and Urdu, dark mode, and local payment methods for more than 60 countries.
+158 currencies with the right decimals, 80+ local payment apps, right-to-left Arabic and Urdu, and dark mode.
 
 FREE TO USE
-Unlimited bills, groups, balances and guest links, and typing bills in by hand is always free. AI scans and voice commands are included to start, with more by watching a short ad. No interstitial ads.
+Unlimited bills, groups, balances and guest links, and typing a bill in is always free. You start with welcome points for AI scans and voice, and a short rewarded ad adds more when you want them. No interstitial ads.
 
 PRO
-Unlimited AI scans and voice, multi-currency groups with daily exchange rates, recurring bills such as rent and utilities, and CSV and PDF export. Choose monthly, yearly with a free trial, or a one-time lifetime purchase.{LEGAL}"""
+Unlimited AI scans and voice, multi-currency groups with daily exchange rates, recurring bills such as rent and utilities, CSV and PDF export, and no ads. Choose monthly, yearly with a free trial, or a one-time lifetime purchase.
+
+PRIVACY
+{NAME} never holds your money: friends pay each other directly in their own apps. Your receipts are never used to train AI.{LEGAL}"""
 
 LEGAL_IOS_EN = """
 
@@ -37,30 +40,20 @@ Subscriptions are charged to your Apple ID account when you confirm the purchase
 Privacy Policy: https://omarmali.net/split-bill/privacy/
 Terms of Use: https://omarmali.net/split-bill/terms/"""
 
-RELEASE_EN = """{NAME} 2.0 is a new app from the ground up.
+RELEASE_EN = """{NAME} 2.0 is here, rebuilt from the ground up.
 
-- Scan a receipt, then say who had what. Voice assignment is new.
-- Groups with a running balance for trips, {FLAT}s and dinners.
-- Settle up in the fewest payments and record payments with proof.
-- Friends pay from a link, no app needed, with payment methods for their country.
-- Every cent accounted for: a full breakdown on every share, with edit history.
-- Split by item, equally, by exact amounts, percentages or shares. Quick IOUs.
-- Every world currency, 22 languages, right-to-left support and dark mode.
-- Pro: multi-currency with daily rates, recurring bills, CSV and PDF export.
-- Free plan: unlimited bills, groups and guest links, with AI scans included to start."""
+- Say who had what: voice puts every item on the right person.
+- Friends pay from a link in 80+ local payment apps, no app needed.
+- Groups and trips settle in the fewest payments, with IOUs and gentle reminders.
+- Can't decide who pays? Spin the roulette.
+- 158 currencies, 22 languages, dark mode.
+- Pro: unlimited scans and voice, recurring bills, PDF and CSV export, no ads."""
 
-CHANGELOG_EN = """2.0 is a new app from the ground up.
-- Scan a receipt, then say who had what (voice assignment).
-- Groups with running balances; settle up in the fewest payments, record payments with proof.
-- Friends pay from a link, no app needed, with payment methods for their country.
-- Every cent accounted for: full breakdown on every share, edit history.
-- Split by item, equally, exact, percentage or shares. Quick IOUs.
-- Every currency, 22 languages, RTL, dark mode.
-- Pro: multi-currency, recurring bills, CSV/PDF export. Free: AI scans included."""
+CHANGELOG_EN = RELEASE_EN.replace("\n\n", "\n")
 
-PROMO_EN = "Scan it. Say who had what. Every cent accounted for. Friends pay from a link in the apps their country uses, no download needed. Free, AI scans included."
+PROMO_EN = "New in 2.0: say who had what and {NAME} splits the receipt for you. Friends pay from a link in the apps their country uses, no app needed. Typing a bill is always free."
 
-SHORT_EN = "Scan receipts, say who had what, settle up. Friends pay from a link, no app."
+SHORT_EN = "Split bills with AI: scan the receipt, say who had what, friends pay by link."
 
 
 def en_variant(ios, play, *, name, subtitle, keywords, pay, pay_play=None, flat="flat",
@@ -86,34 +79,34 @@ def en_variant(ios, play, *, name, subtitle, keywords, pay, pay_play=None, flat=
 EN = [
     en_variant(
         ["en-US"], ["en-US"],
-        name=": Split Group Bills",
-        subtitle="AI Receipt Scanner & Settle Up",
-        keywords="expense,trip,roommate,friends,dinner,tip,owe,iou,share,travel,voice,dutch,pay,calculator,debt,check",
+        name=": Split Bills & Receipts",
+        subtitle="AI Scanner, Groups & Settle Up",
+        keywords="expense,trip,roommate,friends,dinner,tip,owe,iou,travel,voice,splitter,pay,calculator,debt,check",
         pay="Venmo, Cash App, PayPal, Zelle or Apple Cash",
         pay_play="Venmo, Cash App, PayPal or Zelle",
         flat="apartment",
     ),
     en_variant(
         ["en-GB"], ["en-GB"],
-        name=": Split Group Bills",
-        subtitle="AI Receipt Scanner & Settle Up",
-        keywords="expense,holiday,flatmate,friends,dinner,tip,owe,iou,share,travel,voice,pay,calculator,debt,kitty",
+        name=": Split Bills & Receipts",
+        subtitle="AI Scanner, Groups & Settle Up",
+        keywords="expense,holiday,flatmate,friends,dinner,tip,owe,iou,travel,voice,pay,calculator,debt,kitty,splitter",
         pay="a bank transfer, Monzo, PayPal, Revolut or Wise",
         flat="flat",
     ),
     en_variant(
         ["en-AU"], [],
-        name=": Split Group Bills",
-        subtitle="AI Receipt Scanner & Settle Up",
-        keywords="expense,holiday,housemate,mates,dinner,tip,owe,iou,share,travel,voice,pay,calculator,debt,kitty,trip",
+        name=": Split Bills & Receipts",
+        subtitle="AI Scanner, Groups & Settle Up",
+        keywords="expense,holiday,housemate,mates,dinner,tip,owe,iou,travel,voice,pay,calculator,debt,kitty,splitter",
         pay="PayID, PayPal, Revolut or Wise",
         flat="share house",
     ),
     en_variant(
         ["en-CA"], [],
-        name=": Split Group Bills",
-        subtitle="AI Receipt Scanner & Settle Up",
-        keywords="expense,trip,roommate,friends,dinner,tip,owe,iou,share,travel,voice,pay,calculator,debt,etransfer",
+        name=": Split Bills & Receipts",
+        subtitle="AI Scanner, Groups & Settle Up",
+        keywords="expense,trip,roommate,friends,dinner,tip,owe,iou,travel,voice,pay,calculator,debt,etransfer,splitter",
         pay="Interac e-Transfer, PayPal or Wise",
         flat="apartment",
     ),

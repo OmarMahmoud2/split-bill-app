@@ -1,1 +1,1 @@
-patungan,split bill,pengeluaran,bersama,grup,liburan,teman,kos,makan,tip,bayar,ai,hitung,nota
+pengeluaran,bersama,grup,liburan,teman,kos,makan,tip,bayar,ai,hitung,nota,bagi tagihan,hutang,trip

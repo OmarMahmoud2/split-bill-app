@@ -1,1 +1,1 @@
-Scan kvitteringen, sig hvem der fik hvad, afregn. Venner betaler via et link.
+Del regningen: scan, sig hvem der fik hvad, afregn. Venner betaler via link.

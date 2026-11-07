@@ -1,7 +1,7 @@
-2.0 to zupełnie nowa aplikacja.
-- Zeskanuj paragon i powiedz, kto co zamówił (przypisywanie głosem).
-- Grupy z bieżącym saldem; rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty z potwierdzeniem.
-- Znajomi płacą z linku, bez aplikacji, metodami płatności ich kraju.
-- Każdy grosz rozliczony: zestawienie każdego udziału, historia.
-- Wszystkie waluty, 22 języki, RTL, tryb ciemny.
-- Pro: nielimitowane skany AI i głos, cykliczne rachunki, CSV/PDF. Gratis: rachunki bez limitu, skany AI od razu.
+Evens 2.0 jest tu, zbudowany od nowa.
+- Powiedz, kto co zamówił: głos przypisze każdą pozycję do właściwej osoby.
+- Znajomi płacą z linku w ponad 80 lokalnych aplikacjach płatniczych, bez aplikacji.
+- Grupy i wyjazdy rozliczają się najmniejszą liczbą przelewów, z szybkimi długami i delikatnymi przypomnieniami.
+- Nikt nie chce płacić? Zakręć ruletką.
+- 158 walut, 22 języki, tryb ciemny.
+- Pro: nieograniczone skany i głos, rachunki cykliczne, eksport PDF i CSV, bez reklam.

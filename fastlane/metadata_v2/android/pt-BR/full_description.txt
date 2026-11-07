@@ -15,13 +15,16 @@ SEUS AMIGOS PAGAM POR UM LINK
 Envie um link pessoal ou um card de compartilhamento pelo WhatsApp ou iMessage. Os convidados abrem na web, veem a parte deles, pagam com Pix (QR ou copia e cola) ou PayPal e anexam o comprovante. Os meios de pagamento seguem o país de cada amigo, com o valor já preenchido quando o app permite.
 
 ACERTE COM MENOS PAGAMENTOS
-Os grupos mantêm um saldo corrente entre as contas. Acerte com o mínimo de transferências, registre pagamentos e receba um lembrete gentil dos saldos em aberto, nunca mais de um por semana.
+Os grupos mantêm um saldo corrente entre as contas. Acerte com o mínimo de transferências, registre pagamentos e receba um lembrete gentil dos saldos em aberto, nunca mais de um por semana. Ninguém quer pagar? Gire a roleta de quem paga.
 
 QUALQUER MOEDA, 22 IDIOMAS
-Todas as moedas do mundo com as casas decimais certas, árabe e urdu da direita para a esquerda, modo escuro e meios de pagamento locais para mais de 60 países.
+158 moedas com os decimais certos, mais de 80 apps de pagamento locais, árabe e urdu da direita para a esquerda e modo escuro.
 
-GRÁTIS PARA USAR
-Contas, grupos, saldos e links de convidado ilimitados, e digitar contas à mão é sempre grátis. Escaneamentos com IA e comandos de voz já vêm inclusos para começar, e mais assistindo a um anúncio curto. Sem anúncios em tela cheia.
+GRÁTIS
+Contas, grupos, saldos e links de convidado ilimitados, e digitar uma conta à mão é sempre grátis. Você começa com pontos de boas-vindas para escaneios com IA e voz; um anúncio curto dá mais quando você precisar. Sem anúncios em tela cheia.
 
 PRO
-Escaneamentos com IA e voz ilimitados, contas recorrentes como aluguel e luz, e exportação em CSV e PDF. Mensal, anual com teste grátis ou um pagamento único vitalício.
+Escaneamentos com IA e voz ilimitados, grupos em várias moedas com câmbio diário, contas recorrentes como aluguel e luz, e exportação em CSV e PDF. Mensal, anual com teste grátis ou um pagamento único vitalício.
+
+PRIVACIDADE
+O Evens nunca guarda o seu dinheiro: os amigos pagam uns aos outros direto nos próprios apps. Suas notas nunca são usadas para treinar IA.

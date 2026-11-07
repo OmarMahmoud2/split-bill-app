@@ -1,7 +1,7 @@
-2.0 est une toute nouvelle appli.
-- Scannez un ticket, puis dites qui a pris quoi (attribution vocale).
-- Groupes avec solde courant ; réglez en un minimum de paiements, enregistrez les paiements avec preuve.
-- Vos amis paient depuis un lien, sans appli, avec les moyens de paiement de leur pays.
-- Chaque centime justifié : détail de chaque part, historique.
-- Toutes les devises, 22 langues, RTL, mode sombre.
-- Pro : IA et voix illimitées, dépenses récurrentes, CSV/PDF. Gratuit : scans IA inclus.
+Evens 2.0 est là, entièrement repensée.
+- Dites qui a pris quoi : la voix place chaque article sur la bonne personne.
+- Vos amis paient depuis un lien dans plus de 80 applis de paiement locales, sans appli.
+- Groupes et voyages se règlent en un minimum de paiements, avec petites dettes et rappels discrets.
+- Personne ne veut payer ? Lancez la roulette.
+- 158 devises, 22 langues, mode sombre.
+- Pro : scans et voix illimités, dépenses récurrentes, export PDF et CSV, sans publicité.

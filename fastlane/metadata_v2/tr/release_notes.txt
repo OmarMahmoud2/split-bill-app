@@ -1,11 +1,8 @@
-Evens 2.0 sıfırdan yeni bir uygulama.
+Evens 2.0 burada, sıfırdan yeniden yapıldı.
 
-- Fişi tara, sonra kim ne aldı söyle. Sesle atama yeni.
-- Seyahatler, ev arkadaşları ve yemekler için güncel bakiyeli gruplar.
-- En az ödemeyle hesaplaş, ödemeleri dekontla kaydet.
-- Arkadaşların bağlantıdan öder, uygulama gerekmez, kendi ülkelerinin ödeme yöntemleriyle.
-- Her kuruşun hesabı belli: her pay için tam döküm, geçmişle birlikte.
-- Kaleme göre, eşit, tam, yüzde veya pay ile böl. Hızlı borçlar.
-- Tüm para birimleri, 22 dil, sağdan sola, karanlık mod.
-- Pro: sınırsız yapay zeka taraması ve ses, tekrarlayan hesaplar, CSV ve PDF dışa aktarma, reklamsız.
-- Ücretsiz plan: sınırsız hesap, grup ve misafir bağlantısı, başlangıç için yapay zeka taraması dahil.
+- Kim ne aldı söyle: ses her kalemi doğru kişiye yazar.
+- Arkadaşların 80'den fazla yerel ödeme uygulamasında bağlantıdan öder, uygulama gerekmez.
+- Grup ve seyahatler en az ödemeyle hesaplaşır; hızlı borçlar ve nazik hatırlatmalar.
+- Kimse ödemek istemiyor mu? Ruleti çevir.
+- 158 para birimi, 22 dil, karanlık mod.
+- Pro: sınırsız tarama ve ses, tekrarlayan hesaplar, PDF ve CSV dışa aktarma, reklamsız.

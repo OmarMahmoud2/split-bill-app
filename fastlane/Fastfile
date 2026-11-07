@@ -14,19 +14,19 @@ UI.user_error!("Could not read app version from #{PUBSPEC_PATH}") unless VERSION
 
 APP_VERSION = VERSION_MATCH[1]
 BUILD_NUMBER = VERSION_MATCH[2]
-RELEASE_NOTES = File.read(File.join(PROJECT_ROOT, "fastlane", "metadata", "en-US", "release_notes.txt")).strip
+RELEASE_NOTES = File.read(File.join(PROJECT_ROOT, "fastlane", "metadata_v2", "en-US", "release_notes.txt")).strip
 SYMBOLS_DIR = File.join(PROJECT_ROOT, "build", "symbols", "#{APP_VERSION}+#{BUILD_NUMBER}")
 ANDROID_AAB = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
 IOS_IPA = File.join(PROJECT_ROOT, "build", "ios", "ipa", "split_bill_app.ipa")
 FLUTTER_BIN = ENV.fetch("FLUTTER_BIN", "/Users/omarmahmoud/FlutterDev/flutter/bin/flutter")
-IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata")
+IOS_METADATA_PATH = File.join(PROJECT_ROOT, "fastlane", "metadata_v2")
 IOS_FILTERED_METADATA_PATH = File.join(PROJECT_ROOT, "build", "fastlane", "ios_metadata")
 IOS_APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.example.splitBillApp")
 PRIVACY_POLICY_URL = "https://omarmali.net/split-bill/privacy/"
 TERMS_OF_USE_URL = "https://omarmali.net/split-bill/terms/"
 IOS_APP_STORE_LOCALES = %w[
-  ar-SA de-DE en-AU en-CA en-GB en-US es-ES es-MX fr-CA fr-FR hr
-  hi id it ja ko pl pt-BR pt-PT ru zh-Hans zh-Hant
+  ar-SA da de-DE en-AU en-CA en-GB en-US es-ES es-MX fr-CA fr-FR
+  hi id it ja ko nl-NL no pl pt-BR pt-PT ru sv th tr vi zh-Hans zh-Hant
 ]
 APP_REVIEW_NOTES = [
   "Version 1.2.0 (build #{BUILD_NUMBER}) is a security update.",
@@ -339,7 +339,7 @@ platform :android do
       skip_upload_images: true,
       skip_upload_screenshots: true,
       skip_upload_changelogs: true,
-      metadata_path: "fastlane/metadata/android"
+      metadata_path: "fastlane/metadata_v2/android"
     )
   end
 
@@ -351,7 +351,7 @@ platform :android do
     supply(
       track: ENV.fetch("ANDROID_TRACK", "production"),
       aab: ANDROID_AAB,
-      metadata_path: "fastlane/metadata/android",
+      metadata_path: "fastlane/metadata_v2/android",
       skip_upload_metadata: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,

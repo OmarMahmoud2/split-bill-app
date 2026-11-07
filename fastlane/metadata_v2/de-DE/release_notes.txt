@@ -1,11 +1,8 @@
-Evens 2.0 ist eine komplett neue App.
+Evens 2.0 ist da, von Grund auf neu.
 
-- Bon scannen, dann sagen, wer was hatte. Die Sprachzuordnung ist neu.
-- Gruppen mit laufendem Saldo für Reisen, WGs und Abende mit Freunden.
-- Mit den wenigsten Zahlungen ausgleichen, Zahlungen mit Nachweis erfassen.
-- Freunde zahlen per Link, ohne App, mit Zahlungsarten für ihr Land.
-- Jeder Cent nachvollziehbar: vollständige Aufschlüsselung je Anteil, mit Verlauf.
-- Nach Artikel, gleichmäßig, genau, in Prozent oder Anteilen teilen. Schnelle Schuldscheine.
-- Alle Währungen, 22 Sprachen, Rechts-nach-links, Dark Mode.
-- Pro: unbegrenzte KI-Scans und Sprachbefehle, wiederkehrende Rechnungen, CSV- und PDF-Export, keine Werbung.
-- Kostenloser Plan: unbegrenzt Rechnungen, Gruppen und Gast-Links, KI-Scans zum Start inklusive.
+- Sag, wer was hatte: die Sprachzuordnung legt jede Position auf die richtige Person.
+- Freunde zahlen per Link in über 80 lokalen Bezahl-Apps, ohne App.
+- Gruppen und Reisen gleichen mit den wenigsten Zahlungen aus, mit Schuldscheinen und freundlichen Erinnerungen.
+- Keiner will zahlen? Dreh das Roulette.
+- 158 Währungen, 22 Sprachen, Dark Mode.
+- Pro: unbegrenzte Scans und Sprache, wiederkehrende Rechnungen, PDF- und CSV-Export, keine Werbung.

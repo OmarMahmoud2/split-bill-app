@@ -1,1 +1,1 @@
-tiền,nhóm,du lịch,bạn bè,ăn uống,share,phòng trọ,nợ,chuyển khoản,tính,góp,quỹ,đều,hùn,bạn cùng phòng
+nhóm,du lịch,bạn bè,ăn uống,share,phòng trọ,nợ,chuyển khoản,tính,góp,quỹ,đều,hùn,giọng nói

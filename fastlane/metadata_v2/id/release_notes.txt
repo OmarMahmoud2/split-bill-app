@@ -1,11 +1,8 @@
-Evens 2.0 adalah aplikasi baru dari nol.
+Evens 2.0 hadir, dibangun ulang dari nol.
 
-- Pindai struk, lalu sebutkan siapa makan apa. Penetapan suara itu baru.
-- Grup dengan saldo berjalan untuk liburan, anak kos, dan makan bareng.
-- Lunasi dengan transfer sesedikit mungkin, catat pembayaran dengan bukti.
-- Teman bayar lewat tautan, tanpa aplikasi, dengan metode pembayaran negaranya.
-- Tiap rupiah jelas: rincian lengkap tiap bagian, dengan riwayat.
-- Bagi per item, rata, pasti, persentase, atau porsi. Utang kilat.
-- Semua mata uang, 22 bahasa, kanan ke kiri, mode gelap.
-- Pro: pindai AI dan suara tanpa batas, tagihan rutin, ekspor CSV dan PDF, tanpa iklan.
-- Paket gratis: tagihan, grup, dan tautan tamu tanpa batas, pindai AI termasuk untuk memulai.
+- Sebut siapa makan apa: suara menaruh tiap item ke orang yang tepat.
+- Teman bayar lewat tautan di 80+ aplikasi pembayaran lokal, tanpa aplikasi.
+- Grup dan perjalanan lunas dengan transfer paling sedikit, plus utang cepat dan pengingat halus.
+- Tidak ada yang mau bayar? Putar roulette.
+- 158 mata uang, 22 bahasa, mode gelap.
+- Pro: pindai dan suara tanpa batas, tagihan berulang, ekspor PDF dan CSV, tanpa iklan.

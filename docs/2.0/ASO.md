@@ -15,7 +15,7 @@ Notes on the locale map:
 
 - **Urdu has no App Store Connect locale.** The app's 22 languages map to 28 ASC locales (English ×4, Spanish ×2, French ×2, Portuguese ×2, Chinese ×2) and 26 Play locales. The old `fastlane/metadata/ur` folder is never uploaded (it is not in `IOS_APP_STORE_LOCALES` in the Fastfile) and `fastlane/metadata/hr` is English copy that should be removed when `metadata_v2` replaces `metadata`.
 - Play en-AU, en-CA, fr-CA and es-US were not written; Play falls back to en-US / fr-FR / es-419 for those storefronts. Add them later if a Play experiment shows a lift from local spelling.
-- The Fastfile reads `fastlane/metadata` (iOS) and `fastlane/metadata/android`. Switching to `metadata_v2` is a one-line change in `IOS_METADATA_PATH` and the two `metadata_path:` arguments, plus adding `da nl-NL no sv th tr vi` to `IOS_APP_STORE_LOCALES` and removing `hr`.
+- Since 2.0 the Fastfile reads `fastlane/metadata_v2` (iOS, all 28 locales) and `fastlane/metadata_v2/android`. `fastlane/metadata` is the 1.2.x copy and is no longer uploaded; remove it after the 2.0 release ships.
 
 ### Generator and validator
 
@@ -24,15 +24,15 @@ The copy is generated from Python data modules (one dict per language, with `{NA
 - App Store: name ≤ 30, subtitle ≤ 30, keywords ≤ 100 (no space after commas, no duplicates, no word repeated from name or subtitle, no competitor or payment-brand trademarks), promotional text ≤ 170, description and release notes ≤ 4000, every locale has the three URL files.
 - Google Play: title ≤ 30, short description ≤ 80, full description ≤ 4000, changelog ≤ 500, no "Apple ID" or "Apple Cash" in the Play text.
 
-Both scripts are in the session scratchpad (`scratchpad/aso/gen.py`, `validate.py`, `copy_en.py`, `copy_eu.py`, `copy_asia.py`). Copy them into `tool/aso/` in a later commit so the copy can be regenerated after the name is chosen. Current result: 28 iOS locales, 26 Play locales, 0 errors.
+The scripts live in `tool/aso/` (`gen.py`, `validate.py`, `copy_en.py`, `copy_eu.py`, `copy_asia.py`) and write the final name "Evens" directly. Current result: 28 iOS locales, 26 Play locales, 0 errors. The per-market keyword map is in `ASO_KEYWORDS.md`.
 
-### Title rule while the name is open
+### Title rule
 
-`{{APP_NAME}}: Split Bills & Receipts` is 33 characters with a 9-character name, so every title suffix is at most 21 characters (9 + 21 = 30). The shipped suffixes are "Split Group Bills" (en), "Rechnungen teilen" (de), "Rekening splitsen" (nl), "Dela notan" (sv), "Partager l'addition" (fr-FR, exactly 30 at 9 characters) and so on. The subtitle carries "receipt scanner" so the pair still covers *split bills*, *group bills*, *receipt scanner* and *settle up*.
-
-If the final name is **6 characters or fewer** (Halbo, Tabzu, Nusso, Qismo all qualify), switch the English titles to `{{APP_NAME}}: Split Bills & Receipts` (24-character suffix) and move "receipt" out of the subtitle, for example subtitle `AI Scanner, Groups & Settle Up`. Rerun the validator; the keyword fields already avoid "receipt", "split", "bills", "group", "settle", "up", "scanner" and "ai".
+The name is **Evens** (5 characters), so every title suffix may be up to 23 characters. English titles use the long form `Evens: Split Bills & Receipts` with subtitle `AI Scanner, Groups & Settle Up`; the other markets carry their top phrase plus, where it fits, the second one (section 9 and `ASO_KEYWORDS.md`).
 
 ## 2. Keyword strategy per market
+
+The per-locale fields as shipped in 2.0 (titles, subtitles, keyword fields, Play titles and short descriptions, and the cross-localization map) are in `ASO_KEYWORDS.md`; the market notes below explain the intent behind them and some field values here predate the final name.
 
 General rules that apply everywhere:
 
@@ -244,11 +244,48 @@ Every description makes these claims. Each must be true on the 2.0 build that go
 
 Prices are intentionally not in the copy (they vary per storefront). The iOS descriptions end with the auto-renewal sentence Apple expects and the privacy and terms URLs; the Play descriptions omit Apple-specific text and have no legal block (Play shows the privacy policy from the console field).
 
-## 9. Open items
+## 9. 2.0 listing changes (2026-11-07)
 
-- Choose the name, run the validator with the real name, and switch the English titles to the longer form if the name is 6 characters or fewer.
-- Verify keyword popularity per market in Apple Search Ads before upload; swap the two weakest words per field.
+What changed in `fastlane/metadata_v2` and why:
+
+- **Name is final.** Every title is `Evens: <market's top phrase>`; with a 5-character name the English titles moved to the long form `Evens: Split Bills & Receipts` (29) and the subtitle to `AI Scanner, Groups & Settle Up`, as planned in section 1. Spanish, Italian, Portuguese (BR), Russian, Turkish, Swedish, Arabic, Hindi, Thai, Vietnamese, Japanese, Korean and Chinese titles gained a second phrase (*gastos*, *spese*, *расходы*, *masraf*, *kostnader*, *المصاريف*, *खर्च*, *ค่าใช้จ่าย*, *chia tiền*, *立て替え精算*, *엔빵*, *聚餐旅行均摊*). Subtitles were rewritten wherever a word now repeated the title (the validator rejects repeats).
+- **Keyword fields** were rebalanced per the map in `ASO_KEYWORDS.md`: words that moved into a title left the field, *splitter* entered the English fields, *gruppenkasse* replaced *reisekasse* (de), CJK fields dropped title substrings (*더치*, *정산앱*, *立て替え*, *送金*, *旅行*, *聚餐*) and added *音声* / *わりかん* / *拼单* style long tail. No field exceeds 100 characters; Latin-script fields also stay within 100 bytes.
+- **Promotional text** is now a timely 2.0 line in every language: "New in 2.0: say who had what and Evens splits the receipt for you. Friends pay from a link in the apps their country uses, no app needed. Typing a bill is always free."
+- **Descriptions** keep the hook and the scannable blocks but now state the facts of the shipped free plan (welcome points for AI scans and voice, a short rewarded ad adds more, typing a bill is always free, no interstitial ads) instead of the earlier "monthly allowance / no daily limit" wording; they name **158 currencies** and **80+ local payment apps** instead of "every currency / 60+ countries", add the *who pays?* roulette to the settle-up block, and end with a PRIVACY block (Evens never holds money, receipts never train AI) before the Pro auto-renewal line. Prices stay out of the copy.
+- **Release notes and Play changelogs** are six short lines (voice, pay from a link in 80+ apps, groups and trips settle in the fewest payments with IOUs and reminders, roulette, 158 currencies / 22 languages / dark mode, Pro).
+- **Play short descriptions** open with the market's primary phrase ("Split bills with AI: …", "Rechnung teilen: …", "Divide la cuenta: …") so the indexed 80 characters carry it.
+- **Fastfile** now uploads `metadata_v2` (both stores) and all 28 iOS locales; `hr` is gone.
+
+### Product page optimization tests (App Store), one at a time, 7+ days, 90 % confidence
+
+1. Subtitle `AI Scanner, Groups & Settle Up` vs `Scan, Say Who Had What, Settle` (feature list vs the voice story).
+2. First screenshot "Scan it" vs "Say who had what".
+3. Promotional text: the 2.0 line vs "Free to use: typing a bill is always free. Friends pay from a link in 80+ local apps, no download." (new-feature vs free-plan angle).
+4. Icon: the two finalists from the Midnight & Mint pass.
+
+### Play store listing experiments
+
+1. Short description (en-US default): current vs "Split bills with anyone, on any phone, in any country. Friends pay from a link." (feature list vs the "everyone, every phone" claim).
+2. First screenshot Scan vs Voice (mirrors PPO test 2).
+3. Localised short-description tests that name the local rail in the first 80 characters: de-DE ("… Freunde zahlen per Link" vs "… per PayPal-Link"), nl-NL (Tikkie-link named vs not), sv-SE (Swish named vs not), pt-BR (Pix named vs not), hi-IN (UPI named vs not). These decide whether the brand-in-short-description lift is real before we spend screenshot frames on it.
+
+### Custom product pages and custom store listings per market
+
+| Market | App Store custom product page | Play custom store listing |
+|---|---|---|
+| US, GB, AU, CA | Trips / Roommates / Dinners CPPs from section 5, promotional text swapped to the 2.0 line of each use case | Default listing; Roommates variant for the back-to-uni window |
+| Gulf (SA, AE, KW, QA) and Egypt | "Iftar and gatherings" CPP: Arabic-first screens, sarie / STC Bank / InstaPay in frame, Ramadan in-app event linked to it | KSA and Egypt listings with the same first screenshot; Egypt short description names InstaPay |
+| India | "UPI split" CPP: UPI QR in frame, Hinglish captions, `hi` promotional text "दोस्त लिंक से UPI पर चुकाते हैं" | India listing, UPI first; Hinglish short description A/B |
+| Brazil | "Pix" CPP: guest page with Pix copia e cola first | Brazil listing, Pix first |
+| Indonesia | "Patungan" CPP: GoPay / DANA in frame | Indonesia listing, GoPay first |
+| Japan / Korea | Golden Week and Chuseok event CPPs: 合宿 / 모임 group settle, PayPay / Toss in frame | Seasonal LiveOps cards, same art |
+| DACH / Benelux / Nordics | Summer-trips CPP with the local rail (GiroCode, Tikkie, Swish, MobilePay, Vipps) on the guest-page frame | Localised experiments above decide whether to add rail-named listings |
+
+## 10. Open items
+
+- Verify keyword popularity per market in Apple Search Ads before upload; swap the two weakest words per field (fields and candidates are in `ASO_KEYWORDS.md`).
 - Confirm the secondary-locale indexing map for GB, DE, NL, JP, KR and the Gulf storefronts in an ASO tool.
-- Move the generator and validator into `tool/aso/` and export the caption table to `tool/aso/captions.json`.
-- Remove `fastlane/metadata/hr` and the unused iOS `fastlane/metadata/ur` folder when `metadata_v2` becomes `metadata`.
+- Export the caption table to `tool/aso/captions.json` (`tool/store/captions.json` already exists for the screenshot script; keep one).
+- Remove `fastlane/metadata` (1.2.x copy, includes `hr` and the unused iOS `ur` folder) once 2.0 is live.
 - Danish and Finnish MobilePay → Vipps rename (January 2027) needs a description refresh in da and fi (fi is not in the 22 yet).
+- `APP_REVIEW_NOTES` in the Fastfile still describe the 1.2.0 security update; rewrite them for the 2.0 submission.

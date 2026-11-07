@@ -1,1 +1,1 @@
-expense,trip,roommate,friends,dinner,tip,owe,iou,share,travel,voice,dutch,pay,calculator,debt,check
+expense,trip,roommate,friends,dinner,tip,owe,iou,travel,voice,splitter,pay,calculator,debt,check

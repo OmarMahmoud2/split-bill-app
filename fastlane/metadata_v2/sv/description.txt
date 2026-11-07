@@ -15,16 +15,19 @@ VÄNNER BETALAR VIA EN LÄNK
 Skicka en personlig länk eller ett delningskort via WhatsApp eller iMessage. Gäster öppnar det i webbläsaren, ser sin andel, betalar med Swish, PayPal eller Revolut och bifogar ett kvitto på betalningen. Betalsätten matchar vännens land, med beloppet ifyllt där appen tillåter det.
 
 GÖR UPP MED FÄRRE BETALNINGAR
-Grupper håller ett löpande saldo över alla notor. Gör upp med så få överföringar som möjligt, registrera betalningar och få en vänlig påminnelse om öppna saldon, högst en gång i veckan.
+Grupper håller ett löpande saldo över alla notor. Gör upp med så få överföringar som möjligt, registrera betalningar och få en vänlig påminnelse om öppna saldon, högst en gång i veckan. Ingen vill betala? Snurra på vem-betalar-rouletten.
 
 ALLA VALUTOR, 22 SPRÅK
-Alla världens valutor med rätt decimaler, arabiska och urdu från höger till vänster, mörkt läge och lokala betalsätt för över 60 länder.
+158 valutor med rätt decimaler, 80+ lokala betalappar, arabiska och urdu från höger till vänster och mörkt läge.
 
 GRATIS ATT ANVÄNDA
-Obegränsat med notor, grupper, saldon och gästlänkar, och att lägga in notor för hand är alltid gratis. AI-skanningar och röstkommandon ingår från start, fler efter en kort annons. Inga helskärmsannonser.
+Obegränsat med notor, grupper, saldon och gästlänkar, och att skriva in en nota för hand är alltid gratis. Du börjar med välkomstpoäng för AI-skanningar och röst; en kort annons ger fler när du behöver. Inga helskärmsannonser.
 
 PRO
-Obegränsade AI-skanningar och röst, återkommande räkningar som hyra och el, samt export till CSV och PDF. Månadsvis, årsvis med gratis provperiod eller ett engångsköp för alltid.
+Obegränsade AI-skanningar och röst, grupper i flera valutor med dagliga växelkurser, återkommande räkningar som hyra och el, samt export till CSV och PDF. Månadsvis, årsvis med gratis provperiod eller ett engångsköp för alltid.
+
+INTEGRITET
+Evens hanterar aldrig dina pengar: vänner betalar varandra direkt i sina egna appar. Dina kvitton används aldrig för att träna AI.
 
 Prenumerationer debiteras ditt Apple-ID-konto när köpet bekräftas och förnyas automatiskt om inte automatisk förnyelse stängs av minst 24 timmar före periodens slut. Hantera eller avsluta i App Store-kontots inställningar.
 

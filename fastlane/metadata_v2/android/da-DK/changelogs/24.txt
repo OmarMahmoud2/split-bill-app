@@ -1,7 +1,7 @@
-2.0 er en helt ny app.
-- Scan en kvittering og sig hvem der fik hvad (stemmetildeling).
-- Grupper med løbende saldo; afregn med færrest mulige betalinger, registrér betalinger med kvittering.
-- Venner betaler via et link, uden app, med betalingsmetoder for deres land.
-- Hver øre gjort op: opdeling pr. andel, historik.
-- Alle valutaer, 22 sprog, RTL, mørk tilstand.
-- Pro: ubegrænset AI-scanning og stemme, tilbagevendende regninger, CSV/PDF. Gratis: ubegrænsede regninger, AI-scanninger fra start.
+Evens 2.0 er her, bygget helt forfra.
+- Sig hvem der fik hvad: stemmen lægger hver vare på den rigtige person.
+- Venner betaler via et link i 80+ lokale betalingsapps, uden app.
+- Grupper og rejser afregner med færrest mulige betalinger, med gæld og venlige påmindelser.
+- Ingen vil betale? Drej på rouletten.
+- 158 valutaer, 22 sprog, mørk tilstand.
+- Pro: ubegrænsede scanninger og stemme, faste regninger, PDF- og CSV-eksport, ingen reklamer.

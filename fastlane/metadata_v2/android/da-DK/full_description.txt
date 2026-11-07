@@ -15,13 +15,16 @@ VENNER BETALER VIA ET LINK
 Send et personligt link eller et delekort via WhatsApp eller iMessage. Gæster åbner det i browseren, ser deres andel, betaler med MobilePay, PayPal eller Revolut og vedhæfter en kvittering for betalingen. Betalingsmetoderne passer til vennens land, med beløbet udfyldt hvor appen tillader det.
 
 AFREGN MED FÆRRE BETALINGER
-Grupper holder en løbende saldo på tværs af regninger. Afregn med færrest mulige overførsler, registrér betalinger og få en venlig påmindelse om åbne saldi, højst én gang om ugen.
+Grupper holder en løbende saldo på tværs af regninger. Afregn med færrest mulige overførsler, registrér betalinger og få en venlig påmindelse om åbne saldi, højst én gang om ugen. Ingen vil betale? Drej på hvem-betaler-rouletten.
 
 ALLE VALUTAER, 22 SPROG
-Alle verdens valutaer med de rigtige decimaler, arabisk og urdu fra højre mod venstre, mørk tilstand og lokale betalingsmetoder for over 60 lande.
+158 valutaer med de rigtige decimaler, 80+ lokale betalingsapps, arabisk og urdu fra højre mod venstre og mørk tilstand.
 
 GRATIS AT BRUGE
-Ubegrænsede regninger, grupper, saldi og gæstelinks, og det er altid gratis at taste regninger ind selv. AI-scanninger og stemmekommandoer følger med fra start, flere efter en kort reklame. Ingen helsidesreklamer.
+Ubegrænsede regninger, grupper, saldi og gæstelinks, og at taste en regning ind i hånden er altid gratis. Du starter med velkomstpoint til AI-scanninger og stemme; en kort reklame giver flere, når du har brug for dem. Ingen fuldskærmsreklamer.
 
 PRO
-Ubegrænsede AI-scanninger og stemme, tilbagevendende regninger som husleje og el, samt eksport til CSV og PDF. Månedligt, årligt med gratis prøveperiode eller et engangskøb for altid.
+Ubegrænsede AI-scanninger og stemme, grupper i flere valutaer med daglige kurser, tilbagevendende regninger som husleje og el, samt eksport til CSV og PDF. Månedligt, årligt med gratis prøveperiode eller et engangskøb for altid.
+
+PRIVATLIV
+Evens opbevarer aldrig dine penge: venner betaler hinanden direkte i deres egne apps. Dine kvitteringer bruges aldrig til at træne AI.

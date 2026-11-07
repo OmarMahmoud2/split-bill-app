@@ -1,11 +1,8 @@
-Evens 2.0 es una app nueva desde cero.
+Evens 2.0 ya está aquí, hecha de nuevo desde cero.
 
-- Escanea un recibo y di quién pidió qué. La asignación por voz es nueva.
-- Grupos con saldo acumulado para viajes, roomies y cenas.
-- Salda con el mínimo de pagos y registra los pagos con comprobante.
-- Tus amigos pagan desde un enlace, sin app, con los métodos de pago de su país.
-- Cada centavo justificado: desglose completo de cada parte, con historial.
-- Divide por artículo, a partes iguales, exacto, por porcentajes o partes. Deudas rápidas.
-- Todas las monedas, 22 idiomas, derecha a izquierda, modo oscuro.
-- Pro: escaneos con IA y voz ilimitados, gastos recurrentes, exportación CSV y PDF, sin anuncios.
-- Plan gratuito: cuentas, grupos y enlaces de invitado ilimitados, con escaneos con IA incluidos para empezar.
+- Di quién pidió qué: la voz pone cada artículo en la persona correcta.
+- Tus amigos pagan desde un enlace en más de 80 apps de pago locales, sin app.
+- Grupos y viajes se saldan con el mínimo de pagos, con deudas rápidas y recordatorios amables.
+- ¿Nadie quiere pagar? Gira la ruleta.
+- 158 monedas, 22 idiomas, modo oscuro.
+- Pro: escaneos y voz ilimitados, gastos recurrentes, exportación PDF y CSV, sin anuncios.

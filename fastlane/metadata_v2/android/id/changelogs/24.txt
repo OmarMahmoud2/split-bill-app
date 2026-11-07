@@ -1,7 +1,7 @@
-2.0 adalah aplikasi baru dari nol.
-- Pindai struk, lalu sebutkan siapa makan apa (penetapan suara).
-- Grup dengan saldo berjalan; lunasi dengan transfer sesedikit mungkin, catat pembayaran dengan bukti.
-- Teman bayar lewat tautan, tanpa aplikasi, dengan metode pembayaran negaranya.
-- Tiap rupiah jelas: rincian tiap bagian, riwayat.
-- Semua mata uang, 22 bahasa, RTL, mode gelap.
-- Pro: pindai AI dan suara tanpa batas, tagihan rutin, CSV/PDF. Gratis: tagihan tanpa batas, pindai AI termasuk.
+Evens 2.0 hadir, dibangun ulang dari nol.
+- Sebut siapa makan apa: suara menaruh tiap item ke orang yang tepat.
+- Teman bayar lewat tautan di 80+ aplikasi pembayaran lokal, tanpa aplikasi.
+- Grup dan perjalanan lunas dengan transfer paling sedikit, plus utang cepat dan pengingat halus.
+- Tidak ada yang mau bayar? Putar roulette.
+- 158 mata uang, 22 bahasa, mode gelap.
+- Pro: pindai dan suara tanpa batas, tagihan berulang, ekspor PDF dan CSV, tanpa iklan.

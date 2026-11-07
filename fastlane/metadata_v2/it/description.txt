@@ -15,16 +15,19 @@ GLI AMICI PAGANO DA UN LINK
 Invia un link personale o una card da condividere su WhatsApp o iMessage. Gli ospiti lo aprono sul web, vedono la loro quota, pagano con Satispay, PayPal o un QR SEPA e allegano la prova del pagamento. I metodi di pagamento seguono il paese di ogni amico, con l'importo già inserito dove l'app lo consente.
 
 SALDA CON MENO PAGAMENTI
-I gruppi tengono un saldo corrente tra un conto e l'altro. Salda con il minimo di bonifici, registra i pagamenti e ricevi un promemoria gentile per i saldi aperti, mai più di uno a settimana.
+I gruppi tengono un saldo corrente tra un conto e l'altro. Salda con il minimo di bonifici, registra i pagamenti e ricevi un promemoria gentile per i saldi aperti, mai più di uno a settimana. Nessuno vuole pagare? Gira la roulette di chi paga.
 
 QUALSIASI VALUTA, 22 LINGUE
-Tutte le valute del mondo con i decimali giusti, arabo e urdu da destra a sinistra, modalità scura e metodi di pagamento locali per oltre 60 paesi.
+158 valute con i decimali giusti, oltre 80 app di pagamento locali, arabo e urdu da destra a sinistra e modalità scura.
 
-GRATIS DA USARE
-Conti, gruppi, saldi e link ospite illimitati, e inserire i conti a mano è sempre gratis. Scansioni IA e comandi vocali inclusi per iniziare, e altri guardando un breve annuncio. Nessuna pubblicità a schermo intero.
+GRATIS
+Conti, gruppi, saldi e link ospite illimitati, e inserire un conto a mano è sempre gratis. Parti con punti di benvenuto per scansioni IA e voce; un breve annuncio ne aggiunge altri quando ti servono. Nessuna pubblicità a schermo intero.
 
 PRO
-Scansioni IA e voce illimitate, spese ricorrenti come affitto e bollette, esportazione in CSV e PDF. Mensile, annuale con prova gratuita o un acquisto unico per sempre.
+Scansioni IA e voce illimitate, gruppi in più valute con cambi giornalieri, spese ricorrenti come affitto e bollette, esportazione in CSV e PDF. Mensile, annuale con prova gratuita o un acquisto unico per sempre.
+
+PRIVACY
+Evens non trattiene mai i tuoi soldi: gli amici si pagano direttamente nelle loro app. I tuoi scontrini non vengono mai usati per addestrare l'IA.
 
 Gli abbonamenti vengono addebitati sull'account Apple ID alla conferma dell'acquisto e si rinnovano automaticamente, salvo disattivazione del rinnovo automatico almeno 24 ore prima della fine del periodo in corso. Gestiscili o annullali nelle impostazioni dell'account App Store.
 

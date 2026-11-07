@@ -1,8 +1,7 @@
-2.0 är en helt ny app.
-- Skanna ett kvitto och säg vem som tog vad (rösttilldelning).
-- Grupper med löpande saldo; gör upp med så få betalningar som möjligt, registrera betalningar med kvitto.
-- Vänner betalar via en länk, utan app, med betalsätt för sitt land.
-- Varje öre redovisat: uppdelning per andel, historik.
-- Dela per vara, lika, exakt, procent eller andelar.
-- Alla valutor, 22 språk, RTL, mörkt läge.
-- Pro: obegränsad AI/röst, fasta räkningar, CSV/PDF. Gratis: fria notor, AI ingår.
+Evens 2.0 är här, helt ombyggd.
+- Säg vem som tog vad: rösten lägger varje vara på rätt person.
+- Vänner betalar via en länk i 80+ lokala betalappar, utan app.
+- Grupper och resor gör upp med så få betalningar som möjligt, med skulder och vänliga påminnelser.
+- Ingen vill betala? Snurra på rouletten.
+- 158 valutor, 22 språk, mörkt läge.
+- Pro: obegränsat med skanningar och röst, återkommande räkningar, PDF- och CSV-export, inga annonser.

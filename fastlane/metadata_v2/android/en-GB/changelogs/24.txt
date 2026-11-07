@@ -1,7 +1,7 @@
-2.0 is a new app from the ground up.
-- Scan a receipt, then say who had what (voice assignment).
-- Groups with running balances; settle up in the fewest payments, record payments with proof.
-- Friends pay from a link, no app needed, with payment methods for their country.
-- Every cent accounted for: full breakdown on every share, edit history.
-- Every currency, 22 languages, RTL, dark mode.
-- Pro: unlimited AI scans and voice, recurring bills, CSV/PDF export. Free: AI scans included.
+Evens 2.0 is here, rebuilt from the ground up.
+- Say who had what: voice puts every item on the right person.
+- Friends pay from a link in 80+ local payment apps, no app needed.
+- Groups and trips settle in the fewest payments, with IOUs and gentle reminders.
+- Can't decide who pays? Spin the roulette.
+- 158 currencies, 22 languages, dark mode.
+- Pro: unlimited scans and voice, recurring bills, PDF and CSV export, no ads.

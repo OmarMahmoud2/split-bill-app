@@ -15,16 +15,19 @@ FRIENDS PAY FROM A LINK
 Send a personal link or a share card on WhatsApp or iMessage. Guests open it on the web, see their share, pay with Venmo, Cash App, PayPal, Zelle or Apple Cash, and attach proof of payment. Payment methods match each friend's country, with the amount filled in where the app allows it.
 
 SETTLE IN FEWER PAYMENTS
-Groups keep a running balance across bills. Settle up with the fewest transfers, record payments, and get a gentle reminder for open balances, never more than one a week.
+Groups keep a running balance across bills. Settle up with the fewest transfers, record payments, and get a gentle reminder for open balances, never more than one a week. Can't decide who pays? Spin the who-pays roulette.
 
 ANY CURRENCY, 22 LANGUAGES
-Every world currency with the right decimals, right-to-left Arabic and Urdu, dark mode, and local payment methods for more than 60 countries.
+158 currencies with the right decimals, 80+ local payment apps, right-to-left Arabic and Urdu, and dark mode.
 
 FREE TO USE
-Unlimited bills, groups, balances and guest links, and typing bills in by hand is always free. AI scans and voice commands are included to start, with more by watching a short ad. No interstitial ads.
+Unlimited bills, groups, balances and guest links, and typing a bill in is always free. You start with welcome points for AI scans and voice, and a short rewarded ad adds more when you want them. No interstitial ads.
 
 PRO
-Unlimited AI scans and voice, recurring bills such as rent and utilities, and CSV and PDF export. Choose monthly, yearly with a free trial, or a one-time lifetime purchase.
+Unlimited AI scans and voice, multi-currency groups with daily exchange rates, recurring bills such as rent and utilities, CSV and PDF export, and no ads. Choose monthly, yearly with a free trial, or a one-time lifetime purchase.
+
+PRIVACY
+Evens never holds your money: friends pay each other directly in their own apps. Your receipts are never used to train AI.
 
 Subscriptions are charged to your Apple ID account when you confirm the purchase and renew automatically unless auto-renew is turned off at least 24 hours before the end of the current period. Manage or cancel them in your App Store account settings.
 

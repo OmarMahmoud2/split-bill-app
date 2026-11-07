@@ -1,11 +1,8 @@
-Evens 2.0 là ứng dụng hoàn toàn mới.
+Evens 2.0 đã ra mắt, làm lại từ đầu.
 
-- Quét hóa đơn rồi nói ai ăn gì. Gán bằng giọng nói là tính năng mới.
-- Nhóm có số dư liên tục cho chuyến đi, bạn cùng phòng và bữa ăn.
-- Thanh toán với ít lần chuyển nhất, ghi khoản đã trả kèm bằng chứng.
-- Bạn bè trả qua link, không cần app, bằng phương thức của nước họ.
-- Từng đồng rõ ràng: chi tiết đầy đủ mỗi phần, có lịch sử.
-- Chia theo món, đều, chính xác, phần trăm hoặc phần. Nợ nhanh.
-- Mọi loại tiền, 22 ngôn ngữ, phải sang trái, chế độ tối.
-- Pro: quét AI và giọng nói không giới hạn, hóa đơn định kỳ, xuất CSV và PDF, không quảng cáo.
-- Gói miễn phí: hóa đơn, nhóm và link khách không giới hạn, có sẵn quét AI để bắt đầu.
+- Nói ai ăn gì: giọng nói đặt từng món đúng người.
+- Bạn bè trả qua link trong hơn 80 ứng dụng thanh toán địa phương, không cần cài app.
+- Nhóm và chuyến đi thanh toán với ít lần chuyển nhất, kèm nợ nhanh và nhắc nhẹ nhàng.
+- Không ai muốn trả? Quay roulette.
+- 158 loại tiền, 22 ngôn ngữ, chế độ tối.
+- Pro: quét và giọng nói không giới hạn, hóa đơn định kỳ, xuất PDF và CSV, không quảng cáo.

@@ -1,7 +1,7 @@
-2.0 ist eine komplett neue App.
-- Bon scannen, dann sagen, wer was hatte (Sprachzuordnung).
-- Gruppen mit laufendem Saldo; mit den wenigsten Zahlungen ausgleichen, Zahlungen mit Nachweis erfassen.
-- Freunde zahlen per Link, ohne App, mit Zahlungsarten für ihr Land.
-- Jeder Cent nachvollziehbar: Aufschlüsselung je Anteil, Verlauf.
-- Alle Währungen, 22 Sprachen, RTL, Dark Mode.
-- Pro: unbegrenzte KI-Scans, Sprache, wiederkehrende Rechnungen, CSV/PDF. Gratis: unbegrenzt Rechnungen, erste KI-Scans.
+Evens 2.0 ist da, von Grund auf neu.
+- Sag, wer was hatte: die Sprachzuordnung legt jede Position auf die richtige Person.
+- Freunde zahlen per Link in über 80 lokalen Bezahl-Apps, ohne App.
+- Gruppen und Reisen gleichen mit den wenigsten Zahlungen aus, mit Schuldscheinen und Erinnerungen.
+- Keiner will zahlen? Dreh das Roulette.
+- 158 Währungen, 22 Sprachen, Dark Mode.
+- Pro: unbegrenzte Scans und Sprache, wiederkehrende Rechnungen, PDF- und CSV-Export, keine Werbung.

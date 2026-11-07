@@ -1,11 +1,8 @@
-Evens 2.0 är en helt ny app.
+Evens 2.0 är här, helt ombyggd.
 
-- Skanna ett kvitto och säg vem som tog vad. Rösttilldelning är nytt.
-- Grupper med löpande saldo för resor, kollektiv och middagar.
-- Gör upp med så få betalningar som möjligt, registrera betalningar med kvitto.
-- Vänner betalar via en länk, utan app, med betalsätt för sitt land.
-- Varje öre redovisat: full uppdelning per andel, med historik.
-- Dela per vara, lika, exakt, i procent eller andelar. Snabba skulder.
-- Alla valutor, 22 språk, höger-till-vänster, mörkt läge.
-- Pro: obegränsade AI-skanningar och röst, återkommande räkningar, CSV- och PDF-export, inga annonser.
-- Gratisplanen: obegränsat med notor, grupper och gästlänkar, AI-skanningar ingår från start.
+- Säg vem som tog vad: rösten lägger varje vara på rätt person.
+- Vänner betalar via en länk i 80+ lokala betalappar, utan app.
+- Grupper och resor gör upp med så få betalningar som möjligt, med skulder och vänliga påminnelser.
+- Ingen vill betala? Snurra på rouletten.
+- 158 valutor, 22 språk, mörkt läge.
+- Pro: obegränsat med skanningar och röst, återkommande räkningar, PDF- och CSV-export, inga annonser.

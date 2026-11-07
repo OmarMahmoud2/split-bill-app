@@ -1,1 +1,1 @@
-udgifter,gruppe,rejse,venner,middag,gæld,drikkepenge,splitte,deling,ferie,bofæller,ai,betal,fælles
+udgifter,gruppe,rejse,venner,middag,gæld,drikkepenge,splitte,ferie,bofæller,ai,betal,fælles,tur

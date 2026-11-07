@@ -15,16 +15,19 @@ TEMAN BAYAR LEWAT TAUTAN
 Kirim tautan pribadi atau kartu bagikan lewat WhatsApp atau iMessage. Tamu membukanya di web, melihat bagiannya, membayar dengan transfer bank (BI-FAST), GoPay, DANA, OVO, atau PayPal, lalu melampirkan bukti bayar. Metode pembayaran mengikuti negara tiap teman, dengan nominal terisi otomatis jika aplikasinya mendukung.
 
 LUNASI DENGAN LEBIH SEDIKIT TRANSFER
-Grup menyimpan saldo berjalan lintas tagihan. Lunasi dengan transfer sesedikit mungkin, catat pembayaran, dan dapatkan pengingat ramah untuk saldo yang belum lunas, maksimal sekali seminggu.
+Grup menyimpan saldo berjalan lintas tagihan. Lunasi dengan transfer sesedikit mungkin, catat pembayaran, dan dapatkan pengingat ramah untuk saldo yang belum lunas, maksimal sekali seminggu. Tidak ada yang mau bayar? Putar roulette siapa yang bayar.
 
 MATA UANG APA PUN, 22 BAHASA
-Semua mata uang dunia dengan desimal yang benar, Arab dan Urdu dari kanan ke kiri, mode gelap, dan metode pembayaran lokal untuk lebih dari 60 negara.
+158 mata uang dengan desimal yang tepat, 80+ aplikasi pembayaran lokal, Arab dan Urdu dari kanan ke kiri, serta mode gelap.
 
-GRATIS DIGUNAKAN
-Tagihan, grup, saldo, dan tautan tamu tanpa batas, dan mengetik tagihan secara manual selalu gratis. Pindai AI dan perintah suara sudah termasuk untuk memulai, dan tambahan dengan menonton iklan singkat. Tanpa iklan layar penuh.
+GRATIS
+Tagihan, grup, saldo, dan tautan tamu tanpa batas, dan mengetik tagihan secara manual selalu gratis. Kamu mulai dengan poin sambutan untuk pindai AI dan suara; iklan singkat menambah poin saat kamu butuh. Tanpa iklan layar penuh.
 
 PRO
-Pindai AI dan suara tanpa batas, tagihan rutin seperti sewa dan listrik, serta ekspor CSV dan PDF. Bulanan, tahunan dengan uji coba gratis, atau sekali bayar seumur hidup.
+Pindai AI dan suara tanpa batas, grup multi mata uang dengan kurs harian, tagihan rutin seperti sewa dan listrik, serta ekspor CSV dan PDF. Bulanan, tahunan dengan uji coba gratis, atau sekali bayar seumur hidup.
+
+PRIVASI
+Evens tidak pernah memegang uangmu: teman membayar langsung satu sama lain di aplikasi mereka sendiri. Strukmu tidak pernah dipakai untuk melatih AI.
 
 Langganan ditagihkan ke akun Apple ID saat pembelian dikonfirmasi dan diperpanjang otomatis kecuali perpanjangan otomatis dimatikan minimal 24 jam sebelum periode berjalan berakhir. Kelola atau batalkan di pengaturan akun App Store.
 

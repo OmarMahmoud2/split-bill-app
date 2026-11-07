@@ -15,16 +15,19 @@ ZNAJOMI PŁACĄ Z LINKU
 Wyślij osobisty link lub kartę udostępniania przez WhatsApp lub iMessage. Goście otwierają go w przeglądarce, widzą swój udział, płacą przez BLIK, PayPal lub Revolut i dołączają potwierdzenie. Metody płatności pasują do kraju znajomego, z kwotą wpisaną tam, gdzie aplikacja na to pozwala.
 
 ROZLICZ MNIEJSZĄ LICZBĄ PRZELEWÓW
-Grupy prowadzą bieżące saldo między rachunkami. Rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty i otrzymuj delikatne przypomnienie o otwartych saldach, nie częściej niż raz w tygodniu.
+Grupy prowadzą bieżące saldo między rachunkami. Rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty i otrzymuj delikatne przypomnienie o otwartych saldach, nie częściej niż raz w tygodniu. Nikt nie chce płacić? Zakręć ruletką „kto płaci”.
 
 KAŻDA WALUTA, 22 JĘZYKI
-Wszystkie waluty świata z właściwymi miejscami dziesiętnymi, arabski i urdu od prawej do lewej, tryb ciemny i lokalne metody płatności dla ponad 60 krajów.
+158 walut z właściwymi miejscami po przecinku, ponad 80 lokalnych aplikacji płatniczych, arabski i urdu od prawej do lewej oraz tryb ciemny.
 
 ZA DARMO
-Nielimitowane rachunki, grupy, salda i linki dla gości, a ręczne wpisywanie rachunków jest zawsze darmowe. Skany AI i polecenia głosowe są w zestawie na start, więcej po obejrzeniu krótkiej reklamy. Bez reklam pełnoekranowych.
+Nieograniczone rachunki, grupy, salda i linki dla gości, a wpisanie rachunku ręcznie jest zawsze darmowe. Zaczynasz z punktami powitalnymi na skany AI i głos; krótka reklama dodaje kolejne, gdy ich potrzebujesz. Bez reklam pełnoekranowych.
 
 PRO
-Nielimitowane skany AI i głos, cykliczne rachunki jak czynsz i media, eksport do CSV i PDF. Miesięcznie, rocznie z darmowym okresem próbnym lub jednorazowo na zawsze.
+Nielimitowane skany AI i głos, grupy w wielu walutach z dziennymi kursami, cykliczne rachunki jak czynsz i media, eksport do CSV i PDF. Miesięcznie, rocznie z darmowym okresem próbnym lub jednorazowo na zawsze.
+
+PRYWATNOŚĆ
+Evens nigdy nie przechowuje Twoich pieniędzy: znajomi płacą sobie bezpośrednio we własnych aplikacjach. Twoje paragony nigdy nie służą do trenowania AI.
 
 Subskrypcje są pobierane z konta Apple ID przy potwierdzeniu zakupu i odnawiają się automatycznie, chyba że automatyczne odnawianie zostanie wyłączone co najmniej 24 godziny przed końcem bieżącego okresu. Zarządzaj nimi lub anuluj w ustawieniach konta App Store.
 

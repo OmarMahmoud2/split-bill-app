@@ -11,7 +11,7 @@ import re
 import sys
 import unicodedata
 
-REPO = "/Users/omarmahmoud/FlutterProjects/VsCodePros/split_bill_app"
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(REPO, "fastlane", "metadata_v2")
 PLACEHOLDER = "X" * 9  # overridden below when APP_NAME is set
 
@@ -54,9 +54,8 @@ BANNED_KEYWORDS = {
 CJK_THAI = re.compile(r"[぀-ヿ㐀-䶿一-鿿가-힯฀-๿]")
 
 
-# Once the name is final, pass it as APP_NAME (e.g. APP_NAME=Evens): it is
-# mapped back to the token so every check runs on the real text.
-FINAL_NAME = os.environ.get("APP_NAME", "")
+# The final name is mapped back to the token so every check runs on the real text.
+FINAL_NAME = os.environ.get("APP_NAME", "Evens")
 if FINAL_NAME:
     PLACEHOLDER = FINAL_NAME
 

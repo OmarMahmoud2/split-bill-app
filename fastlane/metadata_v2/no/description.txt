@@ -15,16 +15,19 @@ VENNER BETALER VIA EN LENKE
 Send en personlig lenke eller et delekort via WhatsApp eller iMessage. Gjester åpner den i nettleseren, ser sin andel, betaler med Vipps, PayPal eller Revolut og legger ved betalingsbevis. Betalingsmåtene passer til vennens land, med beløpet fylt inn der appen tillater det.
 
 GJØR OPP MED FÆRRE BETALINGER
-Grupper holder en løpende saldo på tvers av regninger. Gjør opp med færrest mulige overføringer, registrer betalinger og få en vennlig påminnelse om åpne saldoer, maks én gang i uken.
+Grupper holder en løpende saldo på tvers av regninger. Gjør opp med færrest mulige overføringer, registrer betalinger og få en vennlig påminnelse om åpne saldoer, maks én gang i uken. Ingen vil betale? Snurr på hvem-betaler-ruletten.
 
 ALLE VALUTAER, 22 SPRÅK
-Alle verdens valutaer med riktige desimaler, arabisk og urdu fra høyre mot venstre, mørk modus og lokale betalingsmåter for over 60 land.
+158 valutaer med riktige desimaler, 80+ lokale betalingsapper, arabisk og urdu fra høyre mot venstre og mørk modus.
 
 GRATIS Å BRUKE
-Ubegrenset med regninger, grupper, saldoer og gjestelenker, og å legge inn regninger for hånd er alltid gratis. AI-skanninger og stemmekommandoer er inkludert fra start, flere etter en kort annonse. Ingen helskjermsannonser.
+Ubegrenset med regninger, grupper, saldoer og gjestelenker, og å taste inn en regning for hånd er alltid gratis. Du starter med velkomstpoeng til AI-skanninger og stemme; en kort reklame gir flere når du trenger dem. Ingen helskjermsannonser.
 
 PRO
-Ubegrensede AI-skanninger og stemme, gjentakende regninger som husleie og strøm, samt eksport til CSV og PDF. Månedlig, årlig med gratis prøveperiode eller ett engangskjøp for alltid.
+Ubegrensede AI-skanninger og stemme, grupper i flere valutaer med daglige kurser, gjentakende regninger som husleie og strøm, samt eksport til CSV og PDF. Månedlig, årlig med gratis prøveperiode eller ett engangskjøp for alltid.
+
+PERSONVERN
+Evens oppbevarer aldri pengene dine: venner betaler hverandre direkte i sine egne apper. Kvitteringene dine brukes aldri til å trene AI.
 
 Abonnementer belastes Apple-ID-kontoen din ved bekreftelse av kjøpet og fornyes automatisk med mindre automatisk fornyelse slås av minst 24 timer før periodens slutt. Administrer eller avslutt i App Store-kontoens innstillinger.
 

@@ -1,1 +1,1 @@
-split,expense,group,trip,roommate,udhaar,hisab,kharcha,dinner,tip,dosti,पैसे,खर्च,हिस्सा,बराबर
+split,bill,expense,group,trip,roommate,udhaar,hisab,kharcha,dinner,tip,settle,पैसे,हिस्सा,बराबर

@@ -10,10 +10,10 @@ EU.append({
     "ios": ["de-DE"], "play": ["de-DE"],
     "name": ": Rechnungen teilen",
     "subtitle": "Kassenbon scannen & abrechnen",
-    "keywords": "kosten,ausgaben,gruppe,reise,wg,urlaub,freunde,essen,trinkgeld,schulden,splitten,reisekasse,beleg,ki",
-    "promo": "Scannen. Sagen, wer was hatte. Jeder Cent nachvollziehbar. Freunde zahlen über einen Link mit PayPal, GiroCode oder Wero, ohne App. Kostenlos, ohne Tageslimit.",
+    "keywords": "kosten,ausgaben,gruppe,reise,wg,urlaub,freunde,essen,trinkgeld,schulden,splitten,gruppenkasse,ki",
+    "promo": "Neu in 2.0: Sag, wer was hatte, und Evens teilt den Bon. Freunde zahlen per Link mit PayPal, GiroCode oder Wero, ohne App. Rechnungen eintippen bleibt immer gratis.",
     "pay": "PayPal, GiroCode (SEPA-QR) oder Wero",
-    "short": "Kassenbon scannen, sagen wer was hatte, abrechnen. Freunde zahlen per Link.",
+    "short": "Rechnung teilen: Bon scannen, sagen wer was hatte. Freunde zahlen per Link.",
     "desc": """Teile jede Rechnung mit allen, auf jedem Handy, in jedem Land.
 
 {NAME} scannt den Kassenbon, versteht, wer was hatte, und führt einen laufenden Saldo für Reisen, WGs und Abende mit Freunden. Freunde zahlen über einen Link mit den Apps, die sie schon nutzen. Kein Download, kein Konto.
@@ -31,41 +31,40 @@ FREUNDE ZAHLEN PER LINK
 Persönlichen Link oder Teilen-Karte über WhatsApp oder iMessage senden. Gäste öffnen ihn im Browser, sehen ihren Anteil, zahlen mit {PAY} und hängen einen Zahlungsnachweis an. Die Zahlungsarten passen zum Land des Freundes, der Betrag ist vorausgefüllt, wo die App es erlaubt.
 
 MIT WENIGER ZAHLUNGEN AUSGLEICHEN
-Gruppen führen einen laufenden Saldo über alle Rechnungen. Mit den wenigsten Überweisungen ausgleichen, Zahlungen erfassen und eine freundliche Erinnerung für offene Beträge erhalten, höchstens einmal pro Woche.
+Gruppen führen einen laufenden Saldo über alle Rechnungen. Mit den wenigsten Überweisungen ausgleichen, Zahlungen erfassen und eine freundliche Erinnerung für offene Beträge erhalten, höchstens einmal pro Woche. Keiner will zahlen? Dreh das Wer-zahlt-Roulette.
 
 JEDE WÄHRUNG, 22 SPRACHEN
-Alle Weltwährungen mit den richtigen Dezimalstellen, Arabisch und Urdu von rechts nach links, Dark Mode und lokale Zahlungsarten für mehr als 60 Länder.
+158 Währungen mit den richtigen Dezimalstellen, über 80 lokale Bezahl-Apps, Arabisch und Urdu von rechts nach links und Dark Mode.
 
-KOSTENLOS, OHNE TAGESLIMIT
-Unbegrenzt Rechnungen, Gruppen, Salden und Gast-Links. Keine Tagesgrenze, keine Interstitial-Werbung. Ein kostenloses monatliches Kontingent an KI-Scans und Sprachbefehlen, mehr gibt es für ein kurzes Werbevideo.
+KOSTENLOS NUTZBAR
+Unbegrenzt Rechnungen, Gruppen, Salden und Gast-Links, und Rechnungen von Hand eintippen ist immer kostenlos. Du startest mit Willkommenspunkten für KI-Scans und Sprachbefehle; ein kurzes Werbevideo bringt mehr, wenn du sie brauchst. Keine Interstitial-Werbung.
 
 PRO
-Unbegrenzte KI-Scans und Sprachbefehle, Gruppen in mehreren Währungen mit täglichen Wechselkursen, wiederkehrende Rechnungen wie Miete und Nebenkosten sowie CSV- und PDF-Export. Monatlich, jährlich mit kostenloser Testphase oder einmalig für immer.{LEGAL}""",
+Unbegrenzte KI-Scans und Sprachbefehle, Gruppen in mehreren Währungen mit täglichen Wechselkursen, wiederkehrende Rechnungen wie Miete und Nebenkosten sowie CSV- und PDF-Export. Monatlich, jährlich mit kostenloser Testphase oder einmalig für immer.
+
+DATENSCHUTZ
+{NAME} verwahrt nie dein Geld: Freunde zahlen sich direkt in ihren eigenen Apps. Deine Kassenbons werden nie zum Trainieren von KI verwendet.{LEGAL}""",
     "legal": f"""
 
 Abos werden bei Kaufbestätigung über dein Apple-ID-Konto abgerechnet und verlängern sich automatisch, sofern die automatische Verlängerung nicht mindestens 24 Stunden vor Ablauf des laufenden Zeitraums deaktiviert wird. Verwalten oder kündigen kannst du sie in den Einstellungen deines App-Store-Kontos.
 
 Datenschutz: {PRIV}
 Nutzungsbedingungen: {TERMS}""",
-    "release": """{NAME} 2.0 ist eine komplett neue App.
+    "release": """{NAME} 2.0 ist da, von Grund auf neu.
 
-- Bon scannen, dann sagen, wer was hatte. Die Sprachzuordnung ist neu.
-- Gruppen mit laufendem Saldo für Reisen, WGs und Abende mit Freunden.
-- Mit den wenigsten Zahlungen ausgleichen, Zahlungen mit Nachweis erfassen.
-- Freunde zahlen per Link, ohne App, mit Zahlungsarten für ihr Land.
-- Jeder Cent nachvollziehbar: vollständige Aufschlüsselung je Anteil, mit Verlauf.
-- Nach Artikel, gleichmäßig, genau, in Prozent oder Anteilen teilen. Schnelle Schuldscheine.
-- Alle Währungen, 22 Sprachen, Rechts-nach-links, Dark Mode.
-- Pro: mehrere Währungen mit Tageskursen, wiederkehrende Rechnungen, CSV- und PDF-Export.
-- Kein Tageslimit im kostenlosen Plan.""",
-    "changelog": """2.0 ist eine komplett neue App.
-- Bon scannen, dann sagen, wer was hatte (Sprachzuordnung).
-- Gruppen mit laufendem Saldo; mit den wenigsten Zahlungen ausgleichen, Zahlungen mit Nachweis erfassen.
-- Freunde zahlen per Link, ohne App, mit Zahlungsarten für ihr Land.
-- Jeder Cent nachvollziehbar: Aufschlüsselung je Anteil, Verlauf.
-- Nach Artikel, gleichmäßig, genau, Prozent oder Anteilen teilen.
-- Alle Währungen, 22 Sprachen, RTL, Dark Mode.
-- Pro: mehrere Währungen, wiederkehrende Rechnungen, CSV/PDF. Kein Tageslimit.""",
+- Sag, wer was hatte: die Sprachzuordnung legt jede Position auf die richtige Person.
+- Freunde zahlen per Link in über 80 lokalen Bezahl-Apps, ohne App.
+- Gruppen und Reisen gleichen mit den wenigsten Zahlungen aus, mit Schuldscheinen und freundlichen Erinnerungen.
+- Keiner will zahlen? Dreh das Roulette.
+- 158 Währungen, 22 Sprachen, Dark Mode.
+- Pro: unbegrenzte Scans und Sprache, wiederkehrende Rechnungen, PDF- und CSV-Export, keine Werbung.""",
+    "changelog": """{NAME} 2.0 ist da, von Grund auf neu.
+- Sag, wer was hatte: die Sprachzuordnung legt jede Position auf die richtige Person.
+- Freunde zahlen per Link in über 80 lokalen Bezahl-Apps, ohne App.
+- Gruppen und Reisen gleichen mit den wenigsten Zahlungen aus, mit Schuldscheinen und Erinnerungen.
+- Keiner will zahlen? Dreh das Roulette.
+- 158 Währungen, 22 Sprachen, Dark Mode.
+- Pro: unbegrenzte Scans und Sprache, wiederkehrende Rechnungen, PDF- und CSV-Export, keine Werbung.""",
 })
 
 # ---------------------------------------------------------------- Dutch
@@ -74,9 +73,9 @@ EU.append({
     "name": ": Rekening splitsen",
     "subtitle": "Bonnetje scannen & verrekenen",
     "keywords": "kosten,delen,uitgaven,groep,vakantie,vrienden,etentje,huisgenoten,schuld,reis,fooi,verdelen,potje,ai",
-    "promo": "Scan de bon. Zeg wie wat had. Elke cent verantwoord. Vrienden betalen via een link met Tikkie, Wero of iDEAL-QR, zonder app. Gratis, zonder daglimiet.",
+    "promo": "Nieuw in 2.0: zeg wie wat had en Evens splitst de bon. Vrienden betalen via een link met Tikkie, Wero of iDEAL-QR, zonder app. Een bon intypen blijft altijd gratis.",
     "pay": "een Tikkie-link, Wero, een SEPA-QR-code of PayPal",
-    "short": "Scan de bon, zeg wie wat had, verreken. Vrienden betalen via een link.",
+    "short": "Rekening splitsen: scan de bon, zeg wie wat had. Vrienden betalen via link.",
     "desc": """Splits elke rekening met iedereen, op elke telefoon, in elk land.
 
 {NAME} scant het bonnetje, begrijpt wie wat had en houdt een lopend saldo bij voor reizen, huisgenoten en etentjes. Vrienden betalen via een link met de apps die ze al gebruiken. Geen download, geen account.
@@ -94,52 +93,51 @@ VRIENDEN BETALEN VIA EEN LINK
 Stuur een persoonlijke link of deelkaart via WhatsApp of iMessage. Gasten openen hem in de browser, zien hun aandeel, betalen met {PAY} en voegen een betaalbewijs toe. De betaalmethoden passen bij het land van je vriend, met het bedrag ingevuld waar de app dat toelaat.
 
 VERREKENEN MET MINDER BETALINGEN
-Groepen houden een lopend saldo bij over alle rekeningen. Verreken met zo min mogelijk overboekingen, registreer betalingen en krijg een vriendelijke herinnering voor open saldo's, hooguit één per week.
+Groepen houden een lopend saldo bij over alle rekeningen. Verreken met zo min mogelijk overboekingen, registreer betalingen en krijg een vriendelijke herinnering voor open saldo's, hooguit één per week. Niemand wil betalen? Draai aan het wie-betaalt-rad.
 
 ELKE VALUTA, 22 TALEN
-Alle wereldvaluta's met de juiste decimalen, Arabisch en Urdu van rechts naar links, donkere modus en lokale betaalmethoden voor meer dan 60 landen.
+158 valuta's met de juiste decimalen, 80+ lokale betaalapps, Arabisch en Urdu van rechts naar links en donkere modus.
 
-GRATIS, ZONDER DAGLIMIET
-Onbeperkt rekeningen, groepen, saldo's en gastlinks. Geen daglimiet, geen interstitial-advertenties. Een gratis maandelijks tegoed aan AI-scans en spraakopdrachten, meer na een korte advertentie.
+GRATIS TE GEBRUIKEN
+Onbeperkt rekeningen, groepen, saldo's en gastlinks, en een rekening zelf intypen is altijd gratis. Je begint met welkomstpunten voor AI-scans en spraak; een korte advertentie levert meer op als je ze nodig hebt. Geen interstitial-advertenties.
 
 PRO
-Onbeperkte AI-scans en spraak, groepen in meerdere valuta's met dagelijkse wisselkoersen, terugkerende rekeningen zoals huur en energie, en export naar CSV en PDF. Maandelijks, jaarlijks met gratis proefperiode, of eenmalig voor altijd.{LEGAL}""",
+Onbeperkte AI-scans en spraak, groepen in meerdere valuta's met dagelijkse wisselkoersen, terugkerende rekeningen zoals huur en energie, en export naar CSV en PDF. Maandelijks, jaarlijks met gratis proefperiode, of eenmalig voor altijd.
+
+PRIVACY
+{NAME} houdt nooit je geld vast: vrienden betalen elkaar rechtstreeks in hun eigen apps. Je bonnetjes worden nooit gebruikt om AI te trainen.{LEGAL}""",
     "legal": f"""
 
 Abonnementen worden bij bevestiging van de aankoop via je Apple ID-account afgeschreven en verlengen automatisch, tenzij automatisch verlengen minstens 24 uur voor het einde van de lopende periode wordt uitgezet. Beheren of opzeggen doe je in de accountinstellingen van de App Store.
 
 Privacybeleid: {PRIV}
 Gebruiksvoorwaarden: {TERMS}""",
-    "release": """{NAME} 2.0 is een volledig nieuwe app.
+    "release": """{NAME} 2.0 is er, helemaal opnieuw gebouwd.
 
-- Scan een bon en zeg wie wat had. Spraaktoewijzing is nieuw.
-- Groepen met een lopend saldo voor reizen, huisgenoten en etentjes.
-- Verreken met zo min mogelijk betalingen, registreer betalingen met bewijs.
-- Vrienden betalen via een link, zonder app, met betaalmethoden voor hun land.
-- Elke cent verantwoord: volledige uitsplitsing per aandeel, met geschiedenis.
-- Verdeel per item, gelijk, exact, in procenten of delen. Snelle schulden.
-- Alle valuta's, 22 talen, rechts-naar-links, donkere modus.
-- Pro: meerdere valuta's met dagkoersen, terugkerende rekeningen, CSV- en PDF-export.
-- Geen daglimiet in het gratis plan.""",
-    "changelog": """2.0 is een volledig nieuwe app.
-- Scan een bon en zeg wie wat had (spraaktoewijzing).
-- Groepen met lopend saldo; verreken met zo min mogelijk betalingen, registreer betalingen met bewijs.
-- Vrienden betalen via een link, zonder app, met betaalmethoden voor hun land.
-- Elke cent verantwoord: uitsplitsing per aandeel, geschiedenis.
-- Verdeel per item, gelijk, exact, procenten of delen.
-- Alle valuta's, 22 talen, RTL, donkere modus.
-- Pro: meerdere valuta's, terugkerende rekeningen, CSV/PDF. Geen daglimiet.""",
+- Zeg wie wat had: spraak zet elk item bij de juiste persoon.
+- Vrienden betalen via een link in 80+ lokale betaalapps, zonder app.
+- Groepen en reizen verrekenen met zo min mogelijk betalingen, met schulden en vriendelijke herinneringen.
+- Niemand wil betalen? Draai aan het rad.
+- 158 valuta's, 22 talen, donkere modus.
+- Pro: onbeperkt scans en spraak, terugkerende rekeningen, PDF- en CSV-export, geen advertenties.""",
+    "changelog": """{NAME} 2.0 is er, helemaal opnieuw gebouwd.
+- Zeg wie wat had: spraak zet elk item bij de juiste persoon.
+- Vrienden betalen via een link in 80+ lokale betaalapps, zonder app.
+- Groepen en reizen verrekenen met zo min mogelijk betalingen, met schulden en vriendelijke herinneringen.
+- Niemand wil betalen? Draai aan het rad.
+- 158 valuta's, 22 talen, donkere modus.
+- Pro: onbeperkt scans en spraak, terugkerende rekeningen, PDF- en CSV-export, geen advertenties.""",
 })
 
 # ---------------------------------------------------------------- Swedish
 EU.append({
     "ios": ["sv"], "play": ["sv-SE"],
-    "name": ": Dela notan",
+    "name": ": Dela notan & kostnader",
     "subtitle": "Skanna kvitton & gör upp",
-    "keywords": "kostnader,utgifter,grupp,resa,vänner,middag,skuld,dricks,splitta,kompisar,semester,ai,betala,räkning",
-    "promo": "Skanna. Säg vem som tog vad. Varje öre redovisat. Vänner betalar via en länk med Swish eller PayPal, utan app. Gratis, utan dagsgräns.",
+    "keywords": "utgifter,grupp,resa,vänner,middag,skuld,dricks,splitta,kompisar,semester,ai,betala,räkning,hyra",
+    "promo": "Nytt i 2.0: säg vem som tog vad så delar Evens kvittot åt dig. Vänner betalar via en länk med Swish eller PayPal, utan app. Att skriva in en nota är alltid gratis.",
     "pay": "Swish, PayPal eller Revolut",
-    "short": "Skanna kvittot, säg vem som tog vad, gör upp. Vänner betalar via en länk.",
+    "short": "Dela notan: skanna kvittot, säg vem som tog vad. Vänner betalar via länk.",
     "desc": """Dela vilken nota som helst med vem som helst, på vilken telefon som helst, i vilket land som helst.
 
 {NAME} skannar kvittot, förstår vem som tog vad och håller ett löpande saldo för resor, kollektiv och middagar. Vänner betalar via en länk i de appar de redan använder. Ingen nedladdning, inget konto.
@@ -157,41 +155,40 @@ VÄNNER BETALAR VIA EN LÄNK
 Skicka en personlig länk eller ett delningskort via WhatsApp eller iMessage. Gäster öppnar det i webbläsaren, ser sin andel, betalar med {PAY} och bifogar ett kvitto på betalningen. Betalsätten matchar vännens land, med beloppet ifyllt där appen tillåter det.
 
 GÖR UPP MED FÄRRE BETALNINGAR
-Grupper håller ett löpande saldo över alla notor. Gör upp med så få överföringar som möjligt, registrera betalningar och få en vänlig påminnelse om öppna saldon, högst en gång i veckan.
+Grupper håller ett löpande saldo över alla notor. Gör upp med så få överföringar som möjligt, registrera betalningar och få en vänlig påminnelse om öppna saldon, högst en gång i veckan. Ingen vill betala? Snurra på vem-betalar-rouletten.
 
 ALLA VALUTOR, 22 SPRÅK
-Alla världens valutor med rätt decimaler, arabiska och urdu från höger till vänster, mörkt läge och lokala betalsätt för över 60 länder.
+158 valutor med rätt decimaler, 80+ lokala betalappar, arabiska och urdu från höger till vänster och mörkt läge.
 
-GRATIS, UTAN DAGSGRÄNS
-Obegränsat med notor, grupper, saldon och gästlänkar. Ingen dagsgräns, inga helskärmsannonser. En gratis månadspott med AI-skanningar och röstkommandon, fler efter en kort annons.
+GRATIS ATT ANVÄNDA
+Obegränsat med notor, grupper, saldon och gästlänkar, och att skriva in en nota för hand är alltid gratis. Du börjar med välkomstpoäng för AI-skanningar och röst; en kort annons ger fler när du behöver. Inga helskärmsannonser.
 
 PRO
-Obegränsade AI-skanningar och röst, grupper i flera valutor med dagliga växelkurser, återkommande räkningar som hyra och el, samt export till CSV och PDF. Månadsvis, årsvis med gratis provperiod eller ett engångsköp för alltid.{LEGAL}""",
+Obegränsade AI-skanningar och röst, grupper i flera valutor med dagliga växelkurser, återkommande räkningar som hyra och el, samt export till CSV och PDF. Månadsvis, årsvis med gratis provperiod eller ett engångsköp för alltid.
+
+INTEGRITET
+{NAME} hanterar aldrig dina pengar: vänner betalar varandra direkt i sina egna appar. Dina kvitton används aldrig för att träna AI.{LEGAL}""",
     "legal": f"""
 
 Prenumerationer debiteras ditt Apple-ID-konto när köpet bekräftas och förnyas automatiskt om inte automatisk förnyelse stängs av minst 24 timmar före periodens slut. Hantera eller avsluta i App Store-kontots inställningar.
 
 Integritetspolicy: {PRIV}
 Användarvillkor: {TERMS}""",
-    "release": """{NAME} 2.0 är en helt ny app.
+    "release": """{NAME} 2.0 är här, helt ombyggd.
 
-- Skanna ett kvitto och säg vem som tog vad. Rösttilldelning är nytt.
-- Grupper med löpande saldo för resor, kollektiv och middagar.
-- Gör upp med så få betalningar som möjligt, registrera betalningar med kvitto.
-- Vänner betalar via en länk, utan app, med betalsätt för sitt land.
-- Varje öre redovisat: full uppdelning per andel, med historik.
-- Dela per vara, lika, exakt, i procent eller andelar. Snabba skulder.
-- Alla valutor, 22 språk, höger-till-vänster, mörkt läge.
-- Pro: flera valutor med dagskurser, återkommande räkningar, CSV- och PDF-export.
-- Ingen dagsgräns i gratisplanen.""",
-    "changelog": """2.0 är en helt ny app.
-- Skanna ett kvitto och säg vem som tog vad (rösttilldelning).
-- Grupper med löpande saldo; gör upp med så få betalningar som möjligt, registrera betalningar med kvitto.
-- Vänner betalar via en länk, utan app, med betalsätt för sitt land.
-- Varje öre redovisat: uppdelning per andel, historik.
-- Dela per vara, lika, exakt, procent eller andelar.
-- Alla valutor, 22 språk, RTL, mörkt läge.
-- Pro: flera valutor, återkommande räkningar, CSV/PDF. Ingen dagsgräns.""",
+- Säg vem som tog vad: rösten lägger varje vara på rätt person.
+- Vänner betalar via en länk i 80+ lokala betalappar, utan app.
+- Grupper och resor gör upp med så få betalningar som möjligt, med skulder och vänliga påminnelser.
+- Ingen vill betala? Snurra på rouletten.
+- 158 valutor, 22 språk, mörkt läge.
+- Pro: obegränsat med skanningar och röst, återkommande räkningar, PDF- och CSV-export, inga annonser.""",
+    "changelog": """{NAME} 2.0 är här, helt ombyggd.
+- Säg vem som tog vad: rösten lägger varje vara på rätt person.
+- Vänner betalar via en länk i 80+ lokala betalappar, utan app.
+- Grupper och resor gör upp med så få betalningar som möjligt, med skulder och vänliga påminnelser.
+- Ingen vill betala? Snurra på rouletten.
+- 158 valutor, 22 språk, mörkt läge.
+- Pro: obegränsat med skanningar och röst, återkommande räkningar, PDF- och CSV-export, inga annonser.""",
 })
 
 # ---------------------------------------------------------------- Danish
@@ -199,10 +196,10 @@ EU.append({
     "ios": ["da"], "play": ["da-DK"],
     "name": ": Del regningen",
     "subtitle": "Scan kvitteringer & afregn",
-    "keywords": "udgifter,gruppe,rejse,venner,middag,gæld,drikkepenge,splitte,deling,ferie,bofæller,ai,betal,fælles",
-    "promo": "Scan. Sig hvem der fik hvad. Hver øre gjort op. Venner betaler via et link med MobilePay eller PayPal, uden app. Gratis, uden dagligt loft.",
+    "keywords": "udgifter,gruppe,rejse,venner,middag,gæld,drikkepenge,splitte,ferie,bofæller,ai,betal,fælles,tur",
+    "promo": "Nyt i 2.0: sig hvem der fik hvad, så deler Evens kvitteringen. Venner betaler via link med MobilePay eller PayPal, uden app. At taste en regning ind er altid gratis.",
     "pay": "MobilePay, PayPal eller Revolut",
-    "short": "Scan kvitteringen, sig hvem der fik hvad, afregn. Venner betaler via et link.",
+    "short": "Del regningen: scan, sig hvem der fik hvad, afregn. Venner betaler via link.",
     "desc": """Del enhver regning med alle, på enhver telefon, i ethvert land.
 
 {NAME} scanner kvitteringen, forstår hvem der fik hvad og holder en løbende saldo for rejser, bofællesskaber og middage. Venner betaler via et link i de apps, de allerede bruger. Ingen download, ingen konto.
@@ -220,41 +217,40 @@ VENNER BETALER VIA ET LINK
 Send et personligt link eller et delekort via WhatsApp eller iMessage. Gæster åbner det i browseren, ser deres andel, betaler med {PAY} og vedhæfter en kvittering for betalingen. Betalingsmetoderne passer til vennens land, med beløbet udfyldt hvor appen tillader det.
 
 AFREGN MED FÆRRE BETALINGER
-Grupper holder en løbende saldo på tværs af regninger. Afregn med færrest mulige overførsler, registrér betalinger og få en venlig påmindelse om åbne saldi, højst én gang om ugen.
+Grupper holder en løbende saldo på tværs af regninger. Afregn med færrest mulige overførsler, registrér betalinger og få en venlig påmindelse om åbne saldi, højst én gang om ugen. Ingen vil betale? Drej på hvem-betaler-rouletten.
 
 ALLE VALUTAER, 22 SPROG
-Alle verdens valutaer med de rigtige decimaler, arabisk og urdu fra højre mod venstre, mørk tilstand og lokale betalingsmetoder for over 60 lande.
+158 valutaer med de rigtige decimaler, 80+ lokale betalingsapps, arabisk og urdu fra højre mod venstre og mørk tilstand.
 
-GRATIS, UDEN DAGLIGT LOFT
-Ubegrænsede regninger, grupper, saldi og gæstelinks. Intet dagligt loft, ingen helsidesreklamer. En gratis månedlig pulje af AI-scanninger og stemmekommandoer, flere efter en kort reklame.
+GRATIS AT BRUGE
+Ubegrænsede regninger, grupper, saldi og gæstelinks, og at taste en regning ind i hånden er altid gratis. Du starter med velkomstpoint til AI-scanninger og stemme; en kort reklame giver flere, når du har brug for dem. Ingen fuldskærmsreklamer.
 
 PRO
-Ubegrænsede AI-scanninger og stemme, grupper i flere valutaer med daglige kurser, tilbagevendende regninger som husleje og el, samt eksport til CSV og PDF. Månedligt, årligt med gratis prøveperiode eller et engangskøb for altid.{LEGAL}""",
+Ubegrænsede AI-scanninger og stemme, grupper i flere valutaer med daglige kurser, tilbagevendende regninger som husleje og el, samt eksport til CSV og PDF. Månedligt, årligt med gratis prøveperiode eller et engangskøb for altid.
+
+PRIVATLIV
+{NAME} opbevarer aldrig dine penge: venner betaler hinanden direkte i deres egne apps. Dine kvitteringer bruges aldrig til at træne AI.{LEGAL}""",
     "legal": f"""
 
 Abonnementer trækkes på din Apple-ID-konto ved bekræftelse af købet og fornyes automatisk, medmindre automatisk fornyelse slås fra mindst 24 timer før periodens udløb. Administrér eller opsig i App Store-kontoens indstillinger.
 
 Privatlivspolitik: {PRIV}
 Vilkår for brug: {TERMS}""",
-    "release": """{NAME} 2.0 er en helt ny app.
+    "release": """{NAME} 2.0 er her, bygget helt forfra.
 
-- Scan en kvittering og sig hvem der fik hvad. Stemmetildeling er nyt.
-- Grupper med løbende saldo for rejser, bofællesskaber og middage.
-- Afregn med færrest mulige betalinger, registrér betalinger med kvittering.
-- Venner betaler via et link, uden app, med betalingsmetoder for deres land.
-- Hver øre gjort op: fuld opdeling pr. andel, med historik.
-- Del pr. vare, ligeligt, præcist, i procent eller andele. Hurtig gæld.
-- Alle valutaer, 22 sprog, højre-mod-venstre, mørk tilstand.
-- Pro: flere valutaer med dagskurser, tilbagevendende regninger, CSV- og PDF-eksport.
-- Intet dagligt loft på gratisplanen.""",
-    "changelog": """2.0 er en helt ny app.
-- Scan en kvittering og sig hvem der fik hvad (stemmetildeling).
-- Grupper med løbende saldo; afregn med færrest mulige betalinger, registrér betalinger med kvittering.
-- Venner betaler via et link, uden app, med betalingsmetoder for deres land.
-- Hver øre gjort op: opdeling pr. andel, historik.
-- Del pr. vare, ligeligt, præcist, procent eller andele.
-- Alle valutaer, 22 sprog, RTL, mørk tilstand.
-- Pro: flere valutaer, tilbagevendende regninger, CSV/PDF. Intet dagligt loft.""",
+- Sig hvem der fik hvad: stemmen lægger hver vare på den rigtige person.
+- Venner betaler via et link i 80+ lokale betalingsapps, uden app.
+- Grupper og rejser afregner med færrest mulige betalinger, med gæld og venlige påmindelser.
+- Ingen vil betale? Drej på rouletten.
+- 158 valutaer, 22 sprog, mørk tilstand.
+- Pro: ubegrænsede scanninger og stemme, faste regninger, PDF- og CSV-eksport, ingen reklamer.""",
+    "changelog": """{NAME} 2.0 er her, bygget helt forfra.
+- Sig hvem der fik hvad: stemmen lægger hver vare på den rigtige person.
+- Venner betaler via et link i 80+ lokale betalingsapps, uden app.
+- Grupper og rejser afregner med færrest mulige betalinger, med gæld og venlige påmindelser.
+- Ingen vil betale? Drej på rouletten.
+- 158 valutaer, 22 sprog, mørk tilstand.
+- Pro: ubegrænsede scanninger og stemme, faste regninger, PDF- og CSV-eksport, ingen reklamer.""",
 })
 
 # ---------------------------------------------------------------- Norwegian
@@ -262,10 +258,10 @@ EU.append({
     "ios": ["no"], "play": ["no-NO"],
     "name": ": Del regningen",
     "subtitle": "Skann kvitteringer & gjør opp",
-    "keywords": "utgifter,gruppe,reise,venner,middag,gjeld,tips,splitte,ferie,kollektiv,ai,betal,regnskap,felles",
-    "promo": "Skann. Si hvem som fikk hva. Hvert øre gjort rede for. Venner betaler via en lenke med Vipps eller PayPal, uten app. Gratis, uten dagsgrense.",
+    "keywords": "utgifter,gruppe,reise,venner,middag,gjeld,tips,splitte,ferie,kollektiv,ai,betal,regnskap,felles,tur",
+    "promo": "Nytt i 2.0: si hvem som fikk hva, så deler Evens kvitteringen. Venner betaler via en lenke med Vipps eller PayPal, uten app. Å taste inn en regning er alltid gratis.",
     "pay": "Vipps, PayPal eller Revolut",
-    "short": "Skann kvitteringen, si hvem som fikk hva, gjør opp. Venner betaler via en lenke.",
+    "short": "Del regningen: skann, si hvem som fikk hva, gjør opp. Venner betaler via lenke.",
     "desc": """Del enhver regning med alle, på enhver telefon, i ethvert land.
 
 {NAME} skanner kvitteringen, forstår hvem som fikk hva og holder en løpende saldo for reiser, kollektiv og middager. Venner betaler via en lenke i appene de allerede bruker. Ingen nedlasting, ingen konto.
@@ -283,41 +279,40 @@ VENNER BETALER VIA EN LENKE
 Send en personlig lenke eller et delekort via WhatsApp eller iMessage. Gjester åpner den i nettleseren, ser sin andel, betaler med {PAY} og legger ved betalingsbevis. Betalingsmåtene passer til vennens land, med beløpet fylt inn der appen tillater det.
 
 GJØR OPP MED FÆRRE BETALINGER
-Grupper holder en løpende saldo på tvers av regninger. Gjør opp med færrest mulige overføringer, registrer betalinger og få en vennlig påminnelse om åpne saldoer, maks én gang i uken.
+Grupper holder en løpende saldo på tvers av regninger. Gjør opp med færrest mulige overføringer, registrer betalinger og få en vennlig påminnelse om åpne saldoer, maks én gang i uken. Ingen vil betale? Snurr på hvem-betaler-ruletten.
 
 ALLE VALUTAER, 22 SPRÅK
-Alle verdens valutaer med riktige desimaler, arabisk og urdu fra høyre mot venstre, mørk modus og lokale betalingsmåter for over 60 land.
+158 valutaer med riktige desimaler, 80+ lokale betalingsapper, arabisk og urdu fra høyre mot venstre og mørk modus.
 
-GRATIS, UTEN DAGSGRENSE
-Ubegrenset med regninger, grupper, saldoer og gjestelenker. Ingen dagsgrense, ingen helskjermsannonser. En gratis månedlig pott med AI-skanninger og stemmekommandoer, flere etter en kort annonse.
+GRATIS Å BRUKE
+Ubegrenset med regninger, grupper, saldoer og gjestelenker, og å taste inn en regning for hånd er alltid gratis. Du starter med velkomstpoeng til AI-skanninger og stemme; en kort reklame gir flere når du trenger dem. Ingen helskjermsannonser.
 
 PRO
-Ubegrensede AI-skanninger og stemme, grupper i flere valutaer med daglige kurser, gjentakende regninger som husleie og strøm, samt eksport til CSV og PDF. Månedlig, årlig med gratis prøveperiode eller ett engangskjøp for alltid.{LEGAL}""",
+Ubegrensede AI-skanninger og stemme, grupper i flere valutaer med daglige kurser, gjentakende regninger som husleie og strøm, samt eksport til CSV og PDF. Månedlig, årlig med gratis prøveperiode eller ett engangskjøp for alltid.
+
+PERSONVERN
+{NAME} oppbevarer aldri pengene dine: venner betaler hverandre direkte i sine egne apper. Kvitteringene dine brukes aldri til å trene AI.{LEGAL}""",
     "legal": f"""
 
 Abonnementer belastes Apple-ID-kontoen din ved bekreftelse av kjøpet og fornyes automatisk med mindre automatisk fornyelse slås av minst 24 timer før periodens slutt. Administrer eller avslutt i App Store-kontoens innstillinger.
 
 Personvern: {PRIV}
 Vilkår for bruk: {TERMS}""",
-    "release": """{NAME} 2.0 er en helt ny app.
+    "release": """{NAME} 2.0 er her, bygget helt på nytt.
 
-- Skann en kvittering og si hvem som fikk hva. Stemmetildeling er nytt.
-- Grupper med løpende saldo for reiser, kollektiv og middager.
-- Gjør opp med færrest mulige betalinger, registrer betalinger med bevis.
-- Venner betaler via en lenke, uten app, med betalingsmåter for sitt land.
-- Hvert øre gjort rede for: full oppdeling per andel, med historikk.
-- Del per vare, likt, nøyaktig, i prosent eller andeler. Rask gjeld.
-- Alle valutaer, 22 språk, høyre-mot-venstre, mørk modus.
-- Pro: flere valutaer med dagskurser, gjentakende regninger, CSV- og PDF-eksport.
-- Ingen dagsgrense i gratisplanen.""",
-    "changelog": """2.0 er en helt ny app.
-- Skann en kvittering og si hvem som fikk hva (stemmetildeling).
-- Grupper med løpende saldo; gjør opp med færrest mulige betalinger, registrer betalinger med bevis.
-- Venner betaler via en lenke, uten app, med betalingsmåter for sitt land.
-- Hvert øre gjort rede for: oppdeling per andel, historikk.
-- Del per vare, likt, nøyaktig, prosent eller andeler.
-- Alle valutaer, 22 språk, RTL, mørk modus.
-- Pro: flere valutaer, gjentakende regninger, CSV/PDF. Ingen dagsgrense.""",
+- Si hvem som fikk hva: stemmen legger hver vare på riktig person.
+- Venner betaler via en lenke i 80+ lokale betalingsapper, uten app.
+- Grupper og reiser gjør opp med færrest mulige betalinger, med gjeld og vennlige påminnelser.
+- Ingen vil betale? Snurr på ruletten.
+- 158 valutaer, 22 språk, mørk modus.
+- Pro: ubegrensede skanninger og stemme, faste regninger, PDF- og CSV-eksport, ingen annonser.""",
+    "changelog": """{NAME} 2.0 er her, bygget helt på nytt.
+- Si hvem som fikk hva: stemmen legger hver vare på riktig person.
+- Venner betaler via en lenke i 80+ lokale betalingsapper, uten app.
+- Grupper og reiser gjør opp med færrest mulige betalinger, med gjeld og vennlige påminnelser.
+- Ingen vil betale? Snurr på ruletten.
+- 158 valutaer, 22 språk, mørk modus.
+- Pro: ubegrensede skanninger og stemme, faste regninger, PDF- og CSV-eksport, ingen annonser.""",
 })
 
 # ---------------------------------------------------------------- French
@@ -338,16 +333,19 @@ VOS AMIS PAIENT DEPUIS UN LIEN
 Envoyez un lien personnel ou une carte de partage sur WhatsApp ou iMessage. Les invités l'ouvrent sur le web, voient leur part, paient avec {PAY} et joignent une preuve de paiement. Les moyens de paiement correspondent au pays de chaque ami, montant prérempli quand l'appli le permet.
 
 RÉGLEZ EN MOINS DE PAIEMENTS
-Les groupes gardent un solde courant d'une addition à l'autre. Réglez avec le minimum de virements, enregistrez les paiements et recevez un rappel discret pour les soldes ouverts, jamais plus d'un par semaine.
+Les groupes gardent un solde courant d'une addition à l'autre. Réglez avec le minimum de virements, enregistrez les paiements et recevez un rappel discret pour les soldes ouverts, jamais plus d'un par semaine. Personne ne veut payer ? Lancez la roulette « qui paie ? ».
 
 TOUTES LES DEVISES, 22 LANGUES
-Toutes les devises du monde avec les bonnes décimales, l'arabe et l'ourdou de droite à gauche, le mode sombre et des moyens de paiement locaux pour plus de 60 pays.
+158 devises avec les bonnes décimales, plus de 80 applis de paiement locales, l'arabe et l'ourdou de droite à gauche, et le mode sombre.
 
-GRATUIT, SANS LIMITE QUOTIDIENNE
-Additions, groupes, soldes et liens invités illimités. Aucun plafond journalier, aucune publicité interstitielle. Un quota mensuel gratuit de scans IA et de commandes vocales, et davantage après une courte vidéo.
+GRATUIT
+Additions, groupes, soldes et liens invités illimités, et saisir une addition à la main est toujours gratuit. Vous démarrez avec des points de bienvenue pour les scans IA et la voix ; une courte vidéo en ajoute quand vous en voulez. Aucune publicité interstitielle.
 
 PRO
-Scans IA et voix illimités, groupes multidevises avec taux de change quotidiens, dépenses récurrentes comme le loyer et les charges, export CSV et PDF. Mensuel, annuel avec essai gratuit, ou achat unique à vie.{LEGAL}"""
+Scans IA et voix illimités, groupes multidevises avec taux de change quotidiens, dépenses récurrentes comme le loyer et les charges, export CSV et PDF. Mensuel, annuel avec essai gratuit, ou achat unique à vie.
+
+CONFIDENTIALITÉ
+{NAME} ne détient jamais votre argent : vos amis se paient directement dans leurs propres applis. Vos {TICKET}s ne servent jamais à entraîner l'IA.{LEGAL}"""
 
 FR_LEGAL = f"""
 
@@ -356,44 +354,40 @@ Les abonnements sont facturés sur votre compte Apple ID à la confirmation de l
 Politique de confidentialité : {PRIV}
 Conditions d'utilisation : {TERMS}"""
 
-FR_RELEASE = """{NAME} 2.0 est une toute nouvelle appli.
+FR_RELEASE = """{NAME} 2.0 est là, entièrement repensée.
 
-- Scannez un {TICKET}, puis dites qui a pris quoi. L'attribution vocale est nouvelle.
-- Des groupes avec un solde courant pour les voyages, la coloc et les restos.
-- Réglez en un minimum de paiements, enregistrez les paiements avec preuve.
-- Vos amis paient depuis un lien, sans appli, avec les moyens de paiement de leur pays.
-- Chaque centime justifié : détail complet de chaque part, avec historique.
-- Partage par article, à parts égales, exact, en pourcentages ou en parts. Petites dettes rapides.
-- Toutes les devises, 22 langues, droite à gauche, mode sombre.
-- Pro : multidevise avec taux du jour, dépenses récurrentes, export CSV et PDF.
-- Aucune limite quotidienne dans l'offre gratuite."""
+- Dites qui a pris quoi : la voix place chaque article sur la bonne personne.
+- Vos amis paient depuis un lien dans plus de 80 applis de paiement locales, sans appli.
+- Groupes et voyages se règlent en un minimum de paiements, avec petites dettes et rappels discrets.
+- Personne ne veut payer ? Lancez la roulette.
+- 158 devises, 22 langues, mode sombre.
+- Pro : scans et voix illimités, dépenses récurrentes, export PDF et CSV, sans publicité."""
 
-FR_CHANGELOG = """2.0 est une toute nouvelle appli.
-- Scannez un {TICKET}, puis dites qui a pris quoi (attribution vocale).
-- Groupes avec solde courant ; réglez en un minimum de paiements, enregistrez les paiements avec preuve.
-- Vos amis paient depuis un lien, sans appli, avec les moyens de paiement de leur pays.
-- Chaque centime justifié : détail de chaque part, historique.
-- Partage par article, égal, exact, pourcentages ou parts.
-- Toutes les devises, 22 langues, RTL, mode sombre.
-- Pro : multidevise, dépenses récurrentes, CSV/PDF. Aucune limite quotidienne."""
+FR_CHANGELOG = """{NAME} 2.0 est là, entièrement repensée.
+- Dites qui a pris quoi : la voix place chaque article sur la bonne personne.
+- Vos amis paient depuis un lien dans plus de 80 applis de paiement locales, sans appli.
+- Groupes et voyages se règlent en un minimum de paiements, avec petites dettes et rappels discrets.
+- Personne ne veut payer ? Lancez la roulette.
+- 158 devises, 22 langues, mode sombre.
+- Pro : scans et voix illimités, dépenses récurrentes, export PDF et CSV, sans publicité."""
 
 EU.append({
     "ios": ["fr-FR"], "play": ["fr-FR"],
     "name": ": Partager l'addition",
-    "subtitle": "Scan de ticket & règlement",
-    "keywords": "dépenses,partage,frais,groupe,voyage,coloc,amis,pourboire,dettes,note,compte,vacances,ia,diviser",
-    "promo": "Scannez. Dites qui a pris quoi. Chaque centime justifié. Vos amis paient depuis un lien avec Wero, Lydia ou PayPal, sans appli. Gratuit, sans limite quotidienne.",
+    "subtitle": "Scanner de tickets & dépenses",
+    "keywords": "partage,frais,groupe,voyage,coloc,amis,pourboire,dettes,note,compte,vacances,ia,diviser,resto,doit",
+    "promo": "Nouveau en 2.0 : dites qui a pris quoi et Evens partage le ticket. Vos amis paient par lien avec Wero, Lydia ou PayPal, sans appli. Saisir une addition reste gratuit.",
     "pay": "Wero, Lydia, un QR SEPA ou PayPal",
-    "short": "Scannez le ticket, dites qui a pris quoi, réglez. Vos amis paient par lien.",
+    "short": "Partagez l'addition : scannez le ticket, dites qui a pris quoi, payez par lien.",
     "desc": FR_DESC, "legal": FR_LEGAL, "release": FR_RELEASE, "changelog": FR_CHANGELOG,
     "vars": {"TICKET": "ticket"},
 })
 EU.append({
     "ios": ["fr-CA"], "play": [],
     "name": ": Séparer la facture",
-    "subtitle": "Scan de reçus & règlement",
-    "keywords": "dépenses,partage,frais,groupe,voyage,coloc,amis,pourboire,dettes,note,compte,ia,diviser,virement",
-    "promo": "Scannez. Dites qui a pris quoi. Chaque cent justifié. Vos amis paient depuis un lien par virement Interac ou PayPal, sans appli. Gratuit, sans limite quotidienne.",
+    "subtitle": "Scanner de reçus & dépenses",
+    "keywords": "partage,frais,groupe,voyage,coloc,amis,pourboire,dettes,note,compte,ia,diviser,virement,resto,doit",
+    "promo": "Nouveau en 2.0 : dites qui a pris quoi et Evens sépare le reçu. Vos amis paient par lien avec virement Interac ou PayPal, sans appli. Saisir une facture reste gratuit.",
     "pay": "un virement Interac ou PayPal",
     "short": "Scannez le reçu, dites qui a pris quoi, réglez. Vos amis paient depuis un lien.",
     "desc": FR_DESC.replace("CHAQUE CENTIME JUSTIFIÉ", "CHAQUE CENT JUSTIFIÉ").replace("Chaque centime", "Chaque cent"),
@@ -421,16 +415,19 @@ TUS AMIGOS PAGAN DESDE UN ENLACE
 Envía un enlace personal o una tarjeta para compartir por WhatsApp o iMessage. Los invitados lo abren en la web, ven su parte, pagan con {PAY} y adjuntan el comprobante. Los métodos de pago se ajustan al país de cada amigo, con el importe ya rellenado cuando la app lo permite.
 
 SALDA CON MENOS PAGOS
-Los grupos llevan un saldo acumulado entre cuentas. Salda con el mínimo de transferencias, registra los pagos y recibe un recordatorio amable de los saldos pendientes, nunca más de uno a la semana.
+Los grupos llevan un saldo acumulado entre cuentas. Salda con el mínimo de transferencias, registra los pagos y recibe un recordatorio amable de los saldos pendientes, nunca más de uno a la semana. ¿Nadie quiere pagar? Gira la ruleta de quién paga.
 
 CUALQUIER MONEDA, 22 IDIOMAS
-Todas las monedas del mundo con sus decimales correctos, árabe y urdu de derecha a izquierda, modo oscuro y métodos de pago locales para más de 60 países.
+158 monedas con sus decimales correctos, más de 80 apps de pago locales, árabe y urdu de derecha a izquierda y modo oscuro.
 
-GRATIS, SIN LÍMITE DIARIO
-Cuentas, grupos, saldos y enlaces de invitado ilimitados. Sin tope diario y sin anuncios a pantalla completa. Una cuota mensual gratuita de escaneos con IA y comandos de voz, y más viendo un anuncio corto.
+GRATIS
+Cuentas, grupos, saldos y enlaces de invitado ilimitados, y escribir una cuenta a mano es siempre gratis. Empiezas con puntos de bienvenida para escaneos con IA y voz; un anuncio corto te da más cuando los necesites. Sin anuncios a pantalla completa.
 
 PRO
-Escaneos con IA y voz ilimitados, grupos en varias monedas con tipos de cambio diarios, gastos recurrentes como el alquiler y los suministros, y exportación a CSV y PDF. Mensual, anual con prueba gratuita o un pago único para siempre.{LEGAL}"""
+Escaneos con IA y voz ilimitados, grupos en varias monedas con tipos de cambio diarios, gastos recurrentes como el alquiler y los suministros, y exportación a CSV y PDF. Mensual, anual con prueba gratuita o un pago único para siempre.
+
+PRIVACIDAD
+{NAME} nunca guarda tu dinero: tus amigos se pagan directamente en sus propias apps. Tus {TICKET}s nunca se usan para entrenar la IA.{LEGAL}"""
 
 ES_LEGAL = f"""
 
@@ -439,35 +436,31 @@ Las suscripciones se cargan en tu cuenta de Apple ID al confirmar la compra y se
 Política de privacidad: {PRIV}
 Condiciones de uso: {TERMS}"""
 
-ES_RELEASE = """{NAME} 2.0 es una app nueva desde cero.
+ES_RELEASE = """{NAME} 2.0 ya está aquí, hecha de nuevo desde cero.
 
-- Escanea un {TICKET} y di quién pidió qué. La asignación por voz es nueva.
-- Grupos con saldo acumulado para viajes, {PISO} y cenas.
-- Salda con el mínimo de pagos y registra los pagos con comprobante.
-- Tus amigos pagan desde un enlace, sin app, con los métodos de pago de su país.
-- Cada {CENT} justificado: desglose completo de cada parte, con historial.
-- Divide por artículo, a partes iguales, exacto, por porcentajes o partes. Deudas rápidas.
-- Todas las monedas, 22 idiomas, derecha a izquierda, modo oscuro.
-- Pro: varias monedas con tipos del día, gastos recurrentes, exportación CSV y PDF.
-- Sin límite diario en el plan gratuito."""
+- Di quién pidió qué: la voz pone cada artículo en la persona correcta.
+- Tus amigos pagan desde un enlace en más de 80 apps de pago locales, sin app.
+- Grupos y viajes se saldan con el mínimo de pagos, con deudas rápidas y recordatorios amables.
+- ¿Nadie quiere pagar? Gira la ruleta.
+- 158 monedas, 22 idiomas, modo oscuro.
+- Pro: escaneos y voz ilimitados, gastos recurrentes, exportación PDF y CSV, sin anuncios."""
 
-ES_CHANGELOG = """2.0 es una app nueva desde cero.
-- Escanea un {TICKET} y di quién pidió qué (asignación por voz).
-- Grupos con saldo acumulado; salda con el mínimo de pagos, registra pagos con comprobante.
-- Tus amigos pagan desde un enlace, sin app, con los métodos de pago de su país.
-- Cada {CENT} justificado: desglose de cada parte, historial.
-- Divide por artículo, igual, exacto, porcentajes o partes.
-- Todas las monedas, 22 idiomas, RTL, modo oscuro.
-- Pro: varias monedas, gastos recurrentes, CSV/PDF. Sin límite diario."""
+ES_CHANGELOG = """{NAME} 2.0 ya está aquí, hecha de nuevo desde cero.
+- Di quién pidió qué: la voz pone cada artículo en la persona correcta.
+- Tus amigos pagan desde un enlace en más de 80 apps de pago locales, sin app.
+- Grupos y viajes se saldan con el mínimo de pagos, con deudas rápidas y recordatorios amables.
+- ¿Nadie quiere pagar? Gira la ruleta.
+- 158 monedas, 22 idiomas, modo oscuro.
+- Pro: escaneos y voz ilimitados, gastos recurrentes, exportación PDF y CSV, sin anuncios."""
 
 EU.append({
     "ios": ["es-ES"], "play": ["es-ES"],
-    "name": ": Dividir la cuenta",
-    "subtitle": "Escanea tickets y salda deudas",
-    "keywords": "gastos,compartidos,grupo,viaje,amigos,piso,cena,propina,a medias,pagar,ia,bote,reparto,vacaciones",
-    "promo": "Escanéalo. Di quién pidió qué. Cada céntimo justificado. Tus amigos pagan desde un enlace con Bizum o PayPal, sin app. Gratis, sin límite diario.",
+    "name": ": Dividir cuenta y gastos",
+    "subtitle": "Escanea tickets, salda deudas",
+    "keywords": "compartidos,grupo,viaje,amigos,piso,cena,propina,pagar,ia,bote,reparto,vacaciones,quién debe",
+    "promo": "Nuevo en 2.0: di quién pidió qué y Evens divide el ticket. Tus amigos pagan desde un enlace con Bizum o PayPal, sin app. Escribir una cuenta a mano es siempre gratis.",
     "pay": "Bizum, un QR SEPA o PayPal",
-    "short": "Escanea el ticket, di quién pidió qué, salda. Tus amigos pagan desde un enlace.",
+    "short": "Divide la cuenta: escanea el ticket, di quién pidió qué, salda por enlace.",
     "desc": ES_DESC, "legal": ES_LEGAL, "release": ES_RELEASE, "changelog": ES_CHANGELOG,
     "vars": {"TICKET": "ticket", "PISO": "pisos compartidos", "CENT": "céntimo"},
 })
@@ -477,12 +470,12 @@ ES_MX_DESC = (ES_DESC.replace("CADA CÉNTIMO JUSTIFICADO", "CADA CENTAVO JUSTIFI
               .replace("¿Prefieres tocar?", "¿Prefieres tocar la pantalla?"))
 EU.append({
     "ios": ["es-MX"], "play": ["es-419"],
-    "name": ": Dividir la cuenta",
-    "subtitle": "Escanea recibos y salda deudas",
-    "keywords": "gastos,compartidos,grupo,viaje,amigos,roomies,cena,propina,vaquita,pagar,ia,reparto,cuentas claras",
-    "promo": "Escanéalo. Di quién pidió qué. Cada centavo justificado. Tus amigos pagan desde un enlace con SPEI, Mercado Pago o PayPal, sin app. Gratis, sin límite diario.",
+    "name": ": Dividir cuenta y gastos",
+    "subtitle": "Escanea recibos, salda deudas",
+    "keywords": "compartidos,grupo,viaje,amigos,roomies,cena,propina,vaquita,pagar,ia,cuentas claras,quién debe",
+    "promo": "Nuevo en 2.0: di quién pidió qué y Evens divide el recibo. Tus amigos pagan por enlace con SPEI, Mercado Pago o PayPal, sin app. Escribir una cuenta es siempre gratis.",
     "pay": "SPEI, Mercado Pago, Nequi, Yape o PayPal",
-    "short": "Escanea el recibo, di quién pidió qué, salda. Tus amigos pagan desde un enlace.",
+    "short": "Divide la cuenta: escanea el recibo, di quién pidió qué, salda por enlace.",
     "desc": ES_MX_DESC, "legal": ES_LEGAL, "release": ES_RELEASE, "changelog": ES_CHANGELOG,
     "vars": {"TICKET": "recibo", "PISO": "roomies", "CENT": "centavo"},
 })
@@ -490,12 +483,12 @@ EU.append({
 # ---------------------------------------------------------------- Italian
 EU.append({
     "ios": ["it"], "play": ["it-IT"],
-    "name": ": Dividi il conto",
-    "subtitle": "Scansiona scontrini e salda",
-    "keywords": "spese,condivise,gruppo,viaggio,amici,coinquilini,cena,mancia,debiti,pagare,ia,vacanza,alla romana",
-    "promo": "Scansiona. Di' chi ha preso cosa. Ogni centesimo giustificato. Gli amici pagano da un link con Satispay o PayPal, senza app. Gratis, senza limite giornaliero.",
+    "name": ": Dividi conto e spese",
+    "subtitle": "Scansiona scontrini, salda",
+    "keywords": "condivise,gruppo,viaggio,amici,coinquilini,cena,mancia,debiti,pagare,ia,vacanza,alla romana,chi deve",
+    "promo": "Novità 2.0: di' chi ha preso cosa ed Evens divide lo scontrino. Gli amici pagano da un link con Satispay o PayPal, senza app. Inserire un conto a mano è sempre gratis.",
     "pay": "Satispay, PayPal o un QR SEPA",
-    "short": "Scansiona lo scontrino, di' chi ha preso cosa, salda. Amici pagano da un link.",
+    "short": "Dividi il conto: scansiona lo scontrino, di' chi ha preso cosa, salda via link.",
     "desc": """Dividi qualsiasi conto con chiunque, su qualsiasi telefono, in qualsiasi paese.
 
 {NAME} scansiona lo scontrino, capisce chi ha preso cosa e tiene un saldo corrente per viaggi, coinquilini e cene. Gli amici pagano da un link con le app che usano già. Nessun download, nessun account.
@@ -513,52 +506,51 @@ GLI AMICI PAGANO DA UN LINK
 Invia un link personale o una card da condividere su WhatsApp o iMessage. Gli ospiti lo aprono sul web, vedono la loro quota, pagano con {PAY} e allegano la prova del pagamento. I metodi di pagamento seguono il paese di ogni amico, con l'importo già inserito dove l'app lo consente.
 
 SALDA CON MENO PAGAMENTI
-I gruppi tengono un saldo corrente tra un conto e l'altro. Salda con il minimo di bonifici, registra i pagamenti e ricevi un promemoria gentile per i saldi aperti, mai più di uno a settimana.
+I gruppi tengono un saldo corrente tra un conto e l'altro. Salda con il minimo di bonifici, registra i pagamenti e ricevi un promemoria gentile per i saldi aperti, mai più di uno a settimana. Nessuno vuole pagare? Gira la roulette di chi paga.
 
 QUALSIASI VALUTA, 22 LINGUE
-Tutte le valute del mondo con i decimali giusti, arabo e urdu da destra a sinistra, modalità scura e metodi di pagamento locali per oltre 60 paesi.
+158 valute con i decimali giusti, oltre 80 app di pagamento locali, arabo e urdu da destra a sinistra e modalità scura.
 
-GRATIS, SENZA LIMITE GIORNALIERO
-Conti, gruppi, saldi e link ospite illimitati. Nessun tetto giornaliero, nessuna pubblicità a schermo intero. Una quota mensile gratuita di scansioni IA e comandi vocali, e altre guardando un breve annuncio.
+GRATIS
+Conti, gruppi, saldi e link ospite illimitati, e inserire un conto a mano è sempre gratis. Parti con punti di benvenuto per scansioni IA e voce; un breve annuncio ne aggiunge altri quando ti servono. Nessuna pubblicità a schermo intero.
 
 PRO
-Scansioni IA e voce illimitate, gruppi in più valute con cambi giornalieri, spese ricorrenti come affitto e bollette, esportazione in CSV e PDF. Mensile, annuale con prova gratuita o un acquisto unico per sempre.{LEGAL}""",
+Scansioni IA e voce illimitate, gruppi in più valute con cambi giornalieri, spese ricorrenti come affitto e bollette, esportazione in CSV e PDF. Mensile, annuale con prova gratuita o un acquisto unico per sempre.
+
+PRIVACY
+{NAME} non trattiene mai i tuoi soldi: gli amici si pagano direttamente nelle loro app. I tuoi scontrini non vengono mai usati per addestrare l'IA.{LEGAL}""",
     "legal": f"""
 
 Gli abbonamenti vengono addebitati sull'account Apple ID alla conferma dell'acquisto e si rinnovano automaticamente, salvo disattivazione del rinnovo automatico almeno 24 ore prima della fine del periodo in corso. Gestiscili o annullali nelle impostazioni dell'account App Store.
 
 Informativa sulla privacy: {PRIV}
 Termini di utilizzo: {TERMS}""",
-    "release": """{NAME} 2.0 è un'app completamente nuova.
+    "release": """{NAME} 2.0 è qui, rifatta da zero.
 
-- Scansiona uno scontrino e di' chi ha preso cosa. L'assegnazione vocale è nuova.
-- Gruppi con saldo corrente per viaggi, coinquilini e cene.
-- Salda con il minimo di pagamenti e registra i pagamenti con prova.
-- Gli amici pagano da un link, senza app, con i metodi di pagamento del loro paese.
-- Ogni centesimo giustificato: dettaglio completo di ogni quota, con cronologia.
-- Dividi per voce, in parti uguali, esatto, in percentuale o quote. Debiti veloci.
-- Tutte le valute, 22 lingue, da destra a sinistra, modalità scura.
-- Pro: più valute con cambi del giorno, spese ricorrenti, esportazione CSV e PDF.
-- Nessun limite giornaliero nel piano gratuito.""",
-    "changelog": """2.0 è un'app completamente nuova.
-- Scansiona uno scontrino e di' chi ha preso cosa (assegnazione vocale).
-- Gruppi con saldo corrente; salda con il minimo di pagamenti, registra i pagamenti con prova.
-- Gli amici pagano da un link, senza app, con i metodi di pagamento del loro paese.
-- Ogni centesimo giustificato: dettaglio di ogni quota, cronologia.
-- Dividi per voce, uguale, esatto, percentuale o quote.
-- Tutte le valute, 22 lingue, RTL, modalità scura.
-- Pro: più valute, spese ricorrenti, CSV/PDF. Nessun limite giornaliero.""",
+- Di' chi ha preso cosa: la voce mette ogni articolo sulla persona giusta.
+- Gli amici pagano da un link in oltre 80 app di pagamento locali, senza app.
+- Gruppi e viaggi si saldano con il minimo di pagamenti, con debiti rapidi e promemoria gentili.
+- Nessuno vuole pagare? Gira la roulette.
+- 158 valute, 22 lingue, modalità scura.
+- Pro: scansioni e voce illimitate, spese ricorrenti, export PDF e CSV, senza pubblicità.""",
+    "changelog": """{NAME} 2.0 è qui, rifatta da zero.
+- Di' chi ha preso cosa: la voce mette ogni articolo sulla persona giusta.
+- Gli amici pagano da un link in oltre 80 app di pagamento locali, senza app.
+- Gruppi e viaggi si saldano con il minimo di pagamenti, con debiti rapidi e promemoria gentili.
+- Nessuno vuole pagare? Gira la roulette.
+- 158 valute, 22 lingue, modalità scura.
+- Pro: scansioni e voce illimitate, spese ricorrenti, export PDF e CSV, senza pubblicità.""",
 })
 
 # ---------------------------------------------------------------- Portuguese
 PT_BR = {
     "ios": ["pt-BR"], "play": ["pt-BR"],
-    "name": ": Dividir a conta",
-    "subtitle": "Escaneie notas e acerte contas",
-    "keywords": "despesas,gastos,grupo,viagem,amigos,república,jantar,gorjeta,dívidas,pagar,ia,rachar,vaquinha,rateio",
-    "promo": "Escaneie. Diga quem pediu o quê. Cada centavo justificado. Seus amigos pagam por um link com Pix ou PayPal, sem app. Grátis, sem limite diário.",
+    "name": ": Dividir conta e gastos",
+    "subtitle": "Escaneie a nota, acerte rápido",
+    "keywords": "despesas,grupo,viagem,amigos,república,jantar,gorjeta,dívidas,pagar,ia,rachar,vaquinha,quem deve",
+    "promo": "Novo no 2.0: diga quem pediu o quê e o Evens divide a nota por você. Seus amigos pagam por um link com Pix ou PayPal, sem app. Digitar uma conta é sempre grátis.",
     "pay": "Pix (QR ou copia e cola) ou PayPal",
-    "short": "Escaneie a nota, diga quem pediu o quê, acerte. Seus amigos pagam por um link.",
+    "short": "Divida a conta: escaneie a nota, diga quem pediu o quê. Amigos pagam por link.",
     "desc": """Divida qualquer conta com qualquer pessoa, em qualquer celular, em qualquer país.
 
 {NAME} escaneia a nota, entende quem pediu o quê e mantém um saldo corrente para viagens, repúblicas e jantares. Seus amigos pagam por um link com os apps que já usam. Sem download, sem conta.
@@ -576,41 +568,40 @@ SEUS AMIGOS PAGAM POR UM LINK
 Envie um link pessoal ou um card de compartilhamento pelo WhatsApp ou iMessage. Os convidados abrem na web, veem a parte deles, pagam com {PAY} e anexam o comprovante. Os meios de pagamento seguem o país de cada amigo, com o valor já preenchido quando o app permite.
 
 ACERTE COM MENOS PAGAMENTOS
-Os grupos mantêm um saldo corrente entre as contas. Acerte com o mínimo de transferências, registre pagamentos e receba um lembrete gentil dos saldos em aberto, nunca mais de um por semana.
+Os grupos mantêm um saldo corrente entre as contas. Acerte com o mínimo de transferências, registre pagamentos e receba um lembrete gentil dos saldos em aberto, nunca mais de um por semana. Ninguém quer pagar? Gire a roleta de quem paga.
 
 QUALQUER MOEDA, 22 IDIOMAS
-Todas as moedas do mundo com as casas decimais certas, árabe e urdu da direita para a esquerda, modo escuro e meios de pagamento locais para mais de 60 países.
+158 moedas com os decimais certos, mais de 80 apps de pagamento locais, árabe e urdu da direita para a esquerda e modo escuro.
 
-GRÁTIS, SEM LIMITE DIÁRIO
-Contas, grupos, saldos e links de convidado ilimitados. Sem teto diário, sem anúncios em tela cheia. Uma cota mensal grátis de escaneamentos com IA e comandos de voz, e mais assistindo a um anúncio curto.
+GRÁTIS
+Contas, grupos, saldos e links de convidado ilimitados, e digitar uma conta à mão é sempre grátis. Você começa com pontos de boas-vindas para escaneios com IA e voz; um anúncio curto dá mais quando você precisar. Sem anúncios em tela cheia.
 
 PRO
-Escaneamentos com IA e voz ilimitados, grupos em várias moedas com câmbio diário, contas recorrentes como aluguel e luz, e exportação em CSV e PDF. Mensal, anual com teste grátis ou um pagamento único vitalício.{LEGAL}""",
+Escaneamentos com IA e voz ilimitados, grupos em várias moedas com câmbio diário, contas recorrentes como aluguel e luz, e exportação em CSV e PDF. Mensal, anual com teste grátis ou um pagamento único vitalício.
+
+PRIVACIDADE
+O {NAME} nunca guarda o seu dinheiro: os amigos pagam uns aos outros direto nos próprios apps. Suas notas nunca são usadas para treinar IA.{LEGAL}""",
     "legal": f"""
 
 As assinaturas são cobradas na sua conta do Apple ID ao confirmar a compra e renovam automaticamente, a menos que a renovação automática seja desativada pelo menos 24 horas antes do fim do período atual. Gerencie ou cancele nos ajustes da sua conta da App Store.
 
 Política de privacidade: {PRIV}
 Termos de uso: {TERMS}""",
-    "release": """{NAME} 2.0 é um app novo do zero.
+    "release": """O {NAME} 2.0 chegou, refeito do zero.
 
-- Escaneie uma nota e diga quem pediu o quê. A atribuição por voz é nova.
-- Grupos com saldo corrente para viagens, repúblicas e jantares.
-- Acerte com o mínimo de pagamentos e registre pagamentos com comprovante.
-- Seus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
-- Cada centavo justificado: detalhamento completo de cada parte, com histórico.
-- Divida por item, igualmente, exato, por porcentagem ou cotas. Dívidas rápidas.
-- Todas as moedas, 22 idiomas, direita para esquerda, modo escuro.
-- Pro: várias moedas com câmbio do dia, contas recorrentes, exportação CSV e PDF.
-- Sem limite diário no plano grátis.""",
-    "changelog": """2.0 é um app novo do zero.
-- Escaneie uma nota e diga quem pediu o quê (atribuição por voz).
-- Grupos com saldo corrente; acerte com o mínimo de pagamentos, registre pagamentos com comprovante.
-- Seus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
-- Cada centavo justificado: detalhamento de cada parte, histórico.
-- Divida por item, igual, exato, porcentagem ou cotas.
-- Todas as moedas, 22 idiomas, RTL, modo escuro.
-- Pro: várias moedas, contas recorrentes, CSV/PDF. Sem limite diário.""",
+- Diga quem pediu o quê: a voz coloca cada item na pessoa certa.
+- Seus amigos pagam por um link em mais de 80 apps de pagamento locais, sem app.
+- Grupos e viagens acertam com o mínimo de pagamentos, com dívidas rápidas e lembretes gentis.
+- Ninguém quer pagar? Gire a roleta.
+- 158 moedas, 22 idiomas, modo escuro.
+- Pro: escaneios e voz ilimitados, contas recorrentes, exportação PDF e CSV, sem anúncios.""",
+    "changelog": """O {NAME} 2.0 chegou, refeito do zero.
+- Diga quem pediu o quê: a voz coloca cada item na pessoa certa.
+- Seus amigos pagam por um link em mais de 80 apps de pagamento locais, sem app.
+- Grupos e viagens acertam com o mínimo de pagamentos, com dívidas rápidas e lembretes gentis.
+- Ninguém quer pagar? Gire a roleta.
+- 158 moedas, 22 idiomas, modo escuro.
+- Pro: escaneios e voz ilimitados, contas recorrentes, exportação PDF e CSV, sem anúncios.""",
 }
 EU.append(PT_BR)
 
@@ -624,15 +615,19 @@ PT_PT_DESC = (PT_BR["desc"].replace("escaneia a nota", "lê o talão").replace("
     .replace("receba um lembrete", "recebe um lembrete").replace("Envie um link", "Envia um link").replace("veem a parte deles", "veem a sua parte")
     .replace("escaneamentos com IA", "digitalizações com IA").replace("Escaneamentos com IA", "Digitalizações com IA")
     .replace("aluguel e luz", "renda e luz").replace("teste grátis", "período experimental grátis").replace("assistindo a um anúncio", "ao ver um anúncio")
-    .replace("GRÁTIS, SEM LIMITE DIÁRIO", "GRÁTIS, SEM LIMITE DIÁRIO").replace("Grátis", "Grátis"))
+    .replace("Você começa com", "Começas com").replace("quando você precisar", "quando precisares")
+    .replace("escaneios com IA", "digitalizações com IA").replace("digitar uma conta à mão", "escrever uma conta à mão")
+    .replace("Gire a roleta", "Gira a roleta").replace("direto nos próprios apps", "diretamente nas suas apps")
+    .replace("Suas notas nunca são usadas", "Os teus talões nunca são usados").replace("o seu dinheiro", "o teu dinheiro")
+    .replace("em tela cheia", "em ecrã inteiro"))
 EU.append({
     "ios": ["pt-PT"], "play": ["pt-PT"],
     "name": ": Dividir a conta",
     "subtitle": "Lê talões e acerta contas",
     "keywords": "despesas,gastos,grupo,viagem,amigos,colegas,jantar,gorjeta,dívidas,pagar,ia,rachar,férias,partilha",
-    "promo": "Digitaliza. Diz quem pediu o quê. Cada cêntimo justificado. Os teus amigos pagam por um link com MB WAY ou PayPal, sem app. Grátis, sem limite diário.",
+    "promo": "Novo na 2.0: diz quem pediu o quê e o Evens divide o talão. Os teus amigos pagam por um link com MB WAY ou PayPal, sem app. Escrever uma conta à mão é sempre grátis.",
     "pay": "MB WAY, um QR SEPA ou PayPal",
-    "short": "Digitaliza o talão, diz quem pediu o quê, acerta. Os amigos pagam por um link.",
+    "short": "Divide a conta: digitaliza o talão, diz quem pediu o quê. Amigos pagam por link.",
     "desc": PT_PT_DESC,
     "legal": f"""
 
@@ -640,25 +635,21 @@ As subscrições são cobradas na tua conta Apple ID ao confirmares a compra e r
 
 Política de privacidade: {PRIV}
 Termos de utilização: {TERMS}""",
-    "release": """{NAME} 2.0 é uma app nova de raiz.
+    "release": """O {NAME} 2.0 chegou, refeito de raiz.
 
-- Digitaliza um talão e diz quem pediu o quê. A atribuição por voz é nova.
-- Grupos com saldo corrente para viagens, casas partilhadas e jantares.
-- Acerta com o mínimo de pagamentos e regista pagamentos com comprovativo.
-- Os teus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
-- Cada cêntimo justificado: detalhe completo de cada parte, com histórico.
-- Divide por item, igualmente, exato, por percentagem ou quotas. Dívidas rápidas.
-- Todas as moedas, 22 idiomas, direita para esquerda, modo escuro.
-- Pro: várias moedas com câmbio do dia, contas recorrentes, exportação CSV e PDF.
-- Sem limite diário no plano grátis.""",
-    "changelog": """2.0 é uma app nova de raiz.
-- Digitaliza um talão e diz quem pediu o quê (atribuição por voz).
-- Grupos com saldo corrente; acerta com o mínimo de pagamentos, regista pagamentos com comprovativo.
-- Os teus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
-- Cada cêntimo justificado: detalhe de cada parte, histórico.
-- Divide por item, igual, exato, percentagem ou quotas.
-- Todas as moedas, 22 idiomas, RTL, modo escuro.
-- Pro: várias moedas, contas recorrentes, CSV/PDF. Sem limite diário.""",
+- Diz quem pediu o quê: a voz coloca cada item na pessoa certa.
+- Os teus amigos pagam por um link em mais de 80 apps de pagamento locais, sem app.
+- Grupos e viagens acertam com o mínimo de pagamentos, com dívidas rápidas e lembretes discretos.
+- Ninguém quer pagar? Gira a roleta.
+- 158 moedas, 22 idiomas, modo escuro.
+- Pro: digitalizações e voz ilimitadas, contas recorrentes, exportação PDF e CSV, sem anúncios.""",
+    "changelog": """O {NAME} 2.0 chegou, refeito de raiz.
+- Diz quem pediu o quê: a voz coloca cada item na pessoa certa.
+- Os teus amigos pagam por um link em mais de 80 apps de pagamento locais, sem app.
+- Grupos e viagens acertam com o mínimo de pagamentos, com dívidas rápidas e lembretes discretos.
+- Ninguém quer pagar? Gira a roleta.
+- 158 moedas, 22 idiomas, modo escuro.
+- Pro: digitalizações e voz ilimitadas, contas recorrentes, exportação PDF e CSV, sem anúncios.""",
 })
 
 # ---------------------------------------------------------------- Polish
@@ -667,9 +658,9 @@ EU.append({
     "name": ": Dzielenie rachunku",
     "subtitle": "Skanuj paragony i rozliczaj",
     "keywords": "wydatki,wspólne,grupa,wyjazd,znajomi,kolacja,napiwek,długi,zapłać,ai,podział,kto ile,rozliczenie",
-    "promo": "Zeskanuj. Powiedz, kto co zamówił. Każdy grosz rozliczony. Znajomi płacą z linku przez BLIK lub PayPal, bez aplikacji. Za darmo, bez dziennego limitu.",
+    "promo": "Nowość w 2.0: powiedz, kto co zamówił, a Evens podzieli paragon. Znajomi płacą z linku przez BLIK lub PayPal, bez aplikacji. Wpisanie rachunku ręcznie zawsze za darmo.",
     "pay": "BLIK, PayPal lub Revolut",
-    "short": "Zeskanuj paragon, powiedz kto co zamówił, rozlicz. Znajomi płacą z linku.",
+    "short": "Dziel rachunek: zeskanuj paragon, powiedz kto co zamówił. Znajomi płacą z linku.",
     "desc": """Podziel każdy rachunek z kimkolwiek, na każdym telefonie, w każdym kraju.
 
 {NAME} skanuje paragon, rozumie, kto co zamówił, i prowadzi bieżące saldo dla wyjazdów, mieszkań i kolacji. Znajomi płacą z linku w aplikacjach, których już używają. Bez pobierania, bez konta.
@@ -687,52 +678,51 @@ ZNAJOMI PŁACĄ Z LINKU
 Wyślij osobisty link lub kartę udostępniania przez WhatsApp lub iMessage. Goście otwierają go w przeglądarce, widzą swój udział, płacą przez {PAY} i dołączają potwierdzenie. Metody płatności pasują do kraju znajomego, z kwotą wpisaną tam, gdzie aplikacja na to pozwala.
 
 ROZLICZ MNIEJSZĄ LICZBĄ PRZELEWÓW
-Grupy prowadzą bieżące saldo między rachunkami. Rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty i otrzymuj delikatne przypomnienie o otwartych saldach, nie częściej niż raz w tygodniu.
+Grupy prowadzą bieżące saldo między rachunkami. Rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty i otrzymuj delikatne przypomnienie o otwartych saldach, nie częściej niż raz w tygodniu. Nikt nie chce płacić? Zakręć ruletką „kto płaci”.
 
 KAŻDA WALUTA, 22 JĘZYKI
-Wszystkie waluty świata z właściwymi miejscami dziesiętnymi, arabski i urdu od prawej do lewej, tryb ciemny i lokalne metody płatności dla ponad 60 krajów.
+158 walut z właściwymi miejscami po przecinku, ponad 80 lokalnych aplikacji płatniczych, arabski i urdu od prawej do lewej oraz tryb ciemny.
 
-ZA DARMO, BEZ DZIENNEGO LIMITU
-Nielimitowane rachunki, grupy, salda i linki dla gości. Bez dziennego limitu, bez reklam pełnoekranowych. Darmowa miesięczna pula skanów AI i poleceń głosowych, więcej po obejrzeniu krótkiej reklamy.
+ZA DARMO
+Nieograniczone rachunki, grupy, salda i linki dla gości, a wpisanie rachunku ręcznie jest zawsze darmowe. Zaczynasz z punktami powitalnymi na skany AI i głos; krótka reklama dodaje kolejne, gdy ich potrzebujesz. Bez reklam pełnoekranowych.
 
 PRO
-Nielimitowane skany AI i głos, grupy w wielu walutach z dziennymi kursami, cykliczne rachunki jak czynsz i media, eksport do CSV i PDF. Miesięcznie, rocznie z darmowym okresem próbnym lub jednorazowo na zawsze.{LEGAL}""",
+Nielimitowane skany AI i głos, grupy w wielu walutach z dziennymi kursami, cykliczne rachunki jak czynsz i media, eksport do CSV i PDF. Miesięcznie, rocznie z darmowym okresem próbnym lub jednorazowo na zawsze.
+
+PRYWATNOŚĆ
+{NAME} nigdy nie przechowuje Twoich pieniędzy: znajomi płacą sobie bezpośrednio we własnych aplikacjach. Twoje paragony nigdy nie służą do trenowania AI.{LEGAL}""",
     "legal": f"""
 
 Subskrypcje są pobierane z konta Apple ID przy potwierdzeniu zakupu i odnawiają się automatycznie, chyba że automatyczne odnawianie zostanie wyłączone co najmniej 24 godziny przed końcem bieżącego okresu. Zarządzaj nimi lub anuluj w ustawieniach konta App Store.
 
 Polityka prywatności: {PRIV}
 Warunki korzystania: {TERMS}""",
-    "release": """{NAME} 2.0 to zupełnie nowa aplikacja.
+    "release": """{NAME} 2.0 jest tu, zbudowany od nowa.
 
-- Zeskanuj paragon i powiedz, kto co zamówił. Przypisywanie głosem jest nowe.
-- Grupy z bieżącym saldem dla wyjazdów, mieszkań i kolacji.
-- Rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty z potwierdzeniem.
-- Znajomi płacą z linku, bez aplikacji, metodami płatności ich kraju.
-- Każdy grosz rozliczony: pełne zestawienie każdego udziału, z historią.
-- Podział po pozycjach, po równo, dokładnie, procentowo lub udziałami. Szybkie długi.
-- Wszystkie waluty, 22 języki, od prawej do lewej, tryb ciemny.
-- Pro: wiele walut z dziennymi kursami, cykliczne rachunki, eksport CSV i PDF.
-- Bez dziennego limitu w darmowym planie.""",
-    "changelog": """2.0 to zupełnie nowa aplikacja.
-- Zeskanuj paragon i powiedz, kto co zamówił (przypisywanie głosem).
-- Grupy z bieżącym saldem; rozlicz się najmniejszą liczbą przelewów, zapisuj wpłaty z potwierdzeniem.
-- Znajomi płacą z linku, bez aplikacji, metodami płatności ich kraju.
-- Każdy grosz rozliczony: zestawienie każdego udziału, historia.
-- Podział po pozycjach, po równo, dokładnie, procentowo lub udziałami.
-- Wszystkie waluty, 22 języki, RTL, tryb ciemny.
-- Pro: wiele walut, cykliczne rachunki, CSV/PDF. Bez dziennego limitu.""",
+- Powiedz, kto co zamówił: głos przypisze każdą pozycję do właściwej osoby.
+- Znajomi płacą z linku w ponad 80 lokalnych aplikacjach płatniczych, bez aplikacji.
+- Grupy i wyjazdy rozliczają się najmniejszą liczbą przelewów, z szybkimi długami i delikatnymi przypomnieniami.
+- Nikt nie chce płacić? Zakręć ruletką.
+- 158 walut, 22 języki, tryb ciemny.
+- Pro: nieograniczone skany i głos, rachunki cykliczne, eksport PDF i CSV, bez reklam.""",
+    "changelog": """{NAME} 2.0 jest tu, zbudowany od nowa.
+- Powiedz, kto co zamówił: głos przypisze każdą pozycję do właściwej osoby.
+- Znajomi płacą z linku w ponad 80 lokalnych aplikacjach płatniczych, bez aplikacji.
+- Grupy i wyjazdy rozliczają się najmniejszą liczbą przelewów, z szybkimi długami i delikatnymi przypomnieniami.
+- Nikt nie chce płacić? Zakręć ruletką.
+- 158 walut, 22 języki, tryb ciemny.
+- Pro: nieograniczone skany i głos, rachunki cykliczne, eksport PDF i CSV, bez reklam.""",
 })
 
 # ---------------------------------------------------------------- Russian
 EU.append({
     "ios": ["ru"], "play": ["ru-RU"],
-    "name": ": Делим счёт",
-    "subtitle": "Скан чеков и расчёт долгов",
-    "keywords": "расходы,общие,группа,поездка,друзья,ужин,чаевые,скинуться,поровну,ии,кто сколько,соседи,сплит",
-    "promo": "Сканируйте. Скажите, кто что брал. Каждая копейка учтена. Друзья платят по ссылке через СБП, без приложения. Бесплатно, без дневного лимита.",
+    "name": ": Делим счёт и расходы",
+    "subtitle": "Скан чеков, расчёт долгов",
+    "keywords": "общие,группа,поездка,друзья,ужин,чаевые,скинуться,поровну,ии,кто сколько,соседи,сплит,траты",
+    "promo": "Новое в 2.0: скажите, кто что брал, и Evens разделит чек за вас. Друзья платят по ссылке через СБП, без приложения. Ввести счёт вручную всегда бесплатно.",
     "pay": "СБП или перевод по номеру карты",
-    "short": "Сканируйте чек, скажите, кто что брал, рассчитайтесь. Друзья платят по ссылке.",
+    "short": "Делим счёт: сканируйте чек, скажите, кто что брал. Друзья платят по ссылке.",
     "desc": """Делите любой счёт с кем угодно, на любом телефоне, в любой стране.
 
 {NAME} сканирует чек, понимает, кто что брал, и ведёт общий баланс для поездок, соседей по квартире и ужинов. Друзья платят по ссылке через приложения, которыми уже пользуются. Без скачивания, без аккаунта.
@@ -750,52 +740,51 @@ EU.append({
 Отправьте личную ссылку или карточку в WhatsApp или iMessage. Гости открывают её в браузере, видят свою долю, платят через {PAY} и прикладывают подтверждение. Способы оплаты подбираются под страну друга, сумма подставляется там, где приложение это позволяет.
 
 РАССЧИТЫВАЙТЕСЬ МЕНЬШИМ ЧИСЛОМ ПЕРЕВОДОВ
-Группы ведут общий баланс по всем счетам. Рассчитывайтесь минимальным числом переводов, отмечайте платежи и получайте мягкое напоминание об открытых долгах, не чаще раза в неделю.
+Группы ведут общий баланс по всем счетам. Рассчитывайтесь минимальным числом переводов, отмечайте платежи и получайте мягкое напоминание об открытых долгах, не чаще раза в неделю. Никто не хочет платить? Крутите рулетку «кто платит».
 
 ЛЮБАЯ ВАЛЮТА, 22 ЯЗЫКА
-Все валюты мира с правильными десятичными знаками, арабский и урду справа налево, тёмная тема и местные способы оплаты для более чем 60 стран.
+158 валют с правильными десятичными знаками, более 80 местных платёжных приложений, арабский и урду справа налево, тёмная тема.
 
-БЕСПЛАТНО, БЕЗ ДНЕВНОГО ЛИМИТА
-Без ограничений на счета, группы, балансы и гостевые ссылки. Никакого дневного лимита и полноэкранной рекламы. Бесплатная месячная квота сканирований ИИ и голосовых команд, больше за короткую рекламу.
+БЕСПЛАТНО
+Безлимитные счета, группы, балансы и гостевые ссылки, а ввод счёта вручную всегда бесплатен. Вы начинаете с приветственных баллов на ИИ-сканы и голос; короткая реклама добавит ещё, когда понадобится. Без полноэкранной рекламы.
 
 PRO
-Безлимитные сканирования ИИ и голос, группы в нескольких валютах с ежедневными курсами, регулярные счета вроде аренды и коммуналки, экспорт в CSV и PDF. Помесячно, на год с бесплатным пробным периодом или разовая покупка навсегда.{LEGAL}""",
+Безлимитные сканирования ИИ и голос, группы в нескольких валютах с ежедневными курсами, регулярные счета вроде аренды и коммуналки, экспорт в CSV и PDF. Помесячно, на год с бесплатным пробным периодом или разовая покупка навсегда.
+
+КОНФИДЕНЦИАЛЬНОСТЬ
+{NAME} никогда не держит ваши деньги: друзья платят друг другу напрямую в своих приложениях. Ваши чеки никогда не используются для обучения ИИ.{LEGAL}""",
     "legal": f"""
 
 Подписки списываются со счёта Apple ID при подтверждении покупки и продлеваются автоматически, если автопродление не отключено минимум за 24 часа до конца текущего периода. Управляйте ими или отменяйте в настройках учётной записи App Store.
 
 Политика конфиденциальности: {PRIV}
 Условия использования: {TERMS}""",
-    "release": """{NAME} 2.0 — полностью новое приложение.
+    "release": """{NAME} 2.0 здесь, собран заново с нуля.
 
-- Сканируйте чек и скажите, кто что брал. Голосовое распределение — новинка.
-- Группы с общим балансом для поездок, соседей и ужинов.
-- Рассчитывайтесь минимальным числом переводов, отмечайте платежи с подтверждением.
-- Друзья платят по ссылке, без приложения, способами оплаты своей страны.
-- Каждая копейка учтена: полная разбивка каждой доли, с историей.
-- Деление по позициям, поровну, точно, в процентах или долях. Быстрые долги.
-- Все валюты, 22 языка, письмо справа налево, тёмная тема.
-- Pro: несколько валют с курсами дня, регулярные счета, экспорт CSV и PDF.
-- Без дневного лимита в бесплатном плане.""",
-    "changelog": """2.0 — полностью новое приложение.
-- Сканируйте чек и скажите, кто что брал (голосовое распределение).
-- Группы с общим балансом; рассчитывайтесь минимальным числом переводов, отмечайте платежи с подтверждением.
-- Друзья платят по ссылке, без приложения, способами оплаты своей страны.
-- Каждая копейка учтена: разбивка каждой доли, история.
-- Деление по позициям, поровну, точно, в процентах или долях.
-- Все валюты, 22 языка, RTL, тёмная тема.
-- Pro: несколько валют, регулярные счета, CSV/PDF. Без дневного лимита.""",
+- Скажите, кто что брал: голос разложит каждую позицию по людям.
+- Друзья платят по ссылке в более чем 80 местных платёжных приложениях, без установки.
+- Группы и поездки рассчитываются минимумом переводов, с быстрыми долгами и мягкими напоминаниями.
+- Никто не хочет платить? Крутите рулетку.
+- 158 валют, 22 языка, тёмная тема.
+- Pro: безлимитные сканы и голос, регулярные счета, экспорт в PDF и CSV, без рекламы.""",
+    "changelog": """{NAME} 2.0 здесь, собран заново с нуля.
+- Скажите, кто что брал: голос разложит каждую позицию по людям.
+- Друзья платят по ссылке в более чем 80 местных платёжных приложениях, без установки.
+- Группы и поездки рассчитываются минимумом переводов, с быстрыми долгами и мягкими напоминаниями.
+- Никто не хочет платить? Крутите рулетку.
+- 158 валют, 22 языка, тёмная тема.
+- Pro: безлимитные сканы и голос, регулярные счета, экспорт в PDF и CSV, без рекламы.""",
 })
 
 # ---------------------------------------------------------------- Turkish
 EU.append({
     "ios": ["tr"], "play": ["tr-TR"],
-    "name": ": Hesap Bölüşme",
-    "subtitle": "Fiş Tarayıcı ve Hesaplaşma",
-    "keywords": "masraf,ortak,grup,seyahat,arkadaş,ev arkadaşı,yemek,bahşiş,borç,öde,yapay zeka,paylaş,tatil,gider",
-    "promo": "Tara. Kim ne yedi söyle. Her kuruşun hesabı belli. Arkadaşların bağlantıdan FAST veya IBAN ile öder, uygulama gerekmez. Ücretsiz, günlük sınır yok.",
+    "name": ": Hesap Bölüşme ve Masraf",
+    "subtitle": "Fiş Tarayıcı, Hesaplaşma",
+    "keywords": "ortak,grup,seyahat,arkadaş,ev arkadaşı,yemek,bahşiş,borç,yapay zeka,paylaş,tatil,gider,kim ne kadar",
+    "promo": "2.0 ile yeni: kim ne aldı söyle, fişi Evens bölüşsün. Arkadaşların bağlantıdan FAST veya IBAN ile öder, uygulama gerekmez. Hesabı elle girmek her zaman ücretsiz.",
     "pay": "FAST, IBAN ile havale veya Revolut",
-    "short": "Fişi tara, kim ne yedi söyle, hesaplaş. Arkadaşların bağlantıdan öder.",
+    "short": "Hesap bölüşme: fişi tara, kim ne yedi söyle, hesaplaş. Arkadaşlar linkten öder.",
     "desc": """Her hesabı herkesle, her telefonda, her ülkede bölüş.
 
 {NAME} fişi tarar, kimin ne aldığını anlar ve seyahatler, ev arkadaşları ve yemekler için güncel bakiye tutar. Arkadaşların zaten kullandıkları uygulamalarla bağlantıdan öder. İndirme yok, hesap açma yok.
@@ -813,39 +802,38 @@ ARKADAŞLARIN BAĞLANTIDAN ÖDER
 WhatsApp veya iMessage'dan kişisel bağlantı ya da paylaşım kartı gönder. Misafirler tarayıcıda açar, payını görür, {PAY} ile öder ve dekontu ekler. Ödeme yöntemleri arkadaşının ülkesine göre gelir; uygulama izin verdiğinde tutar hazır yazılı olur.
 
 DAHA AZ ÖDEMEYLE HESAPLAŞ
-Gruplar hesaplar arasında güncel bakiye tutar. En az transferle hesaplaş, ödemeleri kaydet ve açık bakiyeler için nazik bir hatırlatma al, haftada en fazla bir kez.
+Gruplar hesaplar arasında güncel bakiye tutar. En az transferle hesaplaş, ödemeleri kaydet ve açık bakiyeler için nazik bir hatırlatma al, haftada en fazla bir kez. Kimse ödemek istemiyor mu? Kim öder ruletini çevir.
 
 HER PARA BİRİMİ, 22 DİL
-Dünyadaki tüm para birimleri doğru ondalıklarla, sağdan sola Arapça ve Urduca, karanlık mod ve 60'tan fazla ülke için yerel ödeme yöntemleri.
+Doğru ondalıklarla 158 para birimi, 80'den fazla yerel ödeme uygulaması, sağdan sola Arapça ve Urduca, karanlık mod.
 
-ÜCRETSİZ, GÜNLÜK SINIR YOK
-Sınırsız hesap, grup, bakiye ve misafir bağlantısı. Günlük tavan yok, tam ekran reklam yok. Aylık ücretsiz yapay zeka tarama ve sesli komut hakkı, kısa bir reklamla daha fazlası.
+ÜCRETSİZ
+Sınırsız hesap, grup, bakiye ve misafir bağlantısı; hesabı elle girmek her zaman ücretsiz. AI tarama ve ses için hoş geldin puanlarıyla başlarsın; istediğinde kısa bir reklam daha fazlasını ekler. Tam ekran reklam yok.
 
 PRO
-Sınırsız yapay zeka taraması ve ses, günlük kurlarla çok para birimli gruplar, kira ve faturalar gibi tekrarlayan hesaplar, CSV ve PDF dışa aktarma. Aylık, ücretsiz denemeli yıllık veya tek seferlik ömür boyu.{LEGAL}""",
+Sınırsız yapay zeka taraması ve ses, günlük kurlarla çok para birimli gruplar, kira ve faturalar gibi tekrarlayan hesaplar, CSV ve PDF dışa aktarma. Aylık, ücretsiz denemeli yıllık veya tek seferlik ömür boyu.
+
+GİZLİLİK
+{NAME} paranı asla tutmaz: arkadaşların birbirine doğrudan kendi uygulamalarında öder. Fişlerin asla AI eğitmek için kullanılmaz.{LEGAL}""",
     "legal": f"""
 
 Abonelikler satın alma onayında Apple Kimliği hesabından tahsil edilir ve mevcut dönemin bitiminden en az 24 saat önce otomatik yenileme kapatılmadıkça otomatik olarak yenilenir. App Store hesap ayarlarından yönetebilir veya iptal edebilirsin.
 
 Gizlilik Politikası: {PRIV}
 Kullanım Koşulları: {TERMS}""",
-    "release": """{NAME} 2.0 sıfırdan yeni bir uygulama.
+    "release": """{NAME} 2.0 burada, sıfırdan yeniden yapıldı.
 
-- Fişi tara, sonra kim ne aldı söyle. Sesle atama yeni.
-- Seyahatler, ev arkadaşları ve yemekler için güncel bakiyeli gruplar.
-- En az ödemeyle hesaplaş, ödemeleri dekontla kaydet.
-- Arkadaşların bağlantıdan öder, uygulama gerekmez, kendi ülkelerinin ödeme yöntemleriyle.
-- Her kuruşun hesabı belli: her pay için tam döküm, geçmişle birlikte.
-- Kaleme göre, eşit, tam, yüzde veya pay ile böl. Hızlı borçlar.
-- Tüm para birimleri, 22 dil, sağdan sola, karanlık mod.
-- Pro: günlük kurlarla çoklu para birimi, tekrarlayan hesaplar, CSV ve PDF dışa aktarma.
-- Ücretsiz planda günlük sınır yok.""",
-    "changelog": """2.0 sıfırdan yeni bir uygulama.
-- Fişi tara, sonra kim ne aldı söyle (sesle atama).
-- Güncel bakiyeli gruplar; en az ödemeyle hesaplaş, ödemeleri dekontla kaydet.
-- Arkadaşların bağlantıdan öder, uygulama gerekmez, kendi ülkelerinin ödeme yöntemleriyle.
-- Her kuruşun hesabı belli: her pay için döküm, geçmiş.
-- Kaleme göre, eşit, tam, yüzde veya pay ile böl.
-- Tüm para birimleri, 22 dil, RTL, karanlık mod.
-- Pro: çoklu para birimi, tekrarlayan hesaplar, CSV/PDF. Günlük sınır yok.""",
+- Kim ne aldı söyle: ses her kalemi doğru kişiye yazar.
+- Arkadaşların 80'den fazla yerel ödeme uygulamasında bağlantıdan öder, uygulama gerekmez.
+- Grup ve seyahatler en az ödemeyle hesaplaşır; hızlı borçlar ve nazik hatırlatmalar.
+- Kimse ödemek istemiyor mu? Ruleti çevir.
+- 158 para birimi, 22 dil, karanlık mod.
+- Pro: sınırsız tarama ve ses, tekrarlayan hesaplar, PDF ve CSV dışa aktarma, reklamsız.""",
+    "changelog": """{NAME} 2.0 burada, sıfırdan yeniden yapıldı.
+- Kim ne aldı söyle: ses her kalemi doğru kişiye yazar.
+- Arkadaşların 80'den fazla yerel ödeme uygulamasında bağlantıdan öder, uygulama gerekmez.
+- Grup ve seyahatler en az ödemeyle hesaplaşır; hızlı borçlar ve nazik hatırlatmalar.
+- Kimse ödemek istemiyor mu? Ruleti çevir.
+- 158 para birimi, 22 dil, karanlık mod.
+- Pro: sınırsız tarama ve ses, tekrarlayan hesaplar, PDF ve CSV dışa aktarma, reklamsız.""",
 })

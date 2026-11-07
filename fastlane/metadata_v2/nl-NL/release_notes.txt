@@ -1,11 +1,8 @@
-Evens 2.0 is een volledig nieuwe app.
+Evens 2.0 is er, helemaal opnieuw gebouwd.
 
-- Scan een bon en zeg wie wat had. Spraaktoewijzing is nieuw.
-- Groepen met een lopend saldo voor reizen, huisgenoten en etentjes.
-- Verreken met zo min mogelijk betalingen, registreer betalingen met bewijs.
-- Vrienden betalen via een link, zonder app, met betaalmethoden voor hun land.
-- Elke cent verantwoord: volledige uitsplitsing per aandeel, met geschiedenis.
-- Verdeel per item, gelijk, exact, in procenten of delen. Snelle schulden.
-- Alle valuta's, 22 talen, rechts-naar-links, donkere modus.
-- Pro: onbeperkt AI-scans en spraak, terugkerende rekeningen, CSV- en PDF-export, geen advertenties.
-- Gratis plan: onbeperkt rekeningen, groepen en gastlinks, met AI-scans om te beginnen inbegrepen.
+- Zeg wie wat had: spraak zet elk item bij de juiste persoon.
+- Vrienden betalen via een link in 80+ lokale betaalapps, zonder app.
+- Groepen en reizen verrekenen met zo min mogelijk betalingen, met schulden en vriendelijke herinneringen.
+- Niemand wil betalen? Draai aan het rad.
+- 158 valuta's, 22 talen, donkere modus.
+- Pro: onbeperkt scans en spraak, terugkerende rekeningen, PDF- en CSV-export, geen advertenties.

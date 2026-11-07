@@ -15,13 +15,16 @@ VOS AMIS PAIENT DEPUIS UN LIEN
 Envoyez un lien personnel ou une carte de partage sur WhatsApp ou iMessage. Les invités l'ouvrent sur le web, voient leur part, paient avec Wero, Lydia, un QR SEPA ou PayPal et joignent une preuve de paiement. Les moyens de paiement correspondent au pays de chaque ami, montant prérempli quand l'appli le permet.
 
 RÉGLEZ EN MOINS DE PAIEMENTS
-Les groupes gardent un solde courant d'une addition à l'autre. Réglez avec le minimum de virements, enregistrez les paiements et recevez un rappel discret pour les soldes ouverts, jamais plus d'un par semaine.
+Les groupes gardent un solde courant d'une addition à l'autre. Réglez avec le minimum de virements, enregistrez les paiements et recevez un rappel discret pour les soldes ouverts, jamais plus d'un par semaine. Personne ne veut payer ? Lancez la roulette « qui paie ? ».
 
 TOUTES LES DEVISES, 22 LANGUES
-Toutes les devises du monde avec les bonnes décimales, l'arabe et l'ourdou de droite à gauche, le mode sombre et des moyens de paiement locaux pour plus de 60 pays.
+158 devises avec les bonnes décimales, plus de 80 applis de paiement locales, l'arabe et l'ourdou de droite à gauche, et le mode sombre.
 
-GRATUIT À L'UTILISATION
-Additions, groupes, soldes et liens invités illimités, et la saisie manuelle des additions est toujours gratuite. Scans IA et commandes vocales inclus pour commencer, et davantage après une courte vidéo. Aucune publicité interstitielle.
+GRATUIT
+Additions, groupes, soldes et liens invités illimités, et saisir une addition à la main est toujours gratuit. Vous démarrez avec des points de bienvenue pour les scans IA et la voix ; une courte vidéo en ajoute quand vous en voulez. Aucune publicité interstitielle.
 
 PRO
-Scans IA et voix illimités, dépenses récurrentes comme le loyer et les charges, export CSV et PDF. Mensuel, annuel avec essai gratuit, ou achat unique à vie.
+Scans IA et voix illimités, groupes multidevises avec taux de change quotidiens, dépenses récurrentes comme le loyer et les charges, export CSV et PDF. Mensuel, annuel avec essai gratuit, ou achat unique à vie.
+
+CONFIDENTIALITÉ
+Evens ne détient jamais votre argent : vos amis se paient directement dans leurs propres applis. Vos tickets ne servent jamais à entraîner l'IA.

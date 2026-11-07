@@ -1,8 +1,7 @@
-2.0 sıfırdan yeni bir uygulama.
-- Fişi tara, sonra kim ne aldı söyle (sesle atama).
-- Güncel bakiyeli gruplar; en az ödemeyle hesaplaş, ödemeleri dekontla kaydet.
-- Arkadaşların bağlantıdan öder, uygulama gerekmez, kendi ülkelerinin ödeme yöntemleriyle.
-- Her kuruşun hesabı belli: her pay için döküm, geçmiş.
-- Kaleme göre, eşit, tam, yüzde veya pay ile böl.
-- Tüm para birimleri, 22 dil, RTL, karanlık mod.
-- Pro: sınırsız AI ve ses, düzenli hesaplar, CSV/PDF. Ücretsiz: sınırsız hesap, AI dahil.
+Evens 2.0 burada, sıfırdan yeniden yapıldı.
+- Kim ne aldı söyle: ses her kalemi doğru kişiye yazar.
+- Arkadaşların 80'den fazla yerel ödeme uygulamasında bağlantıdan öder, uygulama gerekmez.
+- Grup ve seyahatler en az ödemeyle hesaplaşır; hızlı borçlar ve nazik hatırlatmalar.
+- Kimse ödemek istemiyor mu? Ruleti çevir.
+- 158 para birimi, 22 dil, karanlık mod.
+- Pro: sınırsız tarama ve ses, tekrarlayan hesaplar, PDF ve CSV dışa aktarma, reklamsız.

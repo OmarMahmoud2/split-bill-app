@@ -1,1 +1,1 @@
-gastos,compartidos,grupo,viaje,amigos,piso,cena,propina,a medias,pagar,ia,bote,reparto,vacaciones
+compartidos,grupo,viaje,amigos,piso,cena,propina,pagar,ia,bote,reparto,vacaciones,quién debe

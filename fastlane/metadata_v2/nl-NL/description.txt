@@ -15,16 +15,19 @@ VRIENDEN BETALEN VIA EEN LINK
 Stuur een persoonlijke link of deelkaart via WhatsApp of iMessage. Gasten openen hem in de browser, zien hun aandeel, betalen met een Tikkie-link, Wero, een SEPA-QR-code of PayPal en voegen een betaalbewijs toe. De betaalmethoden passen bij het land van je vriend, met het bedrag ingevuld waar de app dat toelaat.
 
 VERREKENEN MET MINDER BETALINGEN
-Groepen houden een lopend saldo bij over alle rekeningen. Verreken met zo min mogelijk overboekingen, registreer betalingen en krijg een vriendelijke herinnering voor open saldo's, hooguit één per week.
+Groepen houden een lopend saldo bij over alle rekeningen. Verreken met zo min mogelijk overboekingen, registreer betalingen en krijg een vriendelijke herinnering voor open saldo's, hooguit één per week. Niemand wil betalen? Draai aan het wie-betaalt-rad.
 
 ELKE VALUTA, 22 TALEN
-Alle wereldvaluta's met de juiste decimalen, Arabisch en Urdu van rechts naar links, donkere modus en lokale betaalmethoden voor meer dan 60 landen.
+158 valuta's met de juiste decimalen, 80+ lokale betaalapps, Arabisch en Urdu van rechts naar links en donkere modus.
 
 GRATIS TE GEBRUIKEN
-Onbeperkt rekeningen, groepen, saldo's en gastlinks, en rekeningen handmatig invoeren is altijd gratis. AI-scans en spraakopdrachten zijn om te beginnen inbegrepen, meer na een korte advertentie. Geen interstitial-advertenties.
+Onbeperkt rekeningen, groepen, saldo's en gastlinks, en een rekening zelf intypen is altijd gratis. Je begint met welkomstpunten voor AI-scans en spraak; een korte advertentie levert meer op als je ze nodig hebt. Geen interstitial-advertenties.
 
 PRO
-Onbeperkte AI-scans en spraak, terugkerende rekeningen zoals huur en energie, en export naar CSV en PDF. Maandelijks, jaarlijks met gratis proefperiode, of eenmalig voor altijd.
+Onbeperkte AI-scans en spraak, groepen in meerdere valuta's met dagelijkse wisselkoersen, terugkerende rekeningen zoals huur en energie, en export naar CSV en PDF. Maandelijks, jaarlijks met gratis proefperiode, of eenmalig voor altijd.
+
+PRIVACY
+Evens houdt nooit je geld vast: vrienden betalen elkaar rechtstreeks in hun eigen apps. Je bonnetjes worden nooit gebruikt om AI te trainen.
 
 Abonnementen worden bij bevestiging van de aankoop via je Apple ID-account afgeschreven en verlengen automatisch, tenzij automatisch verlengen minstens 24 uur voor het einde van de lopende periode wordt uitgezet. Beheren of opzeggen doe je in de accountinstellingen van de App Store.
 

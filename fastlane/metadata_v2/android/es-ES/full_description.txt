@@ -15,13 +15,16 @@ TUS AMIGOS PAGAN DESDE UN ENLACE
 Envía un enlace personal o una tarjeta para compartir por WhatsApp o iMessage. Los invitados lo abren en la web, ven su parte, pagan con Bizum, un QR SEPA o PayPal y adjuntan el comprobante. Los métodos de pago se ajustan al país de cada amigo, con el importe ya rellenado cuando la app lo permite.
 
 SALDA CON MENOS PAGOS
-Los grupos llevan un saldo acumulado entre cuentas. Salda con el mínimo de transferencias, registra los pagos y recibe un recordatorio amable de los saldos pendientes, nunca más de uno a la semana.
+Los grupos llevan un saldo acumulado entre cuentas. Salda con el mínimo de transferencias, registra los pagos y recibe un recordatorio amable de los saldos pendientes, nunca más de uno a la semana. ¿Nadie quiere pagar? Gira la ruleta de quién paga.
 
 CUALQUIER MONEDA, 22 IDIOMAS
-Todas las monedas del mundo con sus decimales correctos, árabe y urdu de derecha a izquierda, modo oscuro y métodos de pago locales para más de 60 países.
+158 monedas con sus decimales correctos, más de 80 apps de pago locales, árabe y urdu de derecha a izquierda y modo oscuro.
 
-GRATIS PARA USAR
-Cuentas, grupos, saldos y enlaces de invitado ilimitados, y apuntar las cuentas a mano es siempre gratis. Los escaneos con IA y los comandos de voz vienen incluidos para empezar, y más viendo un anuncio corto. Sin anuncios a pantalla completa.
+GRATIS
+Cuentas, grupos, saldos y enlaces de invitado ilimitados, y escribir una cuenta a mano es siempre gratis. Empiezas con puntos de bienvenida para escaneos con IA y voz; un anuncio corto te da más cuando los necesites. Sin anuncios a pantalla completa.
 
 PRO
-Escaneos con IA y voz ilimitados, gastos recurrentes como el alquiler y los suministros, y exportación a CSV y PDF. Mensual, anual con prueba gratuita o un pago único para siempre.
+Escaneos con IA y voz ilimitados, grupos en varias monedas con tipos de cambio diarios, gastos recurrentes como el alquiler y los suministros, y exportación a CSV y PDF. Mensual, anual con prueba gratuita o un pago único para siempre.
+
+PRIVACIDAD
+Evens nunca guarda tu dinero: tus amigos se pagan directamente en sus propias apps. Tus tickets nunca se usan para entrenar la IA.

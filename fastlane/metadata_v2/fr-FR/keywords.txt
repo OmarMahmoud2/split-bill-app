@@ -1,1 +1,1 @@
-dépenses,partage,frais,groupe,voyage,coloc,amis,pourboire,dettes,note,compte,vacances,ia,diviser
+partage,frais,groupe,voyage,coloc,amis,pourboire,dettes,note,compte,vacances,ia,diviser,resto,doit

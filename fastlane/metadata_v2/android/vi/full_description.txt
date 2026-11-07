@@ -15,13 +15,16 @@ BẠN BÈ TRẢ QUA LINK
 Gửi link cá nhân hoặc thẻ chia sẻ qua WhatsApp hoặc iMessage. Khách mở trên web, thấy phần của mình, trả bằng VietQR, MoMo hoặc PayPal và đính kèm bằng chứng chuyển khoản. Phương thức thanh toán theo quốc gia của từng người bạn, số tiền được điền sẵn khi ứng dụng cho phép.
 
 THANH TOÁN VỚI ÍT LẦN CHUYỂN HƠN
-Nhóm giữ số dư liên tục qua nhiều hóa đơn. Thanh toán với số lần chuyển ít nhất, ghi lại các khoản đã trả và nhận lời nhắc nhẹ nhàng cho số dư còn lại, không quá một lần mỗi tuần.
+Nhóm giữ số dư liên tục qua nhiều hóa đơn. Thanh toán với số lần chuyển ít nhất, ghi lại các khoản đã trả và nhận lời nhắc nhẹ nhàng cho số dư còn lại, không quá một lần mỗi tuần. Không ai muốn trả? Quay roulette "ai trả tiền".
 
 MỌI LOẠI TIỀN, 22 NGÔN NGỮ
-Mọi loại tiền trên thế giới với số lẻ đúng, tiếng Ả Rập và Urdu từ phải sang trái, chế độ tối và phương thức thanh toán địa phương cho hơn 60 quốc gia.
+158 loại tiền tệ với số thập phân đúng, hơn 80 ứng dụng thanh toán địa phương, tiếng Ả Rập và Urdu từ phải sang trái, và chế độ tối.
 
-MIỄN PHÍ SỬ DỤNG
-Hóa đơn, nhóm, số dư và link khách không giới hạn, nhập hóa đơn bằng tay luôn miễn phí. Quét AI và lệnh giọng nói có sẵn để bắt đầu, thêm nữa khi xem một quảng cáo ngắn. Không quảng cáo toàn màn hình.
+MIỄN PHÍ
+Hóa đơn, nhóm, số dư và link cho khách không giới hạn, và nhập hóa đơn thủ công luôn miễn phí. Bạn bắt đầu với điểm chào mừng cho quét AI và giọng nói; xem một quảng cáo ngắn để có thêm điểm khi cần. Không có quảng cáo toàn màn hình.
 
 PRO
-Quét AI và giọng nói không giới hạn, hóa đơn định kỳ như tiền nhà và điện nước, xuất CSV và PDF. Theo tháng, theo năm có dùng thử miễn phí, hoặc mua một lần dùng trọn đời.
+Quét AI và giọng nói không giới hạn, nhóm đa tiền tệ với tỷ giá hằng ngày, hóa đơn định kỳ như tiền nhà và điện nước, xuất CSV và PDF. Theo tháng, theo năm có dùng thử miễn phí, hoặc mua một lần dùng trọn đời.
+
+QUYỀN RIÊNG TƯ
+Evens không bao giờ giữ tiền của bạn: bạn bè trả trực tiếp cho nhau trong ứng dụng của họ. Hóa đơn của bạn không bao giờ được dùng để huấn luyện AI.

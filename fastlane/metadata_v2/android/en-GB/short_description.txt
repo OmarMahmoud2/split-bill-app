@@ -1,1 +1,1 @@
-Scan receipts, say who had what, settle up. Friends pay from a link, no app.
+Split bills with AI: scan the receipt, say who had what, friends pay by link.

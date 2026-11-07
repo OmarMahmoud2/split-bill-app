@@ -10,10 +10,10 @@ from copy_en import EN  # noqa: E402
 from copy_eu import EU  # noqa: E402
 from copy_asia import ASIA  # noqa: E402
 
-REPO = "/Users/omarmahmoud/FlutterProjects/VsCodePros/split_bill_app"
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(REPO, "fastlane", "metadata_v2")
 OLD = os.path.join(REPO, "fastlane", "metadata")
-NAME = "{{APP_NAME}}"
+NAME = "Evens"
 NEXT_VERSION_CODE = 24  # pubspec 1.2.0+23 -> 24
 
 URL_FILES = ["marketing_url.txt", "support_url.txt", "privacy_url.txt"]

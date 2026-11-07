@@ -1,7 +1,7 @@
-2.0 è un'app completamente nuova.
-- Scansiona uno scontrino e di' chi ha preso cosa (assegnazione vocale).
-- Gruppi con saldo corrente; salda con il minimo di pagamenti, registra i pagamenti con prova.
-- Gli amici pagano da un link, senza app, con i metodi di pagamento del loro paese.
-- Ogni centesimo giustificato: dettaglio di ogni quota, cronologia.
-- Tutte le valute, 22 lingue, RTL, modalità scura.
-- Pro: scansioni IA e voce illimitate, spese ricorrenti, CSV/PDF. Gratis: scansioni IA incluse.
+Evens 2.0 è qui, rifatta da zero.
+- Di' chi ha preso cosa: la voce mette ogni articolo sulla persona giusta.
+- Gli amici pagano da un link in oltre 80 app di pagamento locali, senza app.
+- Gruppi e viaggi si saldano con il minimo di pagamenti, con debiti rapidi e promemoria gentili.
+- Nessuno vuole pagare? Gira la roulette.
+- 158 valute, 22 lingue, modalità scura.
+- Pro: scansioni e voce illimitate, spese ricorrenti, export PDF e CSV, senza pubblicità.

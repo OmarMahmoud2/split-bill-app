@@ -1,1 +1,1 @@
-kostnader,utgifter,grupp,resa,vänner,middag,skuld,dricks,splitta,kompisar,semester,ai,betala,räkning
+utgifter,grupp,resa,vänner,middag,skuld,dricks,splitta,kompisar,semester,ai,betala,räkning,hyra

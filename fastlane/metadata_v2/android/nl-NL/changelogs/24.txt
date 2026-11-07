@@ -1,7 +1,7 @@
-2.0 is een volledig nieuwe app.
-- Scan een bon en zeg wie wat had (spraaktoewijzing).
-- Groepen met lopend saldo; verreken met zo min mogelijk betalingen, registreer betalingen met bewijs.
-- Vrienden betalen via een link, zonder app, met betaalmethoden voor hun land.
-- Elke cent verantwoord: uitsplitsing per aandeel, geschiedenis.
-- Alle valuta's, 22 talen, RTL, donkere modus.
-- Pro: onbeperkt AI-scans en spraak, terugkerende rekeningen, CSV/PDF. Gratis: onbeperkt rekeningen, AI-scans inclusief.
+Evens 2.0 is er, helemaal opnieuw gebouwd.
+- Zeg wie wat had: spraak zet elk item bij de juiste persoon.
+- Vrienden betalen via een link in 80+ lokale betaalapps, zonder app.
+- Groepen en reizen verrekenen met zo min mogelijk betalingen, met schulden en vriendelijke herinneringen.
+- Niemand wil betalen? Draai aan het rad.
+- 158 valuta's, 22 talen, donkere modus.
+- Pro: onbeperkt scans en spraak, terugkerende rekeningen, PDF- en CSV-export, geen advertenties.

@@ -1,7 +1,7 @@
-2.0 é uma app nova de raiz.
-- Digitaliza um talão e diz quem pediu o quê (atribuição por voz).
-- Grupos com saldo corrente; acerta com o mínimo de pagamentos, regista pagamentos com comprovativo.
-- Os teus amigos pagam por um link, sem app, com os meios de pagamento do país deles.
-- Cada cêntimo justificado: detalhe de cada parte, histórico.
-- Todas as moedas, 22 idiomas, RTL, modo escuro.
-- Pro: IA e voz ilimitadas, contas recorrentes, CSV/PDF. Grátis: contas ilimitadas, IA já incluída.
+O Evens 2.0 chegou, refeito de raiz.
+- Diz quem pediu o quê: a voz coloca cada item na pessoa certa.
+- Os teus amigos pagam por um link em mais de 80 apps de pagamento locais, sem app.
+- Grupos e viagens acertam com o mínimo de pagamentos, com dívidas rápidas e lembretes discretos.
+- Ninguém quer pagar? Gira a roleta.
+- 158 moedas, 22 idiomas, modo escuro.
+- Pro: digitalizações e voz ilimitadas, contas recorrentes, exportação PDF e CSV, sem anúncios.
