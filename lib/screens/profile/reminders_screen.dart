@@ -296,6 +296,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 color: p.surface,
                 borderRadius: AppRadii.cardRadius,
                 border: Border.all(color: p.hairline),
+                boxShadow: p.softShadow,
               ),
               child: Row(
                 children: [

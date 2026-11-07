@@ -73,6 +73,7 @@ class _TrackingPermissionScreenState extends State<TrackingPermissionScreen> {
           color: p.surface,
           borderRadius: AppRadii.cardRadius,
           border: Border.all(color: p.hairline),
+          boxShadow: p.softShadow,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

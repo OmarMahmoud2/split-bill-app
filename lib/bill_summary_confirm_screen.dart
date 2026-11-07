@@ -702,6 +702,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                           color: p.surface,
                           borderRadius: AppRadii.cardRadius,
                           border: Border.all(color: p.hairline),
+                          boxShadow: p.softShadow,
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: Column(

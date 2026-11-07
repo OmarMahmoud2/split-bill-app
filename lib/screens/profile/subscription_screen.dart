@@ -196,6 +196,7 @@ class _PlanCard extends StatelessWidget {
           color: p.surface,
           borderRadius: AppRadii.cardRadius,
           border: Border.all(color: p.hairline),
+          boxShadow: p.softShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

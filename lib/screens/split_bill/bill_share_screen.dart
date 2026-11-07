@@ -354,6 +354,7 @@ class BillShareScreen extends StatelessWidget {
                             color: p.surface,
                             borderRadius: AppRadii.cardRadius,
                             border: Border.all(color: p.hairline),
+                            boxShadow: p.softShadow,
                           ),
                           clipBehavior: Clip.antiAlias,
                           child: Column(
@@ -573,6 +574,7 @@ class ShareOptionTile extends StatelessWidget {
             color: p.surface,
             borderRadius: AppRadii.cardRadius,
             border: Border.all(color: p.hairline),
+            boxShadow: p.softShadow,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -284,6 +284,7 @@ class _SplitMethodScreenState extends State<SplitMethodScreen> {
                             color: p.surface,
                             borderRadius: AppRadii.cardRadius,
                             border: Border.all(color: p.hairline),
+                            boxShadow: p.softShadow,
                           ),
                           clipBehavior: Clip.antiAlias,
                           child: Column(

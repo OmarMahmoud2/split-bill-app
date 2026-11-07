@@ -400,6 +400,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             color: p.surface,
             borderRadius: AppRadii.cardRadius,
             border: Border.all(color: p.border),
+            boxShadow: p.softShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

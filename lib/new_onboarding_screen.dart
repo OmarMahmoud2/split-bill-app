@@ -343,6 +343,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.hairline),
+        boxShadow: p.softShadow,
       ),
       child: Column(
         children: [
@@ -625,6 +626,7 @@ class _ReceiptPreview extends StatelessWidget {
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.hairline),
+        boxShadow: p.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -688,6 +690,7 @@ class _SplitPreview extends StatelessWidget {
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.hairline),
+        boxShadow: p.softShadow,
       ),
       child: Column(
         children: [

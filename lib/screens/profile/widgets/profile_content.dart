@@ -403,18 +403,16 @@ class _Pill extends StatelessWidget {
     required this.bg,
     required this.fg,
     this.star = false,
-    this.onTap,
   });
 
   final String label;
   final Color bg;
   final Color fg;
   final bool star;
-  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final pill = Container(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(color: bg, borderRadius: AppRadii.chipRadius),
       child: Row(
@@ -436,22 +434,6 @@ class _Pill extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-    if (onTap == null) return pill;
-    return Semantics(
-      button: true,
-      child: InkWell(
-        borderRadius: AppRadii.chipRadius,
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 44),
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            widthFactor: 1,
-            child: pill,
-          ),
-        ),
       ),
     );
   }

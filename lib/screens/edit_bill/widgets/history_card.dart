@@ -42,6 +42,7 @@ class BillHistoryCard extends StatelessWidget {
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.border),
+        boxShadow: p.softShadow,
       ),
       child: shown.isEmpty
           ? Text(

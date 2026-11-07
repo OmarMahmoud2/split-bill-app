@@ -180,6 +180,7 @@ class _ScanReadingViewState extends State<ScanReadingView>
                     color: p.surface,
                     borderRadius: AppRadii.cardRadius,
                     border: Border.all(color: p.border),
+                    boxShadow: p.softShadow,
                   ),
                   child: Stack(
                     children: [

@@ -265,6 +265,7 @@ class _KpiCard extends StatelessWidget {
           color: p.surface,
           borderRadius: AppRadii.cardRadius,
           border: Border.all(color: p.hairline),
+          boxShadow: p.softShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,6 +316,7 @@ class _FunnelCard extends StatelessWidget {
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.hairline),
+        boxShadow: p.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

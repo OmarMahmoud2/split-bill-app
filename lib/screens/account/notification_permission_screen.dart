@@ -221,7 +221,7 @@ class SampleNotificationCard extends StatelessWidget {
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.hairline),
-        boxShadow: elevated ? p.sheetShadow : null,
+        boxShadow: elevated ? p.sheetShadow : p.softShadow,
       ),
       child: Row(
         children: [

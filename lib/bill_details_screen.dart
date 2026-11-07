@@ -1110,6 +1110,7 @@ class _Card extends StatelessWidget {
         color: p.surface,
         borderRadius: AppRadii.cardRadius,
         border: Border.all(color: p.hairline),
+        boxShadow: p.softShadow,
       ),
       child: Material(type: MaterialType.transparency, child: child),
     );

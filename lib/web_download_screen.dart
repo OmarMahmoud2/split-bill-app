@@ -93,6 +93,7 @@ class WebDownloadScreen extends StatelessWidget {
                         color: p.surface,
                         borderRadius: AppRadii.cardRadius,
                         border: Border.all(color: p.border),
+                        boxShadow: p.softShadow,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
