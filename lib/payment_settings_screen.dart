@@ -11,7 +11,7 @@ import 'package:split_bill_app/providers/app_settings_provider.dart';
 import 'package:split_bill_app/services/public_profile_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
 /// Moves the method at [index] to the front: the first saved method is the
@@ -195,13 +195,15 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
 
   Future<void> _openEditor({PaymentMethodType? type, int? index}) async {
     final existing = index == null ? null : _methods[index];
-    final result = await PremiumBottomSheet.show<_EditorResult>(
-      context: context,
-      isScrollable: true,
-      child: _MethodEditor(
-        type: existing?.type ?? type!,
-        existing: existing,
-        isDefault: index == 0,
+    final result = await showLedgerSheet<_EditorResult>(
+      context,
+      builder: (_) => SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 24),
+        child: _MethodEditor(
+          type: existing?.type ?? type!,
+          existing: existing,
+          isDefault: index == 0,
+        ),
       ),
     );
     if (result == null || !mounted) return;
@@ -320,7 +322,7 @@ class _PaymentSettingsScreenState extends State<PaymentSettingsScreen> {
                   ),
               ],
             ),
-          SettingsSectionLabel('pm3_add_section'.tr()),
+          OverlineLabel('pm3_add_section'.tr()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: LayoutBuilder(
