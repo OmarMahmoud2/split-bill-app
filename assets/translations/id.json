@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} item",
   "bfx_people_two": "{count} orang",
   "bfx_people_few": "{count} orang",
-  "bfx_people_many": "{count} orang"
+  "bfx_people_many": "{count} orang",
+  "iou_delete_title": "Hapus IOU ini?",
+  "iou_delete_body": "IOU hilang untuk kalian berdua. Tidak bisa dibatalkan.",
+  "iou_deleted": "IOU dihapus"
 }

@@ -63,7 +63,7 @@ Rules: money always has a sign or a word next to the colour ("+E£620 owed to yo
 Every person gets an avatar; initials are gone (except payment-method logos may keep their initials fallback).
 - If the user has a photo (photoUrl data URL or network URL, incl. Google/Apple sign-in photo) show it.
 - Otherwise draw a **pal**: deterministic from a stable seed (user id, else lowercased name):
-  - colour pairs (bg, fg): mint (#C9F2EA,#0E7C72), coral (#FFD8CC,#E8664A), sky (#D8E3FF,#3B6FE0), sun (#FFE7A8,#C98A1E), lilac (#E7DBFF,#7C5CE0), rose (#FFD6E4,#D84C7E). pair = seed % 6; hair variant = (seed ~/ 2) % 3.
+  - colour pairs (bg, fg): mint (#C9F2EA,#0E7C72), coral (#FFD8CC,#E8664A), sky (#D8E3FF,#3B6FE0), sun (#FFE7A8,#C98A1E), lilac (#E7DBFF,#7C5CE0), rose (#FFD6E4,#D84C7E), ocean (#CDEFFF,#1E88B4), peach (#FFE2C2,#D9741E). pair = hash % 8; hair variant = (hash ~/ 8) % 3 (independent bits: 24 looks). hash = FNV-1a 32-bit over UTF-16 units.
   - 48×48 geometry: bg circle; shoulders path `M8 48c1.5-9 8-13.5 16-13.5S38.5 39 40 48z` in fg; white head circle c(24,22) r10.5; hair in fg (variant 0 cap `M13.6 20.5c0-6.6 4.7-10.6 10.4-10.6s10.4 4 10.4 10.6c-3.2-2.6-6.6-3.6-10.4-3.6s-7.2 1-10.4 3.6z`; variant 1 bun circle c(33.5,12.5) r4.6 + fringe `M13.6 21c.6-6.4 5-10.1 10.4-10.1 5.2 0 9.4 3.4 10.3 9.2-4.6-.4-9.4-2.4-12.4-5.6-1.8 3.2-4.6 5.4-8.3 6.5z`; variant 2 tuft `M15 17l3-6 2.6 4 3.4-6 3.2 6 2.8-4 3 6c-3-1.4-6-2-9-2s-6 .6-9 2z`); eyes ink dots r1.35 at (20.2,22.6),(27.8,22.6); smile `M20.6 26.6c1.9 1.9 4.9 1.9 6.8 0` stroke 1.5 ink round.
   - Same algorithm in the guest web (it is the same Flutter code).
 - Optional ring (2.5px) in mint for "you"/selected, or in surface colour for overlapping stacks (overlap −6).

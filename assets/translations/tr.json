@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} ürün",
   "bfx_people_two": "{count} kişi",
   "bfx_people_few": "{count} kişi",
-  "bfx_people_many": "{count} kişi"
+  "bfx_people_many": "{count} kişi",
+  "iou_delete_title": "Bu borç notu silinsin mi?",
+  "iou_delete_body": "İkiniz için de kaybolur. Geri alınamaz.",
+  "iou_deleted": "Borç notu silindi"
 }

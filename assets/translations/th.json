@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} รายการ",
   "bfx_people_two": "{count} คน",
   "bfx_people_few": "{count} คน",
-  "bfx_people_many": "{count} คน"
+  "bfx_people_many": "{count} คน",
+  "iou_delete_title": "ลบ IOU นี้ไหม",
+  "iou_delete_body": "จะหายไปจากทั้งสองฝ่าย และย้อนกลับไม่ได้",
+  "iou_deleted": "ลบ IOU แล้ว"
 }

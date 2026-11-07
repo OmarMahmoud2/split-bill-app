@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} Artikel",
   "bfx_people_two": "{count} Personen",
   "bfx_people_few": "{count} Personen",
-  "bfx_people_many": "{count} Personen"
+  "bfx_people_many": "{count} Personen",
+  "iou_delete_title": "Diesen Schuldschein löschen?",
+  "iou_delete_body": "Er verschwindet für euch beide. Das lässt sich nicht rückgängig machen.",
+  "iou_deleted": "Schuldschein gelöscht"
 }

@@ -224,7 +224,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('First'), findsNothing);
       expect(find.text('Swipe me'), findsOneWidget);
-      await tester.drag(find.text('Swipe me'), const Offset(0, 300));
+      await tester.drag(find.text('Swipe me'), const Offset(0, -300));
       await tester.pumpAndSettle();
       expect(find.text('Swipe me'), findsNothing);
     });

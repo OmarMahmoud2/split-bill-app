@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} items",
   "bfx_people_two": "{count} people",
   "bfx_people_few": "{count} people",
-  "bfx_people_many": "{count} people"
+  "bfx_people_many": "{count} people",
+  "iou_delete_title": "Delete this IOU?",
+  "iou_delete_body": "It disappears for both of you. This can't be undone.",
+  "iou_deleted": "IOU deleted"
 }

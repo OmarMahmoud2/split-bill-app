@@ -2311,5 +2311,8 @@
   "bfx_people_many": "{count} osób",
   "bfx_charges_none": "Brak",
   "bfx_items_two": "{count} pozycji",
-  "bfx_people_two": "{count} osób"
+  "bfx_people_two": "{count} osób",
+  "iou_delete_title": "Usunąć ten dług?",
+  "iou_delete_body": "Zniknie dla was obojga. Tego nie można cofnąć.",
+  "iou_deleted": "Dług usunięty"
 }

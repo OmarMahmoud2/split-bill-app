@@ -26,7 +26,8 @@ class PalAvatar extends StatelessWidget {
 
   static const double ringWidth = 2.5;
 
-  /// (background, foreground) pairs: mint, coral, sky, sun, lilac, rose.
+  /// (background, foreground) pairs: mint, coral, sky, sun, lilac, rose,
+  /// ocean, peach.
   static const List<(Color, Color)> pairs = [
     (Color(0xFFC9F2EA), Color(0xFF0E7C72)),
     (Color(0xFFFFD8CC), Color(0xFFE8664A)),
@@ -34,6 +35,8 @@ class PalAvatar extends StatelessWidget {
     (Color(0xFFFFE7A8), Color(0xFFC98A1E)),
     (Color(0xFFE7DBFF), Color(0xFF7C5CE0)),
     (Color(0xFFFFD6E4), Color(0xFFD84C7E)),
+    (Color(0xFFCDEFFF), Color(0xFF1E88B4)),
+    (Color(0xFFFFE2C2), Color(0xFFD9741E)),
   ];
 
   /// FNV-1a over UTF-16 code units: stable across platforms and runs
@@ -50,7 +53,10 @@ class PalAvatar extends StatelessWidget {
   static int pairIndex(String seed) => hashSeed(seed) % pairs.length;
 
   /// Hair variant (0 cap, 1 bun, 2 tuft) for [seed].
-  static int hairVariant(String seed) => (hashSeed(seed) ~/ 2) % 3;
+  /// Uses the hash bits above the colour index so colour and hair vary
+  /// independently (24 looks, not 6).
+  static int hairVariant(String seed) =>
+      (hashSeed(seed) ~/ pairs.length) % 3;
 
   @override
   Widget build(BuildContext context) {

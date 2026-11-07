@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count}品目",
   "bfx_people_two": "{count}人",
   "bfx_people_few": "{count}人",
-  "bfx_people_many": "{count}人"
+  "bfx_people_many": "{count}人",
+  "iou_delete_title": "このIOUを削除しますか？",
+  "iou_delete_body": "お二人の両方から消えます。元に戻せません。",
+  "iou_deleted": "IOUを削除しました"
 }

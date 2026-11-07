@@ -64,7 +64,8 @@ class AppToast {
     BuildContext context, {
     required String message,
     AppToastType type = AppToastType.info,
-    AppToastPosition position = AppToastPosition.bottom,
+    // Top by default: the floating nav, keyboard and sheets own the bottom.
+    AppToastPosition position = AppToastPosition.top,
     String? actionLabel,
     VoidCallback? onAction,
     Duration duration = AppMotion.toastVisible,

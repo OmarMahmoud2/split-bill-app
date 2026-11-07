@@ -24,6 +24,7 @@ class ActivityItem {
     this.groupId,
     this.billId,
     this.hasProof = false,
+    this.createdBy,
   });
 
   final String id;
@@ -35,6 +36,9 @@ class ActivityItem {
   final String title;
   final String? groupId;
   final String? billId;
+
+  /// Who recorded it (payments and IOUs); only they may delete an IOU.
+  final String? createdBy;
   final DateTime date;
 
   /// Unsigned amount; [tone] says which way it goes for the user.
@@ -98,6 +102,7 @@ ActivityItem activityFromPayment(PaymentRecord p, String me) {
     currency: p.currency,
     tone: tone,
     hasProof: p.proofUrl != null,
+    createdBy: p.createdBy,
   );
 }
 

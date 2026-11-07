@@ -2311,5 +2311,8 @@
   "bfx_people_two": "{count} شخص",
   "bfx_people_few": "{count} أشخاص",
   "bfx_people_many": "{count} شخصًا",
-  "bfx_charges_none": "لا شيء"
+  "bfx_charges_none": "لا شيء",
+  "iou_delete_title": "حذف هذا الدين؟",
+  "iou_delete_body": "سيختفي لديكما معًا. لا يمكن التراجع عن ذلك.",
+  "iou_deleted": "تم حذف الدين"
 }

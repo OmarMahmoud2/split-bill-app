@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} varor",
   "bfx_people_two": "{count} personer",
   "bfx_people_few": "{count} personer",
-  "bfx_people_many": "{count} personer"
+  "bfx_people_many": "{count} personer",
+  "iou_delete_title": "Radera den här skulden?",
+  "iou_delete_body": "Den försvinner för er båda. Det går inte att ångra.",
+  "iou_deleted": "Skulden raderad"
 }

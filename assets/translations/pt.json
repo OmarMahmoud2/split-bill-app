@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} itens",
   "bfx_people_two": "{count} pessoas",
   "bfx_people_few": "{count} pessoas",
-  "bfx_people_many": "{count} pessoas"
+  "bfx_people_many": "{count} pessoas",
+  "iou_delete_title": "Excluir este vale?",
+  "iou_delete_body": "Ele some para vocês dois. Não dá para desfazer.",
+  "iou_deleted": "Vale excluído"
 }

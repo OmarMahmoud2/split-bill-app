@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} articoli",
   "bfx_people_two": "{count} persone",
   "bfx_people_few": "{count} persone",
-  "bfx_people_many": "{count} persone"
+  "bfx_people_many": "{count} persone",
+  "iou_delete_title": "Eliminare questo pagherò?",
+  "iou_delete_body": "Sparisce per entrambi. Non si può annullare.",
+  "iou_deleted": "Pagherò eliminato"
 }

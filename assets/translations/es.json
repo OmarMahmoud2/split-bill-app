@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} artículos",
   "bfx_people_two": "{count} personas",
   "bfx_people_few": "{count} personas",
-  "bfx_people_many": "{count} personas"
+  "bfx_people_many": "{count} personas",
+  "iou_delete_title": "¿Eliminar este pagaré?",
+  "iou_delete_body": "Desaparece para los dos. No se puede deshacer.",
+  "iou_deleted": "Pagaré eliminado"
 }

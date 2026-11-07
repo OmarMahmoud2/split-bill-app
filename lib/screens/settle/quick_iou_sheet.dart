@@ -59,6 +59,7 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
   ];
   late GroupMember? _person = widget.initialPerson;
   final _amount = TextEditingController();
+  final _amountFocus = FocusNode();
   final _note = TextEditingController();
   String? _currency;
   bool _saving = false;
@@ -66,6 +67,7 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
   @override
   void dispose() {
     _amount.dispose();
+    _amountFocus.dispose();
     _note.dispose();
     super.dispose();
   }
@@ -132,7 +134,11 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
             ),
       type: AppToastType.success,
     );
-    Navigator.of(context).pop(true);
+    // Only pop our own sheet: if it is already being dismissed (drag), a
+    // second pop would remove the screen underneath and leave a black page.
+    if (ModalRoute.of(context)?.isCurrent ?? false) {
+      Navigator.of(context).pop(true);
+    }
   }
 
   @override
@@ -152,235 +158,263 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
             namedArgs: {'name': person.name, 'amount': amount},
           );
 
-    return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Semantics(
-            header: true,
-            child: Text(
-              'iou_title'.tr(),
-              style: AppTypography.headlineSmall.copyWith(
-                color: p.textPrimary,
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'bd2_iou_explainer_short'.tr(),
-                  style: AppTypography.bodySmall.copyWith(
-                    color: p.textSecondary,
+    // The form scrolls; Save stays pinned above the keyboard.
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Flexible(
+          child: SingleChildScrollView(
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Semantics(
+                  header: true,
+                  child: Text(
+                    'iou_title'.tr(),
+                    style: AppTypography.headlineSmall.copyWith(
+                      color: p.textPrimary,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                tooltip: 'bd2_iou_explainer_title'.tr(),
-                icon: Icon(AppIcons.info, color: p.textSecondary),
-                onPressed: () => showLedgerSheet<void>(
-                  context,
-                  title: 'bd2_iou_explainer_title'.tr(),
-                  builder: (_) => Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      20,
-                      0,
-                      20,
-                      24,
-                    ),
-                    child: Text(
-                      'bd2_iou_explainer_body'.tr(),
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: p.textPrimary,
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'bd2_iou_explainer_short'.tr(),
+                        style: AppTypography.bodySmall.copyWith(
+                          color: p.textSecondary,
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          LedgerSegmented<bool>(
-            segments: [
-              (true, 'iou_they_owe_me'.tr()),
-              (false, 'iou_i_owe_them'.tr()),
-            ],
-            selected: _theyOweMe,
-            onChanged: (v) => setState(() => _theyOweMe = v),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            height: 80,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (final m in _people)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 10),
-                    child: Semantics(
-                      button: true,
-                      selected: m.id == person?.id,
-                      label: m.name,
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () {
-                          AppHaptics.selection();
-                          setState(() => _person = m);
-                        },
-                        child: SizedBox(
-                          width: 60,
-                          child: Column(
-                            children: [
-                              m.id == person?.id
-                                  ? AvatarHop(
-                                      child: LedgerAvatar(
-                                        id: m.id,
-                                        name: m.name,
-                                        photoUrl: m.photoUrl,
-                                        size: 48,
-                                        selected: true,
-                                      ),
-                                    )
-                                  : LedgerAvatar(
-                                      id: m.id,
-                                      name: m.name,
-                                      photoUrl: m.photoUrl,
-                                      size: 52,
-                                    ),
-                              const SizedBox(height: 4),
-                              Text(
-                                m.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTypography.caption.copyWith(
-                                  color: p.textSecondary,
-                                ),
-                              ),
-                            ],
+                    IconButton(
+                      tooltip: 'bd2_iou_explainer_title'.tr(),
+                      icon: Icon(AppIcons.info, color: p.textSecondary),
+                      onPressed: () => showLedgerSheet<void>(
+                        context,
+                        title: 'bd2_iou_explainer_title'.tr(),
+                        builder: (_) => Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                            20,
+                            0,
+                            20,
+                            24,
+                          ),
+                          child: Text(
+                            'bd2_iou_explainer_body'.tr(),
+                            style: AppTypography.bodyLarge.copyWith(
+                              color: p.textPrimary,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                Semantics(
-                  button: true,
-                  label: 'iou_add_person'.tr(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: _addPerson,
-                    child: SizedBox(
-                      width: 60,
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: p.borderStrong),
-                            ),
-                            child: Icon(
-                              AppIcons.personAdd,
-                              color: p.textPrimary,
-                              size: 22,
+                  ],
+                ),
+                const SizedBox(height: 8),
+                LedgerSegmented<bool>(
+                  segments: [
+                    (true, 'iou_they_owe_me'.tr()),
+                    (false, 'iou_i_owe_them'.tr()),
+                  ],
+                  selected: _theyOweMe,
+                  onChanged: (v) => setState(() => _theyOweMe = v),
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  height: 80,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      for (final m in _people)
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(end: 10),
+                          child: Semantics(
+                            button: true,
+                            selected: m.id == person?.id,
+                            label: m.name,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () {
+                                AppHaptics.selection();
+                                setState(() => _person = m);
+                              },
+                              child: SizedBox(
+                                width: 60,
+                                child: Column(
+                                  children: [
+                                    m.id == person?.id
+                                        ? AvatarHop(
+                                            child: LedgerAvatar(
+                                              id: m.id,
+                                              name: m.name,
+                                              photoUrl: m.photoUrl,
+                                              size: 48,
+                                              selected: true,
+                                            ),
+                                          )
+                                        : LedgerAvatar(
+                                            id: m.id,
+                                            name: m.name,
+                                            photoUrl: m.photoUrl,
+                                            size: 52,
+                                          ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      m.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.caption.copyWith(
+                                        color: p.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'iou_add_short'.tr(),
-                            maxLines: 1,
-                            style: AppTypography.caption.copyWith(
-                              color: p.textSecondary,
+                        ),
+                      Semantics(
+                        button: true,
+                        label: 'iou_add_person'.tr(),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: _addPerson,
+                          child: SizedBox(
+                            width: 60,
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 52,
+                                  height: 52,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: p.borderStrong),
+                                  ),
+                                  child: Icon(
+                                    AppIcons.personAdd,
+                                    color: p.textPrimary,
+                                    size: 22,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'iou_add_short'.tr(),
+                                  maxLines: 1,
+                                  style: AppTypography.caption.copyWith(
+                                    color: p.textSecondary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-              color: p.surface,
-              borderRadius: BorderRadius.circular(AppRadii.dialog),
-              border: Border.all(color: p.hairline),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () => CurrencySelectionSheet.show(
-                    context: context,
-                    selectedCode: _code,
-                    onSelected: (c) =>
-                        setState(() => _currency = normalizeCurrency(c)),
-                  ),
-                  child: Text(
-                    _code,
-                    semanticsLabel: 'iou_change_currency'.tr(
-                      namedArgs: {'code': _code},
-                    ),
-                  ),
-                ),
-                IntrinsicWidth(
-                  child: TextField(
-                    controller: _amount,
-                    autofocus: false,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
                     ],
-                    textAlign: TextAlign.center,
-                    style: AppTypography.amountHero.copyWith(
-                      color: p.textPrimary,
-                      fontSize: 56,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // The whole card focuses the amount, not just the digits.
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _amountFocus.requestFocus,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 12,
                     ),
-                    decoration: InputDecoration(
-                      hintText: '0',
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      filled: false,
-                      hintStyle: AppTypography.amountHero.copyWith(
-                        color: p.textDisabled,
-                        fontSize: 56,
-                      ),
-                      contentPadding: EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      color: p.surface,
+                      borderRadius: BorderRadius.circular(AppRadii.dialog),
+                      border: Border.all(color: p.hairline),
                     ),
-                    onChanged: (_) => setState(() {}),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () => CurrencySelectionSheet.show(
+                            context: context,
+                            selectedCode: _code,
+                            onSelected: (c) => setState(
+                              () => _currency = normalizeCurrency(c),
+                            ),
+                          ),
+                          child: Text(
+                            _code,
+                            semanticsLabel: 'iou_change_currency'.tr(
+                              namedArgs: {'code': _code},
+                            ),
+                          ),
+                        ),
+                        IntrinsicWidth(
+                          child: TextField(
+                            controller: _amount,
+                            focusNode: _amountFocus,
+                            autofocus: false,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9.,]'),
+                              ),
+                            ],
+                            textAlign: TextAlign.center,
+                            style: AppTypography.amountHero.copyWith(
+                              color: p.textPrimary,
+                              fontSize: 56,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: '0',
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              filled: false,
+                              hintStyle: AppTypography.amountHero.copyWith(
+                                color: p.textDisabled,
+                                fontSize: 56,
+                              ),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: (_) => setState(() {}),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                TextField(
+                  controller: _note,
+                  maxLength: 200,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintText: 'iou_note_hint'.tr(),
+                    counterText: '',
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    filled: false,
+                  ),
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: p.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
-          TextField(
-            controller: _note,
-            maxLength: 200,
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              hintText: 'iou_note_hint'.tr(),
-              counterText: '',
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              filled: false,
-            ),
-            style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
+        ),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 20),
+          child: FilledButton(
+            onPressed: ready ? _save : null,
+            child: Text(cta),
           ),
-          const SizedBox(height: 12),
-          FilledButton(onPressed: ready ? _save : null, child: Text(cta)),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -2311,5 +2311,8 @@
   "bfx_people_many": "{count} человек",
   "bfx_charges_none": "Нет",
   "bfx_items_two": "{count} позиций",
-  "bfx_people_two": "{count} человек"
+  "bfx_people_two": "{count} человек",
+  "iou_delete_title": "Удалить эту расписку?",
+  "iou_delete_body": "Она исчезнет у вас обоих. Это нельзя отменить.",
+  "iou_deleted": "Расписка удалена"
 }

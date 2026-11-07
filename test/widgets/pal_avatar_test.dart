@@ -16,7 +16,7 @@ void main() {
     expect(PalAvatar.hashSeed('a'), 0xE40C292C);
     final pairs = {for (var i = 0; i < 60; i++) PalAvatar.pairIndex('user$i')};
     final hairs = {for (var i = 0; i < 60; i++) PalAvatar.hairVariant('user$i')};
-    expect(pairs.length, 6);
+    expect(pairs.length, PalAvatar.pairs.length);
     expect(hairs.length, 3);
   });
 
@@ -53,5 +53,13 @@ void main() {
       tester.getSize(find.byType(PalAvatar)),
       const Size(45, 45),
     );
+  });
+
+  test('colour and hair vary independently: many distinct looks', () {
+    final looks = {
+      for (var i = 0; i < 60; i++)
+        (PalAvatar.pairIndex('user$i'), PalAvatar.hairVariant('user$i')),
+    };
+    expect(looks.length, greaterThan(12));
   });
 }

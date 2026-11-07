@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} items",
   "bfx_people_two": "{count} personen",
   "bfx_people_few": "{count} personen",
-  "bfx_people_many": "{count} personen"
+  "bfx_people_many": "{count} personen",
+  "iou_delete_title": "Deze schuld verwijderen?",
+  "iou_delete_body": "Hij verdwijnt voor jullie allebei. Dit kan niet ongedaan worden.",
+  "iou_deleted": "Schuld verwijderd"
 }

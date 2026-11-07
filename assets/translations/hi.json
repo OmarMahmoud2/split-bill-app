@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} आइटम",
   "bfx_people_two": "{count} लोग",
   "bfx_people_few": "{count} लोग",
-  "bfx_people_many": "{count} लोग"
+  "bfx_people_many": "{count} लोग",
+  "iou_delete_title": "यह IOU हटाएँ?",
+  "iou_delete_body": "यह आप दोनों के लिए हट जाएगा। इसे वापस नहीं किया जा सकता।",
+  "iou_deleted": "IOU हटाया गया"
 }

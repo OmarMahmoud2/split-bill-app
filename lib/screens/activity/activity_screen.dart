@@ -8,6 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/activity.dart';
 import 'package:split_bill_app/data/ledger_repository.dart';
+import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
@@ -243,6 +244,48 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
+  /// IOUs you recorded can be deleted (a mistyped IOU was permanent).
+  Future<void> _deleteIou(ActivityItem item) async {
+    final ok = await showAppDialog(
+      context,
+      title: 'iou_delete_title'.tr(),
+      message: 'iou_delete_body'.tr(),
+      confirmLabel: 'common_delete'.tr(),
+      icon: AppIcons.delete,
+      destructive: true,
+    );
+    if (!ok || !mounted) return;
+    try {
+      await LedgerRepository.instance.deletePayment(
+        PaymentRecord(
+          id: item.id.replaceFirst('pay:', ''),
+          from: item.actorId,
+          to: item.counterpartId ?? '',
+          amountMinor: item.amountMinor,
+          currency: item.currency,
+          createdBy: item.createdBy ?? '',
+          kind: PaymentKind.iou,
+          groupId: item.groupId,
+        ),
+      );
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        message: 'iou_deleted'.tr(),
+        type: AppToastType.success,
+      );
+      _refresh();
+    } catch (_) {
+      if (mounted) {
+        AppToast.show(
+          context,
+          message: 'iou_save_failed'.tr(),
+          type: AppToastType.error,
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _ledger?.cancel();
@@ -360,8 +403,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         item: item,
                         me: me.uid,
                         onTap:
-                            item.billId == null ||
-                                item.kind != ActivityKind.billAdded
+                            item.kind == ActivityKind.iou &&
+                                item.createdBy == me.uid
+                            ? () => _deleteIou(item)
+                            : item.billId == null ||
+                                  item.kind != ActivityKind.billAdded
                             ? null
                             : () => openBill(
                                 context,

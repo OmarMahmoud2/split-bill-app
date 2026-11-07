@@ -2311,5 +2311,8 @@
   "bfx_items_many": "{count} 项",
   "bfx_people_two": "{count} 人",
   "bfx_people_few": "{count} 人",
-  "bfx_people_many": "{count} 人"
+  "bfx_people_many": "{count} 人",
+  "iou_delete_title": "删除这笔欠条？",
+  "iou_delete_body": "你们双方都将看不到它，且无法撤销。",
+  "iou_deleted": "欠条已删除"
 }
