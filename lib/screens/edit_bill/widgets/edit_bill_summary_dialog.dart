@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:split_bill_app/screens/edit_bill/edit_bill_controller.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/app_text_field.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 
 /// Confirmed charges, all in minor units of the bill currency.
 typedef ChargesConfirm =
@@ -52,10 +53,11 @@ class EditBillSummaryDialog extends StatefulWidget {
     required int deliveryMinor,
     required int discountMinor,
     required ChargesConfirm onConfirm,
-  }) => PremiumBottomSheet.show<void>(
-    context: context,
-    isScrollable: true,
-    child: EditBillSummaryDialog(
+  }) => showLedgerSheet<void>(
+    context,
+    title: 'bf_edit_charges_title'.tr(),
+    subtitle: 'bf_edit_charges_hint'.tr(namedArgs: {'amount': formatMoneyMinor(subtotalMinor, currency)}),
+    builder: (_) => EditBillSummaryDialog(
       currency: currency,
       subtotalMinor: subtotalMinor,
       taxMinor: taxMinor,
@@ -136,33 +138,31 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
+    // Fields scroll; the Apply button stays pinned above the number pad.
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'bf_edit_charges_title'.tr(),
-          style: AppTypography.headlineSmall.copyWith(color: p.textPrimary),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'bf_edit_charges_hint'.tr(
-            namedArgs: {
-              'amount': formatMoneyMinor(widget.subtotalMinor, widget.currency),
-            },
+        Flexible(
+          child: SingleChildScrollView(
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 12),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Column(
+              children: [
+                for (final c in _Charge.values) ...[
+                  _field(c),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+              ],
+            ),
           ),
-          style: AppTypography.bodyMedium.copyWith(color: p.textSecondary),
         ),
-        const SizedBox(height: AppSpacing.lg),
-        for (final c in _Charge.values) ...[
-          _field(c),
-          const SizedBox(height: AppSpacing.md),
-        ],
-        const SizedBox(height: AppSpacing.sm),
-        FilledButton(
-          onPressed: _save,
-          child: Text('bf_edit_charges_apply'.tr()),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+          child: FilledButton(
+            onPressed: _save,
+            child: Text('bf_edit_charges_apply'.tr()),
+          ),
         ),
       ],
     );
@@ -181,29 +181,31 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
         },
       );
     }
+    final service = _value(_Charge.service) ?? 0;
     final pct = value == null || value == 0
         ? null
         : chargePercentLabel(
             value,
             widget.subtotalMinor,
             widget.currency,
-            serviceMinor: c == _Charge.tax ? (_value(_Charge.service) ?? 0) : 0,
+            serviceMinor: c == _Charge.tax ? service : 0,
           );
-    return TextField(
+    final onService =
+        c == _Charge.tax &&
+        value != null &&
+        chargeIsOnItemsPlusService(value, widget.subtotalMinor, service);
+    return AppTextField(
       controller: _controllers[c],
+      label: _label(c),
+      money: true,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       onChanged: (_) => setState(() {}),
-      style: AppTypography.amount.copyWith(color: p.textPrimary),
-      decoration: InputDecoration(
-        labelText: _label(c),
-        hintText: formatMoneyMinor(0, widget.currency, showSymbol: false),
-        suffixText: widget.currency,
-        helperText: pct == null
-            ? null
-            : 'bf_edit_charge_of_subtotal'.tr(namedArgs: {'percent': pct}),
-        errorText: error,
-        errorMaxLines: 3,
-      ),
+      hint: formatMoneyMinor(0, widget.currency, showSymbol: false),
+      suffix: Text(widget.currency, style: AppTypography.labelLarge.copyWith(color: p.textSecondary)),
+      helperText: pct == null
+          ? null
+          : (onService ? 'bf_edit_charge_of_items_service' : 'bf_edit_charge_of_subtotal').tr(namedArgs: {'percent': pct}),
+      errorText: error,
     );
   }
 }

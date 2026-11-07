@@ -208,6 +208,14 @@ int? parseMoneyInput(String text, String currency) {
 
 // -------------------------------------------------------------------- display
 
+/// True when [chargeMinor] is a whole percentage of items plus service but not
+/// of the items alone (VAT charged on items plus service: Egypt, the Gulf).
+bool chargeIsOnItemsPlusService(int chargeMinor, int subtotalMinor, int serviceMinor) {
+  if (serviceMinor <= 0 || subtotalMinor <= 0) return false;
+  bool whole(double v) => (v * 10).round() % 10 == 0;
+  return !whole(chargeMinor * 100 / subtotalMinor) && whole(chargeMinor * 100 / (subtotalMinor + serviceMinor));
+}
+
 /// "14%" for a charge as a share of the items subtotal (pass [serviceMinor]
 /// for the tax), "—" when there is none. Falls back to the amount when the subtotal is zero.
 String chargePercentLabel(
@@ -222,10 +230,9 @@ String chargePercentLabel(
     return formatMoneyMinor(chargeMinor, currency, locale: locale);
   }
   var pct = chargeMinor * 100 / subtotalMinor;
-  // VAT charged on items plus service (Egypt, the Gulf): show that whole rate.
-  bool whole(double v) => (v * 10).round() % 10 == 0;
-  final withService = chargeMinor * 100 / (subtotalMinor + serviceMinor);
-  if (serviceMinor > 0 && !whole(pct) && whole(withService)) pct = withService;
+  if (chargeIsOnItemsPlusService(chargeMinor, subtotalMinor, serviceMinor)) {
+    pct = chargeMinor * 100 / (subtotalMinor + serviceMinor);
+  }
   return '${NumberFormat('#,##0.#', locale).format(pct)}%';
 }
 
