@@ -337,7 +337,7 @@ class AssignCheckbox extends StatelessWidget {
         ),
       ),
       child: checked
-          ? Icon(Icons.check_rounded, size: 16, color: p.onAccent)
+          ? Icon(AppIcons.check, size: 16, color: p.onAccent)
           : null,
     );
   }
@@ -480,7 +480,7 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
                             minHeight: 44,
                           ),
                           icon: Icon(
-                            Icons.remove_rounded,
+                            AppIcons.remove,
                             color: qty > 0 ? p.textPrimary : p.textDisabled,
                           ),
                         ),
@@ -506,7 +506,7 @@ class _ComplexAssignmentSheetState extends State<ComplexAssignmentSheet> {
                             minHeight: 44,
                           ),
                           icon: Icon(
-                            Icons.add_rounded,
+                            AppIcons.add,
                             color: canAdd ? p.textPrimary : p.textDisabled,
                           ),
                         ),

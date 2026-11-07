@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 class VersionInfo extends StatelessWidget {
   const VersionInfo({super.key});
@@ -24,7 +25,7 @@ class VersionInfo extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(Icons.favorite, color: p.danger, size: 14),
+              Icon(AppIcons.heartFill, color: p.danger, size: 14),
               const SizedBox(width: 4),
               Text(
                 'for_smart_spenders'.tr(),

@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/theme/app_spacing.dart';
 import 'package:split_bill_app/theme/app_typography.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 /// "Nothing here yet" with one next step. No illustration: a quiet icon in
 /// a tonal circle, a title, one line of help and an optional action.
 ///
 /// ```dart
 /// EmptyState(
-///   icon: Icons.receipt_long_rounded,
+///   icon: AppIcons.receipt,
 ///   title: 'no_bills_yet'.tr(),
 ///   message: 'scan_a_receipt_to_start'.tr(),
 ///   actionLabel: 'scan_receipt'.tr(),
@@ -19,7 +20,7 @@ import 'package:split_bill_app/theme/app_typography.dart';
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
-    this.icon = Icons.inbox_outlined,
+    this.icon = AppIcons.inbox,
     this.title,
     this.message,
     this.actionLabel,

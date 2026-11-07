@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 class AssignmentMethodSheet extends StatelessWidget {
   final VoidCallback onVoiceCommand;
@@ -30,7 +31,7 @@ class AssignmentMethodSheet extends StatelessWidget {
         const SizedBox(height: 24),
         _buildMethodOption(
           context,
-          icon: Icons.mic_rounded,
+          icon: AppIcons.mic,
           title: 'voice_command'.tr(),
           subtitle: 'just_say_who_ate_what_cost_1_credit'.tr(),
           color: context.palette.accent,
@@ -42,7 +43,7 @@ class AssignmentMethodSheet extends StatelessWidget {
         const SizedBox(height: 16),
         _buildMethodOption(
           context,
-          icon: Icons.touch_app_rounded,
+          icon: AppIcons.tap,
           title: 'manual_assignment'.tr(),
           subtitle: 'tap_to_assign_items_manually_free'.tr(),
           color: context.palette.textPrimary,
@@ -112,7 +113,7 @@ class AssignmentMethodSheet extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.chevron_right_rounded,
+                AppIcons.chevronRight,
                 size: 20,
                 color: colorScheme.onSurface.withValues(alpha: 0.3),
               ),

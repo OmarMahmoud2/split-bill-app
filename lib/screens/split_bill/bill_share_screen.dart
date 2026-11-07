@@ -268,7 +268,7 @@ class BillShareScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.check_rounded,
+                        AppIcons.check,
                         color: p.onAccent,
                         size: 32,
                       ),
@@ -345,7 +345,7 @@ class BillShareScreen extends StatelessWidget {
                                 borderRadius: AppRadii.rowRadius,
                               ),
                               child: Icon(
-                                Icons.qr_code_2_rounded,
+                                AppIcons.qr,
                                 color: p.textSecondary,
                                 size: 36,
                               ),
@@ -532,7 +532,7 @@ class ShareTargetRow extends StatelessWidget {
             onPressed: onCopy,
             tooltip: 'bf_share_copy_link'.tr(),
             constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-            icon: Icon(Icons.link_rounded, color: p.textSecondary),
+            icon: Icon(AppIcons.link, color: p.textSecondary),
           ),
         ],
       ),

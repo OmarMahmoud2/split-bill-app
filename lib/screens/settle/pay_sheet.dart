@@ -169,7 +169,7 @@ class _PaySheetState extends State<PaySheet> {
                       LedgerCard(
                         child: EmptyState(
                           compact: true,
-                          icon: Icons.account_balance_wallet_outlined,
+                          icon: AppIcons.wallet,
                           title: 'pay_no_methods_title'.tr(namedArgs: {'name': widget.recipientName}),
                           message: 'pay_no_methods_body'.tr(),
                         ),

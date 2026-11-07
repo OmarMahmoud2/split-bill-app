@@ -5,6 +5,7 @@ import 'package:split_bill_app/services/contact_service.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 class MultiContactPicker extends StatefulWidget {
   final List<String> alreadySelectedIds;
@@ -143,7 +144,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
               onChanged: _filterContacts,
               decoration: InputDecoration(
                 hintText: 'search_name_or_phone'.tr(),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(AppIcons.search),
                 filled: true,
                 fillColor: p.surfaceVariant,
                 border: OutlineInputBorder(
@@ -216,7 +217,7 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
       floatingActionButton: _selectedIds.isNotEmpty
           ? FloatingActionButton(
               onPressed: _returnSelection,
-              child: const Icon(Icons.check),
+              child: const Icon(AppIcons.check),
             )
           : null,
     );

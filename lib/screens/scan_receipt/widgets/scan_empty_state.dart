@@ -69,7 +69,7 @@ class ScanEmptyState extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.document_scanner_outlined,
+                  AppIcons.scan,
                   color: p.onAccentSoft,
                   size: 26,
                 ),
@@ -93,26 +93,26 @@ class ScanEmptyState extends StatelessWidget {
             FilledButton.icon(
               key: const ValueKey('scan-read-now'),
               onPressed: onAnalyze,
-              icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+              icon: const Icon(AppIcons.sparkle, size: 18),
               label: Text('bf_scan_read_now'.tr()),
             ),
             const SizedBox(height: AppSpacing.sm),
             OutlinedButton.icon(
               onPressed: onTakePhoto,
-              icon: const Icon(Icons.photo_camera_outlined, size: 18),
+              icon: const Icon(AppIcons.camera, size: 18),
               label: Text('bf_scan_retake'.tr()),
             ),
           ] else ...[
             FilledButton.icon(
               key: const ValueKey('scan-take-photo'),
               onPressed: onTakePhoto,
-              icon: const Icon(Icons.photo_camera_outlined, size: 18),
+              icon: const Icon(AppIcons.camera, size: 18),
               label: Text('bf_scan_take_photo'.tr()),
             ),
             const SizedBox(height: AppSpacing.sm),
             OutlinedButton.icon(
               onPressed: onChoosePhoto,
-              icon: const Icon(Icons.photo_library_outlined, size: 18),
+              icon: const Icon(AppIcons.gallery, size: 18),
               label: Text('bf_scan_choose_photo'.tr()),
             ),
           ],
@@ -135,14 +135,14 @@ class ScanEmptyState extends StatelessWidget {
               TextButton.icon(
                 onPressed: onTypeItIn,
                 style: TextButton.styleFrom(foregroundColor: p.accent),
-                icon: const Icon(Icons.edit_outlined, size: 18),
+                icon: const Icon(AppIcons.edit, size: 18),
                 label: Text('bf_scan_type_it_in'.tr()),
               ),
               if (!hasImage)
                 TextButton.icon(
                   onPressed: onSnapAndSave,
                   style: TextButton.styleFrom(foregroundColor: p.accent),
-                  icon: const Icon(Icons.bolt_outlined, size: 18),
+                  icon: const Icon(AppIcons.bolt, size: 18),
                   label: Text('snap_now_and_split_later'.tr()),
                 ),
             ],

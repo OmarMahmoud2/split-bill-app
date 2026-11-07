@@ -311,7 +311,7 @@ class _MethodRow extends StatelessWidget {
             tooltip: qrOpen ? 'guest_hide_qr'.tr() : 'guest_show_qr'.tr(),
             onPressed: onToggleQr,
             icon: Icon(
-              qrOpen ? Icons.close_rounded : Icons.qr_code_2_rounded,
+              qrOpen ? AppIcons.close : AppIcons.qr,
               color: p.textPrimary,
             ),
           ),
@@ -446,7 +446,7 @@ class GuestProofZone extends StatelessWidget {
             IconButton(
               tooltip: 'guest_remove_screenshot'.tr(),
               onPressed: onRemove,
-              icon: Icon(Icons.close_rounded, color: p.textSecondary),
+              icon: Icon(AppIcons.close, color: p.textSecondary),
             ),
           ],
         ),
@@ -476,7 +476,7 @@ class GuestProofZone extends StatelessWidget {
                 children: [
                   if (!desktop) ...[
                     Icon(
-                      Icons.file_upload_outlined,
+                      AppIcons.upload,
                       size: 26,
                       color: p.textSecondary,
                     ),

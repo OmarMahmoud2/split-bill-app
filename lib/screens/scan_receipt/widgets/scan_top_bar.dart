@@ -114,8 +114,8 @@ class ScanTopBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             ScanRoundButton(
               icon: close
-                  ? Icons.close_rounded
-                  : Icons.arrow_back_ios_new_rounded,
+                  ? AppIcons.close
+                  : AppIcons.chevronLeft,
               label: close ? 'close'.tr() : 'back'.tr(),
               onPressed: onLeading ?? () => Navigator.of(context).maybePop(),
             ),

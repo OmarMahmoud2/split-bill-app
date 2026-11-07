@@ -8,6 +8,7 @@ import 'package:split_bill_app/theme/app_motion.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/theme/app_spacing.dart';
 import 'package:split_bill_app/theme/app_typography.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 enum AppToastType { success, info, warning, error }
 
@@ -229,10 +230,10 @@ class _AppToastHostState extends State<_AppToastHost>
     // opposite palette to keep contrast.
     final inv = p.isDark ? AppPalette.light : AppPalette.dark;
     final (IconData icon, Color iconColor) = switch (widget.type) {
-      AppToastType.success => (Icons.check_circle_rounded, inv.accent),
-      AppToastType.info => (Icons.info_rounded, inv.info),
-      AppToastType.warning => (Icons.warning_amber_rounded, inv.owe),
-      AppToastType.error => (Icons.error_rounded, inv.error),
+      AppToastType.success => (AppIcons.successFill, inv.accent),
+      AppToastType.info => (AppIcons.info, inv.info),
+      AppToastType.warning => (AppIcons.warning, inv.owe),
+      AppToastType.error => (AppIcons.error, inv.error),
     };
     final top = widget.position == AppToastPosition.top;
     final reduce = AppMotion.reduceMotion(context);

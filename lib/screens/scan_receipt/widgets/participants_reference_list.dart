@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/widgets/pal_avatar.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 class ParticipantsReferenceList extends StatelessWidget {
   final List<Map<String, dynamic>>? participants;
@@ -30,7 +31,7 @@ class ParticipantsReferenceList extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.record_voice_over_rounded,
+                AppIcons.voice,
                 size: 16,
                 color: palette.textSecondary,
               ),

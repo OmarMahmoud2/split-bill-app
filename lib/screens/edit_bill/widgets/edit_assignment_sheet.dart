@@ -277,7 +277,7 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
                     ),
                   ),
                   child: on
-                      ? Icon(Icons.check_rounded, size: 16, color: p.onAccent)
+                      ? Icon(AppIcons.check, size: 16, color: p.onAccent)
                       : null,
                 ),
               ],
@@ -320,7 +320,7 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
               tooltip: 'bf_edit_assign_less'.tr(
                 namedArgs: {'name': person.name},
               ),
-              icon: const Icon(Icons.remove_rounded),
+              icon: const Icon(AppIcons.remove),
             ),
             SizedBox(
               width: 28,
@@ -337,7 +337,7 @@ class _EditAssignmentSheetState extends State<EditAssignmentSheet> {
               tooltip: 'bf_edit_assign_more'.tr(
                 namedArgs: {'name': person.name},
               ),
-              icon: const Icon(Icons.add_rounded),
+              icon: const Icon(AppIcons.add),
             ),
           ],
         ),

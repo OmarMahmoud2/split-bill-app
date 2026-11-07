@@ -144,7 +144,7 @@ class ReceiptResultView extends StatelessWidget {
           trailing: [
             if (image != null)
               ScanRoundButton(
-                icon: Icons.image_outlined,
+                icon: AppIcons.gallery,
                 label: 'bf_scan_review_view_photo'.tr(),
                 onPressed: () => _showPhoto(context),
               ),
@@ -346,7 +346,7 @@ class ReceiptResultView extends StatelessWidget {
               top: 8,
               end: 8,
               child: ScanRoundButton(
-                icon: Icons.close_rounded,
+                icon: AppIcons.close,
                 label: 'close'.tr(),
                 onPressed: () => Navigator.of(dialogContext).pop(),
               ),
@@ -399,7 +399,7 @@ class ReceiptResultView extends StatelessWidget {
                   );
                   if (picked != null) setLocal(() => date = picked);
                 },
-                icon: const Icon(Icons.calendar_today_outlined, size: 18),
+                icon: const Icon(AppIcons.calendar, size: 18),
                 label: Text(dateText),
               ),
             ],
@@ -583,7 +583,7 @@ class ReceiptResultView extends StatelessWidget {
                 : TextButton.icon(
                     onPressed: () => Navigator.of(dialogContext).pop('delete'),
                     style: TextButton.styleFrom(foregroundColor: p.error),
-                    icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                    icon: const Icon(AppIcons.delete, size: 18),
                     label: Text('receipt_delete_item'.tr()),
                   ),
             children: [
@@ -752,7 +752,7 @@ class _ItemsCard extends StatelessWidget {
                     ),
                     if (isFlagged) ...[
                       Icon(
-                        Icons.warning_amber_rounded,
+                        AppIcons.warning,
                         size: 16,
                         color: p.oweInk,
                       ),
@@ -800,7 +800,7 @@ class _ItemsCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.add_rounded, size: 18, color: p.accent),
+                  Icon(AppIcons.add, size: 18, color: p.accent),
                   const SizedBox(width: 6),
                   Text(
                     'receipt_add_item'.tr(),

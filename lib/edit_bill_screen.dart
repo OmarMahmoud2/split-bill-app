@@ -661,7 +661,7 @@ class _TapField extends StatelessWidget {
                   ),
                 ),
                 Icon(
-                  Icons.expand_more_rounded,
+                  AppIcons.chevronDown,
                   size: 20,
                   color: p.textSecondary,
                 ),
@@ -706,7 +706,7 @@ class _SummaryRow extends StatelessWidget {
               ),
             ),
             if (needsAttention) ...[
-              Icon(Icons.error_outline_rounded, size: 16, color: p.owe),
+              Icon(AppIcons.error, size: 16, color: p.owe),
               const SizedBox(width: 6),
             ],
             Text(
@@ -719,7 +719,7 @@ class _SummaryRow extends StatelessWidget {
             if (onTap != null) ...[
               const SizedBox(width: 4),
               Icon(
-                Icons.chevron_right_rounded,
+                AppIcons.chevronRight,
                 size: 20,
                 color: p.textTertiary,
               ),

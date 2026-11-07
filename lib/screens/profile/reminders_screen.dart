@@ -276,7 +276,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                       borderRadius: BorderRadius.circular(9),
                     ),
                     child: Icon(
-                      Icons.notifications_rounded,
+                      AppIcons.bell,
                       size: 20,
                       color: p.onAccent,
                     ),

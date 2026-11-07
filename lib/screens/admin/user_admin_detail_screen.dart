@@ -162,7 +162,7 @@ class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
                   ),
                   Expanded(
                     child: EmptyState(
-                      icon: Icons.person_off_outlined,
+                      icon: AppIcons.personRemove,
                       title: 'adm3_user_gone'.tr(),
                     ),
                   ),
@@ -375,7 +375,7 @@ class _UserAdminDetailScreenState extends State<UserAdminDetailScreen> {
             if (bills.isEmpty) {
               return EmptyState(
                 compact: true,
-                icon: Icons.receipt_long_outlined,
+                icon: AppIcons.receipt,
                 title: 'no_bills_found'.tr(),
               );
             }
@@ -987,7 +987,7 @@ class _BillSummarySheet extends StatelessWidget {
             child: Row(
               children: [
                 Icon(
-                  isPaid ? Icons.check_circle_rounded : Icons.schedule_rounded,
+                  isPaid ? AppIcons.successFill : AppIcons.clock,
                   size: 18,
                   color: isPaid ? p.accent : p.textTertiary,
                 ),

@@ -276,7 +276,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       );
     } else if (_items.isEmpty) {
       body = EmptyState(
-        icon: Icons.timeline_rounded,
+        icon: AppIcons.chart,
         title: 'activity_empty_title'.tr(),
         message: 'activity_empty_body'.tr(),
       );

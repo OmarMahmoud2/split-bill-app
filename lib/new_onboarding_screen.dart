@@ -302,7 +302,7 @@ class _NewOnboardingScreenState extends State<NewOnboardingScreen> {
                   style: AppTypography.titleSmall.copyWith(color: p.accent),
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: p.accent),
+              Icon(AppIcons.chevronRight, color: p.accent),
             ],
           ),
         ),

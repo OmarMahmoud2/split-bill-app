@@ -198,8 +198,8 @@ class _TabBar extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              item(0, Icons.home_outlined, Icons.home_rounded, 'home_tab_home'.tr()),
-              item(1, Icons.group_outlined, Icons.group_rounded, 'groups'.tr()),
+              item(0, AppIcons.home, AppIcons.home, 'home_tab_home'.tr()),
+              item(1, AppIcons.people, AppIcons.people, 'groups'.tr()),
               Expanded(
                 child: Center(
                   child: Transform.translate(
@@ -219,7 +219,7 @@ class _TabBar extends StatelessWidget {
                             child: SizedBox(
                               width: 58,
                               height: 58,
-                              child: Icon(Icons.document_scanner_outlined, color: p.onAccent, size: 26),
+                              child: Icon(AppIcons.scan, color: p.onAccent, size: 26),
                             ),
                           ),
                         ),
@@ -228,8 +228,8 @@ class _TabBar extends StatelessWidget {
                   ),
                 ),
               ),
-              item(2, Icons.show_chart_rounded, Icons.show_chart_rounded, 'activity_title'.tr()),
-              item(3, Icons.person_outline_rounded, Icons.person_rounded, 'home_tab_you'.tr()),
+              item(2, AppIcons.chart, AppIcons.chart, 'activity_title'.tr()),
+              item(3, AppIcons.you, AppIcons.you, 'home_tab_you'.tr()),
             ],
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
 import 'package:split_bill_app/theme/app_spacing.dart';
 import 'package:split_bill_app/theme/app_typography.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 enum ErrorStateVariant {
   /// Centered in the available space (whole screen or a tab body).
@@ -34,7 +35,7 @@ class ErrorState extends StatelessWidget {
     this.retryLabel,
     this.secondaryLabel,
     this.onSecondary,
-    this.icon = Icons.error_outline_rounded,
+    this.icon = AppIcons.error,
     this.variant = ErrorStateVariant.fullScreen,
   });
 
@@ -46,7 +47,7 @@ class ErrorState extends StatelessWidget {
     this.retryLabel,
     this.secondaryLabel,
     this.onSecondary,
-    this.icon = Icons.error_outline_rounded,
+    this.icon = AppIcons.error,
   }) : variant = ErrorStateVariant.inline;
 
   /// Offline preset: "You're offline" with the sync reassurance.
@@ -59,7 +60,7 @@ class ErrorState extends StatelessWidget {
     title: 'feedback_offline_title'.tr(),
     message: 'feedback_offline_message'.tr(),
     onRetry: onRetry,
-    icon: Icons.wifi_off_rounded,
+    icon: AppIcons.wifiOff,
     variant: variant,
   );
 

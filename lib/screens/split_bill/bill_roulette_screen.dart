@@ -121,7 +121,7 @@ class _BillRouletteScreenState extends State<BillRouletteScreen> {
                     side: BorderSide(color: p.hairline),
                   ),
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.close_rounded, color: p.textPrimary),
+                  icon: Icon(AppIcons.close, color: p.textPrimary),
                 ),
               ),
             ),

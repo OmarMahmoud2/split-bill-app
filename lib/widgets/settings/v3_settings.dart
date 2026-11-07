@@ -23,7 +23,7 @@ class V3IconButton extends StatelessWidget {
   /// Back button (mirrors in RTL).
   factory V3IconButton.back(BuildContext context, {VoidCallback? onPressed}) =>
       V3IconButton(
-        icon: Icons.arrow_back_rounded,
+        icon: AppIcons.back,
         semanticLabel: MaterialLocalizations.of(context).backButtonTooltip,
         onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
       );
@@ -31,7 +31,7 @@ class V3IconButton extends StatelessWidget {
   /// Close button.
   factory V3IconButton.close(BuildContext context, {VoidCallback? onPressed}) =>
       V3IconButton(
-        icon: Icons.close_rounded,
+        icon: AppIcons.close,
         semanticLabel: MaterialLocalizations.of(context).closeButtonTooltip,
         onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
       );
@@ -253,7 +253,7 @@ class SettingsRow extends StatelessWidget {
                 if (showChevron && onTap != null) ...[
                   const SizedBox(width: 6),
                   Icon(
-                    Icons.chevron_right_rounded,
+                    AppIcons.chevronRight,
                     size: 20,
                     color: p.textTertiary,
                   ),

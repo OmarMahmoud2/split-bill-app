@@ -211,7 +211,7 @@ class SampleNotificationCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              Icons.receipt_long_rounded,
+              AppIcons.receipt,
               size: 20,
               color: p.onAccent,
             ),

@@ -57,7 +57,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   _topBar(context),
                   Expanded(
                     child: EmptyState(
-                      icon: Icons.lock_outline_rounded,
+                      icon: AppIcons.lock,
                       title: 'adm3_not_admin_title'.tr(),
                       message: 'adm3_not_admin_message'.tr(),
                     ),

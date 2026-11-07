@@ -21,7 +21,7 @@ class BillLinkErrorScreen extends StatelessWidget {
       body: SafeArea(
         child: notFound
             ? ErrorState(
-                icon: Icons.receipt_long_outlined,
+                icon: AppIcons.receipt,
                 title: 'bf_bill_not_found_title'.tr(),
                 message: message ?? 'bf_bill_not_found_message'.tr(),
                 retryLabel: 'bf_bill_go_back'.tr(),

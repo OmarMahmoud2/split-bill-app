@@ -348,7 +348,7 @@ class _GoProCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Icon(Icons.chevron_right_rounded, color: p.onInverseSurface),
+                  Icon(AppIcons.chevronRight, color: p.onInverseSurface),
                 ],
               ),
             ),

@@ -184,7 +184,7 @@ class MemberPickerField extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () async =>
                     _add(await pickMemberFromContacts(context)),
-                icon: const Icon(Icons.contacts_rounded, size: 18),
+                icon: const Icon(AppIcons.contacts, size: 18),
                 label: Text('groups_add_from_contacts'.tr()),
               ),
             ),
@@ -192,7 +192,7 @@ class MemberPickerField extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () async => _add(await scanMemberQr(context)),
-                icon: const Icon(Icons.qr_code_scanner_rounded, size: 18),
+                icon: const Icon(AppIcons.qr, size: 18),
                 label: Text('groups_scan_qr'.tr()),
               ),
             ),
@@ -209,7 +209,7 @@ class MemberPickerField extends StatelessWidget {
               if (name == null || name.trim().isEmpty) return;
               _add(GroupMember.fromMap(guestParticipant(name)));
             },
-            icon: const Icon(Icons.person_add_alt_outlined, size: 18),
+            icon: const Icon(AppIcons.personAdd, size: 18),
             label: Text('bf_assign_add_guest'.tr()),
           ),
         ),

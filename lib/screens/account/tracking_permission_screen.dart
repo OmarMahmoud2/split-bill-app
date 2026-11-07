@@ -70,10 +70,10 @@ class _TrackingPermissionScreenState extends State<TrackingPermissionScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             point(
-              Icons.play_circle_outline_rounded,
+              AppIcons.playCircle,
               'acct_att_point_optional'.tr(),
             ),
-            point(Icons.lock_outline_rounded, 'acct_att_point_data'.tr()),
+            point(AppIcons.lock, 'acct_att_point_data'.tr()),
           ],
         ),
       ),

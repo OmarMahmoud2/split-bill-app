@@ -10,6 +10,7 @@
 library;
 
 export 'app_colors.dart';
+export 'app_icons.dart';
 export 'app_haptics.dart';
 export 'app_motion.dart';
 export 'app_palette.dart';

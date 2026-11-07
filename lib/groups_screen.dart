@@ -61,11 +61,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!widget.embedded) LedgerTopBar(actions: [RoundIconButton(icon: Icons.add_rounded, tooltip: 'groups_new_title'.tr(), onPressed: _create)]),
+            if (!widget.embedded) LedgerTopBar(actions: [RoundIconButton(icon: AppIcons.add, tooltip: 'groups_new_title'.tr(), onPressed: _create)]),
             ScreenTitle(
               'groups'.tr(),
               trailing: widget.embedded
-                  ? RoundIconButton(icon: Icons.add_rounded, tooltip: 'groups_new_title'.tr(), onPressed: _create)
+                  ? RoundIconButton(icon: AppIcons.add, tooltip: 'groups_new_title'.tr(), onPressed: _create)
                   : null,
             ),
             Expanded(
@@ -88,7 +88,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         final state = snap.data!;
                         if (state.groups.isEmpty) {
                           return EmptyState(
-                            icon: Icons.group_outlined,
+                            icon: AppIcons.people,
                             title: 'groups_empty_title'.tr(),
                             message: 'groups_empty_body'.tr(),
                             actionLabel: 'groups_new_title'.tr(),

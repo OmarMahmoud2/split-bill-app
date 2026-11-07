@@ -117,7 +117,7 @@ class ParticipantOptionsSheet extends StatelessWidget {
             ListTile(
               minTileHeight: 56,
               leading: Icon(
-                isPaid ? Icons.undo_rounded : Icons.check_circle_outline,
+                isPaid ? AppIcons.undo : AppIcons.success,
                 color: p.textPrimary,
               ),
               title: Text(
@@ -134,7 +134,7 @@ class ParticipantOptionsSheet extends StatelessWidget {
               ListTile(
                 minTileHeight: 56,
                 leading: Icon(
-                  Icons.person_remove_outlined,
+                  AppIcons.personRemove,
                   color: p.textPrimary,
                 ),
                 title: Text(

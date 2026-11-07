@@ -87,24 +87,24 @@ class AddMembersSheet extends StatelessWidget {
     final p = context.palette;
     final cards = <Widget>[
       AddSourceCard(
-        icon: Icons.qr_code_scanner_rounded,
+        icon: AppIcons.qr,
         label: 'scan_qr'.tr(),
         onTap: onScanQR,
       ),
       AddSourceCard(
-        icon: Icons.contacts_outlined,
+        icon: AppIcons.contacts,
         label: 'contacts'.tr(),
         onTap: onPickContacts,
       ),
       if (onAddGuest != null)
         AddSourceCard(
-          icon: Icons.person_add_alt_outlined,
+          icon: AppIcons.personAdd,
           label: 'bf_assign_add_guest'.tr(),
           onTap: onAddGuest!,
         ),
       if (onPickGroups != null)
         AddSourceCard(
-          icon: Icons.groups_outlined,
+          icon: AppIcons.groups,
           label: 'groups'.tr(),
           onTap: onPickGroups!,
         ),

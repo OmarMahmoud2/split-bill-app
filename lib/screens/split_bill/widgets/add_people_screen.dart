@@ -267,7 +267,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                     tooltip: 'back'.tr(),
                     onPressed: () => Navigator.of(context).maybePop(),
                     icon: Icon(
-                      Icons.adaptive.arrow_back_rounded,
+                      AppIcons.back,
                       color: p.textPrimary,
                     ),
                   ),
@@ -296,7 +296,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                     decoration: InputDecoration(
                       hintText: 'bf_assign_search_hint'.tr(),
                       prefixIcon: Icon(
-                        Icons.search_rounded,
+                        AppIcons.search,
                         color: p.textSecondary,
                       ),
                       filled: true,
@@ -338,7 +338,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                       if (widget.onScanQr != null) ...[
                         Expanded(
                           child: AddSourceCard(
-                            icon: Icons.qr_code_scanner_rounded,
+                            icon: AppIcons.qr,
                             label: 'scan_qr'.tr(),
                             onTap: () => _runSource(widget.onScanQr),
                           ),
@@ -348,7 +348,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                       if (widget.onPickContacts != null) ...[
                         Expanded(
                           child: AddSourceCard(
-                            icon: Icons.contacts_outlined,
+                            icon: AppIcons.contacts,
                             label: 'contacts'.tr(),
                             onTap: () => _runSource(widget.onPickContacts),
                           ),
@@ -357,7 +357,7 @@ class _AddPeopleScreenState extends State<AddPeopleScreen> {
                       ],
                       Expanded(
                         child: AddSourceCard(
-                          icon: Icons.person_add_alt_outlined,
+                          icon: AppIcons.personAdd,
                           label: 'bf_assign_add_guest'.tr(),
                           onTap: _addGuest,
                         ),
@@ -484,7 +484,7 @@ class _SelectedChip extends StatelessWidget {
           ),
           if (!isHost) ...[
             const SizedBox(width: 2),
-            Icon(Icons.close_rounded, size: 16, color: p.textPrimary),
+            Icon(AppIcons.close, size: 16, color: p.textPrimary),
           ],
         ],
       ),
@@ -528,7 +528,7 @@ class _AddQueryAsGuest extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Icon(Icons.person_add_alt_outlined, color: p.primaryStrong),
+              Icon(AppIcons.personAdd, color: p.primaryStrong),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(

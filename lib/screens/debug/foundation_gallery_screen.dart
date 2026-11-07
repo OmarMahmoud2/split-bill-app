@@ -56,12 +56,12 @@ class _FoundationGalleryScreenState extends State<FoundationGalleryScreen> {
         actions: [
           IconButton(
             tooltip: 'Toggle dark',
-            icon: Icon(_dark ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(_dark ? AppIcons.sun : AppIcons.moon),
             onPressed: () => setState(() => _dark = !_dark),
           ),
           IconButton(
             tooltip: 'Replay animations',
-            icon: const Icon(Icons.replay),
+            icon: const Icon(AppIcons.undo),
             onPressed: () => setState(() => _replay++),
           ),
         ],
@@ -325,7 +325,7 @@ class _FoundationGalleryScreenState extends State<FoundationGalleryScreen> {
           SizedBox(height: 360, child: ErrorState(onRetry: () {})),
           SizedBox(height: 300, child: ErrorState.offline(onRetry: () {})),
           EmptyState(
-            icon: Icons.receipt_long_rounded,
+            icon: AppIcons.receipt,
             message: 'Scan a receipt to start a bill.',
             actionLabel: 'Scan',
             onAction: () {},

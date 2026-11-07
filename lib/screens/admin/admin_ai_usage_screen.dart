@@ -114,19 +114,19 @@ class _AdminAiUsageScreenState extends State<AdminAiUsageScreen> {
   Widget _buildResult(AiUsageResult result) {
     return switch (result) {
       AiUsageNotDeployed() => EmptyState(
-        icon: Icons.cloud_off_rounded,
+        icon: AppIcons.cloudOff,
         title: 'adm3_ai_not_deployed_title'.tr(),
         message: 'adm3_ai_not_deployed_message'.tr(),
         actionLabel: 'adm3_try_again'.tr(),
         onAction: _retry,
       ),
       AiUsageDisabled() => EmptyState(
-        icon: Icons.toggle_off_outlined,
+        icon: AppIcons.toggle,
         title: 'adm3_ai_not_deployed_title'.tr(),
         message: 'adm3_ai_disabled'.tr(),
       ),
       AiUsageUnauthorized() => ErrorState(
-        icon: Icons.lock_outline_rounded,
+        icon: AppIcons.lock,
         title: 'adm3_ai_unauthorized_title'.tr(),
         message: 'adm3_ai_unauthorized_message'.tr(),
         onRetry: _retry,
@@ -135,7 +135,7 @@ class _AdminAiUsageScreenState extends State<AdminAiUsageScreen> {
       AiUsageLoaded(:final report) =>
         report.isEmpty
             ? EmptyState(
-                icon: Icons.auto_awesome_outlined,
+                icon: AppIcons.sparkle,
                 title: 'adm3_ai_empty'.tr(),
               )
             : _AiUsageBody(report: report),

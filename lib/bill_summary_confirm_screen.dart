@@ -642,7 +642,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                       side: BorderSide(color: p.hairline),
                     ),
                     onPressed: () => Navigator.of(context).maybePop(),
-                    icon: Icon(Icons.arrow_back_rounded, color: p.textPrimary),
+                    icon: Icon(AppIcons.back, color: p.textPrimary),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -762,7 +762,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                   const SizedBox(height: 12),
                   _ActionCard(
                     key: const ValueKey('summary_split_method'),
-                    icon: Icons.call_split_rounded,
+                    icon: AppIcons.split,
                     title: 'bf_summary_split_method'.tr(),
                     subtitle: 'bf_split_seg_${_draft.method.wireName}'.tr(),
                     onTap: _editSplit,
@@ -771,7 +771,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                     const SizedBox(height: 12),
                     _ActionCard(
                       key: const ValueKey('summary_reset'),
-                      icon: Icons.undo_rounded,
+                      icon: AppIcons.undo,
                       title: 'bf_summary_reset_title'.tr(),
                       subtitle: 'bf_summary_reset_body'.tr(),
                       onTap: _resetShares,
@@ -781,7 +781,7 @@ class _BillSummaryConfirmScreenState extends State<BillSummaryConfirmScreen> {
                     const SizedBox(height: 12),
                     _ActionCard(
                       key: const ValueKey('summary_roulette'),
-                      icon: Icons.donut_large_rounded,
+                      icon: AppIcons.pieChart,
                       title: 'bill_roulette'.tr(),
                       subtitle: 'bf_summary_roulette_body'.tr(),
                       onTap: _roulette,
@@ -968,7 +968,7 @@ class _PersonRow extends StatelessWidget {
                         turns: expanded ? 0.5 : 0,
                         duration: reduce ? Duration.zero : AppMotion.fast,
                         child: Icon(
-                          Icons.expand_more_rounded,
+                          AppIcons.chevronDown,
                           color: p.textSecondary,
                         ),
                       ),
@@ -1006,7 +1006,7 @@ class _PersonRow extends StatelessWidget {
                               minimumSize: const Size(44, 44),
                               padding: EdgeInsets.zero,
                             ),
-                            icon: const Icon(Icons.edit_rounded, size: 16),
+                            icon: const Icon(AppIcons.edit, size: 16),
                             label: Text('bf_summary_edit_share'.tr()),
                           ),
                         ),
@@ -1046,7 +1046,7 @@ class _PersonRow extends StatelessWidget {
                                 minimumSize: const Size(44, 44),
                                 padding: EdgeInsets.zero,
                               ),
-                              icon: const Icon(Icons.edit_rounded, size: 16),
+                              icon: const Icon(AppIcons.edit, size: 16),
                               label: Text('bf_summary_edit_share'.tr()),
                             ),
                           ),
@@ -1121,7 +1121,7 @@ class _ActionCard extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.chevron_right_rounded,
+                AppIcons.chevronRight,
                 color: p.textSecondary,
                 textDirection: Directionality.of(context),
               ),

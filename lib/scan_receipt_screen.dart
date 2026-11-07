@@ -895,7 +895,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final delete = canDeleteDraft
         ? ScanRoundButton(
-            icon: Icons.delete_outline_rounded,
+            icon: AppIcons.delete,
             label: 'delete_saved_draft'.tr(),
             color: context.palette.error,
             onPressed: _busy ? null : _confirmDeleteSavedDraft,
@@ -938,7 +938,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.workspace_premium, color: p.onPremium, size: 14),
+          Icon(AppIcons.crown, color: p.onPremium, size: 14),
           const SizedBox(width: 4),
           Text(
             'pro'.tr(),
@@ -965,7 +965,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.stars_rounded, color: p.oweInk, size: 14),
+            Icon(AppIcons.star, color: p.oweInk, size: 14),
             const SizedBox(width: 4),
             Text(
               '$points',
@@ -1003,7 +1003,7 @@ class _ScanReceiptScreenState extends State<ScanReceiptScreen> {
       headerTrailing: [
         if (canDeleteDraft)
           ScanRoundButton(
-            icon: Icons.delete_outline_rounded,
+            icon: AppIcons.delete,
             label: 'delete_saved_draft'.tr(),
             color: context.palette.error,
             onPressed: _busy ? null : _confirmDeleteSavedDraft,

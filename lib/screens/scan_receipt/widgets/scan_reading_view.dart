@@ -242,7 +242,7 @@ class _ScanReadingViewState extends State<ScanReadingView>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.lock_outline_rounded,
+                      AppIcons.lock,
                       size: 14,
                       color: p.textSecondary,
                     ),

@@ -213,7 +213,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ),
                 PopupMenuButton<String>(
                   tooltip: 'groups_more'.tr(),
-                  icon: Icon(Icons.more_horiz_rounded, color: p.textPrimary),
+                  icon: Icon(AppIcons.more, color: p.textPrimary),
                   onSelected: (_) => _clearAll(),
                   itemBuilder: (_) => [
                     PopupMenuItem(value: 'clear', child: Text('clear_all'.tr())),
@@ -248,7 +248,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   final docs = snapshot.data?.docs ?? const [];
                   if (docs.isEmpty) {
                     return EmptyState(
-                      icon: Icons.notifications_none_rounded,
+                      icon: AppIcons.bell,
                       title: 'no_notifications'.tr(),
                       message: 'your_history_is_clean_for_now_any_alerts_will_appear_here'.tr(),
                     );

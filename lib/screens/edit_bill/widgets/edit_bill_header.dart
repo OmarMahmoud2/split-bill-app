@@ -10,7 +10,7 @@ class EditBillHeader extends StatelessWidget {
     super.key,
     required this.title,
     required this.onLeading,
-    this.leadingIcon = Icons.close_rounded,
+    this.leadingIcon = AppIcons.close,
     this.leadingTooltip,
     this.actionLabel,
     this.onAction,

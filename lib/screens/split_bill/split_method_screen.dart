@@ -231,7 +231,7 @@ class _SplitMethodScreenState extends State<SplitMethodScreen> {
               child: Row(
                 children: [
                   _RoundIconButton(
-                    icon: Icons.arrow_back_rounded,
+                    icon: AppIcons.back,
                     label: 'bf_split_back'.tr(),
                     onTap: () => Navigator.of(context).maybePop(),
                   ),
@@ -458,7 +458,7 @@ class _MethodRow extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _RoundIconButton(
-              icon: Icons.remove_rounded,
+              icon: AppIcons.remove,
               size: 36,
               label: 'bf_split_fewer_shares'.tr(namedArgs: {'name': name}),
               onTap: shares > 0 ? () => onShares(-1) : null,
@@ -475,7 +475,7 @@ class _MethodRow extends StatelessWidget {
               ),
             ),
             _RoundIconButton(
-              icon: Icons.add_rounded,
+              icon: AppIcons.add,
               size: 36,
               label: 'bf_split_more_shares'.tr(namedArgs: {'name': name}),
               onTap: () => onShares(1),

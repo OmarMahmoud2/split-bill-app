@@ -97,7 +97,7 @@ class GuestLanguageButton extends StatelessWidget {
     );
     return GuestPill(
       label: current.nativeName,
-      icon: Icons.translate_rounded,
+      icon: AppIcons.language,
       semanticsLabel: '${'guest_language'.tr()}: ${current.nativeName}',
       onPressed: () => showGuestLanguagePicker(context),
     );
@@ -146,7 +146,7 @@ Future<void> showGuestLanguagePicker(BuildContext context) async {
                           ),
                         ),
                   trailing: option.code == current
-                      ? Icon(Icons.check_rounded, color: p.primary)
+                      ? Icon(AppIcons.check, color: p.primary)
                       : null,
                   selected: option.code == current,
                   onTap: () {
@@ -221,13 +221,13 @@ class GuestStoreButtons extends StatelessWidget {
         FilledButton.icon(
           style: style(),
           onPressed: () => openStore(AppLinks.appStoreUrl),
-          icon: const Icon(Icons.apple, size: 20),
+          icon: const Icon(AppIcons.apple, size: 20),
           label: Text('web_download_app_store'.tr()),
         ),
         FilledButton.icon(
           style: style(),
           onPressed: () => openStore(AppLinks.playStoreUrl),
-          icon: const Icon(Icons.android_rounded, size: 20),
+          icon: const Icon(AppIcons.android, size: 20),
           label: Text('web_download_play_store'.tr()),
         ),
       ],
@@ -303,12 +303,12 @@ class GuestGetAppPill extends StatelessWidget {
     return MenuAnchor(
       menuChildren: [
         MenuItemButton(
-          leadingIcon: const Icon(Icons.apple),
+          leadingIcon: const Icon(AppIcons.apple),
           onPressed: () => openStore(AppLinks.appStoreUrl),
           child: Text('web_download_app_store'.tr()),
         ),
         MenuItemButton(
-          leadingIcon: const Icon(Icons.android_rounded),
+          leadingIcon: const Icon(AppIcons.android),
           onPressed: () => openStore(AppLinks.playStoreUrl),
           child: Text('web_download_play_store'.tr()),
         ),

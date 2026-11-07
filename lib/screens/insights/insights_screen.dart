@@ -59,12 +59,12 @@ class _InsightsScreenState extends State<InsightsScreen> {
               actions: [
                 IconButton(
                   tooltip: 'insights_previous_month'.tr(),
-                  icon: Icon(rtl ? Icons.chevron_right_rounded : Icons.chevron_left_rounded),
+                  icon: Icon(rtl ? AppIcons.chevronRight : AppIcons.chevronLeft),
                   onPressed: () => _shift(-1),
                 ),
                 IconButton(
                   tooltip: 'insights_next_month'.tr(),
-                  icon: Icon(rtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded),
+                  icon: Icon(rtl ? AppIcons.chevronLeft : AppIcons.chevronRight),
                   onPressed: isCurrent ? null : () => _shift(1),
                 ),
               ],
@@ -107,7 +107,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
     final groupNames = {for (final g in state.groups) g.id: g.name};
     if (i.billCount == 0) {
       return EmptyState(
-        icon: Icons.insights_rounded,
+        icon: AppIcons.insights,
         title: 'insights_empty_title'.tr(),
         message: i.otherCurrencies.isEmpty
             ? 'insights_empty_body'.tr()

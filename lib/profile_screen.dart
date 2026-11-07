@@ -350,7 +350,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'split_bill_on_the_app_store',
                   );
                 },
-                icon: const Icon(Icons.apple_rounded),
+                icon: const Icon(AppIcons.apple),
                 label: Text('share_to_iphone'.tr()),
               ),
               const SizedBox(height: 10),
@@ -363,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'split_bill_on_google_play',
                   );
                 },
-                icon: const Icon(Icons.android_rounded),
+                icon: const Icon(AppIcons.android),
                 label: Text('share_to_android'.tr()),
               ),
               const SizedBox(height: 10),
@@ -377,7 +377,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     type: AppToastType.success,
                   );
                 },
-                icon: const Icon(Icons.link_rounded),
+                icon: const Icon(AppIcons.link),
                 label: Text('copy_app_link'.tr()),
               ),
             ],

@@ -360,7 +360,7 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
       );
     } else if (_groups!.isEmpty) {
       body = EmptyState(
-        icon: Icons.group_outlined,
+        icon: AppIcons.people,
         title: 'rec_no_groups_title'.tr(),
         message: 'rec_no_groups_message'.tr(),
       );
@@ -495,7 +495,7 @@ class _RecurringBillScreenState extends State<RecurringBillScreen> {
                         ),
                       ),
                       Icon(
-                        Icons.calendar_today_rounded,
+                        AppIcons.calendar,
                         size: 18,
                         color: p.textSecondary,
                       ),

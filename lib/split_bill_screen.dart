@@ -691,7 +691,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
               child: Row(
                 children: [
                   _CircleIconButton(
-                    icon: Icons.adaptive.arrow_back_rounded,
+                    icon: AppIcons.back,
                     tooltip: 'back'.tr(),
                     onPressed: () => Navigator.of(context).maybePop(),
                   ),
@@ -727,7 +727,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                   IconButton(
                     tooltip: 'bf_assign_split_another_way'.tr(),
                     onPressed: () => _splitAnotherWay(draft),
-                    icon: Icon(Icons.tune_rounded, color: p.textPrimary),
+                    icon: Icon(AppIcons.filter, color: p.textPrimary),
                   ),
                 ],
               ),
@@ -759,7 +759,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                   children: [
                     if (draft.items.isEmpty)
                       EmptyState(
-                        icon: Icons.receipt_long_outlined,
+                        icon: AppIcons.receipt,
                         title: 'bf_assign_no_items'.tr(),
                         compact: true,
                       )
@@ -815,7 +815,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
                     Center(
                       child: TextButton.icon(
                         onPressed: () => _splitAnotherWay(draft),
-                        icon: const Icon(Icons.call_split_rounded, size: 18),
+                        icon: const Icon(AppIcons.split, size: 18),
                         label: Text('bf_assign_split_another_way'.tr()),
                         style: TextButton.styleFrom(
                           foregroundColor: p.primaryStrong,
@@ -840,7 +840,7 @@ class _SplitBillScreenState extends State<SplitBillScreen> {
           child: Row(
             children: [
               _CircleIconButton(
-                icon: Icons.mic_none_rounded,
+                icon: AppIcons.mic,
                 tooltip: 'bf_assign_voice'.tr(),
                 size: 52,
                 onPressed: () => _showVoiceOverlay(raw.length),

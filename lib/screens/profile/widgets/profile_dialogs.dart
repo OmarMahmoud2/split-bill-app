@@ -62,7 +62,7 @@ class ProfileDialogs {
                   );
                 }
               },
-              icon: const Icon(Icons.mail_outline_rounded),
+              icon: const Icon(AppIcons.mail),
               label: Text('send_email'.tr()),
             ),
             const SizedBox(height: 10),
@@ -127,7 +127,7 @@ class ProfileDialogs {
                 SettingsRow(
                   title: 'prof_privacy_policy'.tr(),
                   trailing: Icon(
-                    Icons.open_in_new_rounded,
+                    AppIcons.openExternal,
                     size: 18,
                     color: sheetContext.palette.textTertiary,
                   ),
@@ -137,7 +137,7 @@ class ProfileDialogs {
                 SettingsRow(
                   title: 'prof_terms'.tr(),
                   trailing: Icon(
-                    Icons.open_in_new_rounded,
+                    AppIcons.openExternal,
                     size: 18,
                     color: sheetContext.palette.textTertiary,
                   ),
@@ -355,8 +355,8 @@ class _DeleteAccountSheetState extends State<_DeleteAccountSheet> {
                 onPressed: () => setState(() => _hidePassword = !_hidePassword),
                 icon: Icon(
                   _hidePassword
-                      ? Icons.visibility_off_rounded
-                      : Icons.visibility_rounded,
+                      ? AppIcons.eyeOff
+                      : AppIcons.eye,
                 ),
               ),
             ),

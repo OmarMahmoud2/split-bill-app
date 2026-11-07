@@ -313,7 +313,7 @@ class _SettleUpScreenState extends State<SettleUpScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
                   child: EmptyState(
-                    icon: Icons.check_circle_outline_rounded,
+                    icon: AppIcons.success,
                     title: 'settle_all_square_title'.tr(),
                     message: 'settle_all_square_body'.tr(),
                   ),
@@ -439,8 +439,8 @@ class _SettleCard extends StatelessWidget {
         ? MoneyTone.owed
         : (t.from == me ? MoneyTone.owe : MoneyTone.neutral);
     final arrow = Directionality.of(context) == TextDirection.rtl
-        ? Icons.arrow_back_rounded
-        : Icons.arrow_forward_rounded;
+        ? AppIcons.back
+        : AppIcons.forward;
 
     final buttons = <Widget>[];
     if (!settled) {

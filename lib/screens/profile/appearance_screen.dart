@@ -196,7 +196,7 @@ class _LanguageRow extends StatelessWidget {
         value: showEnglish ? option.englishName : null,
         showChevron: false,
         trailing: selected
-            ? Icon(Icons.check_rounded, size: 20, color: p.accent)
+            ? Icon(AppIcons.check, size: 20, color: p.accent)
             : const SizedBox(width: 20),
         onTap: onTap,
       ),

@@ -46,7 +46,7 @@ class GuestOutcomeView extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              Icons.hourglass_top_rounded,
+                              AppIcons.hourglass,
                               size: 44,
                               color: p.oweInk,
                             ),

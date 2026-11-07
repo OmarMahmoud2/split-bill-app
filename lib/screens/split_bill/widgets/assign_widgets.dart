@@ -219,7 +219,7 @@ class _AddPersonCard extends StatelessWidget {
           onTap: onTap,
           child: SizedBox(
             height: 72,
-            child: Icon(Icons.person_add_alt_1_rounded, color: p.textPrimary),
+            child: Icon(AppIcons.personAdd, color: p.textPrimary),
           ),
         ),
       ),
@@ -343,7 +343,7 @@ class AssignFaceToggle extends StatelessWidget {
                                   ),
                                 )
                               : Icon(
-                                  Icons.check_rounded,
+                                  AppIcons.check,
                                   size: 12,
                                   color: p.onAccent,
                                 ),
@@ -524,13 +524,13 @@ class AssignItemRow extends StatelessWidget {
                       children: [
                         if (onEveryone != null)
                           _RowAction(
-                            icon: Icons.groups_2_outlined,
+                            icon: AppIcons.groups,
                             label: 'bf_assign_everyone'.tr(),
                             onTap: onEveryone!,
                           ),
                         if (onAdjustUnits != null)
                           _RowAction(
-                            icon: Icons.tune_rounded,
+                            icon: AppIcons.filter,
                             label: 'bf_assign_adjust_units'.tr(),
                             onTap: onAdjustUnits!,
                           ),

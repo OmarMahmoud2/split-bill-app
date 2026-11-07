@@ -158,14 +158,14 @@ class _Header extends StatelessWidget {
               style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
-          RoundIconButton(icon: Icons.add_rounded, tooltip: 'new_title'.tr(), onPressed: actions.onNew),
+          RoundIconButton(icon: AppIcons.add, tooltip: 'new_title'.tr(), onPressed: actions.onNew),
           const SizedBox(width: 8),
           StreamBuilder<bool>(
             stream: unread,
             builder: (context, snap) {
               final has = snap.data ?? false;
               return RoundIconButton(
-                icon: Icons.notifications_none_rounded,
+                icon: AppIcons.bell,
                 tooltip: has ? 'home_notifications_new'.tr() : 'notifications'.tr(),
                 badge: has,
                 onPressed: actions.onOpenNotifications,
@@ -262,11 +262,11 @@ class _QuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final voice = BillEntryPoints.voice;
     final tiles = <(IconData, String, VoidCallback)>[
-      (Icons.document_scanner_outlined, 'home_qa_scan'.tr(), () => BillEntryPoints.scan(context)),
-      if (voice != null) (Icons.mic_none_rounded, 'home_qa_say'.tr(), () => voice(context)),
-      (Icons.add_rounded, 'home_qa_expense'.tr(), () => BillEntryPoints.manual(context)),
+      (AppIcons.scan, 'home_qa_scan'.tr(), () => BillEntryPoints.scan(context)),
+      if (voice != null) (AppIcons.mic, 'home_qa_say'.tr(), () => voice(context)),
+      (AppIcons.add, 'home_qa_expense'.tr(), () => BillEntryPoints.manual(context)),
       (
-        Icons.swap_horiz_rounded,
+        AppIcons.swap,
         'home_qa_settle'.tr(),
         () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PeopleScreen())),
       ),
@@ -470,7 +470,7 @@ class _InsightsTeaser extends StatelessWidget {
       onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => InsightsScreen(state: stream))),
       child: Row(
         children: [
-          Icon(Icons.insights_rounded, color: p.accent),
+          Icon(AppIcons.insights, color: p.accent),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -478,7 +478,7 @@ class _InsightsTeaser extends StatelessWidget {
               style: AppTypography.bodyMedium.copyWith(color: p.textPrimary),
             ),
           ),
-          Icon(Directionality.of(context) == TextDirection.rtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded, color: p.textTertiary),
+          Icon(Directionality.of(context) == TextDirection.rtl ? AppIcons.chevronLeft : AppIcons.chevronRight, color: p.textTertiary),
         ],
       ),
     );
@@ -503,7 +503,7 @@ class _FirstDay extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(color: p.accentSoft, borderRadius: AppRadii.cardRadius),
-              child: Icon(Icons.receipt_long_rounded, color: p.accent, size: 32),
+              child: Icon(AppIcons.receipt, color: p.accent, size: 32),
             ),
           ),
           const SizedBox(height: 16),

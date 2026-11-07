@@ -119,14 +119,14 @@ class UpdateDialogContent extends StatelessWidget {
                 height: 140,
                 child: reduce
                     ? Icon(
-                        Icons.rocket_launch_rounded,
+                        AppIcons.rocket,
                         size: 100,
                         color: p.infoAccent,
                       )
                     : Lottie.asset(
                         'assets/animations/update_rocket.json',
                         errorBuilder: (c, e, s) => Icon(
-                          Icons.rocket_launch_rounded,
+                          AppIcons.rocket,
                           size: 100,
                           color: p.infoAccent,
                         ),

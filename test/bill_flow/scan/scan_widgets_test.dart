@@ -54,7 +54,7 @@ void main() {
       locale: 'en',
     )!;
 
-    testWidgets('warning uses the amber owe colors', (tester) async {
+    testWidgets('warning uses the coral owe colors', (tester) async {
       await tester.pumpWidget(_app(ReviewBanner(content: warning())));
       final context = tester.element(find.byType(ReviewBanner));
       final p = context.palette;
@@ -72,7 +72,7 @@ void main() {
       expect(text.data, contains('bf_scan_review_total_matches'));
       expect(text.data, contains('bf_scan_review_check_items_blurry'));
       expect(text.style!.color, p.oweInk);
-      expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+      expect(find.byIcon(AppIcons.warning), findsOneWidget);
     });
 
     testWidgets('calm tone in dark mode', (tester) async {
@@ -90,7 +90,7 @@ void main() {
         find.byKey(const ValueKey('scan-review-banner')),
       );
       expect((box.decoration! as BoxDecoration).color, p.accentSoft);
-      expect(find.byIcon(Icons.check_circle_outline_rounded), findsOneWidget);
+      expect(find.byIcon(AppIcons.success), findsOneWidget);
     });
   });
 

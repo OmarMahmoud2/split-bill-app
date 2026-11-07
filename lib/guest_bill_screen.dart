@@ -676,7 +676,7 @@ class _GuestBillScreenState extends State<GuestBillScreen> {
   );
 
   Widget _errorView() => ErrorState(
-    icon: Icons.cloud_off_rounded,
+    icon: AppIcons.cloudOff,
     title: 'guest_load_error_title'.tr(),
     message: 'guest_load_error_message'.tr(),
     onRetry: () => setState(_subscribe),

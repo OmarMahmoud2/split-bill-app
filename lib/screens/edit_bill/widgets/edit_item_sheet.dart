@@ -197,7 +197,7 @@ class _QtyStepper extends StatelessWidget {
           IconButton(
             onPressed: value > 1 ? () => onChanged(value - 1) : null,
             tooltip: 'bf_edit_qty_less'.tr(),
-            icon: const Icon(Icons.remove_rounded),
+            icon: const Icon(AppIcons.remove),
           ),
           Semantics(
             label: 'bf_edit_qty_label'.tr(namedArgs: {'qty': '$value'}),
@@ -214,7 +214,7 @@ class _QtyStepper extends StatelessWidget {
           IconButton(
             onPressed: value < 999 ? () => onChanged(value + 1) : null,
             tooltip: 'bf_edit_qty_more'.tr(),
-            icon: const Icon(Icons.add_rounded),
+            icon: const Icon(AppIcons.add),
           ),
         ],
       ),

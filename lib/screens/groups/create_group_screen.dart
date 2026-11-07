@@ -284,10 +284,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 }
 
 IconData groupTypeIcon(GroupType t) => switch (t) {
-  GroupType.trip => Icons.flight_takeoff_rounded,
-  GroupType.home => Icons.home_rounded,
-  GroupType.couple => Icons.favorite_rounded,
-  GroupType.other => Icons.group_rounded,
+  GroupType.trip => AppIcons.trip,
+  GroupType.home => AppIcons.home,
+  GroupType.couple => AppIcons.heartFill,
+  GroupType.other => AppIcons.people,
 };
 
 String plainMemberCount(int n) => n == 1

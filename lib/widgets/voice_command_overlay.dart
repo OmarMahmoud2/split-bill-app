@@ -764,7 +764,7 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
         child: ErrorState(
-          icon: Icons.mic_off_rounded,
+          icon: AppIcons.micOff,
           title: 'bf_voice_mic_off_title'.tr(),
           message: 'bf_voice_mic_off_message'.tr(),
           retryLabel: 'bf_voice_open_settings'.tr(),
@@ -781,37 +781,37 @@ class _VoiceCommandOverlayState extends State<VoiceCommandOverlay>
       _ErrorKind.offline => (
         'feedback_offline_title'.tr(),
         'bf_voice_error_offline'.tr(),
-        Icons.wifi_off_rounded,
+        AppIcons.wifiOff,
       ),
       _ErrorKind.timeout => (
         'bf_voice_error_timeout_title'.tr(),
         'bf_voice_error_timeout'.tr(),
-        Icons.hourglass_empty_rounded,
+        AppIcons.hourglass,
       ),
       _ErrorKind.noCredits => (
         'bf_voice_error_no_credits_title'.tr(),
         'bf_voice_error_no_credits'.tr(),
-        Icons.toll_rounded,
+        AppIcons.coins,
       ),
       _ErrorKind.rateLimited => (
         'bf_voice_error_busy_title'.tr(),
         'bf_voice_error_busy'.tr(),
-        Icons.hourglass_empty_rounded,
+        AppIcons.hourglass,
       ),
       _ErrorKind.noSpeech => (
         'bf_voice_error_no_speech_title'.tr(),
         'bf_voice_error_no_speech'.tr(),
-        Icons.hearing_disabled_rounded,
+        AppIcons.earOff,
       ),
       _ErrorKind.noMatch => (
         'bf_voice_error_no_match_title'.tr(),
         'bf_voice_error_no_match'.tr(),
-        Icons.help_outline_rounded,
+        AppIcons.help,
       ),
       _ErrorKind.unknown => (
         'bf_voice_error_unknown_title'.tr(),
         'bf_voice_error_unknown'.tr(),
-        Icons.error_outline_rounded,
+        AppIcons.error,
       ),
     };
     return SingleChildScrollView(
@@ -1279,7 +1279,7 @@ class _AmbiguityNote extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline_rounded, size: 16, color: p.owe),
+          Icon(AppIcons.info, size: 16, color: p.owe),
           const SizedBox(width: 6),
           Expanded(
             child: Text(

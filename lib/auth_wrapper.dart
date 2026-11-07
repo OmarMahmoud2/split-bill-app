@@ -69,7 +69,7 @@ class SuspendedAccountScreen extends StatelessWidget {
     backgroundColor: context.palette.background,
     body: SafeArea(
       child: ErrorState(
-        icon: Icons.block_rounded,
+        icon: AppIcons.block,
         title: 'account_suspended_title'.tr(),
         message: 'account_suspended_message'.tr(
           namedArgs: {'email': AppLinks.supportEmail},

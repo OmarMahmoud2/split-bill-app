@@ -86,7 +86,7 @@ class _GroupCurrenciesScreenState extends State<GroupCurrenciesScreen> {
                   if (bills.isEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 24),
-                      child: EmptyState(icon: Icons.currency_exchange_rounded, title: 'groups_no_bills_title'.tr(), message: 'groups_no_bills_body'.tr()),
+                      child: EmptyState(icon: AppIcons.currency, title: 'groups_no_bills_title'.tr(), message: 'groups_no_bills_body'.tr()),
                     )
                   else
                     LedgerCard(

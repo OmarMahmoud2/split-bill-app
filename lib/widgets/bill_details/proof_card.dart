@@ -57,13 +57,13 @@ class ProofCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: image == null
-          ? Icon(Icons.receipt_long_rounded, color: p.textSecondary)
+          ? Icon(AppIcons.receipt, color: p.textSecondary)
           : Image.memory(
               image!,
               fit: BoxFit.cover,
               gaplessPlayback: true,
               errorBuilder: (_, _, _) =>
-                  Icon(Icons.broken_image_outlined, color: p.textSecondary),
+                  Icon(AppIcons.brokenImage, color: p.textSecondary),
             ),
     );
     return Container(

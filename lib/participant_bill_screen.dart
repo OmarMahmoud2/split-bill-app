@@ -200,7 +200,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           const SizedBox(height: AppSpacing.xl),
           BillPillButton(
             label: 'bf_bill_paid_add_proof'.tr(),
-            icon: Icons.image_outlined,
+            icon: AppIcons.gallery,
             onPressed: () {
               Navigator.of(context).pop();
               _submitPaid(bill, withProof: true);
@@ -389,7 +389,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           if (!doc.exists || bill == null) {
             return _withBack(
               ErrorState(
-                icon: Icons.receipt_long_outlined,
+                icon: AppIcons.receipt,
                 title: 'bf_bill_not_found_title'.tr(),
                 message: 'bf_bill_not_found_message'.tr(),
                 retryLabel: 'bf_bill_go_back'.tr(),
@@ -403,7 +403,7 @@ class _ParticipantBillScreenState extends State<ParticipantBillScreen> {
           if (me == null) {
             return _withBack(
               ErrorState(
-                icon: Icons.person_search_outlined,
+                icon: AppIcons.personSearch,
                 title: 'bf_bill_not_on_bill_title'.tr(),
                 message: 'bf_bill_not_on_bill_message'.tr(),
                 retryLabel: 'bf_bill_go_back'.tr(),

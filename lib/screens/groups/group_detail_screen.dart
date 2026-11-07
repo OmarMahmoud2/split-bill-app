@@ -325,7 +325,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         LedgerTopBar(
           actions: [
             RoundIconButton(
-              icon: Icons.person_add_alt_1_rounded,
+              icon: AppIcons.personAdd,
               tooltip: isOwner
                   ? 'groups_edit_members'.tr()
                   : 'groups_invite_friends'.tr(),
@@ -333,7 +333,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             ),
             PopupMenuButton<String>(
               tooltip: 'groups_more'.tr(),
-              icon: Icon(Icons.more_horiz_rounded, color: p.textPrimary),
+              icon: Icon(AppIcons.more, color: p.textPrimary),
               onSelected: (v) {
                 switch (v) {
                   case 'currencies':
@@ -537,7 +537,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       return Padding(
         padding: const EdgeInsets.only(top: 24),
         child: EmptyState(
-          icon: Icons.receipt_long_outlined,
+          icon: AppIcons.receipt,
           title: 'groups_no_bills_title'.tr(),
           message: 'groups_no_bills_body'.tr(),
           actionLabel: 'groups_add_bill'.tr(),
@@ -627,7 +627,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       return Padding(
         padding: const EdgeInsets.only(top: 24),
         child: EmptyState(
-          icon: Icons.bar_chart_rounded,
+          icon: AppIcons.insights,
           title: 'groups_no_bills_title'.tr(),
           message: 'groups_no_bills_body'.tr(),
         ),

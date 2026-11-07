@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/app_palette.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 class SearchableSheetItem<T> {
   const SearchableSheetItem({
@@ -111,7 +112,7 @@ class _SearchableSelectionSheetState<T>
                       color: colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     prefixIcon: Icon(
-                      Icons.search_rounded,
+                      AppIcons.search,
                       color: colorScheme.primary,
                     ),
                     suffixIcon: _query.isEmpty
@@ -122,7 +123,7 @@ class _SearchableSelectionSheetState<T>
                               _searchController.clear();
                               setState(() => _query = '');
                             },
-                            icon: const Icon(Icons.cancel_rounded),
+                            icon: const Icon(AppIcons.cancel),
                             color: colorScheme.onSurface.withValues(alpha: 0.3),
                           ),
                     border: InputBorder.none,
@@ -227,10 +228,10 @@ class _SearchableSelectionSheetState<T>
 
               // Status Indicator
               if (selected)
-                Icon(Icons.check_circle_rounded, color: colorScheme.primary)
+                Icon(AppIcons.successFill, color: colorScheme.primary)
               else
                 Icon(
-                  Icons.arrow_forward_ios_rounded,
+                  AppIcons.chevronRight,
                   size: 14,
                   color: colorScheme.outline.withValues(alpha: 0.5),
                 ),
@@ -258,7 +259,7 @@ class _SearchableSelectionSheetState<T>
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.search_off_rounded,
+                AppIcons.search,
                 size: 40,
                 color: colorScheme.onSurface.withValues(alpha: 0.3),
               ),

@@ -69,7 +69,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
               return Column(
                 children: [
                   const LedgerTopBar(),
-                  Expanded(child: EmptyState(icon: Icons.person_outline_rounded, title: 'friend_nothing_title'.tr(), message: 'friend_nothing_body'.tr())),
+                  Expanded(child: EmptyState(icon: AppIcons.you, title: 'friend_nothing_title'.tr(), message: 'friend_nothing_body'.tr())),
                 ],
               );
             }
@@ -208,7 +208,7 @@ class _FriendDetailScreenState extends State<FriendDetailScreen> {
               people: const [],
               initialPerson: GroupMember(id: friend.id, name: friend.name, photoUrl: friend.photoUrl),
             ),
-            icon: const Icon(Icons.add_rounded),
+            icon: const Icon(AppIcons.add),
             label: Text('friend_add_iou'.tr(namedArgs: {'name': friend.name})),
           ),
         ),

@@ -189,7 +189,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       body = const _ListSkeleton();
     } else if (_isAdmin == false) {
       body = EmptyState(
-        icon: Icons.lock_outline_rounded,
+        icon: AppIcons.lock,
         title: 'adm3_not_admin_title'.tr(),
         message: 'adm3_not_admin_message'.tr(),
       );
@@ -225,7 +225,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           SliverToBoxAdapter(
             child: EmptyState(
               compact: true,
-              icon: Icons.group_outlined,
+              icon: AppIcons.people,
               title: 'no_users_found'.tr(),
             ),
           )
@@ -233,7 +233,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           SliverToBoxAdapter(
             child: EmptyState(
               compact: true,
-              icon: Icons.manage_search_rounded,
+              icon: AppIcons.search,
               title: 'admin_no_matching_users'.tr(),
               message: _hasMore ? 'adm3_search_load_more_hint'.tr() : null,
               actionLabel: 'admin_clear_filters'.tr(),
@@ -296,13 +296,13 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
                     hintText: 'search_by_name_email_phone_or_uid'.tr(),
-                    prefixIcon: const Icon(Icons.search_rounded),
+                    prefixIcon: const Icon(AppIcons.search),
                     suffixIcon: _filters.query.isNotEmpty
                         ? IconButton(
                             tooltip: MaterialLocalizations.of(
                               context,
                             ).deleteButtonTooltip,
-                            icon: const Icon(Icons.clear_rounded),
+                            icon: const Icon(AppIcons.close),
                             onPressed: () {
                               _searchController.clear();
                               _onQueryChanged('');
@@ -321,7 +321,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 textColor: p.onAccent,
                 child: V3IconButton(
                   key: const ValueKey('admin-users-filters'),
-                  icon: Icons.tune_rounded,
+                  icon: AppIcons.filter,
                   semanticLabel: 'admin_user_filters'.tr(),
                   onPressed: _openFilters,
                 ),

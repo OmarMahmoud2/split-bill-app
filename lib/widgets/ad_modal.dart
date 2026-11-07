@@ -62,7 +62,7 @@ class AdModal extends StatelessWidget {
                     color: p.accent,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.check_rounded, size: 20, color: p.onAccent),
+                  child: Icon(AppIcons.check, size: 20, color: p.onAccent),
                 ),
               ),
               const SizedBox(width: 12),
@@ -85,7 +85,7 @@ class AdModal extends StatelessWidget {
             Navigator.of(context).pop(true);
             onWatchAd();
           },
-          icon: const Icon(Icons.play_arrow_rounded),
+          icon: const Icon(AppIcons.play),
           label: Text('pw_ad_watch'.tr()),
         ),
         const SizedBox(height: 8),

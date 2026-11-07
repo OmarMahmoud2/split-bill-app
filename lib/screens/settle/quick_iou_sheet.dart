@@ -202,7 +202,7 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
                             width: 52,
                             height: 52,
                             decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: p.borderStrong)),
-                            child: Icon(Icons.person_add_alt_rounded, color: p.textPrimary, size: 22),
+                            child: Icon(AppIcons.personAdd, color: p.textPrimary, size: 22),
                           ),
                           const SizedBox(height: 4),
                           Text('iou_add_short'.tr(), maxLines: 1, style: AppTypography.caption.copyWith(color: p.textSecondary)),

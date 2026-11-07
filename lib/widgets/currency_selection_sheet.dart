@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:split_bill_app/config/supported_preferences.dart';
 import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 /// The same searchable currency picker used during setup and in Settings.
 class CurrencySelectionSheet extends StatefulWidget {
@@ -103,7 +104,7 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
           controller: _search,
           onChanged: (_) => setState(() {}),
           decoration: decoration.copyWith(
-            prefixIcon: const Icon(Icons.search_rounded),
+            prefixIcon: const Icon(AppIcons.search),
             hintText: 'settings_search_currency'.tr(),
           ),
         ),
@@ -127,7 +128,7 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
             suffixIcon: IconButton(
               tooltip: 'save_changes'.tr(),
               onPressed: _saving ? null : () => _select(_custom.text),
-              icon: const Icon(Icons.check_circle_rounded),
+              icon: const Icon(AppIcons.successFill),
             ),
           ),
         ),
@@ -172,7 +173,7 @@ class _CurrencySelectionSheetState extends State<CurrencySelectionSheet> {
             ),
             subtitle: Text(option.name),
             trailing: selected
-                ? Icon(Icons.check_circle_rounded, color: colors.primary)
+                ? Icon(AppIcons.successFill, color: colors.primary)
                 : null,
             onTap: _saving ? null : () => _select(option.code),
           );

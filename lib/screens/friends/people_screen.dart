@@ -47,7 +47,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
               title: 'home_settle_with'.tr(),
               actions: [
                 RoundIconButton(
-                  icon: Icons.qr_code_rounded,
+                  icon: AppIcons.qr,
                   tooltip: 'people_my_code'.tr(),
                   onPressed: () {
                     final me = LedgerMe.current();
@@ -68,7 +68,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
                   final open = s.summary.open;
                   if (open.isEmpty) {
                     return EmptyState(
-                      icon: Icons.check_circle_outline_rounded,
+                      icon: AppIcons.success,
                       title: 'settle_all_square_title'.tr(),
                       message: 'people_all_square_body'.tr(),
                       actionLabel: 'iou_title'.tr(),

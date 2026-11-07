@@ -311,10 +311,10 @@ class LedgerTopBar extends StatelessWidget {
         children: [
           RoundIconButton(
             icon: close
-                ? Icons.close_rounded
+                ? AppIcons.close
                 : Directionality.of(context) == TextDirection.rtl
-                ? Icons.chevron_right_rounded
-                : Icons.chevron_left_rounded,
+                ? AppIcons.chevronRight
+                : AppIcons.chevronLeft,
             tooltip: close ? l.closeButtonTooltip : l.backButtonTooltip,
             onPressed: onBack ?? () => Navigator.of(context).maybePop(),
           ),

@@ -162,7 +162,7 @@ class _EditSplitScreenState extends State<EditSplitScreen> {
               children: [
                 EditBillHeader(
                   title: 'bf_edit_row_items'.tr(),
-                  leadingIcon: Icons.arrow_back_rounded,
+                  leadingIcon: AppIcons.back,
                   leadingTooltip: 'bf_edit_back'.tr(),
                   onLeading: () => Navigator.of(context).pop(),
                   actionLabel: 'bf_edit_done'.tr(),
@@ -196,7 +196,7 @@ class _EditSplitScreenState extends State<EditSplitScreen> {
                             : TextButton.icon(
                                 onPressed: _addPeople,
                                 icon: const Icon(
-                                  Icons.person_add_alt_rounded,
+                                  AppIcons.personAdd,
                                   size: 18,
                                 ),
                                 label: Text('bf_edit_add_people'.tr()),
@@ -218,7 +218,7 @@ class _EditSplitScreenState extends State<EditSplitScreen> {
                         label: 'bf_edit_section_items'.tr(),
                         action: TextButton.icon(
                           onPressed: _addItem,
-                          icon: const Icon(Icons.add_rounded, size: 18),
+                          icon: const Icon(AppIcons.add, size: 18),
                           label: Text('bf_edit_add_item'.tr()),
                         ),
                       ),
@@ -305,7 +305,7 @@ class EditIssuesBanner extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 1),
                     child: Icon(
-                      Icons.error_outline_rounded,
+                      AppIcons.error,
                       size: 16,
                       color: p.oweInk,
                     ),

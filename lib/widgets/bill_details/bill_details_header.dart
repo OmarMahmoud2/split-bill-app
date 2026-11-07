@@ -24,7 +24,7 @@ class BillDetailsHeader extends StatelessWidget {
       child: Row(
         children: [
           BillCircleButton(
-            icon: Icons.arrow_back_ios_new_rounded,
+            icon: AppIcons.chevronLeft,
             semanticLabel: 'bf_bill_back'.tr(),
             onTap: onBack ?? () => Navigator.of(context).maybePop(),
           ),

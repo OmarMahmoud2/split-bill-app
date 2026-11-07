@@ -269,7 +269,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                             ),
                           ),
                           Icon(
-                            Icons.calendar_today_outlined,
+                            AppIcons.calendar,
                             size: 18,
                             color: p.textSecondary,
                           ),
@@ -464,7 +464,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             ),
             constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
             icon: Icon(
-              Icons.remove_circle_outline_rounded,
+              AppIcons.removeCircle,
               size: 20,
               color: p.textSecondary,
             ),
@@ -536,7 +536,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         const SizedBox(height: AppSpacing.md),
         OutlinedButton.icon(
           onPressed: _addItem,
-          icon: Icon(Icons.add_rounded, size: 18, color: p.accent),
+          icon: Icon(AppIcons.add, size: 18, color: p.accent),
           label: Text('add_to_list'.tr()),
         ),
       ],

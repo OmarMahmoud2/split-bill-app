@@ -452,7 +452,7 @@ class _AddTile extends StatelessWidget {
                             color: p.surfaceVariant,
                             borderRadius: BorderRadius.circular(9),
                           ),
-                          child: Icon(Icons.add_rounded, color: p.textPrimary),
+                          child: Icon(AppIcons.add, color: p.textPrimary),
                         )
                       : PaymentMethodLogo(type: type, size: 32),
                   const SizedBox(height: 6),

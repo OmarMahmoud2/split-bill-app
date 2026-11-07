@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
           FilledButton.icon(
             key: const ValueKey('sign-in-apple'),
             onPressed: () => _runSignIn(_authService.signInWithApple),
-            icon: const Icon(Icons.apple, size: 20),
+            icon: const Icon(AppIcons.apple, size: 20),
             label: Text('acct_continue_apple'.tr()),
           ),
           const SizedBox(height: 12),
@@ -310,8 +310,8 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () => setState(() => _hidePassword = !_hidePassword),
               icon: Icon(
                 _hidePassword
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
+                    ? AppIcons.eyeOff
+                    : AppIcons.eye,
               ),
             ),
           ),

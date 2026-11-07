@@ -158,7 +158,7 @@ class _ItemRow extends StatelessWidget {
                       children: [
                         if (problem) ...[
                           Icon(
-                            Icons.error_outline_rounded,
+                            AppIcons.error,
                             size: 14,
                             color: p.owe,
                           ),
@@ -189,7 +189,7 @@ class _ItemRow extends StatelessWidget {
                 onPressed: onEdit,
                 tooltip: 'bf_edit_edit_item'.tr(),
                 icon: Icon(
-                  Icons.edit_outlined,
+                  AppIcons.edit,
                   size: 20,
                   color: p.textSecondary,
                 ),

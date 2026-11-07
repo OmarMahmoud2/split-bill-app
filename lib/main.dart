@@ -46,6 +46,7 @@ import 'web_download_screen.dart';
 import 'screens/debug/foundation_gallery_screen.dart';
 import 'screens/guest_bill/guest_bill_model.dart' show parseGuestLink;
 import 'screens/guest_bill/guest_locale.dart';
+import 'package:split_bill_app/theme/app_icons.dart';
 
 // Global Navigator Key for Deep Linking
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -218,7 +219,7 @@ class _FirebaseStartupErrorAppState extends State<FirebaseStartupErrorApp> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.cloud_off_rounded, size: 48, color: p.error),
+                        Icon(AppIcons.cloudOff, size: 48, color: p.error),
                         const SizedBox(height: 20),
                         Semantics(
                           header: true,

@@ -137,8 +137,8 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
         data: AppTheme.darkTheme,
         child: ErrorState(
           icon: denied
-              ? Icons.no_photography_outlined
-              : Icons.videocam_off_outlined,
+              ? AppIcons.cameraOff
+              : AppIcons.videoOff,
           title: denied
               ? 'bf_assign_camera_denied_title'.tr()
               : 'bf_assign_camera_error_title'.tr(),
@@ -197,7 +197,7 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
                 child: IconButton(
                   tooltip: 'close'.tr(),
                   onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close_rounded, color: p.textPrimary),
+                  icon: Icon(AppIcons.close, color: p.textPrimary),
                 ),
               ),
             ),

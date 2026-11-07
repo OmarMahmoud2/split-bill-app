@@ -475,7 +475,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _SheetAction(
-            icon: Icons.edit_outlined,
+            icon: AppIcons.edit,
             label: 'bf_bill_action_edit'.tr(),
             onTap: () {
               Navigator.of(context).pop();
@@ -483,7 +483,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             },
           ),
           _SheetAction(
-            icon: Icons.receipt_long_outlined,
+            icon: AppIcons.receipt,
             label: 'bf_bill_action_full_bill'.tr(),
             onTap: () {
               Navigator.of(context).pop();
@@ -491,7 +491,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             },
           ),
           _SheetAction(
-            icon: Icons.ios_share_rounded,
+            icon: AppIcons.share,
             label: 'bf_bill_action_share_table'.tr(),
             onTap: () {
               Navigator.of(context).pop();
@@ -499,7 +499,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             },
           ),
           _SheetAction(
-            icon: Icons.delete_outline_rounded,
+            icon: AppIcons.delete,
             label: 'bf_bill_action_delete'.tr(),
             destructive: true,
             onTap: () {
@@ -561,7 +561,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           const SizedBox(height: AppSpacing.md),
           if (status != PayStatus.paid)
             _SheetAction(
-              icon: Icons.check_circle_outline_rounded,
+              icon: AppIcons.success,
               label: 'bf_bill_action_mark_paid'.tr(),
               onTap: () {
                 Navigator.of(context).pop();
@@ -570,7 +570,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             )
           else
             _SheetAction(
-              icon: Icons.undo_rounded,
+              icon: AppIcons.undo,
               label: 'bf_bill_action_mark_unpaid'.tr(),
               onTap: () {
                 Navigator.of(context).pop();
@@ -579,7 +579,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             ),
           if (proof != null)
             _SheetAction(
-              icon: Icons.image_outlined,
+              icon: AppIcons.gallery,
               label: 'bf_bill_action_view_proof'.tr(),
               onTap: () {
                 Navigator.of(context).pop();
@@ -588,7 +588,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
             ),
           if (status != PayStatus.paid && !isGuestParticipant(participant))
             _SheetAction(
-              icon: Icons.notifications_none_rounded,
+              icon: AppIcons.bell,
               label: 'bf_bill_action_remind'.tr(),
               onTap: () {
                 Navigator.of(context).pop();
@@ -596,7 +596,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               },
             ),
           _SheetAction(
-            icon: Icons.link_rounded,
+            icon: AppIcons.link,
             label: 'bf_bill_action_share_person'.tr(),
             onTap: () {
               Navigator.of(context).pop();
@@ -723,7 +723,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   const BillDetailsHeader(),
                   Expanded(
                     child: ErrorState(
-                      icon: Icons.receipt_long_outlined,
+                      icon: AppIcons.receipt,
                       title: 'bf_bill_not_found_title'.tr(),
                       message: 'bf_bill_not_found_message'.tr(),
                       retryLabel: 'bf_bill_go_back'.tr(),
@@ -853,7 +853,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.receipt_long_outlined, color: p.textSecondary),
+                  Icon(AppIcons.receipt, color: p.textSecondary),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
@@ -864,7 +864,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                       ),
                     ),
                   ),
-                  Icon(Icons.chevron_right_rounded, color: p.textTertiary),
+                  Icon(AppIcons.chevronRight, color: p.textTertiary),
                 ],
               ),
             ),
@@ -920,13 +920,13 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
           BillDetailsHeader(
             actions: [
               BillCircleButton(
-                icon: Icons.ios_share_rounded,
+                icon: AppIcons.share,
                 semanticLabel: 'bf_bill_share_semantics'.tr(),
                 onTap: () => _shareTable(bill),
               ),
               if (amIHost)
                 BillCircleButton(
-                  icon: Icons.more_horiz_rounded,
+                  icon: AppIcons.more,
                   semanticLabel: 'bf_bill_more_semantics'.tr(),
                   onTap: () => _showMore(bill),
                 ),
