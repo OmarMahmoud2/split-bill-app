@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Gerade schuldet niemand jemandem etwas.",
   "people_my_code": "Mein QR-Code",
   "settle_all_square_body": "Hier gibt es gerade nichts abzurechnen.",
-  "settle_all_square_title": "Alle sind quitt",
+  "settle_all_square_title": "Alles ausgeglichen",
   "settle_archive_group": "Gruppe archivieren",
   "settle_everyone_square": "Alle sind quitt",
   "settle_group_balance": "Saldo {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Das lässt sich nicht rückgängig machen",
   "you_exp_30d": "Letzte 30 Tage",
   "you_exp_year": "Dieses Jahr",
-  "you_exp_custom": "Benutzerdefiniert"
+  "you_exp_custom": "Benutzerdefiniert",
+  "pw_ad_offer": "Kurze Werbung ansehen für 2 Punkte · heute noch {left}",
+  "exp_done_sub": "{name} ist bereit zum Teilen.",
+  "exp_share_file": "Datei teilen"
 }

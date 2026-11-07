@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:split_bill_app/screens/profile/subscription_screen.dart';
 import 'package:split_bill_app/screens/scan_receipt/widgets/no_points_dialog.dart';
@@ -208,6 +209,49 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('ad-not-now')));
     await tester.pumpAndSettle();
     expect(find.text('Watch a short ad'), findsNothing);
+  });
+
+  testWidgets('ad modal shows how many ads are left today', (tester) async {
+    await _mount(
+      tester,
+      Scaffold(
+        body: Builder(
+          builder: (context) => TextButton(
+            onPressed: () =>
+                AdModal.show(context, onWatchAd: () {}, watchedToday: 1),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Watch a short ad for 2 points · 2 left today'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('paywall plan prices come from the injected store packages', (
+    tester,
+  ) async {
+    const ctx = PresentedOfferingContext('default', null, null);
+    Package pkg(PackageType t, double price, String label) => Package(
+      t.name,
+      t,
+      StoreProduct('id_${t.name}', '', 'Pro', price, label, 'EUR'),
+      ctx,
+    );
+    final plans = PaywallPlan.fromPackages([
+      pkg(PackageType.annual, 31.5, '31,50 EUR'),
+      pkg(PackageType.monthly, 3.7, '3,70 EUR'),
+      pkg(PackageType.lifetime, 77, '77,00 EUR'),
+    ]);
+    await _mount(tester, PremiumModal.preview(loadPlans: () async => plans));
+    expect(_textContaining('3,70 EUR'), findsWidgets);
+    expect(_textContaining('77,00 EUR'), findsWidgets);
+    expect(_textContaining(r'$2.99'), findsNothing);
+    expect(_textContaining(r'$59.99'), findsNothing);
   });
 
   testWidgets('subscription screen: Pro yearly status', (tester) async {

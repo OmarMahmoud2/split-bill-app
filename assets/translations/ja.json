@@ -1674,7 +1674,7 @@
   "people_all_square_body": "今は誰も貸し借りがありません。",
   "people_my_code": "マイQRコード",
   "settle_all_square_body": "今は精算するものはありません。",
-  "settle_all_square_title": "全員精算済み",
+  "settle_all_square_title": "精算済み",
   "settle_archive_group": "グループをアーカイブ",
   "settle_everyone_square": "全員精算済み",
   "settle_group_balance": "{group}の残高",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "この操作は元に戻せません",
   "you_exp_30d": "過去30日",
   "you_exp_year": "今年",
-  "you_exp_custom": "カスタム"
+  "you_exp_custom": "カスタム",
+  "pw_ad_offer": "短い広告を見て2ポイント獲得 · 今日はあと{left}回",
+  "exp_done_sub": "{name} を共有できます。",
+  "exp_share_file": "ファイルを共有"
 }

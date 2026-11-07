@@ -1674,7 +1674,7 @@
   "people_all_square_body": "目前谁也不欠谁。",
   "people_my_code": "我的二维码",
   "settle_all_square_body": "目前没有需要结清的。",
-  "settle_all_square_title": "大家都两清了",
+  "settle_all_square_title": "两清",
   "settle_archive_group": "归档群组",
   "settle_everyone_square": "大家都两清了",
   "settle_group_balance": "{group}余额",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "此操作无法撤销",
   "you_exp_30d": "最近 30 天",
   "you_exp_year": "今年",
-  "you_exp_custom": "自定义"
+  "you_exp_custom": "自定义",
+  "pw_ad_offer": "观看短广告获得 2 积分 · 今天还剩 {left} 次",
+  "exp_done_sub": "{name} 已可分享。",
+  "exp_share_file": "分享文件"
 }

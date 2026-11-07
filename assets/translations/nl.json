@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Op dit moment is niemand iemand iets schuldig.",
   "people_my_code": "Mijn QR-code",
   "settle_all_square_body": "Hier valt nu niets af te rekenen.",
-  "settle_all_square_title": "Iedereen staat quitte",
+  "settle_all_square_title": "Alles gelijk",
   "settle_archive_group": "Groep archiveren",
   "settle_everyone_square": "Iedereen staat quitte",
   "settle_group_balance": "Saldo {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Dit kan niet ongedaan worden gemaakt",
   "you_exp_30d": "Laatste 30 dagen",
   "you_exp_year": "Dit jaar",
-  "you_exp_custom": "Aangepast"
+  "you_exp_custom": "Aangepast",
+  "pw_ad_offer": "Bekijk een korte advertentie voor 2 punten · nog {left} vandaag",
+  "exp_done_sub": "{name} staat klaar om te delen.",
+  "exp_share_file": "Bestand delen"
 }

@@ -1674,7 +1674,7 @@
   "people_all_square_body": "لا أحد مدين لأحد حاليًا.",
   "people_my_code": "رمز QR الخاص بي",
   "settle_all_square_body": "لا شيء للتسوية هنا حاليًا.",
-  "settle_all_square_title": "الجميع متعادلون",
+  "settle_all_square_title": "الحساب متعادل",
   "settle_archive_group": "أرشفة المجموعة",
   "settle_everyone_square": "الجميع متعادلون",
   "settle_group_balance": "رصيد {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "لا يمكن التراجع عن هذا",
   "you_exp_30d": "آخر 30 يومًا",
   "you_exp_year": "هذا العام",
-  "you_exp_custom": "مخصص"
+  "you_exp_custom": "مخصص",
+  "pw_ad_offer": "شاهد إعلانًا قصيرًا مقابل نقطتين · متبقٍ {left} اليوم",
+  "exp_done_sub": "{name} جاهز للمشاركة.",
+  "exp_share_file": "مشاركة الملف"
 }

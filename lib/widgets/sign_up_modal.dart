@@ -3,7 +3,8 @@ import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
 final _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$');
@@ -21,10 +22,13 @@ class SignUpModal extends StatefulWidget {
     required Future<void> Function(String name, String email, String password)
     onSignUp,
   }) {
-    return PremiumBottomSheet.show(
-      context: context,
-      isScrollable: true,
-      child: SignUpModal(onSignUp: onSignUp),
+    return showLedgerSheet<void>(
+      context,
+      showClose: false,
+      builder: (_) => SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
+        child: SignUpModal(onSignUp: onSignUp),
+      ),
     );
   }
 
@@ -98,6 +102,8 @@ class _SignUpModalState extends State<SignUpModal> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 4),
+            const ExcludeSemantics(child: _PalCluster()),
+            const SizedBox(height: 14),
             Semantics(
               header: true,
               child: Text(
@@ -183,6 +189,32 @@ class _SignUpModalState extends State<SignUpModal> {
             const SizedBox(height: 8),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Three overlapping pals: you will not be splitting alone.
+class _PalCluster extends StatelessWidget {
+  const _PalCluster();
+
+  @override
+  Widget build(BuildContext context) {
+    final ring = context.palette.surface;
+    return SizedBox(
+      height: 48,
+      child: Stack(
+        children: [
+          for (var i = 0; i < 3; i++)
+            PositionedDirectional(
+              start: i * 30.0,
+              child: PalAvatar(
+                seed: 'signup-pal-$i',
+                size: 48,
+                ringColor: ring,
+              ),
+            ),
+        ],
       ),
     );
   }

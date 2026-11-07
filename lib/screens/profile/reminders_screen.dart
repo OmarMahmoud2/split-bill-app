@@ -1,11 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart'
+    show
+        CupertinoDatePicker,
+        CupertinoDatePickerMode,
+        CupertinoTextThemeData,
+        CupertinoTheme,
+        CupertinoThemeData;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/services/reminder_prefs.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/feedback/feedback.dart';
-import 'package:split_bill_app/widgets/premium_bottom_sheet.dart';
+import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
 
 /// "Reminders you control": friendly nudges, trip-end prompt, monthly
@@ -78,29 +85,17 @@ class _RemindersScreenState extends State<RemindersScreen> {
   Future<void> _pickWhen(ReminderPrefs prefs) async {
     var weekday = prefs.weekday;
     var hour = prefs.hour;
-    final result = await PremiumBottomSheet.show<(int, int)>(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, setSheet) {
-          final p = context.palette;
-          return Column(
+    final result = await showLedgerSheet<(int, int)>(
+      context,
+      title: 'rem_when'.tr(),
+      subtitle: 'rem_when_sub'.tr(),
+      builder: (_) => StatefulBuilder(
+        builder: (context, setSheet) => Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 20),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'rem_when'.tr(),
-                style: AppTypography.headlineMedium.copyWith(
-                  color: p.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'rem_when_sub'.tr(),
-                style: AppTypography.bodyMedium.copyWith(
-                  color: p.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 16),
               V3FieldLabel('rem_day'.tr()),
               Wrap(
                 spacing: 6,
@@ -117,45 +112,59 @@ class _RemindersScreenState extends State<RemindersScreen> {
               ),
               const SizedBox(height: 16),
               V3FieldLabel('rem_time'.tr()),
-              OutlinedButton(
-                key: const ValueKey('rem-hour'),
-                onPressed: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay(hour: hour, minute: 0),
-                  );
-                  if (picked != null) setSheet(() => hour = picked.hour);
-                },
-                child: Text(ReminderPrefs.hourLabel(hour, locale: _locale)),
+              SizedBox(
+                height: 150,
+                child: _TimeWheel(
+                  key: const ValueKey('rem-hour'),
+                  initial: TimeOfDay(hour: hour, minute: 0),
+                  onChanged: (t) => hour = t.hour,
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               FilledButton(
                 key: const ValueKey('rem-when-done'),
                 onPressed: () => Navigator.of(context).pop((weekday, hour)),
                 child: Text('rem_done'.tr()),
               ),
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
     if (result == null || !mounted) return;
     await _update(prefs.copyWith(weekday: result.$1, hour: result.$2));
   }
 
+  Future<TimeOfDay?> _pickTime(String title, ClockTime initial) {
+    var value = TimeOfDay(hour: initial.hour, minute: initial.minute);
+    return showLedgerSheet<TimeOfDay>(
+      context,
+      title: title,
+      builder: (context) => Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 170,
+              child: _TimeWheel(initial: value, onChanged: (t) => value = t),
+            ),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(value),
+              child: Text('rem_done'.tr()),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _pickQuietHours(ReminderPrefs prefs) async {
     final q = prefs.quietHours;
-    final start = await showTimePicker(
-      context: context,
-      helpText: 'rem_quiet_start'.tr(),
-      initialTime: TimeOfDay(hour: q.start.hour, minute: q.start.minute),
-    );
+    final start = await _pickTime('rem_quiet_start'.tr(), q.start);
     if (start == null || !mounted) return;
-    final end = await showTimePicker(
-      context: context,
-      helpText: 'rem_quiet_end'.tr(),
-      initialTime: TimeOfDay(hour: q.end.hour, minute: q.end.minute),
-    );
+    final end = await _pickTime('rem_quiet_end'.tr(), q.end);
     if (end == null || !mounted) return;
     await _update(
       prefs.copyWith(
@@ -163,6 +172,21 @@ class _RemindersScreenState extends State<RemindersScreen> {
           start: ClockTime(start.hour, start.minute),
           end: ClockTime(end.hour, end.minute),
         ),
+      ),
+    );
+  }
+
+  Widget _tile(BuildContext context, IconData icon) {
+    final p = context.palette;
+    return ExcludeSemantics(
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: p.accentSoft,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, size: 20, color: p.accent),
       ),
     );
   }
@@ -216,6 +240,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
           children: [
             SettingsSwitchRow(
               key: const ValueKey('rem-enabled'),
+              leading: _tile(context, AppIcons.bell),
               title: 'rem_nudge'.tr(),
               subtitle: 'rem_nudge_sub'.tr(),
               value: prefs.enabled,
@@ -223,6 +248,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
             ),
             SettingsRow(
               key: const ValueKey('rem-when'),
+              leading: _tile(context, AppIcons.clock),
               title: 'rem_when'.tr(),
               subtitle: 'rem_when_sub'.tr(),
               value: prefs.summary(offLabel: 'rem_off'.tr(), locale: _locale),
@@ -231,6 +257,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
             ),
             SettingsSwitchRow(
               key: const ValueKey('rem-trip'),
+              leading: _tile(context, AppIcons.calendar),
               title: 'rem_trip_end'.tr(),
               subtitle: 'rem_trip_end_sub'.tr(),
               value: prefs.tripEndPrompt,
@@ -238,6 +265,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
             ),
             SettingsSwitchRow(
               key: const ValueKey('rem-monthly'),
+              leading: _tile(context, AppIcons.chart),
               title: 'rem_monthly'.tr(),
               subtitle: 'rem_monthly_sub'.tr(),
               value: prefs.monthlySummary,
@@ -245,6 +273,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
             ),
             SettingsRow(
               key: const ValueKey('rem-quiet'),
+              leading: _tile(context, AppIcons.moon),
               title: 'rem_quiet'.tr(),
               subtitle: 'rem_quiet_sub'.tr(),
               value: prefs.quietHours.label,
@@ -275,11 +304,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                       color: p.accent,
                       borderRadius: BorderRadius.circular(9),
                     ),
-                    child: Icon(
-                      AppIcons.bell,
-                      size: 20,
-                      color: p.onAccent,
-                    ),
+                    child: Icon(AppIcons.bell, size: 20, color: p.onAccent),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -315,6 +340,42 @@ class _RemindersScreenState extends State<RemindersScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Wheel time picker (iOS-style on every platform), themed from the palette.
+class _TimeWheel extends StatelessWidget {
+  const _TimeWheel({super.key, required this.initial, required this.onChanged});
+
+  final TimeOfDay initial;
+  final ValueChanged<TimeOfDay> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+      child: CupertinoTheme(
+        data: CupertinoThemeData(
+          brightness: p.isDark ? Brightness.dark : Brightness.light,
+          textTheme: CupertinoTextThemeData(
+            dateTimePickerTextStyle: TextStyle(
+              fontFamily: AppTypography.displayFamily,
+              fontSize: 21,
+              color: p.textPrimary,
+            ),
+          ),
+        ),
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.time,
+          use24hFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+          initialDateTime: DateTime(2000, 1, 1, initial.hour, initial.minute),
+          onDateTimeChanged: (d) =>
+              onChanged(TimeOfDay(hour: d.hour, minute: d.minute)),
+          backgroundColor: Colors.transparent,
+        ),
+      ),
     );
   }
 }

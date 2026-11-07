@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Şu an kimse kimseye borçlu değil.",
   "people_my_code": "QR kodum",
   "settle_all_square_body": "Şu an burada ödeşilecek bir şey yok.",
-  "settle_all_square_title": "Herkes ödeşik",
+  "settle_all_square_title": "Hesap ödeşik",
   "settle_archive_group": "Grubu arşivle",
   "settle_everyone_square": "Herkes ödeşik",
   "settle_group_balance": "{group} bakiyesi",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Bu geri alınamaz",
   "you_exp_30d": "Son 30 gün",
   "you_exp_year": "Bu yıl",
-  "you_exp_custom": "Özel"
+  "you_exp_custom": "Özel",
+  "pw_ad_offer": "Kısa bir reklam izle, 2 puan kazan · bugün {left} hakkın kaldı",
+  "exp_done_sub": "{name} paylaşıma hazır.",
+  "exp_share_file": "Dosyayı paylaş"
 }

@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Hiện không ai nợ ai.",
   "people_my_code": "Mã QR của tôi",
   "settle_all_square_body": "Hiện không có gì cần thanh toán.",
-  "settle_all_square_title": "Mọi người đã hết nợ",
+  "settle_all_square_title": "Đã hết nợ",
   "settle_archive_group": "Lưu trữ nhóm",
   "settle_everyone_square": "Mọi người đã hết nợ",
   "settle_group_balance": "Số dư {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Không thể hoàn tác",
   "you_exp_30d": "30 ngày qua",
   "you_exp_year": "Năm nay",
-  "you_exp_custom": "Tùy chọn"
+  "you_exp_custom": "Tùy chọn",
+  "pw_ad_offer": "Xem quảng cáo ngắn để nhận 2 điểm · hôm nay còn {left} lượt",
+  "exp_done_sub": "{name} đã sẵn sàng để chia sẻ.",
+  "exp_share_file": "Chia sẻ tệp"
 }

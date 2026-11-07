@@ -1674,7 +1674,7 @@
   "people_all_square_body": "ตอนนี้ไม่มีใครค้างใคร",
   "people_my_code": "QR Code ของฉัน",
   "settle_all_square_body": "ตอนนี้ไม่มีอะไรต้องเคลียร์",
-  "settle_all_square_title": "ทุกคนเคลียร์กันหมดแล้ว",
+  "settle_all_square_title": "เคลียร์หมดแล้ว",
   "settle_archive_group": "เก็บกลุ่มถาวร",
   "settle_everyone_square": "ทุกคนเคลียร์กันหมดแล้ว",
   "settle_group_balance": "ยอดของ {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "ย้อนกลับไม่ได้",
   "you_exp_30d": "30 วันล่าสุด",
   "you_exp_year": "ปีนี้",
-  "you_exp_custom": "กำหนดเอง"
+  "you_exp_custom": "กำหนดเอง",
+  "pw_ad_offer": "ดูโฆษณาสั้นๆ รับ 2 แต้ม · วันนี้เหลือ {left} ครั้ง",
+  "exp_done_sub": "{name} พร้อมแชร์แล้ว",
+  "exp_share_file": "แชร์ไฟล์"
 }

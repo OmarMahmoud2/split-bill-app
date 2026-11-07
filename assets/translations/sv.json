@@ -1674,7 +1674,7 @@
   "people_all_square_body": "Ingen är skyldig någon just nu.",
   "people_my_code": "Min QR-kod",
   "settle_all_square_body": "Inget att göra upp här just nu.",
-  "settle_all_square_title": "Alla är kvitt",
+  "settle_all_square_title": "Allt är kvitt",
   "settle_archive_group": "Arkivera grupp",
   "settle_everyone_square": "Alla är kvitt",
   "settle_group_balance": "Saldo för {group}",
@@ -2286,5 +2286,8 @@
   "you_del_c4": "Det går inte att ångra",
   "you_exp_30d": "Senaste 30 dagarna",
   "you_exp_year": "I år",
-  "you_exp_custom": "Anpassat"
+  "you_exp_custom": "Anpassat",
+  "pw_ad_offer": "Titta på en kort annons för 2 poäng · {left} kvar idag",
+  "exp_done_sub": "{name} är redo att delas.",
+  "exp_share_file": "Dela fil"
 }
