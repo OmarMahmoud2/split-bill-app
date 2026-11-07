@@ -2190,5 +2190,11 @@
   "startup_error_message": "Kontrollera anslutningen och försök igen. Om det fortsätter, kontakta supporten.",
   "payment_apple_cash_message_plain": "Jag betalar dig {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF skapad, men vissa tecken kanske inte visas. Gå online och försök igen för att hämta typsnitten.",
-  "ad_daily_cap_reached": "Du har sett dagens 3 annonser. Kom tillbaka i morgon, skriv in notor gratis eller skaffa Pro för obegränsade skanningar."
+  "ad_daily_cap_reached": "Du har sett dagens 3 annonser. Kom tillbaka i morgon, skriv in notor gratis eller skaffa Pro för obegränsade skanningar.",
+  "home_good_morning": "God morgon",
+  "home_good_afternoon": "God eftermiddag",
+  "home_good_evening": "God kväll",
+  "home_your_people": "Dina personer",
+  "home_recent_bills": "Senaste notor",
+  "home_paid_progress": "{paid} av {total} har betalat"
 }

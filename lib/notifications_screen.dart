@@ -264,6 +264,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             when: when,
                             read: read,
                             reminder: isReminder,
+                            senderId: payload?['senderId']?.toString(),
+                            senderName: payload?['senderName']?.toString(),
+                            senderPhotoUrl: payload?['senderPhotoUrl']?.toString(),
                             onTap: () => _open(doc.id, payload),
                           ),
                         ),
@@ -337,7 +340,15 @@ class NotificationCard extends StatelessWidget {
     required this.read,
     this.reminder = false,
     this.onTap,
+    this.senderId,
+    this.senderName,
+    this.senderPhotoUrl,
   });
+
+  /// The person behind the notification, when the payload names one.
+  final String? senderId;
+  final String? senderName;
+  final String? senderPhotoUrl;
 
   final String title;
   final String body;
@@ -349,7 +360,16 @@ class NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final dot = read ? null : (reminder ? p.owe : p.accent);
+    final dot = read ? null : (reminder ? p.coral : p.accent);
+    final hasPerson = (senderName ?? '').isNotEmpty || (senderId ?? '').isNotEmpty;
+    final leading = hasPerson
+        ? LedgerAvatar(id: senderId ?? '', name: senderName ?? '', photoUrl: senderPhotoUrl)
+        : Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(color: reminder ? p.coralSoft : p.accentSoft, borderRadius: AppRadii.rowRadius),
+            child: Icon(AppIcons.bell, size: 20, color: reminder ? p.coral : p.accent),
+          );
     return Semantics(
       label: read ? null : 'notifications_unread'.tr(),
       child: LedgerCard(
@@ -359,18 +379,13 @@ class NotificationCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.only(top: 7),
-              decoration: BoxDecoration(shape: BoxShape.circle, color: dot ?? p.background.withValues(alpha: 0)),
-            ),
+            leading,
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+                  Text(title, style: AppTypography.titleSmall.copyWith(color: p.textPrimary, fontSize: 15, fontWeight: read ? FontWeight.w500 : FontWeight.w700)),
                   if (body.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Text(body, style: AppTypography.bodySmall.copyWith(color: p.textSecondary, fontSize: 13, height: 1.4)),
@@ -380,6 +395,13 @@ class NotificationCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (dot != null)
+              Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsetsDirectional.only(start: 8, top: 6),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: dot),
+              ),
           ],
         ),
       ),

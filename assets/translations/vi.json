@@ -2190,5 +2190,11 @@
   "startup_error_message": "Hãy kiểm tra kết nối rồi thử lại. Nếu vẫn lỗi, hãy liên hệ hỗ trợ.",
   "payment_apple_cash_message_plain": "Mình trả bạn {amount} qua Apple Cash",
   "exp_fonts_unavailable": "Đã tạo PDF, nhưng một số ký tự có thể không hiển thị. Hãy kết nối mạng và thử lại để tải phông chữ.",
-  "ad_daily_cap_reached": "Bạn đã xem đủ 3 quảng cáo hôm nay. Hãy quay lại vào ngày mai, tự nhập hóa đơn miễn phí, hoặc nâng cấp Pro để quét không giới hạn."
+  "ad_daily_cap_reached": "Bạn đã xem đủ 3 quảng cáo hôm nay. Hãy quay lại vào ngày mai, tự nhập hóa đơn miễn phí, hoặc nâng cấp Pro để quét không giới hạn.",
+  "home_good_morning": "Chào buổi sáng",
+  "home_good_afternoon": "Chào buổi chiều",
+  "home_good_evening": "Chào buổi tối",
+  "home_your_people": "Mọi người của bạn",
+  "home_recent_bills": "Hóa đơn gần đây",
+  "home_paid_progress": "{paid}/{total} đã trả"
 }

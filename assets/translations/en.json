@@ -2190,5 +2190,11 @@
   "bf_edit_history_you_marked_paid_self": "marked your share paid",
   "groups_paid_by_you": "paid by you",
   "settle_record_cash_body_you_paid": "You paid {to} {amount} outside the app?",
-  "settle_record_cash_body_paid_you": "{from} paid you {amount} outside the app?"
+  "settle_record_cash_body_paid_you": "{from} paid you {amount} outside the app?",
+  "home_good_morning": "Good morning",
+  "home_good_afternoon": "Good afternoon",
+  "home_good_evening": "Good evening",
+  "home_your_people": "Your people",
+  "home_recent_bills": "Recent bills",
+  "home_paid_progress": "{paid} of {total} paid"
 }

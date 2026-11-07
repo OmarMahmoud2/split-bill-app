@@ -2190,5 +2190,11 @@
   "startup_error_message": "Periksa koneksimu, lalu coba lagi. Jika terus terjadi, hubungi dukungan.",
   "payment_apple_cash_message_plain": "Membayarmu {amount} lewat Apple Cash",
   "exp_fonts_unavailable": "PDF dibuat, tetapi beberapa karakter mungkin tidak tampil. Online lalu coba lagi untuk mengunduh font.",
-  "ad_daily_cap_reached": "Anda sudah menonton 3 iklan hari ini. Kembali besok, ketik tagihan secara gratis, atau jadi Pro untuk scan tanpa batas."
+  "ad_daily_cap_reached": "Anda sudah menonton 3 iklan hari ini. Kembali besok, ketik tagihan secara gratis, atau jadi Pro untuk scan tanpa batas.",
+  "home_good_morning": "Selamat pagi",
+  "home_good_afternoon": "Selamat siang",
+  "home_good_evening": "Selamat malam",
+  "home_your_people": "Teman-temanmu",
+  "home_recent_bills": "Tagihan terbaru",
+  "home_paid_progress": "{paid} dari {total} sudah bayar"
 }

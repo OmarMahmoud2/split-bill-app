@@ -2190,5 +2190,11 @@
   "startup_error_message": "Verifique sua conexão e tente de novo. Se continuar, fale com o suporte.",
   "payment_apple_cash_message_plain": "Estou te pagando {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF criado, mas alguns caracteres podem não aparecer. Conecte-se e tente de novo para baixar as fontes.",
-  "ad_daily_cap_reached": "Você já assistiu aos 3 anúncios de hoje. Volte amanhã, digite as contas à mão de graça ou assine o Pro para escaneamentos ilimitados."
+  "ad_daily_cap_reached": "Você já assistiu aos 3 anúncios de hoje. Volte amanhã, digite as contas à mão de graça ou assine o Pro para escaneamentos ilimitados.",
+  "home_good_morning": "Bom dia",
+  "home_good_afternoon": "Boa tarde",
+  "home_good_evening": "Boa noite",
+  "home_your_people": "Suas pessoas",
+  "home_recent_bills": "Contas recentes",
+  "home_paid_progress": "{paid} de {total} pagaram"
 }

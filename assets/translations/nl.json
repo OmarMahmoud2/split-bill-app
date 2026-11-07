@@ -2190,5 +2190,11 @@
   "startup_error_message": "Controleer je verbinding en probeer het opnieuw. Blijft het gebeuren, neem dan contact op met support.",
   "payment_apple_cash_message_plain": "Ik betaal je {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF gemaakt, maar sommige tekens worden misschien niet getoond. Ga online en probeer opnieuw om de lettertypen op te halen.",
-  "ad_daily_cap_reached": "Je hebt de 3 advertenties van vandaag al bekeken. Kom morgen terug, voer rekeningen gratis met de hand in, of ga voor Pro met onbeperkt scannen."
+  "ad_daily_cap_reached": "Je hebt de 3 advertenties van vandaag al bekeken. Kom morgen terug, voer rekeningen gratis met de hand in, of ga voor Pro met onbeperkt scannen.",
+  "home_good_morning": "Goedemorgen",
+  "home_good_afternoon": "Goedemiddag",
+  "home_good_evening": "Goedenavond",
+  "home_your_people": "Jouw mensen",
+  "home_recent_bills": "Recente rekeningen",
+  "home_paid_progress": "{paid} van {total} betaald"
 }

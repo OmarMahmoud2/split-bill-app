@@ -2190,5 +2190,11 @@
   "startup_error_message": "अपना कनेक्शन जाँचें और फिर कोशिश करें। अगर यह बार-बार हो, तो सहायता से संपर्क करें।",
   "payment_apple_cash_message_plain": "मैं आपको Apple Cash से {amount} भेज रहा हूँ",
   "exp_fonts_unavailable": "PDF बन गई, लेकिन कुछ अक्षर नहीं दिख सकते। फ़ॉन्ट पाने के लिए ऑनलाइन होकर फिर कोशिश करें।",
-  "ad_daily_cap_reached": "आज के 3 विज्ञापन आप देख चुके हैं। कल फिर आएँ, बिल मुफ़्त में टाइप करें, या असीमित स्कैन के लिए Pro लें।"
+  "ad_daily_cap_reached": "आज के 3 विज्ञापन आप देख चुके हैं। कल फिर आएँ, बिल मुफ़्त में टाइप करें, या असीमित स्कैन के लिए Pro लें।",
+  "home_good_morning": "सुप्रभात",
+  "home_good_afternoon": "नमस्कार",
+  "home_good_evening": "शुभ संध्या",
+  "home_your_people": "आपके लोग",
+  "home_recent_bills": "हाल के बिल",
+  "home_paid_progress": "{total} में से {paid} ने भुगतान किया"
 }

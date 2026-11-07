@@ -2190,5 +2190,11 @@
   "startup_error_message": "تحقق من اتصالك ثم حاول مرة أخرى. إذا استمرت المشكلة، تواصل مع الدعم.",
   "payment_apple_cash_message_plain": "أدفع لك {amount} عبر Apple Cash",
   "exp_fonts_unavailable": "تم إنشاء ملف PDF، لكن قد لا تظهر بعض الأحرف. اتصل بالإنترنت وأعد المحاولة للحصول على الخطوط.",
-  "ad_daily_cap_reached": "شاهدت إعلانات اليوم الثلاثة. عد غدًا، أو أدخل الفواتير يدويًا مجانًا، أو اشترك في Pro لمسح بلا حدود."
+  "ad_daily_cap_reached": "شاهدت إعلانات اليوم الثلاثة. عد غدًا، أو أدخل الفواتير يدويًا مجانًا، أو اشترك في Pro لمسح بلا حدود.",
+  "home_good_morning": "صباح الخير",
+  "home_good_afternoon": "مساء الخير",
+  "home_good_evening": "مساء الخير",
+  "home_your_people": "أصدقاؤك",
+  "home_recent_bills": "الفواتير الأخيرة",
+  "home_paid_progress": "{paid} من {total} دفعوا"
 }

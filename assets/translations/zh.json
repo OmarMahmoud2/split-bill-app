@@ -2190,5 +2190,11 @@
   "startup_error_message": "请检查网络连接后重试。如果问题持续出现，请联系支持。",
   "payment_apple_cash_message_plain": "通过 Apple Cash 向你支付 {amount}",
   "exp_fonts_unavailable": "PDF 已生成，但部分字符可能无法显示。请联网后重试以获取字体。",
-  "ad_daily_cap_reached": "今天的 3 条广告你已经看完了。明天再来、免费手动输入账单，或升级 Pro 享受无限扫描。"
+  "ad_daily_cap_reached": "今天的 3 条广告你已经看完了。明天再来、免费手动输入账单，或升级 Pro 享受无限扫描。",
+  "home_good_morning": "早上好",
+  "home_good_afternoon": "下午好",
+  "home_good_evening": "晚上好",
+  "home_your_people": "你的朋友",
+  "home_recent_bills": "最近账单",
+  "home_paid_progress": "{total}人中{paid}人已付"
 }

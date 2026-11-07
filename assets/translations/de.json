@@ -2190,5 +2190,11 @@
   "startup_error_message": "Prüfe deine Verbindung und versuche es erneut. Wenn es weiterhin auftritt, wende dich an den Support.",
   "payment_apple_cash_message_plain": "Ich bezahle dir {amount} per Apple Cash",
   "exp_fonts_unavailable": "PDF erstellt, aber einige Zeichen werden eventuell nicht angezeigt. Geh online und versuche es erneut, um die Schriften zu laden.",
-  "ad_daily_cap_reached": "Du hast die 3 Werbungen für heute gesehen. Komm morgen wieder, gib Rechnungen kostenlos von Hand ein oder hol dir Pro für unbegrenzte Scans."
+  "ad_daily_cap_reached": "Du hast die 3 Werbungen für heute gesehen. Komm morgen wieder, gib Rechnungen kostenlos von Hand ein oder hol dir Pro für unbegrenzte Scans.",
+  "home_good_morning": "Guten Morgen",
+  "home_good_afternoon": "Guten Tag",
+  "home_good_evening": "Guten Abend",
+  "home_your_people": "Deine Leute",
+  "home_recent_bills": "Letzte Rechnungen",
+  "home_paid_progress": "{paid} von {total} bezahlt"
 }

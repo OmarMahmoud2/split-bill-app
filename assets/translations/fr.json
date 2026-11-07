@@ -2190,5 +2190,11 @@
   "startup_error_message": "Vérifiez votre connexion, puis réessayez. Si le problème persiste, contactez le support.",
   "payment_apple_cash_message_plain": "Je te paie {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF créé, mais certains caractères risquent de ne pas s'afficher. Connectez-vous et réessayez pour récupérer les polices.",
-  "ad_daily_cap_reached": "Vous avez vu les 3 pubs du jour. Revenez demain, saisissez vos additions gratuitement, ou passez à Pro pour des scans illimités."
+  "ad_daily_cap_reached": "Vous avez vu les 3 pubs du jour. Revenez demain, saisissez vos additions gratuitement, ou passez à Pro pour des scans illimités.",
+  "home_good_morning": "Bonjour",
+  "home_good_afternoon": "Bon après-midi",
+  "home_good_evening": "Bonsoir",
+  "home_your_people": "Vos proches",
+  "home_recent_bills": "Notes récentes",
+  "home_paid_progress": "{paid} sur {total} ont payé"
 }

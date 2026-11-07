@@ -215,12 +215,11 @@ class OverlineLabel extends StatelessWidget {
     child: Semantics(
       header: true,
       child: Text(
-        text.toUpperCase(),
+        text,
         style: AppTypography.labelMedium.copyWith(
           color: context.palette.textSecondary,
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.4,
         ),
       ),
     ),
@@ -253,9 +252,14 @@ class RoundIconButton extends StatelessWidget {
         label: tooltip,
         child: Material(
           color: p.surface,
-          shape: CircleBorder(side: BorderSide(color: p.border)),
+          shape: RoundedRectangleBorder(
+            borderRadius: AppRadii.rowRadius,
+            side: BorderSide(color: p.border),
+          ),
           child: InkWell(
-            customBorder: const CircleBorder(),
+            customBorder: RoundedRectangleBorder(
+              borderRadius: AppRadii.rowRadius,
+            ),
             onTap: onPressed,
             child: SizedBox(
               width: 44,
@@ -272,7 +276,7 @@ class RoundIconButton extends StatelessWidget {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: p.owe,
+                          color: p.coral,
                           shape: BoxShape.circle,
                         ),
                       ),

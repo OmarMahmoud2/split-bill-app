@@ -300,21 +300,21 @@ class BillDateTile extends StatelessWidget {
     final locale = _dateLocale(context);
     return ExcludeSemantics(
       child: Container(
-        width: 40,
-        height: 40,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
-          color: p.surfaceVariant,
+          color: p.accentSoft,
           borderRadius: AppRadii.rowRadius,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              DateFormat.MMM(locale).format(date).toUpperCase(),
+              DateFormat.MMM(locale).format(date),
               style: AppTypography.labelSmall.copyWith(
                 fontSize: 10,
                 height: 1.1,
-                color: p.textSecondary,
+                color: p.onAccentSoft,
               ),
               maxLines: 1,
             ),
@@ -323,7 +323,8 @@ class BillDateTile extends StatelessWidget {
               style: AppTypography.labelSmall.copyWith(
                 fontSize: 12,
                 height: 1.1,
-                color: p.textPrimary,
+                color: p.onAccentSoft,
+                fontWeight: FontWeight.w700,
                 fontFeatures: AppTypography.tabularFigures,
               ),
             ),
@@ -441,14 +442,14 @@ class BillListSectionView extends StatelessWidget {
 
   String _title(BuildContext context) {
     if (section.kind == BillSectionKind.thisWeek) {
-      return 'bf_bills_this_week'.tr().toUpperCase();
+      return 'bf_bills_this_week'.tr();
     }
     final m = section.month!;
     final locale = _dateLocale(context);
     final label = m.year == DateTime.now().year
         ? DateFormat.MMMM(locale).format(m)
         : DateFormat.yMMMM(locale).format(m);
-    return label.toUpperCase();
+    return label;
   }
 
   @override
@@ -467,23 +468,17 @@ class BillListSectionView extends StatelessWidget {
             ),
           ),
         ),
-        Material(
-          color: p.surface,
-          shape: AppRadii.cardShape(p.border),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              for (var i = 0; i < section.entries.length; i++) ...[
-                if (i > 0)
-                  Divider(height: 1, thickness: 1, color: p.borderSubtle),
-                BillListRow(
-                  entry: section.entries[i],
-                  onTap: () => onTap(section.entries[i]),
-                ),
-              ],
-            ],
+        // One tile per bill (same language as Home's Recent bills).
+        for (final e in section.entries)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(bottom: 10),
+            child: Material(
+              color: p.surface,
+              shape: AppRadii.cardShape(p.border),
+              clipBehavior: Clip.antiAlias,
+              child: BillListRow(entry: e, onTap: () => onTap(e)),
+            ),
           ),
-        ),
       ],
     );
   }

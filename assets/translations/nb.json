@@ -2190,5 +2190,11 @@
   "startup_error_message": "Sjekk tilkoblingen og prøv igjen. Hvis det fortsetter, kontakt support.",
   "payment_apple_cash_message_plain": "Jeg betaler deg {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF-en er laget, men noen tegn vises kanskje ikke. Gå på nett og prøv igjen for å hente skriftene.",
-  "ad_daily_cap_reached": "Du har sett dagens 3 reklamer. Kom tilbake i morgen, skriv inn regninger gratis, eller bli Pro for ubegrenset med skanninger."
+  "ad_daily_cap_reached": "Du har sett dagens 3 reklamer. Kom tilbake i morgen, skriv inn regninger gratis, eller bli Pro for ubegrenset med skanninger.",
+  "home_good_morning": "God morgen",
+  "home_good_afternoon": "God ettermiddag",
+  "home_good_evening": "God kveld",
+  "home_your_people": "Folkene dine",
+  "home_recent_bills": "Siste regninger",
+  "home_paid_progress": "{paid} av {total} har betalt"
 }

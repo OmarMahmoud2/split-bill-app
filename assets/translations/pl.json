@@ -2190,5 +2190,11 @@
   "startup_error_message": "Sprawdź połączenie i spróbuj ponownie. Jeśli problem się powtarza, skontaktuj się z pomocą.",
   "payment_apple_cash_message_plain": "Płacę Ci {amount} przez Apple Cash",
   "exp_fonts_unavailable": "PDF utworzono, ale niektóre znaki mogą się nie wyświetlać. Połącz się z internetem i spróbuj ponownie, aby pobrać czcionki.",
-  "ad_daily_cap_reached": "Dzisiejsze 3 reklamy są już obejrzane. Wróć jutro, wpisuj rachunki ręcznie za darmo albo przejdź na Pro, aby skanować bez limitu."
+  "ad_daily_cap_reached": "Dzisiejsze 3 reklamy są już obejrzane. Wróć jutro, wpisuj rachunki ręcznie za darmo albo przejdź na Pro, aby skanować bez limitu.",
+  "home_good_morning": "Dzień dobry",
+  "home_good_afternoon": "Dzień dobry",
+  "home_good_evening": "Dobry wieczór",
+  "home_your_people": "Twoi ludzie",
+  "home_recent_bills": "Ostatnie rachunki",
+  "home_paid_progress": "{paid} z {total} zapłaciło"
 }

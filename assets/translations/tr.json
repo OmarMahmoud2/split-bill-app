@@ -2190,5 +2190,11 @@
   "startup_error_message": "Bağlantınızı kontrol edip tekrar deneyin. Sorun sürerse destekle iletişime geçin.",
   "payment_apple_cash_message_plain": "Sana Apple Cash ile {amount} ödüyorum",
   "exp_fonts_unavailable": "PDF oluşturuldu ancak bazı karakterler görünmeyebilir. Yazı tiplerini almak için çevrimiçi olup tekrar deneyin.",
-  "ad_daily_cap_reached": "Bugünün 3 reklamını izlediniz. Yarın tekrar gelin, hesapları ücretsiz elle girin ya da sınırsız tarama için Pro'ya geçin."
+  "ad_daily_cap_reached": "Bugünün 3 reklamını izlediniz. Yarın tekrar gelin, hesapları ücretsiz elle girin ya da sınırsız tarama için Pro'ya geçin.",
+  "home_good_morning": "Günaydın",
+  "home_good_afternoon": "İyi öğlenler",
+  "home_good_evening": "İyi akşamlar",
+  "home_your_people": "Kişilerin",
+  "home_recent_bills": "Son hesaplar",
+  "home_paid_progress": "{total} kişiden {paid} öğdü"
 }
