@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/services/my_photo.dart';
 import 'package:split_bill_app/screens/profile/widgets/photo_sheet.dart';
 import 'package:split_bill_app/services/profile_service.dart';
@@ -199,6 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                 )
                               : V3Avatar(
+                                  id: PalAvatar.currentUid(),
                                   name: name,
                                   size: 88,
                                   photoUrl: _removePhoto

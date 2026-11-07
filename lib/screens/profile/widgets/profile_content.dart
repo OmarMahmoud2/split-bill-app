@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:split_bill_app/widgets/pal_avatar.dart';
 import 'package:split_bill_app/screens/profile/widgets/profile_extras.dart';
 import 'package:split_bill_app/theme/theme.dart';
 import 'package:split_bill_app/widgets/settings/v3_settings.dart';
@@ -136,6 +137,8 @@ class ProfileContent extends StatelessWidget {
                     clipBehavior: Clip.none,
                     children: [
                       V3Avatar(
+                        // Seed by account id so the pal matches Home's.
+                        id: PalAvatar.currentUid(),
                         name: data.name,
                         photoUrl: data.photoUrl,
                         size: 76,

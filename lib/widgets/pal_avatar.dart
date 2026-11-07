@@ -71,7 +71,7 @@ class PalAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     // The signed-in user always shows their chosen Evens photo (or their pal),
     // never a photo copied into an old bill or group (e.g. a Google default).
-    final me = _currentUid();
+    final me = currentUid();
     if (me != null && me.isNotEmpty && seed == me) {
       return ValueListenableBuilder<String?>(
         valueListenable: MyPhoto.notifier,
@@ -82,7 +82,7 @@ class PalAvatar extends StatelessWidget {
   }
 
   /// Cheap and side-effect free (no Firebase in tests, no loads in build).
-  static String? _currentUid() {
+  static String? currentUid() {
     final o = LedgerMe.debugOverride;
     if (o != null) return o.uid;
     try {
