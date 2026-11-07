@@ -160,3 +160,30 @@ List<(DateTime, List<ActivityItem>)> groupByDay(List<ActivityItem> items) {
   }
   return out;
 }
+
+/// How many bills a month holds and the user's share of them.
+class MonthSummary {
+  const MonthSummary(this.billCount, this.shareMinor, this.currency);
+  final int billCount;
+  final int shareMinor;
+  final String currency;
+}
+
+/// Summary of the bills in [items] (one month): the count, and the user's
+/// share in [currency]. [shareByBill] holds known shares by bill id; for a
+/// bill someone else added, the row's own amount is the user's share.
+MonthSummary summarizeMonth(
+  Iterable<ActivityItem> items, {
+  required String me,
+  required String currency,
+  Map<String, int> shareByBill = const {},
+}) {
+  var count = 0, share = 0;
+  for (final i in items) {
+    if (i.kind != ActivityKind.billAdded) continue;
+    count++;
+    if (i.currency != currency) continue;
+    share += shareByBill[i.billId] ?? (i.actorId == me ? 0 : i.amountMinor);
+  }
+  return MonthSummary(count, share, currency);
+}

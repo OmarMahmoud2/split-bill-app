@@ -2317,5 +2317,11 @@
   "iou_deleted": "قرض نوٹ حذف ہو گیا",
   "guest2_your_share": "آپ کا حصہ",
   "guest2_already_paid": "پہلے ادا کیا",
-  "guest2_left_to_pay": "باقی"
+  "guest2_left_to_pay": "باقی",
+  "hx_qa_iou": "ادھار",
+  "hx_qr_tooltip": "میرا QR کوڈ",
+  "hx_month_share": "آپ کا حصہ",
+  "hx_bills_n": "بل: {count}",
+  "hx_activity_empty": "بل اور ادائیگیاں یہاں نظر آئیں گی۔",
+  "hx_activity_load_failed": "سرگرمی لوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔"
 }

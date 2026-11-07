@@ -29,7 +29,7 @@ Widget _app(Widget child, {bool dark = false}) => MaterialApp(
 String _plain(String s) => s.replaceAll(RegExp('[\u2066\u2069]'), '');
 
 Finder _text(String value) => find.byWidgetPredicate(
-  (w) => w is Text && w.data != null && _plain(w.data!) == value,
+  (w) => w is Text && _plain(w.data ?? w.textSpan?.toPlainText() ?? '') == value,
 );
 
 /// Text of a [Text] or a [RichText] under [finder].

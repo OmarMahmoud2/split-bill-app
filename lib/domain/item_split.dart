@@ -300,7 +300,8 @@ ItemizedSplit splitItemizedBill({
       ),
   };
 
-  final grandTotal = itemsSubtotal +
+  final grandTotal =
+      itemsSubtotal +
       charges.tax +
       charges.serviceCharge +
       charges.tip +

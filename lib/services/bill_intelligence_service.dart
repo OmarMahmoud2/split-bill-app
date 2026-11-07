@@ -69,8 +69,7 @@ class VoiceAssignResult {
             if (n is num && n > 0) map[pid.toString()] = n.round();
           });
         } else if (units is num && entry['participantId'] != null) {
-          splits.putIfAbsent(key, () => {})[entry['participantId']
-                  .toString()] =
+          splits.putIfAbsent(key, () => {})[entry['participantId'].toString()] =
               units.round();
         }
       }

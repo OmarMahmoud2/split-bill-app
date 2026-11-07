@@ -2317,5 +2317,11 @@
   "iou_deleted": "ลบ IOU แล้ว",
   "guest2_your_share": "ส่วนของคุณ",
   "guest2_already_paid": "จ่ายแล้ว",
-  "guest2_left_to_pay": "คงเหลือ"
+  "guest2_left_to_pay": "คงเหลือ",
+  "hx_qa_iou": "หนี้",
+  "hx_qr_tooltip": "คิวอาร์โค้ดของฉัน",
+  "hx_month_share": "ส่วนของคุณ",
+  "hx_bills_n": "บิล: {count}",
+  "hx_activity_empty": "บิลและการชำระเงินจะแสดงที่นี่",
+  "hx_activity_load_failed": "โหลดกิจกรรมไม่ได้ ลองอีกครั้ง"
 }

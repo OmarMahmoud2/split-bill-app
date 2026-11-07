@@ -56,7 +56,9 @@ class EditBillSummaryDialog extends StatefulWidget {
   }) => showLedgerSheet<void>(
     context,
     title: 'bf_edit_charges_title'.tr(),
-    subtitle: 'bf_edit_charges_hint'.tr(namedArgs: {'amount': formatMoneyMinor(subtotalMinor, currency)}),
+    subtitle: 'bf_edit_charges_hint'.tr(
+      namedArgs: {'amount': formatMoneyMinor(subtotalMinor, currency)},
+    ),
     builder: (_) => EditBillSummaryDialog(
       currency: currency,
       subtotalMinor: subtotalMinor,
@@ -201,10 +203,16 @@ class _EditBillSummaryDialogState extends State<EditBillSummaryDialog> {
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       onChanged: (_) => setState(() {}),
       hint: formatMoneyMinor(0, widget.currency, showSymbol: false),
-      suffix: Text(widget.currency, style: AppTypography.labelLarge.copyWith(color: p.textSecondary)),
+      suffix: Text(
+        widget.currency,
+        style: AppTypography.labelLarge.copyWith(color: p.textSecondary),
+      ),
       helperText: pct == null
           ? null
-          : (onService ? 'bf_edit_charge_of_items_service' : 'bf_edit_charge_of_subtotal').tr(namedArgs: {'percent': pct}),
+          : (onService
+                    ? 'bf_edit_charge_of_items_service'
+                    : 'bf_edit_charge_of_subtotal')
+                .tr(namedArgs: {'percent': pct}),
       errorText: error,
     );
   }

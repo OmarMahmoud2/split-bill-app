@@ -210,10 +210,15 @@ int? parseMoneyInput(String text, String currency) {
 
 /// True when [chargeMinor] is a whole percentage of items plus service but not
 /// of the items alone (VAT charged on items plus service: Egypt, the Gulf).
-bool chargeIsOnItemsPlusService(int chargeMinor, int subtotalMinor, int serviceMinor) {
+bool chargeIsOnItemsPlusService(
+  int chargeMinor,
+  int subtotalMinor,
+  int serviceMinor,
+) {
   if (serviceMinor <= 0 || subtotalMinor <= 0) return false;
   bool whole(double v) => (v * 10).round() % 10 == 0;
-  return !whole(chargeMinor * 100 / subtotalMinor) && whole(chargeMinor * 100 / (subtotalMinor + serviceMinor));
+  return !whole(chargeMinor * 100 / subtotalMinor) &&
+      whole(chargeMinor * 100 / (subtotalMinor + serviceMinor));
 }
 
 /// "14%" for a charge as a share of the items subtotal (pass [serviceMinor]

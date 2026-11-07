@@ -2317,5 +2317,11 @@
   "iou_deleted": "Pagherò eliminato",
   "guest2_your_share": "La tua quota",
   "guest2_already_paid": "Già pagato",
-  "guest2_left_to_pay": "Da pagare"
+  "guest2_left_to_pay": "Da pagare",
+  "hx_qa_iou": "Debito",
+  "hx_qr_tooltip": "Il mio codice QR",
+  "hx_month_share": "La tua quota",
+  "hx_bills_n": "Conti: {count}",
+  "hx_activity_empty": "Conti e pagamenti compaiono qui.",
+  "hx_activity_load_failed": "Impossibile caricare l'attività. Riprova."
 }

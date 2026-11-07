@@ -2317,5 +2317,11 @@
   "iou_deleted": "Schuldschein gelöscht",
   "guest2_your_share": "Dein Anteil",
   "guest2_already_paid": "Bereits bezahlt",
-  "guest2_left_to_pay": "Noch offen"
+  "guest2_left_to_pay": "Noch offen",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "Mein QR-Code",
+  "hx_month_share": "Dein Anteil",
+  "hx_bills_n": "Rechnungen: {count}",
+  "hx_activity_empty": "Rechnungen und Zahlungen erscheinen hier.",
+  "hx_activity_load_failed": "Aktivität konnte nicht geladen werden. Versuch es erneut."
 }

@@ -6,9 +6,11 @@ import 'package:split_bill_app/services/my_photo.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/data/activity.dart';
+import 'package:split_bill_app/data/insights.dart';
+import 'package:split_bill_app/screens/insights/insights_screen.dart';
 import 'package:split_bill_app/data/ledger_repository.dart';
 import 'package:split_bill_app/data/models.dart';
 import 'package:split_bill_app/theme/theme.dart';
@@ -16,6 +18,7 @@ import 'package:split_bill_app/widgets/feedback/feedback.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/money_text.dart';
+import 'package:split_bill_app/widgets/motion/motion.dart';
 
 /// "Sara added Taxi to Blue Hole" with its amount.
 class ActivityRow extends StatelessWidget {
@@ -87,7 +90,8 @@ class ActivityRow extends StatelessWidget {
       ActivityTone.owe => MoneyTone.owe,
       ActivityTone.neutral => MoneyTone.neutral,
     };
-    return InkWell(
+    return Pressable(
+      haptic: true,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -345,18 +349,102 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  String _dayLabel(BuildContext context, DateTime day) => switch (dayBucket(
-    day,
-    DateTime.now(),
-  )) {
-    DayBucket.today => 'activity_today'.tr(),
-    DayBucket.yesterday => 'activity_yesterday'.tr(),
-    DayBucket.earlier => DateFormat.MMMMEEEEd(localeTag(context)).format(day),
-  };
+  String _dayLabel(BuildContext context, DateTime day) =>
+      switch (dayBucket(day, DateTime.now())) {
+        DayBucket.today => 'activity_today'.tr(),
+        DayBucket.yesterday => 'activity_yesterday'.tr(),
+        DayBucket.earlier => DateFormat.MMMEd(localeTag(context)).format(day),
+      };
+
+  Map<String, int> _shareByBill(String me) {
+    final s = HomeBalances.latest;
+    if (s == null) return const {};
+    return {
+      for (final b in [
+        ...s.recentBills,
+        for (final g in s.groupInputs) ...g.bills,
+      ])
+        if (b.share(me) != null) b.id: b.share(me)!.shareMinor,
+    };
+  }
+
+  /// The current month's share so far, from what Home loaded.
+  Widget? _monthCard(BuildContext context, String me) {
+    final s = HomeBalances.latest;
+    if (s == null) return null;
+    final now = DateTime.now();
+    final i = computeInsights(
+      me: me,
+      month: now,
+      currency: preferredCurrency(context),
+      bills: s.recentBills,
+    );
+    if (i.billCount == 0) return null;
+    final p = context.palette;
+    final count = 'hx_bills_n'.tr(namedArgs: {'count': '${i.billCount}'});
+    return LedgerCard(
+      key: const ValueKey('activity_month_card'),
+      margin: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      onTap: () => _openInsights(now),
+      child: Row(
+        children: [
+          Icon(AppIcons.insights, color: p.accent),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat.MMMM(localeTag(context)).format(now),
+                  style: AppTypography.titleSmall.copyWith(
+                    color: p.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  '${'hx_month_share'.tr()} · $count',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    color: p.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          MoneyText(
+            minor: i.totalMinor,
+            currency: i.currency,
+            tone: MoneyTone.neutral,
+            size: MoneySize.large,
+            style: const TextStyle(fontSize: 22),
+            animate: true,
+          ),
+          const SizedBox(width: 4),
+          Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? AppIcons.chevronLeft
+                : AppIcons.chevronRight,
+            color: p.textTertiary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openInsights(DateTime month) => Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => InsightsScreen(
+        state: HomeBalances.stream,
+        month: DateTime(month.year, month.month),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     final me = _me;
     final days = groupByDay(_items);
     Widget body;
@@ -364,7 +452,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       body = ErrorState(title: 'please_log_in_2'.tr());
     } else if (_items.isEmpty && _error != null) {
       body = ErrorState(
-        message: 'activity_load_failed'.tr(),
+        message: 'hx_activity_load_failed'.tr(),
         onRetry: _refresh,
       );
     } else if (_items.isEmpty && (_loading || !_done)) {
@@ -385,7 +473,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       body = EmptyState(
         icon: AppIcons.chart,
         title: 'activity_empty_title'.tr(),
-        message: 'activity_empty_body'.tr(),
+        message: 'hx_activity_empty'.tr(),
       );
     } else {
       body = RefreshIndicator(
@@ -397,7 +485,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
             bottom: MediaQuery.paddingOf(context).bottom + 16,
           ),
           children: [
-            for (final (day, items) in days) ...[
+            if (_monthCard(context, me.uid) case final card?) card,
+            for (final (i, (day, items)) in days.indexed) ...[
+              if (i == 0 || days[i - 1].$1.month != day.month)
+                _MonthHeader(
+                  month: day,
+                  summary: summarizeMonth(
+                    _items.where(
+                      (x) =>
+                          x.date.year == day.year && x.date.month == day.month,
+                    ),
+                    me: me.uid,
+                    currency: preferredCurrency(context),
+                    shareByBill: _shareByBill(me.uid),
+                  ),
+                ),
               OverlineLabel(_dayLabel(context, day)),
               LedgerCard(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -444,7 +546,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       );
     }
     return Scaffold(
-      backgroundColor: p.background,
+      backgroundColor: Colors.transparent,
       body: AdaptiveBody(
         child: SafeArea(
           bottom: false,
@@ -456,6 +558,62 @@ class _ActivityScreenState extends State<ActivityScreen> {
               Expanded(child: body),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "November" with your share and the bill count, above that month's days.
+class _MonthHeader extends StatelessWidget {
+  const _MonthHeader({required this.month, required this.summary});
+  final DateTime month;
+  final MonthSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final tag = localeTag(context);
+    final now = DateTime.now();
+    final name = month.year == now.year
+        ? DateFormat.MMMM(tag).format(month)
+        : DateFormat.yMMMM(tag).format(month);
+    final share = summary.shareMinor > 0
+        ? moneyLabel(context, summary.shareMinor, summary.currency)
+        : null;
+    final detail = [
+      if (share != null) '${'hx_month_share'.tr()} $share',
+      'hx_bills_n'.tr(namedArgs: {'count': '${summary.billCount}'}),
+    ].join(' · ');
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
+      child: Semantics(
+        header: true,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              name,
+              style: AppTypography.titleMedium.copyWith(
+                color: p.textPrimary,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                detail,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.caption.copyWith(
+                  color: p.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

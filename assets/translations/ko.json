@@ -2317,5 +2317,11 @@
   "iou_deleted": "IOU를 삭제했습니다",
   "guest2_your_share": "내 몫",
   "guest2_already_paid": "이미 낸 금액",
-  "guest2_left_to_pay": "남은 금액"
+  "guest2_left_to_pay": "남은 금액",
+  "hx_qa_iou": "차용증",
+  "hx_qr_tooltip": "내 QR 코드",
+  "hx_month_share": "내 부담금",
+  "hx_bills_n": "청구서: {count}건",
+  "hx_activity_empty": "청구서와 결제가 여기에 표시돼요.",
+  "hx_activity_load_failed": "활동을 불러오지 못했어요. 다시 시도해 주세요."
 }

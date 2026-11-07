@@ -25,7 +25,7 @@ Widget _app(Widget child, {bool dark = false, bool reduceMotion = true}) =>
 String _plain(String s) => s.replaceAll(RegExp(r'[\u2066\u2069]'), '');
 
 Finder _textPlain(String value) => find.byWidgetPredicate(
-  (w) => w is Text && w.data != null && _plain(w.data!) == value,
+  (w) => w is Text && _plain(w.data ?? w.textSpan?.toPlainText() ?? '') == value,
 );
 
 void main() {

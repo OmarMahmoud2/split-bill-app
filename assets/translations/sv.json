@@ -2317,5 +2317,11 @@
   "iou_deleted": "Skulden raderad",
   "guest2_your_share": "Din andel",
   "guest2_already_paid": "Redan betalt",
-  "guest2_left_to_pay": "Kvar att betala"
+  "guest2_left_to_pay": "Kvar att betala",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "Min QR-kod",
+  "hx_month_share": "Din andel",
+  "hx_bills_n": "Notor: {count}",
+  "hx_activity_empty": "Notor och betalningar visas här.",
+  "hx_activity_load_failed": "Kunde inte läsa in aktivitet. Försök igen."
 }

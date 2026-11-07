@@ -2317,5 +2317,11 @@
   "iou_deleted": "تم حذف الدين",
   "guest2_your_share": "حصتك",
   "guest2_already_paid": "مدفوع مسبقًا",
-  "guest2_left_to_pay": "المتبقي للدفع"
+  "guest2_left_to_pay": "المتبقي للدفع",
+  "hx_qa_iou": "دين",
+  "hx_qr_tooltip": "رمز QR الخاص بي",
+  "hx_month_share": "حصتك",
+  "hx_bills_n": "الفواتير: {count}",
+  "hx_activity_empty": "ستظهر هنا الفواتير والمدفوعات.",
+  "hx_activity_load_failed": "تعذّر تحميل النشاط. حاول مجددًا."
 }

@@ -2317,5 +2317,11 @@
   "iou_deleted": "欠条已删除",
   "guest2_your_share": "你的份额",
   "guest2_already_paid": "已付",
-  "guest2_left_to_pay": "待付"
+  "guest2_left_to_pay": "待付",
+  "hx_qa_iou": "欠款",
+  "hx_qr_tooltip": "我的二维码",
+  "hx_month_share": "你的份额",
+  "hx_bills_n": "账单：{count}",
+  "hx_activity_empty": "账单和付款会显示在这里。",
+  "hx_activity_load_failed": "无法加载动态，请重试。"
 }

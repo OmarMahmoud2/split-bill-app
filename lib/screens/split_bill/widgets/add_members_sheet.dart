@@ -87,11 +87,7 @@ class AddMembersSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final cards = <Widget>[
-      AddSourceCard(
-        icon: AppIcons.qr,
-        label: 'scan_qr'.tr(),
-        onTap: onScanQR,
-      ),
+      AddSourceCard(icon: AppIcons.qr, label: 'scan_qr'.tr(), onTap: onScanQR),
       AddSourceCard(
         icon: AppIcons.contacts,
         label: 'contacts'.tr(),

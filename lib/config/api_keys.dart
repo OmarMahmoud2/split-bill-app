@@ -16,5 +16,4 @@ class ApiKeys {
   static const String adMobAndroidBanner =
       'ca-app-pub-8581075015023620/6310100274';
   static const String adMobIosBanner = 'ca-app-pub-8581075015023620/5550602314';
-
 }

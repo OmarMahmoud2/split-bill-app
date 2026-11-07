@@ -97,9 +97,7 @@ class V3TopBar extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: large
-                    ? AppTypography.displaySmall.copyWith(
-                        color: p.textPrimary,
-                      )
+                    ? AppTypography.displaySmall.copyWith(color: p.textPrimary)
                     : AppTypography.titleLarge.copyWith(color: p.textPrimary),
               ),
             ),
@@ -279,11 +277,7 @@ class SettingsRow extends StatelessWidget {
                 if (trailing != null) ...[const SizedBox(width: 8), trailing!],
                 if (showChevron && onTap != null) ...[
                   const SizedBox(width: 6),
-                  Icon(
-                    AppIcons.chevronRight,
-                    size: 20,
-                    color: p.textTertiary,
-                  ),
+                  Icon(AppIcons.chevronRight, size: 20, color: p.textTertiary),
                 ],
               ],
             ),
@@ -447,9 +441,7 @@ class V3ChoiceChip extends StatelessWidget {
         color: selected ? p.inverseSurface : p.surface,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadii.chipRadius,
-          side: selected
-              ? BorderSide.none
-              : BorderSide(color: p.borderStrong),
+          side: selected ? BorderSide.none : BorderSide(color: p.borderStrong),
         ),
         child: InkWell(
           borderRadius: AppRadii.chipRadius,

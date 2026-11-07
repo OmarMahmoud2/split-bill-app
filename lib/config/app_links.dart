@@ -18,8 +18,7 @@ class AppLinks {
   static const String privacyPolicyUrl =
       'https://omarmali.net/split-bill/privacy/';
 
-  static const String termsOfUseUrl =
-      'https://omarmali.net/split-bill/terms/';
+  static const String termsOfUseUrl = 'https://omarmali.net/split-bill/terms/';
 
   static String get storeUrl =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS

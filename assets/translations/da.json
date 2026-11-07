@@ -2317,5 +2317,11 @@
   "iou_deleted": "Gæld slettet",
   "guest2_your_share": "Din andel",
   "guest2_already_paid": "Allerede betalt",
-  "guest2_left_to_pay": "Mangler at betale"
+  "guest2_left_to_pay": "Mangler at betale",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "Min QR-kode",
+  "hx_month_share": "Din andel",
+  "hx_bills_n": "Regninger: {count}",
+  "hx_activity_empty": "Regninger og betalinger vises her.",
+  "hx_activity_load_failed": "Kunne ikke hente aktivitet. Prøv igen."
 }

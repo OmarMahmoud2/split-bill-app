@@ -80,7 +80,12 @@ class PremiumBottomSheet extends StatelessWidget {
   static Future<T?> show<T>({
     required BuildContext context,
     required Widget child,
-    EdgeInsetsGeometry padding = const EdgeInsetsDirectional.fromSTEB(24, 12, 24, 24),
+    EdgeInsetsGeometry padding = const EdgeInsetsDirectional.fromSTEB(
+      24,
+      12,
+      24,
+      24,
+    ),
     bool isScrollControlled = true,
     bool showPullHandle = true,
     bool isScrollable = false,

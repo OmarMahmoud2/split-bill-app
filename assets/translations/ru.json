@@ -2317,5 +2317,11 @@
   "iou_deleted": "Расписка удалена",
   "guest2_your_share": "Ваша доля",
   "guest2_already_paid": "Уже оплачено",
-  "guest2_left_to_pay": "Осталось"
+  "guest2_left_to_pay": "Осталось",
+  "hx_qa_iou": "Долг",
+  "hx_qr_tooltip": "Мой QR-код",
+  "hx_month_share": "Ваша доля",
+  "hx_bills_n": "Счета: {count}",
+  "hx_activity_empty": "Здесь появятся счета и платежи.",
+  "hx_activity_load_failed": "Не удалось загрузить активность. Повторите попытку."
 }

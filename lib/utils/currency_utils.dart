@@ -13,11 +13,12 @@ class CurrencyUtils {
         name: currencyCode,
         decimalDigits: decimalDigits,
       ).format(amount);
-      
+
       // Ensure space between digit and non-digit (currency symbol/letters)
       return formatted.replaceAllMapped(
-          RegExp(r'(?<=[0-9])(?=[^\d\s.,\-])|(?<=[^\d\s.,\-])(?=[0-9])'), 
-          (match) => ' ');
+        RegExp(r'(?<=[0-9])(?=[^\d\s.,\-])|(?<=[^\d\s.,\-])(?=[0-9])'),
+        (match) => ' ',
+      );
     } catch (_) {
       return '${amount.toStringAsFixed(decimalDigits)} $currencyCode';
     }

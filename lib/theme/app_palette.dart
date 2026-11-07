@@ -243,7 +243,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
   Color get hero => isDark ? AppColors.surface2Dark : AppColors.inkLight;
 
   /// 1px inner line on the dark hero card (transparent in light).
-  Color get heroLine => isDark ? AppColors.heroLineDark : const Color(0x00000000);
+  Color get heroLine =>
+      isDark ? AppColors.heroLineDark : const Color(0x00000000);
 
   /// Text on [hero].
   Color get onHero => isDark ? AppColors.inkDark : const Color(0xFFFFFFFF);
@@ -262,8 +263,9 @@ class AppPalette extends ThemeExtension<AppPalette> {
   /// Soft shadow under primary buttons and the floating nav.
   List<BoxShadow> get softShadow => [
     BoxShadow(
-      color: (isDark ? const Color(0xFF000000) : AppColors.inkLight)
-          .withValues(alpha: isDark ? 0.4 : 0.14),
+      color: (isDark ? const Color(0xFF000000) : AppColors.inkLight).withValues(
+        alpha: isDark ? 0.4 : 0.14,
+      ),
       offset: const Offset(0, 8),
       blurRadius: 20,
     ),
@@ -333,11 +335,11 @@ class AppPalette extends ThemeExtension<AppPalette> {
     surfaceVariant: AppColors.surface2Light, // #EEF1F6
     surfaceMuted: AppColors.canvasLight,
     border: AppColors.hairlineLight, // #E3E7EF
-    borderSubtle: AppColors.dividerSubtleLight, 
-    borderStrong: AppColors.borderStrongLight, 
+    borderSubtle: AppColors.dividerSubtleLight,
+    borderStrong: AppColors.borderStrongLight,
     textPrimary: AppColors.inkLight, // #0E1526
     textStrong: AppColors.inkLight,
-    textMedium: AppColors.inkMediumLight, 
+    textMedium: AppColors.inkMediumLight,
     textSecondary: AppColors.mutedLight, // #5B6478
     textTertiary: AppColors.tertiaryLight, // #5F687D
     textDisabled: AppColors.disabledLight,
@@ -375,7 +377,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     onPremium: Color(0xFF000000),
     inverseSurface: AppColors.inkLight,
     onInverseSurface: Color(0xFFFFFFFF),
-    skeleton: AppColors.dividerSubtleLight, 
+    skeleton: AppColors.dividerSubtleLight,
     skeletonHighlight: AppColors.canvasLight,
     shadow: AppColors.inkLight,
     scrim: Color(0x590E1526), // ink 35%
@@ -388,7 +390,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     surfaceVariant: AppColors.surface2Dark, // #1A2438
     surfaceMuted: Color(0xFF0E1525),
     border: AppColors.hairlineDark, // #22304A
-    borderSubtle: AppColors.dividerSubtleDark, 
+    borderSubtle: AppColors.dividerSubtleDark,
     borderStrong: AppColors.borderStrongDark,
     textPrimary: AppColors.inkDark, // #E8EDF7
     textStrong: AppColors.inkDark,
@@ -398,7 +400,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     textDisabled: AppColors.disabledDark,
     primary: AppColors.tealDark, // #34D7C0
     primaryStrong: AppColors.tealStrongDark,
-    primarySoft: AppColors.tealSoftDark, 
+    primarySoft: AppColors.tealSoftDark,
     onPrimary: AppColors.onMintDark,
     primaryGradient: LinearGradient(
       colors: [AppColors.tealDark, Color(0xFF22B8A4)],

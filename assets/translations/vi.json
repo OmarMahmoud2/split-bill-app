@@ -2317,5 +2317,11 @@
   "iou_deleted": "Đã xoá khoản nợ",
   "guest2_your_share": "Phần của bạn",
   "guest2_already_paid": "Đã trả",
-  "guest2_left_to_pay": "Còn lại"
+  "guest2_left_to_pay": "Còn lại",
+  "hx_qa_iou": "Nợ",
+  "hx_qr_tooltip": "Mã QR của tôi",
+  "hx_month_share": "Phần của bạn",
+  "hx_bills_n": "Hóa đơn: {count}",
+  "hx_activity_empty": "Hóa đơn và khoản thanh toán sẽ hiện ở đây.",
+  "hx_activity_load_failed": "Không tải được hoạt động. Thử lại nhé."
 }

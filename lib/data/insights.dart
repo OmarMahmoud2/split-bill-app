@@ -13,7 +13,11 @@ class InsightSlice {
 }
 
 class PaybackStat {
-  const PaybackStat({required this.personId, required this.name, required this.days});
+  const PaybackStat({
+    required this.personId,
+    required this.name,
+    required this.days,
+  });
   final String personId;
   final String name;
   final double days;

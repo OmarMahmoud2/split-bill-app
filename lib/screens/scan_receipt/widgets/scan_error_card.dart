@@ -23,9 +23,7 @@ class ScanErrorCard extends StatelessWidget {
       key: const ValueKey('scan-error-card'),
       title: content.titleKey.tr(),
       message: content.message((k) => k.tr()),
-      icon: content.offline
-          ? AppIcons.wifiOff
-          : AppIcons.error,
+      icon: content.offline ? AppIcons.wifiOff : AppIcons.error,
       retryLabel: scanErrorActionLabelKey(content.primary).tr(),
       onRetry: () => onAction(content.primary),
       secondaryLabel: secondary == null

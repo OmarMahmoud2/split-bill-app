@@ -2317,5 +2317,11 @@
   "iou_deleted": "IOU deleted",
   "guest2_your_share": "Your share",
   "guest2_already_paid": "Already paid",
-  "guest2_left_to_pay": "Left to pay"
+  "guest2_left_to_pay": "Left to pay",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "My QR code",
+  "hx_month_share": "Your share",
+  "hx_bills_n": "Bills: {count}",
+  "hx_activity_empty": "Bills and payments show up here.",
+  "hx_activity_load_failed": "Couldn't load activity. Try again."
 }

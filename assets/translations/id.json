@@ -2317,5 +2317,11 @@
   "iou_deleted": "IOU dihapus",
   "guest2_your_share": "Bagianmu",
   "guest2_already_paid": "Sudah dibayar",
-  "guest2_left_to_pay": "Sisa bayar"
+  "guest2_left_to_pay": "Sisa bayar",
+  "hx_qa_iou": "Utang",
+  "hx_qr_tooltip": "Kode QR saya",
+  "hx_month_share": "Bagianmu",
+  "hx_bills_n": "Tagihan: {count}",
+  "hx_activity_empty": "Tagihan dan pembayaran muncul di sini.",
+  "hx_activity_load_failed": "Aktivitas gagal dimuat. Coba lagi."
 }

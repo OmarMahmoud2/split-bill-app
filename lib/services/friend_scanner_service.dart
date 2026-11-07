@@ -137,9 +137,7 @@ class _ScanFriendScreenState extends State<ScanFriendScreen> {
       child: Theme(
         data: AppTheme.darkTheme,
         child: ErrorState(
-          icon: denied
-              ? AppIcons.cameraOff
-              : AppIcons.videoOff,
+          icon: denied ? AppIcons.cameraOff : AppIcons.videoOff,
           title: denied
               ? 'bf_assign_camera_denied_title'.tr()
               : 'bf_assign_camera_error_title'.tr(),

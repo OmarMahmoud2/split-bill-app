@@ -2317,5 +2317,11 @@
   "iou_deleted": "Borç notu silindi",
   "guest2_your_share": "Senin payın",
   "guest2_already_paid": "Ödenen",
-  "guest2_left_to_pay": "Kalan"
+  "guest2_left_to_pay": "Kalan",
+  "hx_qa_iou": "Borç",
+  "hx_qr_tooltip": "QR kodum",
+  "hx_month_share": "Payın",
+  "hx_bills_n": "Hesaplar: {count}",
+  "hx_activity_empty": "Hesaplar ve ödemeler burada görünür.",
+  "hx_activity_load_failed": "Etkinlik yüklenemedi. Tekrar dene."
 }

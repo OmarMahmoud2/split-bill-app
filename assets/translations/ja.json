@@ -2317,5 +2317,11 @@
   "iou_deleted": "IOUを削除しました",
   "guest2_your_share": "あなたの分",
   "guest2_already_paid": "支払い済み",
-  "guest2_left_to_pay": "残り"
+  "guest2_left_to_pay": "残り",
+  "hx_qa_iou": "貸し借り",
+  "hx_qr_tooltip": "マイQRコード",
+  "hx_month_share": "あなたの負担額",
+  "hx_bills_n": "請求: {count}件",
+  "hx_activity_empty": "請求と支払いがここに表示されます。",
+  "hx_activity_load_failed": "アクティビティを読み込めませんでした。もう一度お試しください。"
 }

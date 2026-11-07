@@ -2317,5 +2317,11 @@
   "iou_deleted": "Vale excluído",
   "guest2_your_share": "Sua parte",
   "guest2_already_paid": "Já pago",
-  "guest2_left_to_pay": "Falta pagar"
+  "guest2_left_to_pay": "Falta pagar",
+  "hx_qa_iou": "Dívida",
+  "hx_qr_tooltip": "Meu código QR",
+  "hx_month_share": "Sua parte",
+  "hx_bills_n": "Contas: {count}",
+  "hx_activity_empty": "Contas e pagamentos aparecem aqui.",
+  "hx_activity_load_failed": "Não foi possível carregar a atividade. Tente de novo."
 }

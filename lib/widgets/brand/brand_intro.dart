@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:split_bill_app/theme/theme.dart';
@@ -183,9 +182,17 @@ class _BrandIntroState extends State<BrandIntro>
               builder: (context, _) {
                 // Part (0-300 ms), settle level (300-600 ms).
                 final out = _interval(0, 300, Curves.easeOut);
-                final back = _interval(300, 600, AppMotion.emphasizedDecelerate);
+                final back = _interval(
+                  300,
+                  600,
+                  AppMotion.emphasizedDecelerate,
+                );
                 final split = 0.1 * out * (1 - back);
-                final line = _interval(200, 600, AppMotion.emphasizedDecelerate);
+                final line = _interval(
+                  200,
+                  600,
+                  AppMotion.emphasizedDecelerate,
+                );
                 final word = _interval(450, 750, Curves.easeOut);
                 final tag = _interval(620, 880, Curves.easeOut);
                 final fade = 1 - _interval(850, 1100, Curves.easeIn);

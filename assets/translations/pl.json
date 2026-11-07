@@ -2317,5 +2317,11 @@
   "iou_deleted": "Dług usunięty",
   "guest2_your_share": "Twoja część",
   "guest2_already_paid": "Już zapłacono",
-  "guest2_left_to_pay": "Do zapłaty"
+  "guest2_left_to_pay": "Do zapłaty",
+  "hx_qa_iou": "Dług",
+  "hx_qr_tooltip": "Mój kod QR",
+  "hx_month_share": "Twoja część",
+  "hx_bills_n": "Rachunki: {count}",
+  "hx_activity_empty": "Tu pojawią się rachunki i płatności.",
+  "hx_activity_load_failed": "Nie udało się wczytać aktywności. Spróbuj ponownie."
 }

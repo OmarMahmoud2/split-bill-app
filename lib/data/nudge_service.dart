@@ -43,9 +43,13 @@ BillRecord? pickNudgeBill(Iterable<BillRecord> bills, String me, String other) {
     final related =
         (b.hostId == me && b.owedBy(other) > 0) ||
         (b.hostId == other && b.owedBy(me) > 0) ||
-        (b.share(me) != null && b.share(other) != null && b.hostId != me && b.hostId != other);
+        (b.share(me) != null &&
+            b.share(other) != null &&
+            b.hostId != me &&
+            b.hostId != other);
     if (!related) continue;
-    if (best == null || (b.date ?? DateTime(0)).isAfter(best.date ?? DateTime(0))) {
+    if (best == null ||
+        (b.date ?? DateTime(0)).isAfter(best.date ?? DateTime(0))) {
       best = b;
     }
   }

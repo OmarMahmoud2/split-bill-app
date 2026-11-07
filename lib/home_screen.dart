@@ -1,4 +1,3 @@
-import 'dart:ui' show ImageFilter;
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
 
@@ -15,10 +14,11 @@ import 'package:split_bill_app/screens/groups/create_group_screen.dart';
 import 'package:split_bill_app/screens/settle/quick_iou_sheet.dart';
 import 'package:split_bill_app/services/revenue_cat_service.dart';
 import 'package:split_bill_app/theme/theme.dart';
+import 'package:split_bill_app/widgets/home/floating_tab_bar.dart';
 import 'package:split_bill_app/widgets/home/home_dashboard.dart';
+import 'package:split_bill_app/widgets/layout/app_background.dart';
 import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/home/new_sheet.dart';
-import 'package:split_bill_app/widgets/motion/motion.dart';
 
 /// The signed-in shell: Home, Groups, a raised New action, Activity, You.
 ///
@@ -34,7 +34,14 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  // Quick fade-through when the tab changes; the pages stay alive.
+  late final AnimationController _fade = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 180),
+    value: 1,
+  );
   int _tab = 0;
   static const _tabNames = ['home', 'activity', 'groups', 'you'];
   Stream<HomeLedgerState>? _ledger;
@@ -89,13 +96,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _publish?.cancel();
+    _fade.dispose();
     super.dispose();
   }
 
   void _select(int i) {
     if (i == _tab) return;
-    AppHaptics.selection();
+    AppHaptics.light();
     setState(() => _tab = i);
+    if (!AppMotion.reduceMotion(context)) _fade.forward(from: 0.2);
     if (i >= 0 && i < _tabNames.length) {
       AnalyticsService.instance.screen(_tabNames[i]);
     }
@@ -148,13 +157,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       const ProfileScreen(),
     ];
     return Scaffold(
-      backgroundColor: p.background,
+      backgroundColor: Colors.transparent,
       // Content scrolls behind the frosted nav; each tab pads its list by
       // MediaQuery bottom padding, which here includes the bar's height.
       extendBody: true,
       body: Stack(
         children: [
-          IndexedStack(index: _tab, children: pages),
+          const Positioned.fill(child: AppBackground()),
+          FadeTransition(
+            opacity: CurvedAnimation(parent: _fade, curve: Curves.easeOut),
+            child: IndexedStack(index: _tab, children: pages),
+          ),
           // Soft fade under the status bar so scrolled content never sits
           // hard against the clock.
           Positioned(
@@ -181,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      bottomNavigationBar: _TabBar(
+      bottomNavigationBar: FloatingTabBar(
         index: _tab,
         onSelect: _select,
         onNew: _openNew,
@@ -189,186 +202,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           AppHaptics.light();
           BillEntryPoints.scan(context);
         },
-      ),
-    );
-  }
-}
-
-/// The floating pill nav: 16 from the sides, 24 from the bottom, radius 24,
-/// 68 high, hairline and soft shadow, with a raised mint "+" in the middle.
-/// Tap opens the new-bill sheet; long-press starts a receipt scan.
-///
-/// The body extends behind the bar (`extendBody`), so the pill is frosted:
-/// a backdrop blur under a translucent surface.
-class _TabBar extends StatelessWidget {
-  const _TabBar({
-    required this.index,
-    required this.onSelect,
-    required this.onNew,
-    required this.onScan,
-  });
-
-  final int index;
-  final ValueChanged<int> onSelect;
-  final VoidCallback onNew;
-  final VoidCallback onScan;
-
-  static const double _pillHeight = 68;
-  static const double _raise = 26;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    Widget item(int i, IconData icon, IconData active, String label) {
-      final on = i == index;
-      return Expanded(
-        child: Semantics(
-          selected: on,
-          button: true,
-          label: label,
-          child: Pressable(
-            onTap: () => onSelect(i),
-            child: ExcludeSemantics(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedContainer(
-                    duration: AppMotion.durationFor(context, AppMotion.fast),
-                    width: 52,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: on ? p.accentSoft : Colors.transparent,
-                      borderRadius: AppRadii.fullRadius,
-                    ),
-                    child: Icon(
-                      on ? active : icon,
-                      size: 22,
-                      color: on ? p.textPrimary : p.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.labelSmall.copyWith(
-                      fontSize: 11,
-                      fontWeight: on ? FontWeight.w600 : FontWeight.w500,
-                      color: on ? p.textPrimary : p.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        newLabel: 'new_title'.tr(),
+        scanHint: 'home_scan_receipt'.tr(),
+        tabs: [
+          TabSpec(AppIcons.home, AppIcons.homeFill, 'home_tab_home'.tr()),
+          TabSpec(
+            AppIcons.activity,
+            AppIcons.activityFill,
+            'activity_title'.tr(),
           ),
-        ),
-      );
-    }
-
-    return SafeArea(
-      top: false,
-      minimum: const EdgeInsets.only(bottom: 24),
-      child: Center(
-        heightFactor: 1,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SizedBox(
-              height: _pillHeight + _raise,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Positioned(
-                    top: _raise,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: p.softShadow,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: p.surface.withValues(alpha: 0.78),
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: p.border),
-                            ),
-                            child: Row(
-                              children: [
-                                item(
-                                  0,
-                                  AppIcons.home,
-                                  AppIcons.homeFill,
-                                  'home_tab_home'.tr(),
-                                ),
-                                item(
-                                  1,
-                                  AppIcons.activity,
-                                  AppIcons.activityFill,
-                                  'activity_title'.tr(),
-                                ),
-                                const Spacer(),
-                                item(
-                                  2,
-                                  AppIcons.groups,
-                                  AppIcons.groupsFill,
-                                  'groups'.tr(),
-                                ),
-                                item(
-                                  3,
-                                  AppIcons.you,
-                                  AppIcons.youFill,
-                                  'home_tab_you'.tr(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Semantics(
-                        button: true,
-                        label: 'new_title'.tr(),
-                        onLongPressHint: 'home_scan_receipt'.tr(),
-                        child: Pressable(
-                          haptic: true,
-                          onTap: onNew,
-                          onLongPress: onScan,
-                          child: Container(
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: p.accent,
-                              borderRadius: BorderRadius.circular(18),
-                              boxShadow: p.softShadow,
-                            ),
-                            child: Icon(
-                              AppIcons.add,
-                              color: p.onMint,
-                              size: 28,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+          TabSpec(AppIcons.groups, AppIcons.groupsFill, 'groups'.tr()),
+          TabSpec(AppIcons.you, AppIcons.youFill, 'home_tab_you'.tr()),
+        ],
       ),
     );
   }

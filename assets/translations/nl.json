@@ -2317,5 +2317,11 @@
   "iou_deleted": "Schuld verwijderd",
   "guest2_your_share": "Jouw deel",
   "guest2_already_paid": "Al betaald",
-  "guest2_left_to_pay": "Nog te betalen"
+  "guest2_left_to_pay": "Nog te betalen",
+  "hx_qa_iou": "IOU",
+  "hx_qr_tooltip": "Mijn QR-code",
+  "hx_month_share": "Jouw deel",
+  "hx_bills_n": "Rekeningen: {count}",
+  "hx_activity_empty": "Rekeningen en betalingen verschijnen hier.",
+  "hx_activity_load_failed": "Activiteit laden mislukt. Probeer het opnieuw."
 }

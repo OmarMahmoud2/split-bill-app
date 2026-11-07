@@ -144,7 +144,12 @@ class _MultiContactPickerState extends State<MultiContactPicker> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      20,
+                      0,
+                      20,
+                      16,
+                    ),
                     itemCount: _filteredContacts.length,
                     itemBuilder: (context, index) {
                       final contact = _filteredContacts[index];

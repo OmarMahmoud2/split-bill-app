@@ -2317,5 +2317,11 @@
   "iou_deleted": "IOU हटाया गया",
   "guest2_your_share": "आपका हिस्सा",
   "guest2_already_paid": "पहले ही चुकाया",
-  "guest2_left_to_pay": "बाकी"
+  "guest2_left_to_pay": "बाकी",
+  "hx_qa_iou": "उधार",
+  "hx_qr_tooltip": "मेरा QR कोड",
+  "hx_month_share": "आपका हिस्सा",
+  "hx_bills_n": "बिल: {count}",
+  "hx_activity_empty": "बिल और भुगतान यहाँ दिखेंगे।",
+  "hx_activity_load_failed": "गतिविधि लोड नहीं हो सकी। फिर कोशिश करें।"
 }

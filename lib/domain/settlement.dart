@@ -19,9 +19,8 @@ bool _mapEquals(Map<String, int> a, Map<String, int> b) {
   return true;
 }
 
-int _mapHash(Map<String, int> m) => Object.hashAllUnordered(
-      m.entries.map((e) => Object.hash(e.key, e.value)),
-    );
+int _mapHash(Map<String, int> m) =>
+    Object.hashAllUnordered(m.entries.map((e) => Object.hash(e.key, e.value)));
 
 /// A shared expense: who paid and who consumed what, in one currency.
 class Expense {
@@ -41,9 +40,9 @@ class Expense {
     required String currency,
     required Map<String, int> paidBy,
     required Map<String, int> owedBy,
-  })  : currency = normalizeCurrency(currency),
-        paidBy = Map.unmodifiable(paidBy),
-        owedBy = Map.unmodifiable(owedBy) {
+  }) : currency = normalizeCurrency(currency),
+       paidBy = Map.unmodifiable(paidBy),
+       owedBy = Map.unmodifiable(owedBy) {
     var paid = 0;
     var owed = 0;
     paidBy.forEach((who, v) {
@@ -70,13 +69,12 @@ class Expense {
     required String currency,
     required String payer,
     required Map<String, int> shares,
-  }) =>
-      Expense(
-        id: id,
-        currency: currency,
-        paidBy: {payer: shares.values.fold(0, (a, b) => a + b)},
-        owedBy: shares,
-      );
+  }) => Expense(
+    id: id,
+    currency: currency,
+    paidBy: {payer: shares.values.fold(0, (a, b) => a + b)},
+    owedBy: shares,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -118,14 +116,13 @@ class SettlementPayment {
     required String from,
     required String to,
     required int amount,
-  }) =>
-      SettlementPayment(
-        id: id,
-        currency: normalizeCurrency(currency),
-        from: from,
-        to: to,
-        amount: amount,
-      ).._validate();
+  }) => SettlementPayment(
+    id: id,
+    currency: normalizeCurrency(currency),
+    from: from,
+    to: to,
+    amount: amount,
+  ).._validate();
 
   void _validate() {
     if (amount < 0) throw NegativeAmountError('$id.amount', amount);
@@ -315,8 +312,7 @@ class Ledger {
   Map<String, Map<String, int>> balances() =>
       computeBalances(expenses, payments: payments);
 
-  Map<String, List<Transfer>> suggestedTransfers() =>
-      simplifyDebts(balances());
+  Map<String, List<Transfer>> suggestedTransfers() => simplifyDebts(balances());
 
   /// Records every suggested transfer as a payment. Calling it again on a
   /// settled ledger changes nothing.
@@ -327,13 +323,15 @@ class Ledger {
     var n = 0;
     for (final entry in transfers.entries) {
       for (final t in entry.value) {
-        ledger = ledger.recordPayment(SettlementPayment(
-          id: 'settle-$batch-${n++}-${t.currency}-${t.from}-${t.to}',
-          currency: t.currency,
-          from: t.from,
-          to: t.to,
-          amount: t.amount,
-        ));
+        ledger = ledger.recordPayment(
+          SettlementPayment(
+            id: 'settle-$batch-${n++}-${t.currency}-${t.from}-${t.to}',
+            currency: t.currency,
+            from: t.from,
+            to: t.to,
+            amount: t.amount,
+          ),
+        );
       }
     }
     return ledger;
