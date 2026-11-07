@@ -12,7 +12,6 @@ import 'package:split_bill_app/widgets/home/ledger_session.dart';
 import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 import 'package:split_bill_app/widgets/layout/adaptive_body.dart';
 
-import '../data/fixtures.dart';
 import '../ledger_screens/fake_repo.dart';
 import '../ledger_screens/ledger_screens_test.dart' show tripRepo, noActions;
 
