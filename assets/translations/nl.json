@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Een scan kost {count} punten",
   "bf_scan_cost_pro": "Pro: onbeperkt scannen",
   "fr_tagline": "Splits het. Reken af. Blijf quitte.",
-  "fr_pay_now": "Nu betalen"
+  "fr_pay_now": "Nu betalen",
+  "guest2_split_with_you": "{host} heeft {store} met je gedeeld",
+  "guest2_total_amount": "{amount} totaal",
+  "guest2_you_owe": "{name}, je bent {host} geld schuldig",
+  "guest2_pill_unpaid": "Nog niet betaald",
+  "guest2_pill_sent": "Verstuurd · wacht op {host}",
+  "guest2_pill_paid": "Betaald · verrekend",
+  "guest2_pay_with": "Betaal {host} met",
+  "guest2_paid_amount": "Ik heb {amount} betaald",
+  "guest2_paid_helper": "{host} krijgt een melding en bevestigt. Geen account nodig.",
+  "guest2_see_bill": "Bekijk de hele rekening",
+  "guest2_service_tax": "Service {service}% + btw {tax}%"
 }

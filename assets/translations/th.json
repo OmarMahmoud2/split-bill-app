@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "สแกนหนึ่งครั้งใช้ {count} แต้ม",
   "bf_scan_cost_pro": "Pro: สแกนได้ไม่จำกัด",
   "fr_tagline": "หารกัน จ่ายกัน เจ๊ากัน",
-  "fr_pay_now": "จ่ายเลย"
+  "fr_pay_now": "จ่ายเลย",
+  "guest2_split_with_you": "{host} แบ่ง {store} กับคุณ",
+  "guest2_total_amount": "รวม {amount}",
+  "guest2_you_owe": "{name} คุณเป็นหนี้ {host}",
+  "guest2_pill_unpaid": "ยังไม่จ่าย",
+  "guest2_pill_sent": "ส่งแล้ว · รอ {host} ยืนยัน",
+  "guest2_pill_paid": "จ่ายแล้ว · เคลียร์แล้ว",
+  "guest2_pay_with": "จ่ายให้ {host} ผ่าน",
+  "guest2_paid_amount": "ฉันจ่าย {amount} แล้ว",
+  "guest2_paid_helper": "{host} จะได้รับแจ้งเตือนและยืนยัน ไม่ต้องมีบัญชี",
+  "guest2_see_bill": "ดูบิลทั้งหมด",
+  "guest2_service_tax": "ค่าบริการ {service}% + ภาษี {tax}%"
 }

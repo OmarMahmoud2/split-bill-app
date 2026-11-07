@@ -6,20 +6,18 @@ import 'package:split_bill_app/widgets/feedback/feedback.dart';
 
 import 'guest_chrome.dart';
 
-/// Waiting / confirmed: a badge, a title, a message, then the app card.
-class GuestOutcomeView extends StatelessWidget {
-  const GuestOutcomeView({
+/// Sent / paid: a small badge beside the title and message.
+class GuestStatusNote extends StatelessWidget {
+  const GuestStatusNote({
     super.key,
     required this.confirmed,
     required this.title,
     required this.message,
-    this.footer,
   });
 
   final bool confirmed;
   final String title;
   final String message;
-  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -27,153 +25,50 @@ class GuestOutcomeView extends StatelessWidget {
     return Semantics(
       liveRegion: true,
       container: true,
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    confirmed
-                        ? const GuestCheckBadge()
-                        : Container(
-                            width: 96,
-                            height: 96,
-                            decoration: BoxDecoration(
-                              color: p.oweSoft,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              AppIcons.hourglass,
-                              size: 44,
-                              color: p.oweInk,
-                            ),
-                          ),
-                    const SizedBox(height: 12),
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.headlineLarge.copyWith(
-                        fontSize: 26,
-                        color: p.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.bodyLarge.copyWith(
-                        fontSize: 15,
-                        height: 1.5,
-                        color: p.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: confirmed ? p.successSoft : p.skySoft,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              confirmed ? AppIcons.check : AppIcons.hourglass,
+              size: 20,
+              color: confirmed ? p.successStrong : p.sky,
             ),
           ),
-          if (footer != null)
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 30),
-              child: footer,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTypography.titleMedium.copyWith(
+                    fontSize: 16,
+                    color: p.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: AppTypography.bodyMedium.copyWith(
+                    fontSize: 14,
+                    height: 1.45,
+                    color: p.textSecondary,
+                  ),
+                ),
+              ],
             ),
+          ),
         ],
       ),
     );
   }
-}
-
-/// Teal circle whose check draws in once (static under Reduce Motion).
-class GuestCheckBadge extends StatefulWidget {
-  const GuestCheckBadge({super.key, this.size = 96});
-
-  final double size;
-
-  @override
-  State<GuestCheckBadge> createState() => _GuestCheckBadgeState();
-}
-
-class _GuestCheckBadgeState extends State<GuestCheckBadge>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 500),
-  );
-  bool _started = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_started) return;
-    _started = true;
-    if (AppMotion.reduceMotion(context)) {
-      _c.value = 1;
-    } else {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) _c.forward();
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return ExcludeSemantics(
-      child: Container(
-        width: widget.size,
-        height: widget.size,
-        decoration: BoxDecoration(color: p.primary, shape: BoxShape.circle),
-        child: AnimatedBuilder(
-          animation: _c,
-          builder: (context, _) => CustomPaint(
-            painter: _CheckPainter(
-              progress: Curves.easeOut.transform(_c.value),
-              color: p.onPrimary,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CheckPainter extends CustomPainter {
-  _CheckPainter({required this.progress, required this.color});
-
-  final double progress;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.width / 2 / 24; // 48px glyph in a 96px circle
-    final origin = Offset(size.width / 4, size.height / 4);
-    final path = Path()
-      ..moveTo(origin.dx + 5 * s, origin.dy + 12.5 * s)
-      ..lineTo(origin.dx + 9.5 * s, origin.dy + 17 * s)
-      ..lineTo(origin.dx + 19 * s, origin.dy + 7.5 * s);
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.6 * s
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    for (final metric in path.computeMetrics()) {
-      canvas.drawPath(metric.extractPath(0, metric.length * progress), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_CheckPainter old) =>
-      old.progress != progress || old.color != color;
 }
 
 /// Settled / expired / not found: a quiet message with one way forward.
@@ -258,7 +153,7 @@ class GuestMessageView extends StatelessWidget {
   }
 }
 
-/// First paint while the bill loads: the picker's shape in skeletons.
+/// First paint while the bill loads: the page's shape in skeletons.
 class GuestLoadingSkeleton extends StatelessWidget {
   const GuestLoadingSkeleton({super.key});
 
@@ -269,22 +164,53 @@ class GuestLoadingSkeleton extends StatelessWidget {
         label: 'feedback_loading'.tr(),
         container: true,
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 22, 20, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Skeleton.line(width: 180),
+              const Row(
+                children: [
+                  Skeleton.circle(size: 48),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Skeleton.line(width: 220),
+                        SizedBox(height: 8),
+                        Skeleton.line(width: 150, height: 12),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Skeleton.line(width: 120, height: 14),
               const SizedBox(height: 10),
-              const Skeleton.line(width: 240, height: 28),
-              const SizedBox(height: 10),
-              const Skeleton.line(width: 160),
-              const SizedBox(height: 30),
-              const Skeleton.line(width: 140, height: 16),
-              const SizedBox(height: 12),
-              GuestCard(
+              const Row(
+                children: [
+                  _ChipSkeleton(),
+                  SizedBox(width: 10),
+                  _ChipSkeleton(),
+                  SizedBox(width: 10),
+                  _ChipSkeleton(),
+                ],
+              ),
+              const SizedBox(height: 18),
+              const GuestCard(
+                padding: EdgeInsets.all(16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (var i = 0; i < 3; i++) const SkeletonListTile(),
+                    Skeleton.line(width: 140, height: 12),
+                    SizedBox(height: 10),
+                    Skeleton.line(width: 190, height: 34),
+                    SizedBox(height: 22),
+                    Skeleton.line(),
+                    SizedBox(height: 10),
+                    Skeleton.line(),
+                    SizedBox(height: 10),
+                    Skeleton.line(width: 200),
                   ],
                 ),
               ),
@@ -294,4 +220,15 @@ class GuestLoadingSkeleton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ChipSkeleton extends StatelessWidget {
+  const _ChipSkeleton();
+
+  @override
+  Widget build(BuildContext context) => const Skeleton(
+    width: 96,
+    height: 48,
+    borderRadius: BorderRadius.all(Radius.circular(14)),
+  );
 }

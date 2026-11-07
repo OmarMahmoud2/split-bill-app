@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "スキャン1回で{count}ポイント",
   "bf_scan_cost_pro": "Pro: スキャン無制限",
   "fr_tagline": "割り勘して、精算して、貸し借りなしに。",
-  "fr_pay_now": "今すぐ支払う"
+  "fr_pay_now": "今すぐ支払う",
+  "guest2_split_with_you": "{host}さんが{store}をあなたと割り勘にしました",
+  "guest2_total_amount": "合計 {amount}",
+  "guest2_you_owe": "{name}さん、{host}さんへの支払い",
+  "guest2_pill_unpaid": "未払い",
+  "guest2_pill_sent": "送信済み · {host}さんの確認待ち",
+  "guest2_pill_paid": "支払い済み · 精算完了",
+  "guest2_pay_with": "{host}さんへの支払い方法",
+  "guest2_paid_amount": "{amount}を支払いました",
+  "guest2_paid_helper": "{host}さんに通知が届き、確認されます。アカウントは不要です。",
+  "guest2_see_bill": "明細をすべて見る",
+  "guest2_service_tax": "サービス料 {service}% + 税 {tax}%"
 }

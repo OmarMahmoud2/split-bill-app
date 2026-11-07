@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Satu pindaian butuh {count} poin",
   "bf_scan_cost_pro": "Pro: pindai tanpa batas",
   "fr_tagline": "Bagi. Lunasi. Tetap impas.",
-  "fr_pay_now": "Bayar sekarang"
+  "fr_pay_now": "Bayar sekarang",
+  "guest2_split_with_you": "{host} membagi {store} denganmu",
+  "guest2_total_amount": "Total {amount}",
+  "guest2_you_owe": "{name}, kamu berutang ke {host}",
+  "guest2_pill_unpaid": "Belum dibayar",
+  "guest2_pill_sent": "Terkirim · menunggu {host}",
+  "guest2_pill_paid": "Lunas · selesai",
+  "guest2_pay_with": "Bayar {host} dengan",
+  "guest2_paid_amount": "Saya sudah bayar {amount}",
+  "guest2_paid_helper": "{host} mendapat notifikasi dan mengonfirmasi. Tanpa akun.",
+  "guest2_see_bill": "Lihat seluruh tagihan",
+  "guest2_service_tax": "Layanan {service}% + pajak {tax}%"
 }

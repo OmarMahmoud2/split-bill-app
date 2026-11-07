@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "एक स्कैन की क़ीमत {count} पॉइंट है",
   "bf_scan_cost_pro": "प्रो: असीमित स्कैन",
   "fr_tagline": "बाँटो। चुकाओ। हिसाब बराबर रखो।",
-  "fr_pay_now": "अभी भुगतान करें"
+  "fr_pay_now": "अभी भुगतान करें",
+  "guest2_split_with_you": "{host} ने {store} आपके साथ बाँटा",
+  "guest2_total_amount": "कुल {amount}",
+  "guest2_you_owe": "{name}, आप पर {host} का बकाया है",
+  "guest2_pill_unpaid": "अभी भुगतान नहीं हुआ",
+  "guest2_pill_sent": "भेजा गया · {host} की पुष्टि का इंतज़ार",
+  "guest2_pill_paid": "भुगतान हुआ · हिसाब बराबर",
+  "guest2_pay_with": "{host} को भुगतान करें",
+  "guest2_paid_amount": "मैंने {amount} चुका दिए",
+  "guest2_paid_helper": "{host} को सूचना मिलती है और वे पुष्टि करते हैं। खाते की ज़रूरत नहीं।",
+  "guest2_see_bill": "पूरा बिल देखें",
+  "guest2_service_tax": "सर्विस {service}% + कर {tax}%"
 }

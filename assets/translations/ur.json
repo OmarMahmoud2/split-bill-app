@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "ایک اسکین کی قیمت {count} پوائنٹس ہے",
   "bf_scan_cost_pro": "پرو: لامحدود اسکین",
   "fr_tagline": "تقسیم کریں۔ حساب چکائیں۔ برابر رہیں۔",
-  "fr_pay_now": "ابھی ادا کریں"
+  "fr_pay_now": "ابھی ادا کریں",
+  "guest2_split_with_you": "{host} نے {store} آپ کے ساتھ تقسیم کیا",
+  "guest2_total_amount": "کل {amount}",
+  "guest2_you_owe": "{name}، آپ پر {host} کا بقایا ہے",
+  "guest2_pill_unpaid": "ابھی ادا نہیں ہوا",
+  "guest2_pill_sent": "بھیج دیا · {host} کی تصدیق کا انتظار",
+  "guest2_pill_paid": "ادا ہو گیا · حساب برابر",
+  "guest2_pay_with": "{host} کو ادائیگی کریں",
+  "guest2_paid_amount": "میں نے {amount} ادا کر دیے",
+  "guest2_paid_helper": "{host} کو اطلاع ملتی ہے اور وہ تصدیق کرتے ہیں۔ اکاؤنٹ کی ضرورت نہیں۔",
+  "guest2_see_bill": "پورا بل دیکھیں",
+  "guest2_service_tax": "سروس {service}% + ٹیکس {tax}%"
 }

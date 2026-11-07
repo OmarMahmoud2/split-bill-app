@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Сканирование стоит {count} балла",
   "bf_scan_cost_pro": "Pro: безлимитное сканирование",
   "fr_tagline": "Раздели. Рассчитайся. Будьте квиты.",
-  "fr_pay_now": "Оплатить"
+  "fr_pay_now": "Оплатить",
+  "guest2_split_with_you": "{host} разделил(а) {store} с вами",
+  "guest2_total_amount": "Итого {amount}",
+  "guest2_you_owe": "{name}, вы должны {host}",
+  "guest2_pill_unpaid": "Ещё не оплачено",
+  "guest2_pill_sent": "Отправлено · ждём {host}",
+  "guest2_pill_paid": "Оплачено · рассчитались",
+  "guest2_pay_with": "Оплатить {host} через",
+  "guest2_paid_amount": "Я оплатил(а) {amount}",
+  "guest2_paid_helper": "{host} получит уведомление и подтвердит. Аккаунт не нужен.",
+  "guest2_see_bill": "Весь счёт",
+  "guest2_service_tax": "Обслуживание {service}% + налог {tax}%"
 }

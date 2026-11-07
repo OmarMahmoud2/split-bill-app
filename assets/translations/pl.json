@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Skan kosztuje {count} punktu",
   "bf_scan_cost_pro": "Pro: skanowanie bez limitu",
   "fr_tagline": "Podziel. Rozlicz. Bądźcie kwita.",
-  "fr_pay_now": "Zapłać teraz"
+  "fr_pay_now": "Zapłać teraz",
+  "guest2_split_with_you": "{host} podzielił(a) {store} z Tobą",
+  "guest2_total_amount": "Razem {amount}",
+  "guest2_you_owe": "{name}, jesteś winien(-na) {host}",
+  "guest2_pill_unpaid": "Jeszcze nie zapłacono",
+  "guest2_pill_sent": "Wysłano · czeka na {host}",
+  "guest2_pill_paid": "Zapłacono · rozliczone",
+  "guest2_pay_with": "Zapłać {host} przez",
+  "guest2_paid_amount": "Zapłaciłem(-am) {amount}",
+  "guest2_paid_helper": "{host} dostaje powiadomienie i potwierdza. Konto nie jest potrzebne.",
+  "guest2_see_bill": "Zobacz cały rachunek",
+  "guest2_service_tax": "Obsługa {service}% + podatek {tax}%"
 }

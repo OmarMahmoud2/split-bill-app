@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "En scanning koster {count} point",
   "bf_scan_cost_pro": "Pro: ubegrænsede scanninger",
   "fr_tagline": "Del den. Afgør den. Hold den lige.",
-  "fr_pay_now": "Betal nu"
+  "fr_pay_now": "Betal nu",
+  "guest2_split_with_you": "{host} har delt {store} med dig",
+  "guest2_total_amount": "{amount} i alt",
+  "guest2_you_owe": "{name}, du skylder {host}",
+  "guest2_pill_unpaid": "Ikke betalt endnu",
+  "guest2_pill_sent": "Sendt · venter på {host}",
+  "guest2_pill_paid": "Betalt · afgjort",
+  "guest2_pay_with": "Betal {host} med",
+  "guest2_paid_amount": "Jeg har betalt {amount}",
+  "guest2_paid_helper": "{host} får en besked og bekræfter. Ingen konto nødvendig.",
+  "guest2_see_bill": "Se hele regningen",
+  "guest2_service_tax": "Service {service}% + moms {tax}%"
 }

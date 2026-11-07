@@ -282,16 +282,38 @@ Future<void> showGuestReceipt(BuildContext context, GuestBill bill) {
                           fontSize: 15,
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          item.assignees.isEmpty
-                              ? 'guest_receipt_unassigned'.tr()
-                              : item.assignees
-                                    .map((id) => names[id] ?? '?')
-                                    .join(', '),
-                          style: AppTypography.bodySmall.copyWith(
-                            color: p.textSecondary,
+                        if (item.assignees.isEmpty)
+                          Text(
+                            'guest_receipt_unassigned'.tr(),
+                            style: AppTypography.bodySmall.copyWith(
+                              color: p.textSecondary,
+                            ),
+                          )
+                        else
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 4,
+                            children: [
+                              for (final id in item.assignees)
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    GuestAvatar(
+                                      id: id,
+                                      name: names[id] ?? '?',
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      names[id] ?? '?',
+                                      style: AppTypography.bodySmall.copyWith(
+                                        color: p.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -302,6 +324,41 @@ Future<void> showGuestReceipt(BuildContext context, GuestBill bill) {
                   bold: true,
                   fontSize: 15,
                 ),
+                const SizedBox(height: 14),
+                for (final person in bill.participants)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        GuestAvatar(
+                          id: person.id,
+                          name: person.name,
+                          size: 32,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            person.name.isEmpty ? 'guest'.tr() : person.name,
+                            style: AppTypography.bodyMedium.copyWith(
+                              fontSize: 15,
+                              color: p.textPrimary,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          guestAmount(
+                            bill.breakdownFor(person.id).totalMinor,
+                            bill.currency,
+                          ),
+                          textDirection: TextDirection.ltr,
+                          style: AppTypography.amountSmall.copyWith(
+                            fontSize: 15,
+                            color: p.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),

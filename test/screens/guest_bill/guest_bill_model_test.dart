@@ -108,6 +108,31 @@ void main() {
       expect(bill.participant('mona')!.shareMinor, 1700);
     });
 
+    test('old bills without a currency use the host\'s country, not "\$"', () {
+      Map<String, dynamic> old(Map<String, String> methods) => {
+        'hostId': 'h',
+        'participants': [
+          {'id': 'h', 'name': 'Omar', 'status': 'PAID'},
+          {'id': 'm', 'name': 'Mona', 'share': 10, 'status': 'PENDING'},
+        ],
+        'paymentMethods': methods,
+      };
+      // InstaPay is Egyptian: E£ like the app.
+      expect(
+        GuestBill.fromMap('b', old({'InstaPay': 'omar@instapay'})).currency,
+        'EGP',
+      );
+      // Nothing to go on: the browser's country, then USD.
+      expect(GuestBill.fromMap('b', old({}), countryCode: 'SA').currency, 'SAR');
+      expect(GuestBill.fromMap('b', old({})).currency, 'USD');
+      // A saved currency always wins.
+      expect(
+        GuestBill.fromMap('b', old({'InstaPay': 'x'})..['currency'] = 'eur')
+            .currency,
+        'EUR',
+      );
+    });
+
     test('is settled when every guest paid', () {
       final data = seaBreeze();
       (data['participants'] as List).last['status'] = 'PAID';

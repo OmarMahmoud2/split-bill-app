@@ -13,8 +13,8 @@
   <title>Evens · Your share of the bill</title>
   <meta name="description" content="Open the link to see what you owe, pay your host the way you like and let them know. No account needed.">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0E0F0E" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F5F7FB" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0A0F1C" media="(prefers-color-scheme: dark)">
   <meta name="robots" content="noindex,follow">
 
   <!-- Link previews (WhatsApp, iMessage, Slack...) read these without JS. -->
@@ -47,69 +47,70 @@
   <style id="splash-screen-style">
     /* v3 tokens (lib/theme/app_colors.dart). */
     :root {
-      --canvas: #F7F7F5; --surface: #FFFFFF; --hairline: #E7E6E1;
-      --divider: #EFEEEA; --ink: #111312; --muted: #5F6360;
-      --skeleton: #EFEEEA; --skeleton-hi: #F7F7F5;
+      --canvas: #F5F7FB; --surface: #FFFFFF; --hairline: #E3E7EF;
+      --divider: #EBEEF4; --ink: #0E1526; --muted: #5B6478; --mint: #0E7C72;
+      --skeleton: #EBEEF4; --skeleton-hi: #F5F7FB; --outer: #EEF1F6;
       color-scheme: light dark;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --canvas: #0E0F0E; --surface: #171918; --hairline: #262927;
-        --divider: #222523; --ink: #F2F3F1; --muted: #A3A8A5;
-        --skeleton: #222523; --skeleton-hi: #2A2D2B;
+        --canvas: #0A0F1C; --surface: #121A2B; --hairline: #22304A;
+        --divider: #1B2740; --ink: #E8EDF7; --muted: #9AA4B8; --mint: #34D7C0;
+        --skeleton: #1B2740; --skeleton-hi: #22304A; --outer: #1A2438;
       }
     }
     html, body { height: 100%; margin: 0; }
     body {
       background: var(--canvas);
       color: var(--ink);
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
     #splash {
       position: fixed; inset: 0; display: flex; flex-direction: column;
-      align-items: center; overflow: hidden;
+      align-items: center; overflow: hidden; background: var(--canvas);
       transition: opacity 150ms ease-out;
     }
     #splash.gone { opacity: 0; }
-    .sp-header { width: 100%; display: flex; justify-content: center; }
-    .sp-col { width: 100%; max-width: 560px; box-sizing: border-box; padding: 14px 20px 0; }
-    .sp-brand { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; height: 44px; display: flex; align-items: center; }
+    .sp-wrap { width: 100%; max-width: 480px; }
+    .sp-col { width: 100%; max-width: 480px; box-sizing: border-box; padding: 14px 20px 0; }
+    .sp-brand { font-weight: 800; font-size: 20px; letter-spacing: -0.4px; height: 44px; display: flex; align-items: center; }
+    .sp-brand i { font-style: normal; color: var(--mint); }
     .sp-line { height: 14px; border-radius: 6px; margin-top: 10px; background: var(--skeleton); }
-    .sp-card { margin-top: 12px; border: 1px solid var(--hairline); border-radius: 20px; background: var(--surface); overflow: hidden; }
-    .sp-row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-top: 1px solid var(--divider); }
-    .sp-row:first-child { border-top: 0; }
-    .sp-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--skeleton); flex: none; }
-    .sp-shimmer .sp-line, .sp-shimmer .sp-dot {
-      background: linear-gradient(90deg, var(--skeleton) 0%, var(--skeleton-hi) 50%, var(--skeleton) 100%);
-      background-size: 200% 100%;
-      animation: sp-shimmer 1.2s linear infinite;
+    .sp-card { margin-top: 18px; border: 1px solid var(--hairline); border-radius: 24px; background: var(--surface); padding: 16px; }
+    .sp-host { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+    .sp-host .sp-line { margin-top: 0; }
+    .sp-dot { width: 48px; height: 48px; border-radius: 50%; background: var(--skeleton); flex: none; }
+    .sp-chips { display: flex; gap: 10px; margin-top: 10px; }
+    .sp-chip { width: 96px; height: 48px; border-radius: 14px; background: var(--skeleton); }
+    @media (min-width: 600px) {
+      .sp-wrap { margin-top: 24px; max-width: 480px; width: 100%; border: 1px solid var(--hairline); border-radius: 28px; background: var(--canvas); padding-bottom: 24px; }
+      body, #splash { background: var(--outer); }
     }
-    @keyframes sp-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+    /* No heavy animation on the web: a light fade only. */
+    .sp-shimmer .sp-line, .sp-shimmer .sp-dot, .sp-shimmer .sp-chip { animation: sp-pulse 1.4s ease-in-out infinite; }
+    @keyframes sp-pulse { 50% { opacity: 0.55; } }
     @media (prefers-reduced-motion: reduce) {
-      .sp-shimmer .sp-line, .sp-shimmer .sp-dot { animation: none; }
+      .sp-shimmer .sp-line, .sp-shimmer .sp-dot, .sp-shimmer .sp-chip { animation: none; }
       #splash { transition: none; }
-    }
-    @media (min-width: 900px) {
-      .sp-header { width: 100%; background: var(--surface); border-bottom: 1px solid var(--hairline); display: flex; justify-content: center; }
-      .sp-header .sp-col { max-width: 1080px; padding: 14px 24px; }
-      .sp-brand { font-size: 20px; }
-      .sp-body { padding-top: 40px; }
     }
     noscript p { max-width: 520px; margin: 40px auto; padding: 0 20px; color: var(--muted); }
   </style>
 </head>
 <body>
   <div id="splash" class="sp-shimmer" aria-busy="true" aria-label="Loading">
-    <div class="sp-header"><div class="sp-col"><div class="sp-brand">Evens</div></div></div>
-    <div class="sp-col sp-body" aria-hidden="true">
-      <div class="sp-line" style="width: 180px; margin-top: 22px"></div>
-      <div class="sp-line" style="width: 240px; height: 28px"></div>
-      <div class="sp-line" style="width: 160px"></div>
-      <div class="sp-line" style="width: 140px; height: 16px; margin-top: 30px"></div>
-      <div class="sp-card">
-        <div class="sp-row"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 60%; margin: 0"></div><div class="sp-line" style="width: 35%"></div></span></div>
-        <div class="sp-row"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 50%; margin: 0"></div><div class="sp-line" style="width: 30%"></div></span></div>
-        <div class="sp-row"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 55%; margin: 0"></div><div class="sp-line" style="width: 40%"></div></span></div>
+    <div class="sp-wrap">
+      <div class="sp-col"><div class="sp-brand">evens<i>.</i></div></div>
+      <div class="sp-col" aria-hidden="true" style="padding-top: 0">
+        <div class="sp-host"><span class="sp-dot"></span><span style="flex: 1"><div class="sp-line" style="width: 70%"></div><div class="sp-line" style="width: 45%; height: 12px"></div></span></div>
+        <div class="sp-line" style="width: 120px; margin-top: 24px"></div>
+        <div class="sp-chips"><span class="sp-chip"></span><span class="sp-chip"></span><span class="sp-chip"></span></div>
+        <div class="sp-card">
+          <div class="sp-line" style="width: 140px; height: 12px; margin-top: 0"></div>
+          <div class="sp-line" style="width: 190px; height: 34px"></div>
+          <div class="sp-line" style="margin-top: 22px"></div>
+          <div class="sp-line"></div>
+          <div class="sp-line" style="width: 60%"></div>
+        </div>
       </div>
     </div>
   </div>

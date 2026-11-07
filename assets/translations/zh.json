@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "每次扫描需 {count} 积分",
   "bf_scan_cost_pro": "Pro：无限次扫描",
   "fr_tagline": "分摊,结清,两不相欠。",
-  "fr_pay_now": "立即支付"
+  "fr_pay_now": "立即支付",
+  "guest2_split_with_you": "{host}和你分摊了{store}",
+  "guest2_total_amount": "共 {amount}",
+  "guest2_you_owe": "{name}，你欠{host}",
+  "guest2_pill_unpaid": "尚未付款",
+  "guest2_pill_sent": "已发送 · 等待{host}确认",
+  "guest2_pill_paid": "已付款 · 已结清",
+  "guest2_pay_with": "用以下方式支付给{host}",
+  "guest2_paid_amount": "我已付 {amount}",
+  "guest2_paid_helper": "{host}会收到通知并确认。无需账号。",
+  "guest2_see_bill": "查看完整账单",
+  "guest2_service_tax": "服务费 {service}% + 税 {tax}%"
 }

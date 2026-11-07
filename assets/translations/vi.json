@@ -2251,5 +2251,16 @@
   "bf_scan_cost_points_other": "Mỗi lần quét tốn {count} điểm",
   "bf_scan_cost_pro": "Pro: quét không giới hạn",
   "fr_tagline": "Chia. Thanh toán. Huề nhau.",
-  "fr_pay_now": "Thanh toán ngay"
+  "fr_pay_now": "Thanh toán ngay",
+  "guest2_split_with_you": "{host} đã chia {store} với bạn",
+  "guest2_total_amount": "Tổng {amount}",
+  "guest2_you_owe": "{name}, bạn nợ {host}",
+  "guest2_pill_unpaid": "Chưa thanh toán",
+  "guest2_pill_sent": "Đã gửi · chờ {host} xác nhận",
+  "guest2_pill_paid": "Đã trả · đã tất toán",
+  "guest2_pay_with": "Trả cho {host} bằng",
+  "guest2_paid_amount": "Tôi đã trả {amount}",
+  "guest2_paid_helper": "{host} nhận thông báo và xác nhận. Không cần tài khoản.",
+  "guest2_see_bill": "Xem toàn bộ hóa đơn",
+  "guest2_service_tax": "Phí dịch vụ {service}% + thuế {tax}%"
 }
