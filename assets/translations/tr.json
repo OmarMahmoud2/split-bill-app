@@ -2190,5 +2190,16 @@
   "startup_error_message": "Bağlantınızı kontrol edip tekrar deneyin. Sorun sürerse destekle iletişime geçin.",
   "payment_apple_cash_message_plain": "Sana Apple Cash ile {amount} ödüyorum",
   "exp_fonts_unavailable": "PDF oluşturuldu ancak bazı karakterler görünmeyebilir. Yazı tiplerini almak için çevrimiçi olup tekrar deneyin.",
-  "ad_daily_cap_reached": "Bugünün 3 reklamını izlediniz. Yarın tekrar gelin, hesapları ücretsiz elle girin ya da sınırsız tarama için Pro'ya geçin."
+  "ad_daily_cap_reached": "Bugünün 3 reklamını izlediniz. Yarın tekrar gelin, hesapları ücretsiz elle girin ya da sınırsız tarama için Pro'ya geçin.",
+  "bd2_status_sent_confirm": "Gönderildi · onayla",
+  "bd2_status_owes": "{amount} borçlu",
+  "bd2_share_pdf": "PDF olarak paylaş",
+  "bd2_pdf_paid_by": "Ödeyen: {name}",
+  "bd2_pdf_items": "Kalemler",
+  "bd2_pdf_shares": "Kim ne kadar borçlu",
+  "bd2_pdf_pay_to": "Ödeme yapılacak kişi",
+  "bd2_apple_cash_hint": "Apple Cash ile göndermek için Mesajlar'ı açar",
+  "bd2_iou_explainer_short": "IOU, fiş olmadan birinin sana borçlu olduğunu belirten bir nottur.",
+  "bd2_iou_explainer_title": "IOU nedir?",
+  "bd2_iou_explainer_body": "Fiş olmadan birinin sana borçlu olduğunu belirten bir not. Ali'ye taksi için 200 TL mi verdin? Bir IOU ekle, Evens geri ödeyene kadar takip etsin."
 }

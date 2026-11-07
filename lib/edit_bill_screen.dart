@@ -563,7 +563,7 @@ class _EditBillScreenState extends State<EditBillScreen> {
           child: Semantics(
             header: true,
             child: Text(
-              'bf_edit_history_title'.tr().toUpperCase(),
+              'bf_edit_history_title'.tr(),
               style: AppTypography.titleSmall.copyWith(color: p.textSecondary),
             ),
           ),

@@ -2190,5 +2190,16 @@
   "startup_error_message": "اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔ اگر یہ بار بار ہو تو سپورٹ سے رابطہ کریں۔",
   "payment_apple_cash_message_plain": "میں آپ کو Apple Cash سے {amount} بھیج رہا ہوں",
   "exp_fonts_unavailable": "PDF بن گئی، لیکن کچھ حروف شاید نظر نہ آئیں۔ فونٹس حاصل کرنے کے لیے آن لائن ہو کر دوبارہ کوشش کریں۔",
-  "ad_daily_cap_reached": "آپ آج کے 3 اشتہارات دیکھ چکے ہیں۔ کل دوبارہ آئیں، بل مفت ہاتھ سے لکھیں، یا لامحدود اسکین کے لیے Pro لیں۔"
+  "ad_daily_cap_reached": "آپ آج کے 3 اشتہارات دیکھ چکے ہیں۔ کل دوبارہ آئیں، بل مفت ہاتھ سے لکھیں، یا لامحدود اسکین کے لیے Pro لیں۔",
+  "bd2_status_sent_confirm": "بھیجا گیا · تصدیق کریں",
+  "bd2_status_owes": "{amount} واجب الادا",
+  "bd2_share_pdf": "PDF کے طور پر شیئر کریں",
+  "bd2_pdf_paid_by": "{name} نے ادائیگی کی",
+  "bd2_pdf_items": "آئٹمز",
+  "bd2_pdf_shares": "کس کے ذمے کتنا",
+  "bd2_pdf_pay_to": "ادائیگی کریں",
+  "bd2_apple_cash_hint": "Apple Cash سے بھیجنے کے لیے Messages کھلتا ہے",
+  "bd2_iou_explainer_short": "IOU ایک نوٹ ہے کہ کسی کے ذمے آپ کی رقم ہے، بغیر بل کے۔",
+  "bd2_iou_explainer_title": "IOU کیا ہے؟",
+  "bd2_iou_explainer_body": "ایک نوٹ کہ کسی کے ذمے آپ کی رقم ہے، بغیر بل کے۔ علی کو ٹیکسی کے لیے ۲۰۰ روپے دیے؟ IOU شامل کریں اور Evens واپسی تک حساب رکھے گا۔"
 }

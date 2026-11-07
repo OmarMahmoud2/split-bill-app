@@ -2190,5 +2190,16 @@
   "startup_error_message": "अपना कनेक्शन जाँचें और फिर कोशिश करें। अगर यह बार-बार हो, तो सहायता से संपर्क करें।",
   "payment_apple_cash_message_plain": "मैं आपको Apple Cash से {amount} भेज रहा हूँ",
   "exp_fonts_unavailable": "PDF बन गई, लेकिन कुछ अक्षर नहीं दिख सकते। फ़ॉन्ट पाने के लिए ऑनलाइन होकर फिर कोशिश करें।",
-  "ad_daily_cap_reached": "आज के 3 विज्ञापन आप देख चुके हैं। कल फिर आएँ, बिल मुफ़्त में टाइप करें, या असीमित स्कैन के लिए Pro लें।"
+  "ad_daily_cap_reached": "आज के 3 विज्ञापन आप देख चुके हैं। कल फिर आएँ, बिल मुफ़्त में टाइप करें, या असीमित स्कैन के लिए Pro लें।",
+  "bd2_status_sent_confirm": "भेजा गया · पुष्टि करें",
+  "bd2_status_owes": "{amount} बकाया",
+  "bd2_share_pdf": "PDF के रूप में शेयर करें",
+  "bd2_pdf_paid_by": "{name} ने भुगतान किया",
+  "bd2_pdf_items": "आइटम",
+  "bd2_pdf_shares": "किसे कितना देना है",
+  "bd2_pdf_pay_to": "भुगतान करें",
+  "bd2_apple_cash_hint": "Apple Cash से भेजने के लिए Messages खुलता है",
+  "bd2_iou_explainer_short": "IOU एक नोट है कि किसी पर आपका पैसा बकाया है, बिना बिल के।",
+  "bd2_iou_explainer_title": "IOU क्या है?",
+  "bd2_iou_explainer_body": "एक नोट कि किसी पर आपका पैसा बकाया है, बिना बिल के। अली को टैक्सी के लिए ₹200 उधार दिए? IOU जोड़ें और Evens तब तक हिसाब रखेगा जब तक वह लौटा न दे।"
 }

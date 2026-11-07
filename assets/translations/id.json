@@ -2190,5 +2190,16 @@
   "startup_error_message": "Periksa koneksimu, lalu coba lagi. Jika terus terjadi, hubungi dukungan.",
   "payment_apple_cash_message_plain": "Membayarmu {amount} lewat Apple Cash",
   "exp_fonts_unavailable": "PDF dibuat, tetapi beberapa karakter mungkin tidak tampil. Online lalu coba lagi untuk mengunduh font.",
-  "ad_daily_cap_reached": "Anda sudah menonton 3 iklan hari ini. Kembali besok, ketik tagihan secara gratis, atau jadi Pro untuk scan tanpa batas."
+  "ad_daily_cap_reached": "Anda sudah menonton 3 iklan hari ini. Kembali besok, ketik tagihan secara gratis, atau jadi Pro untuk scan tanpa batas.",
+  "bd2_status_sent_confirm": "Terkirim · konfirmasi",
+  "bd2_status_owes": "Berutang {amount}",
+  "bd2_share_pdf": "Bagikan sebagai PDF",
+  "bd2_pdf_paid_by": "Dibayar oleh {name}",
+  "bd2_pdf_items": "Item",
+  "bd2_pdf_shares": "Siapa berutang berapa",
+  "bd2_pdf_pay_to": "Bayar ke",
+  "bd2_apple_cash_hint": "Membuka Pesan untuk mengirim dengan Apple Cash",
+  "bd2_iou_explainer_short": "IOU adalah catatan bahwa seseorang berutang padamu, tanpa tagihan.",
+  "bd2_iou_explainer_title": "Apa itu IOU?",
+  "bd2_iou_explainer_body": "Catatan bahwa seseorang berutang padamu, tanpa tagihan. Meminjamkan Ali Rp50.000 untuk taksi? Tambahkan IOU dan Evens mencatatnya sampai dia membayar."
 }

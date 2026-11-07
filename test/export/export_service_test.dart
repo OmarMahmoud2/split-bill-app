@@ -150,4 +150,30 @@ void main() {
     expect(bytes.length, greaterThan(500));
     expect(ascii.decode(bytes.sublist(0, 5)), '%PDF-');
   });
+
+  test(
+    'buildBillReceiptPdf builds a one-page receipt (RTL names too)',
+    () async {
+      const receipt = BillReceipt(
+        title: 'Sea Breeze Grill',
+        dateText: '3 Oct 2026',
+        totalText: 'E£812.70',
+        paidByText: 'Paid by Omar',
+        itemsHeading: 'Items',
+        sharesHeading: 'Who owes what',
+        methodsHeading: 'Pay to',
+        paidLabel: 'Paid',
+        notPaidLabel: 'Not yet',
+        items: [('Burger', 'E£200.00')],
+        people: [
+          BillReceiptPerson('Omar', 'E£300.00', true),
+          BillReceiptPerson('سارة', 'E£512.70', false),
+        ],
+        methods: [('InstaPay', 'omar@instapay')],
+      );
+      final bytes = await ExportService.buildBillReceiptPdf(receipt, rtl: true);
+      expect(ascii.decode(bytes.sublist(0, 5)), '%PDF-');
+      expect(bytes.length, greaterThan(500));
+    },
+  );
 }

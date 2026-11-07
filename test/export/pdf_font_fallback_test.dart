@@ -27,15 +27,16 @@ void main() {
     });
 
     test('mixed text asks for each font once', () {
-      expect(
-        PdfFontFallback.scriptsIn('Dinner عشاء 晚餐'),
-        {PdfScript.arabic, PdfScript.chinese},
-      );
+      expect(PdfFontFallback.scriptsIn('Dinner عشاء 晚餐'), {
+        PdfScript.arabic,
+        PdfScript.chinese,
+      });
     });
   });
 
   test('fontUrlFromCss reads the first url()', () {
-    const css = "@font-face { src: url(https://fonts.gstatic.com/l/font?kit=x) format('truetype'); }";
+    const css =
+        "@font-face { src: url(https://fonts.gstatic.com/l/font?kit=x) format('truetype'); }";
     expect(
       PdfFontFallback.fontUrlFromCss(css),
       'https://fonts.gstatic.com/l/font?kit=x',
@@ -43,7 +44,9 @@ void main() {
   });
 
   test('offline: no throw, the script is reported missing', () async {
-    final client = MockClient((_) async => throw const SocketException('offline'));
+    final client = MockClient(
+      (_) async => throw const SocketException('offline'),
+    );
     final result = await PdfFontFallback(client: client).load('晚餐');
     expect(result.complete, isFalse);
     expect(result.missing, {PdfScript.chinese});
@@ -69,7 +72,10 @@ void main() {
       if (req.url.host == 'fonts.googleapis.com') {
         expect(req.url.queryParameters['family'], 'Noto Sans SC:wght@400');
         expect(req.url.queryParameters['text'], '晚餐');
-        return http.Response('src: url(https://fonts.gstatic.com/l/font?kit=a) format("truetype");', 200);
+        return http.Response(
+          'src: url(https://fonts.gstatic.com/l/font?kit=a) format("truetype");',
+          200,
+        );
       }
       return http.Response.bytes(ttf, 200);
     });
@@ -81,7 +87,9 @@ void main() {
 
   test('buildPdf accepts fallback fonts', () async {
     final inter = pw.Font.ttf(
-      ByteData.sublistView(File('assets/fonts/Inter/Inter-Regular.ttf').readAsBytesSync()),
+      ByteData.sublistView(
+        File('assets/fonts/Inter/Inter-Regular.ttf').readAsBytesSync(),
+      ),
     );
     final bytes = await ExportService.buildPdf(
       bills: [

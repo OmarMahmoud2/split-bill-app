@@ -1,12 +1,22 @@
 import 'package:split_bill_app/services/analytics_service.dart';
 import 'dart:async';
+import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:split_bill_app/services/export_service.dart';
+import 'package:split_bill_app/widgets/bill_details/pay_methods_list.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
+import 'package:split_bill_app/bill_flow/bill_calculator.dart'
+    show minorFromAny;
+import 'package:split_bill_app/services/pdf_font_fallback.dart';
 import 'package:split_bill_app/bill_flow/bill_document.dart';
 import 'package:split_bill_app/bill_flow/group_settlement.dart';
 import 'package:split_bill_app/bill_flow/share_links.dart';
@@ -413,6 +423,94 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
     );
   }
 
+  Future<void> _sharePdf(Map<String, dynamic> bill) async {
+    AppHaptics.light();
+    final rtl = Directionality.of(context) == ui.TextDirection.rtl;
+    try {
+      final reader = BillReader(bill);
+      final cur = reader.currency;
+      String money(int m) => formatMoneyMinor(m, cur);
+      final hostId = bill['hostId']?.toString();
+      final host = reader.participants
+          .where((p) => p['id']?.toString() == hostId)
+          .firstOrNull;
+      final date = dateFromAny(bill['date']);
+      final receipt = BillReceipt(
+        title: _storeName(bill),
+        dateText: date == null ? '' : formatBillDate(context, date),
+        totalText: money(reader.totalMinor),
+        paidByText: host == null
+            ? ''
+            : 'bd2_pdf_paid_by'.tr(namedArgs: {'name': '${host['name']}'}),
+        itemsHeading: 'bd2_pdf_items'.tr(),
+        sharesHeading: 'bd2_pdf_shares'.tr(),
+        methodsHeading: 'bd2_pdf_pay_to'.tr(),
+        paidLabel: 'bf_bill_status_paid'.tr(),
+        notPaidLabel: 'bf_bill_status_not_yet'.tr(),
+        items: [
+          for (final i in reader.items)
+            (
+              '${i['name'] ?? ''}',
+              money(
+                minorFromAny(i['price'], cur) *
+                    ((i['qty'] as num?)?.round() ?? 1),
+              ),
+            ),
+        ],
+        people: [
+          for (final p in reader.participants)
+            BillReceiptPerson(
+              '${p['name'] ?? ''}',
+              money(reader.shareMinorOf(p)),
+              p['id']?.toString() == hostId || payStatusOf(p) == PayStatus.paid,
+            ),
+        ],
+        methods: [
+          for (final m in payMethodsFor(bill: bill))
+            if (m.value.trim().isNotEmpty) (m.label, m.value.trim()),
+        ],
+      );
+      final fonts = await PdfFontFallback().load(
+        [
+          receipt.title,
+          for (final p in receipt.people) p.name,
+          for (final i in receipt.items) i.$1,
+          for (final m in receipt.methods) m.$1,
+          receipt.paidByText,
+          receipt.paidLabel,
+          receipt.notPaidLabel,
+        ].join(' '),
+      );
+      final bytes = await ExportService.buildBillReceiptPdf(
+        receipt,
+        font: pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Inter/Inter-Regular.ttf'),
+        ),
+        boldFont: pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Inter/Inter-Bold.ttf'),
+        ),
+        fontFallback: fonts.fonts,
+        rtl: rtl,
+      );
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/evens-bill-${widget.billId}.pdf');
+      await file.writeAsBytes(bytes);
+      if (!mounted) return;
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], subject: receipt.title),
+      );
+    } catch (e) {
+      debugPrint('Bill PDF failed: $e');
+      if (mounted) {
+        AppToast.show(
+          context,
+          message: 'exp_failed'.tr(),
+          type: AppToastType.error,
+        );
+      }
+    }
+  }
+
   Future<void> _sharePerson(
     Map<String, dynamic> participant,
     Map<String, dynamic> bill,
@@ -498,6 +596,15 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
               _shareTable(bill);
             },
           ),
+          if (!kIsWeb)
+            _SheetAction(
+              icon: AppIcons.receipt,
+              label: 'bd2_share_pdf'.tr(),
+              onTap: () {
+                Navigator.of(context).pop();
+                _sharePdf(bill);
+              },
+            ),
           _SheetAction(
             icon: AppIcons.delete,
             label: 'bf_bill_action_delete'.tr(),
@@ -544,7 +651,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                   ),
                 ),
               ),
-              PayStatusPill(status: status),
+              PayStatusPill(status: status, hasProof: proof != null),
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -786,6 +893,8 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
                         : reader.outstandingMinorOf(others[i]),
                     currency: currency,
                     status: payStatusOf(others[i]),
+                    hasProof:
+                        decodeProofImage(others[i]['paymentProof']) != null,
                     showDivider: i > 0,
                     onTap: amIHost
                         ? () => _showParticipantActions(others[i], bill)
@@ -864,7 +973,7 @@ class _BillDetailsScreenState extends State<BillDetailsScreen> {
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 8),
           child: Text(
-            'bf_bill_history_title'.tr().toUpperCase(),
+            'bf_bill_history_title'.tr(),
             style: AppTypography.labelMedium.copyWith(
               color: p.textSecondary,
               fontWeight: FontWeight.w600,

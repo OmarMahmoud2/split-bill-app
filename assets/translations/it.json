@@ -2190,5 +2190,16 @@
   "startup_error_message": "Controlla la connessione e riprova. Se il problema persiste, contatta l'assistenza.",
   "payment_apple_cash_message_plain": "Ti pago {amount} con Apple Cash",
   "exp_fonts_unavailable": "PDF creato, ma alcuni caratteri potrebbero non comparire. Connettiti e riprova per scaricare i font.",
-  "ad_daily_cap_reached": "Hai visto i 3 annunci di oggi. Torna domani, inserisci i conti gratis, oppure passa a Pro per scansioni illimitate."
+  "ad_daily_cap_reached": "Hai visto i 3 annunci di oggi. Torna domani, inserisci i conti gratis, oppure passa a Pro per scansioni illimitate.",
+  "bd2_status_sent_confirm": "Inviato · conferma",
+  "bd2_status_owes": "Deve {amount}",
+  "bd2_share_pdf": "Condividi come PDF",
+  "bd2_pdf_paid_by": "Pagato da {name}",
+  "bd2_pdf_items": "Articoli",
+  "bd2_pdf_shares": "Chi deve cosa",
+  "bd2_pdf_pay_to": "Paga a",
+  "bd2_apple_cash_hint": "Apre Messaggi per inviare con Apple Cash",
+  "bd2_iou_explainer_short": "Un IOU è una nota che qualcuno ti deve dei soldi, senza un conto.",
+  "bd2_iou_explainer_title": "Cos'è un IOU?",
+  "bd2_iou_explainer_body": "Una nota che qualcuno ti deve dei soldi, senza un conto. Hai prestato 20 € ad Ali per un taxi? Aggiungi un IOU e Evens tiene il conto finché non ti restituisce i soldi."
 }

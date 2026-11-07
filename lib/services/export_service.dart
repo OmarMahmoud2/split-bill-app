@@ -453,4 +453,141 @@ class ExportService {
     }
     return doc.save();
   }
+
+  /// One-page receipt for a single bill: wordmark, title, date, total,
+  /// items, each person's share with paid status and the host's methods.
+  /// Everything is passed in already formatted and translated.
+  static Future<Uint8List> buildBillReceiptPdf(
+    BillReceipt r, {
+    pw.Font? font,
+    pw.Font? boldFont,
+    List<pw.Font> fontFallback = const [],
+    bool rtl = false,
+  }) async {
+    final theme = font != null
+        ? pw.ThemeData.withFont(
+            base: font,
+            bold: boldFont ?? font,
+            fontFallback: fontFallback,
+          )
+        : pw.ThemeData.base();
+    const ink = PdfColor.fromInt(0xFF111312);
+    const muted = PdfColor.fromInt(0xFF5F6360);
+    const hairline = PdfColor.fromInt(0xFFE7E6E1);
+    const mint = PdfColor.fromInt(0xFF0F8F6B);
+    const coral = PdfColor.fromInt(0xFFC2452D);
+    pw.TextStyle t(double size, {bool bold = false, PdfColor c = ink}) =>
+        pw.TextStyle(
+          fontSize: size,
+          fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+          color: c,
+        );
+    pw.Widget row(String a, String b, {PdfColor? bColor, bool bold = false}) =>
+        pw.Padding(
+          padding: const pw.EdgeInsets.symmetric(vertical: 4),
+          child: pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Expanded(
+                child: pw.Text(a, style: t(11, bold: bold)),
+              ),
+              pw.SizedBox(width: 12),
+              pw.Text(
+                b,
+                style: t(11, bold: bold, c: bColor ?? ink),
+              ),
+            ],
+          ),
+        );
+    pw.Widget heading(String text) => pw.Padding(
+      padding: const pw.EdgeInsets.only(top: 18, bottom: 4),
+      child: pw.Text(text, style: t(11, bold: true, c: muted)),
+    );
+    final rule = pw.Divider(color: hairline, thickness: 1);
+
+    final doc = pw.Document(title: r.title, creator: 'Evens');
+    doc.addPage(
+      pw.Page(
+        theme: theme,
+        textDirection: rtl ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+        pageFormat: PdfPageFormat.a5,
+        margin: const pw.EdgeInsets.all(32),
+        build: (_) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text('Evens', style: t(13, bold: true, c: mint)),
+            pw.SizedBox(height: 14),
+            pw.Text(r.title, style: t(20, bold: true)),
+            pw.Text(r.dateText, style: t(11, c: muted)),
+            pw.SizedBox(height: 10),
+            pw.Text(r.totalText, style: t(26, bold: true)),
+            if (r.paidByText.isNotEmpty)
+              pw.Text(r.paidByText, style: t(11, c: muted)),
+            if (r.items.isNotEmpty) ...[
+              heading(r.itemsHeading),
+              rule,
+              for (final i in r.items) row(i.$1, i.$2),
+            ],
+            heading(r.sharesHeading),
+            rule,
+            for (final p in r.people)
+              row(
+                '${p.name} · ${p.paid ? r.paidLabel : r.notPaidLabel}',
+                p.amountText,
+                bColor: p.paid ? mint : coral,
+                bold: true,
+              ),
+            if (r.methods.isNotEmpty) ...[
+              heading(r.methodsHeading),
+              rule,
+              for (final m in r.methods) row(m.$1, m.$2),
+            ],
+          ],
+        ),
+      ),
+    );
+    return doc.save();
+  }
+}
+
+/// Pre-formatted content of the single-bill receipt PDF.
+class BillReceipt {
+  const BillReceipt({
+    required this.title,
+    required this.dateText,
+    required this.totalText,
+    required this.people,
+    required this.itemsHeading,
+    required this.sharesHeading,
+    required this.methodsHeading,
+    required this.paidLabel,
+    required this.notPaidLabel,
+    this.paidByText = '',
+    this.items = const [],
+    this.methods = const [],
+  });
+
+  final String title;
+  final String dateText;
+  final String totalText;
+  final String paidByText;
+  final String itemsHeading;
+  final String sharesHeading;
+  final String methodsHeading;
+  final String paidLabel;
+  final String notPaidLabel;
+
+  /// (name, formatted amount)
+  final List<(String, String)> items;
+  final List<BillReceiptPerson> people;
+
+  /// (label, handle)
+  final List<(String, String)> methods;
+}
+
+class BillReceiptPerson {
+  const BillReceiptPerson(this.name, this.amountText, this.paid);
+  final String name;
+  final String amountText;
+  final bool paid;
 }

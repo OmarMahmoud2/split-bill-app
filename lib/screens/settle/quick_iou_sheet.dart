@@ -20,7 +20,10 @@ import 'package:split_bill_app/widgets/home/ledger_ui.dart';
 /// Parses "20", "20.5" or "20,50" into minor units; null when invalid or
 /// not positive.
 int? parseAmountMinor(String text, String currency) {
-  final cleaned = text.trim().replaceAll(RegExp(r'[\s  ]'), '').replaceAll(',', '.');
+  final cleaned = text
+      .trim()
+      .replaceAll(RegExp(r'[\s  ]'), '')
+      .replaceAll(',', '.');
   if (cleaned.isEmpty) return null;
   final v = double.tryParse(cleaned);
   if (v == null || v.isNaN || v.isInfinite || v <= 0) return null;
@@ -67,7 +70,8 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
     super.dispose();
   }
 
-  String get _code => _currency ?? normalizeCurrency(preferredCurrency(context));
+  String get _code =>
+      _currency ?? normalizeCurrency(preferredCurrency(context));
 
   Future<void> _addPerson() async {
     final m = await pickMemberFromContacts(context);
@@ -120,8 +124,12 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
     AppToast.show(
       context,
       message: _theyOweMe
-          ? 'iou_saved_they_owe'.tr(namedArgs: {'name': person.name, 'amount': amount})
-          : 'iou_saved_i_owe'.tr(namedArgs: {'name': person.name, 'amount': amount}),
+          ? 'iou_saved_they_owe'.tr(
+              namedArgs: {'name': person.name, 'amount': amount},
+            )
+          : 'iou_saved_i_owe'.tr(
+              namedArgs: {'name': person.name, 'amount': amount},
+            ),
       type: AppToastType.success,
     );
     Navigator.of(context).pop(true);
@@ -137,8 +145,12 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
     final cta = person == null || minor == null
         ? 'iou_save'.tr()
         : _theyOweMe
-        ? 'iou_cta_they_owe'.tr(namedArgs: {'name': person.name, 'amount': amount})
-        : 'iou_cta_i_owe'.tr(namedArgs: {'name': person.name, 'amount': amount});
+        ? 'iou_cta_they_owe'.tr(
+            namedArgs: {'name': person.name, 'amount': amount},
+          )
+        : 'iou_cta_i_owe'.tr(
+            namedArgs: {'name': person.name, 'amount': amount},
+          );
 
     return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 20),
@@ -147,11 +159,56 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
         children: [
           Semantics(
             header: true,
-            child: Text('iou_title'.tr(), style: AppTypography.headlineSmall.copyWith(color: p.textPrimary, fontSize: 22, fontWeight: FontWeight.w700)),
+            child: Text(
+              'iou_title'.tr(),
+              style: AppTypography.headlineSmall.copyWith(
+                color: p.textPrimary,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'bd2_iou_explainer_short'.tr(),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: p.textSecondary,
+                  ),
+                ),
+              ),
+              IconButton(
+                tooltip: 'bd2_iou_explainer_title'.tr(),
+                icon: Icon(AppIcons.info, color: p.textSecondary),
+                onPressed: () => showLedgerSheet<void>(
+                  context,
+                  title: 'bd2_iou_explainer_title'.tr(),
+                  builder: (_) => Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      20,
+                      0,
+                      20,
+                      24,
+                    ),
+                    child: Text(
+                      'bd2_iou_explainer_body'.tr(),
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: p.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           LedgerSegmented<bool>(
-            segments: [(true, 'iou_they_owe_me'.tr()), (false, 'iou_i_owe_them'.tr())],
+            segments: [
+              (true, 'iou_they_owe_me'.tr()),
+              (false, 'iou_i_owe_them'.tr()),
+            ],
             selected: _theyOweMe,
             onChanged: (v) => setState(() => _theyOweMe = v),
           ),
@@ -179,14 +236,29 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
                           child: Column(
                             children: [
                               m.id == person?.id
-                                  ? AvatarHop(child: LedgerAvatar(id: m.id, name: m.name, photoUrl: m.photoUrl, size: 48, selected: true))
-                                  : LedgerAvatar(id: m.id, name: m.name, photoUrl: m.photoUrl, size: 52),
+                                  ? AvatarHop(
+                                      child: LedgerAvatar(
+                                        id: m.id,
+                                        name: m.name,
+                                        photoUrl: m.photoUrl,
+                                        size: 48,
+                                        selected: true,
+                                      ),
+                                    )
+                                  : LedgerAvatar(
+                                      id: m.id,
+                                      name: m.name,
+                                      photoUrl: m.photoUrl,
+                                      size: 52,
+                                    ),
                               const SizedBox(height: 4),
                               Text(
                                 m.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: AppTypography.caption.copyWith(color: p.textSecondary),
+                                style: AppTypography.caption.copyWith(
+                                  color: p.textSecondary,
+                                ),
                               ),
                             ],
                           ),
@@ -207,11 +279,24 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
                           Container(
                             width: 52,
                             height: 52,
-                            decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: p.borderStrong)),
-                            child: Icon(AppIcons.personAdd, color: p.textPrimary, size: 22),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: p.borderStrong),
+                            ),
+                            child: Icon(
+                              AppIcons.personAdd,
+                              color: p.textPrimary,
+                              size: 22,
+                            ),
                           ),
                           const SizedBox(height: 4),
-                          Text('iou_add_short'.tr(), maxLines: 1, style: AppTypography.caption.copyWith(color: p.textSecondary)),
+                          Text(
+                            'iou_add_short'.tr(),
+                            maxLines: 1,
+                            style: AppTypography.caption.copyWith(
+                              color: p.textSecondary,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -228,25 +313,41 @@ class _QuickIouSheetState extends State<QuickIouSheet> {
                 onPressed: () => CurrencySelectionSheet.show(
                   context: context,
                   selectedCode: _code,
-                  onSelected: (c) => setState(() => _currency = normalizeCurrency(c)),
+                  onSelected: (c) =>
+                      setState(() => _currency = normalizeCurrency(c)),
                 ),
-                child: Text(_code, semanticsLabel: 'iou_change_currency'.tr(namedArgs: {'code': _code})),
+                child: Text(
+                  _code,
+                  semanticsLabel: 'iou_change_currency'.tr(
+                    namedArgs: {'code': _code},
+                  ),
+                ),
               ),
               IntrinsicWidth(
                 child: TextField(
                   controller: _amount,
                   autofocus: false,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                  ],
                   textAlign: TextAlign.center,
-                  style: AppTypography.amountHero.copyWith(color: p.textPrimary, fontSize: 48),
+                  style: AppTypography.amountHero.copyWith(
+                    color: p.textPrimary,
+                    fontSize: 48,
+                  ),
                   decoration: InputDecoration(
                     hintText: '0',
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     filled: false,
-                    hintStyle: AppTypography.amountHero.copyWith(color: p.textDisabled, fontSize: 48),
+                    hintStyle: AppTypography.amountHero.copyWith(
+                      color: p.textDisabled,
+                      fontSize: 48,
+                    ),
                     contentPadding: EdgeInsets.zero,
                   ),
                   onChanged: (_) => setState(() {}),

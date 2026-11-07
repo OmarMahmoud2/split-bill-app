@@ -2190,5 +2190,16 @@
   "startup_error_message": "请检查网络连接后重试。如果问题持续出现，请联系支持。",
   "payment_apple_cash_message_plain": "通过 Apple Cash 向你支付 {amount}",
   "exp_fonts_unavailable": "PDF 已生成，但部分字符可能无法显示。请联网后重试以获取字体。",
-  "ad_daily_cap_reached": "今天的 3 条广告你已经看完了。明天再来、免费手动输入账单，或升级 Pro 享受无限扫描。"
+  "ad_daily_cap_reached": "今天的 3 条广告你已经看完了。明天再来、免费手动输入账单，或升级 Pro 享受无限扫描。",
+  "bd2_status_sent_confirm": "已发送 · 请确认",
+  "bd2_status_owes": "欠 {amount}",
+  "bd2_share_pdf": "分享为 PDF",
+  "bd2_pdf_paid_by": "由 {name} 付款",
+  "bd2_pdf_items": "项目",
+  "bd2_pdf_shares": "谁欠多少",
+  "bd2_pdf_pay_to": "付款给",
+  "bd2_apple_cash_hint": "打开信息，用 Apple Cash 发送",
+  "bd2_iou_explainer_short": "IOU 是一张欠条，记录别人欠你钱，无需账单。",
+  "bd2_iou_explainer_title": "什么是 IOU？",
+  "bd2_iou_explainer_body": "一张欠条，记录别人欠你钱，无需账单。借给阿里 20 元打车？添加一条 IOU，Evens 会帮你记着，直到他还钱。"
 }

@@ -2190,5 +2190,16 @@
   "startup_error_message": "Kontrollera anslutningen och försök igen. Om det fortsätter, kontakta supporten.",
   "payment_apple_cash_message_plain": "Jag betalar dig {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF skapad, men vissa tecken kanske inte visas. Gå online och försök igen för att hämta typsnitten.",
-  "ad_daily_cap_reached": "Du har sett dagens 3 annonser. Kom tillbaka i morgon, skriv in notor gratis eller skaffa Pro för obegränsade skanningar."
+  "ad_daily_cap_reached": "Du har sett dagens 3 annonser. Kom tillbaka i morgon, skriv in notor gratis eller skaffa Pro för obegränsade skanningar.",
+  "bd2_status_sent_confirm": "Skickat · bekräfta",
+  "bd2_status_owes": "Är skyldig {amount}",
+  "bd2_share_pdf": "Dela som PDF",
+  "bd2_pdf_paid_by": "Betalat av {name}",
+  "bd2_pdf_items": "Poster",
+  "bd2_pdf_shares": "Vem är skyldig vad",
+  "bd2_pdf_pay_to": "Betala till",
+  "bd2_apple_cash_hint": "Öppnar Meddelanden för att skicka med Apple Cash",
+  "bd2_iou_explainer_short": "En IOU är en anteckning om att någon är skyldig dig pengar, utan kvitto.",
+  "bd2_iou_explainer_title": "Vad är en IOU?",
+  "bd2_iou_explainer_body": "En anteckning om att någon är skyldig dig pengar, utan kvitto. Lånat ut 200 kr till Ali för en taxi? Lägg till en IOU så håller Evens koll tills han betalar tillbaka."
 }

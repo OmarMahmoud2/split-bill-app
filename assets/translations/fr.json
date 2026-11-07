@@ -2190,5 +2190,16 @@
   "startup_error_message": "Vérifiez votre connexion, puis réessayez. Si le problème persiste, contactez le support.",
   "payment_apple_cash_message_plain": "Je te paie {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF créé, mais certains caractères risquent de ne pas s'afficher. Connectez-vous et réessayez pour récupérer les polices.",
-  "ad_daily_cap_reached": "Vous avez vu les 3 pubs du jour. Revenez demain, saisissez vos additions gratuitement, ou passez à Pro pour des scans illimités."
+  "ad_daily_cap_reached": "Vous avez vu les 3 pubs du jour. Revenez demain, saisissez vos additions gratuitement, ou passez à Pro pour des scans illimités.",
+  "bd2_status_sent_confirm": "Envoyé · confirmer",
+  "bd2_status_owes": "Doit {amount}",
+  "bd2_share_pdf": "Partager en PDF",
+  "bd2_pdf_paid_by": "Payé par {name}",
+  "bd2_pdf_items": "Articles",
+  "bd2_pdf_shares": "Qui doit quoi",
+  "bd2_pdf_pay_to": "Payer à",
+  "bd2_apple_cash_hint": "Ouvre Messages pour envoyer avec Apple Cash",
+  "bd2_iou_explainer_short": "Un IOU est une note indiquant que quelqu'un vous doit de l'argent, sans addition.",
+  "bd2_iou_explainer_title": "C'est quoi un IOU ?",
+  "bd2_iou_explainer_body": "Une note indiquant que quelqu'un vous doit de l'argent, sans addition. Vous avez prêté 20 € à Ali pour un taxi ? Ajoutez un IOU et Evens garde le compte jusqu'à son remboursement."
 }

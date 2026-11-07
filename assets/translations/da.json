@@ -2190,5 +2190,16 @@
   "startup_error_message": "Tjek din forbindelse, og prøv igen. Hvis det fortsætter, så kontakt support.",
   "payment_apple_cash_message_plain": "Jeg betaler dig {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF'en er klar, men nogle tegn vises måske ikke. Gå online og prøv igen for at hente skrifttyperne.",
-  "ad_daily_cap_reached": "Du har set dagens 3 annoncer. Kom tilbage i morgen, skriv regninger ind gratis, eller få Pro for ubegrænsede scanninger."
+  "ad_daily_cap_reached": "Du har set dagens 3 annoncer. Kom tilbage i morgen, skriv regninger ind gratis, eller få Pro for ubegrænsede scanninger.",
+  "bd2_status_sent_confirm": "Sendt · bekræft",
+  "bd2_status_owes": "Skylder {amount}",
+  "bd2_share_pdf": "Del som PDF",
+  "bd2_pdf_paid_by": "Betalt af {name}",
+  "bd2_pdf_items": "Varer",
+  "bd2_pdf_shares": "Hvem skylder hvad",
+  "bd2_pdf_pay_to": "Betal til",
+  "bd2_apple_cash_hint": "Åbner Beskeder for at sende med Apple Cash",
+  "bd2_iou_explainer_short": "En IOU er en note om, at nogen skylder dig penge, uden en regning.",
+  "bd2_iou_explainer_title": "Hvad er en IOU?",
+  "bd2_iou_explainer_body": "En note om, at nogen skylder dig penge, uden en regning. Lånt Ali 200 kr. til en taxa? Tilføj en IOU, så holder Evens styr på det, til han betaler dig tilbage."
 }

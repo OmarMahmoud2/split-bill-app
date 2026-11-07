@@ -5,12 +5,24 @@ import 'package:split_bill_app/utils/image_utils.dart';
 import 'package:split_bill_app/utils/money_format.dart';
 import 'package:split_bill_app/widgets/bill_details/bill_view_logic.dart';
 
-/// Status pill: Paid (teal soft), Check proof (slate/indigo soft), Not yet
-/// (amber soft). The word carries the meaning, the color supports it.
+/// Status pill: Paid (mint), Sent / Check proof (sky), Owes E£x (coral). The word carries the meaning, the color supports it.
 class PayStatusPill extends StatelessWidget {
-  const PayStatusPill({super.key, required this.status, this.self = false});
+  const PayStatusPill({
+    super.key,
+    required this.status,
+    this.self = false,
+    this.hasProof = true,
+    this.owesText,
+  });
 
   final PayStatus status;
+
+  /// False when the payer said "I paid" without attaching a proof: the pill
+  /// then reads "Sent" instead of "Check proof".
+  final bool hasProof;
+
+  /// Formatted amount for the "Owes E£x" wording of the not-yet pill.
+  final String? owesText;
 
   /// Participant's own view ("Waiting" instead of "Check proof").
   final bool self;
@@ -20,14 +32,19 @@ class PayStatusPill extends StatelessWidget {
     final p = context.palette;
     final (bg, ink) = switch (status) {
       PayStatus.paid => (p.accentSoft, p.onAccentSoft),
-      PayStatus.review => (p.infoSoft, p.infoStrong),
-      PayStatus.notYet => (p.oweSoft, p.oweInk),
+      PayStatus.review => (p.skySoft, p.sky),
+      PayStatus.notYet => (p.coralSoft, p.coralText),
     };
+    final label = status == PayStatus.review && !self && !hasProof
+        ? 'bd2_status_sent_confirm'.tr()
+        : status == PayStatus.notYet && owesText != null
+        ? 'bd2_status_owes'.tr(namedArgs: {'amount': owesText!})
+        : (self ? status.selfLabelKey : status.labelKey).tr();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: AppRadii.chipRadius),
       child: Text(
-        (self ? status.selfLabelKey : status.labelKey).tr(),
+        label,
         style: AppTypography.labelSmall.copyWith(
           color: ink,
           fontWeight: FontWeight.w600,
@@ -95,6 +112,7 @@ class ParticipantTile extends StatelessWidget {
     this.photoUrl,
     this.tintKey,
     this.subtitle,
+    this.hasProof = true,
     this.showDivider = false,
     this.onTap,
   });
@@ -108,6 +126,7 @@ class ParticipantTile extends StatelessWidget {
 
   /// Extra muted text after the amount ("reminded 3 days ago").
   final String? subtitle;
+  final bool hasProof;
   final bool showDivider;
   final VoidCallback? onTap;
 
@@ -166,7 +185,11 @@ class ParticipantTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
-              PayStatusPill(status: status),
+              PayStatusPill(
+                status: status,
+                hasProof: hasProof,
+                owesText: amount,
+              ),
             ],
           ),
         ),

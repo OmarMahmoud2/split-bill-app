@@ -2190,5 +2190,16 @@
   "startup_error_message": "接続を確認して、もう一度お試しください。解決しない場合はサポートまでご連絡ください。",
   "payment_apple_cash_message_plain": "Apple Cashで{amount}を支払います",
   "exp_fonts_unavailable": "PDFを作成しましたが、一部の文字が表示されない場合があります。オンラインでもう一度お試しください。",
-  "ad_daily_cap_reached": "今日の広告3回分はすべて視聴済みです。明日またお越しいただくか、無料の手入力をご利用いただくか、Proにして無制限にスキャンしましょう。"
+  "ad_daily_cap_reached": "今日の広告3回分はすべて視聴済みです。明日またお越しいただくか、無料の手入力をご利用いただくか、Proにして無制限にスキャンしましょう。",
+  "bd2_status_sent_confirm": "送信済み・確認",
+  "bd2_status_owes": "{amount}の支払いあり",
+  "bd2_share_pdf": "PDFで共有",
+  "bd2_pdf_paid_by": "支払者: {name}",
+  "bd2_pdf_items": "品目",
+  "bd2_pdf_shares": "誰がいくら払うか",
+  "bd2_pdf_pay_to": "支払い先",
+  "bd2_apple_cash_hint": "メッセージを開いてApple Cashで送金します",
+  "bd2_iou_explainer_short": "IOUは、請求書なしで誰かがあなたに借りていることを記録するメモです。",
+  "bd2_iou_explainer_title": "IOUとは？",
+  "bd2_iou_explainer_body": "請求書なしで誰かがあなたに借りていることを記録するメモです。アリにタクシー代2,000円を貸した？IOUを追加すれば、返してもらうまでEvensが記録します。"
 }

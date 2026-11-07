@@ -163,7 +163,9 @@ class _PayMethodRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final subtitle = entry.prefillsAmount
+    final subtitle = entry.type.id == 'apple_cash'
+        ? 'bd2_apple_cash_hint'.tr()
+        : entry.prefillsAmount
         ? 'bf_bill_pay_amount_filled'.tr()
         : entry.handle;
     return Semantics(

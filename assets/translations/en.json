@@ -2190,5 +2190,16 @@
   "bf_edit_history_you_marked_paid_self": "marked your share paid",
   "groups_paid_by_you": "paid by you",
   "settle_record_cash_body_you_paid": "You paid {to} {amount} outside the app?",
-  "settle_record_cash_body_paid_you": "{from} paid you {amount} outside the app?"
+  "settle_record_cash_body_paid_you": "{from} paid you {amount} outside the app?",
+  "bd2_status_sent_confirm": "Sent · confirm",
+  "bd2_status_owes": "Owes {amount}",
+  "bd2_share_pdf": "Share as PDF",
+  "bd2_pdf_paid_by": "Paid by {name}",
+  "bd2_pdf_items": "Items",
+  "bd2_pdf_shares": "Who owes what",
+  "bd2_pdf_pay_to": "Pay to",
+  "bd2_apple_cash_hint": "Opens Messages to send with Apple Cash",
+  "bd2_iou_explainer_short": "An IOU is a note that someone owes you, without a bill.",
+  "bd2_iou_explainer_title": "What's an IOU?",
+  "bd2_iou_explainer_body": "A note that someone owes you, without a bill. Lent Ali E£200 for a taxi? Add an IOU and Evens keeps track until he pays you back."
 }

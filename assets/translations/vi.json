@@ -2190,5 +2190,16 @@
   "startup_error_message": "Hãy kiểm tra kết nối rồi thử lại. Nếu vẫn lỗi, hãy liên hệ hỗ trợ.",
   "payment_apple_cash_message_plain": "Mình trả bạn {amount} qua Apple Cash",
   "exp_fonts_unavailable": "Đã tạo PDF, nhưng một số ký tự có thể không hiển thị. Hãy kết nối mạng và thử lại để tải phông chữ.",
-  "ad_daily_cap_reached": "Bạn đã xem đủ 3 quảng cáo hôm nay. Hãy quay lại vào ngày mai, tự nhập hóa đơn miễn phí, hoặc nâng cấp Pro để quét không giới hạn."
+  "ad_daily_cap_reached": "Bạn đã xem đủ 3 quảng cáo hôm nay. Hãy quay lại vào ngày mai, tự nhập hóa đơn miễn phí, hoặc nâng cấp Pro để quét không giới hạn.",
+  "bd2_status_sent_confirm": "Đã gửi · xác nhận",
+  "bd2_status_owes": "Nợ {amount}",
+  "bd2_share_pdf": "Chia sẻ dưới dạng PDF",
+  "bd2_pdf_paid_by": "{name} đã trả",
+  "bd2_pdf_items": "Món",
+  "bd2_pdf_shares": "Ai nợ bao nhiêu",
+  "bd2_pdf_pay_to": "Trả cho",
+  "bd2_apple_cash_hint": "Mở Tin nhắn để gửi bằng Apple Cash",
+  "bd2_iou_explainer_short": "IOU là ghi chú rằng ai đó nợ bạn, không cần hóa đơn.",
+  "bd2_iou_explainer_title": "IOU là gì?",
+  "bd2_iou_explainer_body": "Ghi chú rằng ai đó nợ bạn, không cần hóa đơn. Cho Ali mượn 50.000đ đi taxi? Thêm IOU và Evens sẽ theo dõi cho đến khi bạn ấy trả lại."
 }

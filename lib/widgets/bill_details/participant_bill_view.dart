@@ -126,9 +126,7 @@ class ParticipantBillView extends StatelessWidget {
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 0),
           child: _StatusNote(
-            icon: settled
-                ? AppIcons.success
-                : AppIcons.clock,
+            icon: settled ? AppIcons.success : AppIcons.clock,
             text: settled
                 ? 'bf_bill_settled_note'.tr(namedArgs: {'host': firstName})
                 : 'bf_bill_waiting_note'.tr(namedArgs: {'host': firstName}),

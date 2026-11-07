@@ -2190,5 +2190,16 @@
   "startup_error_message": "Controleer je verbinding en probeer het opnieuw. Blijft het gebeuren, neem dan contact op met support.",
   "payment_apple_cash_message_plain": "Ik betaal je {amount} via Apple Cash",
   "exp_fonts_unavailable": "PDF gemaakt, maar sommige tekens worden misschien niet getoond. Ga online en probeer opnieuw om de lettertypen op te halen.",
-  "ad_daily_cap_reached": "Je hebt de 3 advertenties van vandaag al bekeken. Kom morgen terug, voer rekeningen gratis met de hand in, of ga voor Pro met onbeperkt scannen."
+  "ad_daily_cap_reached": "Je hebt de 3 advertenties van vandaag al bekeken. Kom morgen terug, voer rekeningen gratis met de hand in, of ga voor Pro met onbeperkt scannen.",
+  "bd2_status_sent_confirm": "Verstuurd · bevestig",
+  "bd2_status_owes": "Is {amount} verschuldigd",
+  "bd2_share_pdf": "Delen als pdf",
+  "bd2_pdf_paid_by": "Betaald door {name}",
+  "bd2_pdf_items": "Items",
+  "bd2_pdf_shares": "Wie is wat verschuldigd",
+  "bd2_pdf_pay_to": "Betaal aan",
+  "bd2_apple_cash_hint": "Opent Berichten om te sturen met Apple Cash",
+  "bd2_iou_explainer_short": "Een IOU is een notitie dat iemand je geld schuldig is, zonder rekening.",
+  "bd2_iou_explainer_title": "Wat is een IOU?",
+  "bd2_iou_explainer_body": "Een notitie dat iemand je geld schuldig is, zonder rekening. Ali €20 geleend voor een taxi? Voeg een IOU toe en Evens houdt het bij tot hij je terugbetaalt."
 }

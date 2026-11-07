@@ -54,11 +54,7 @@ void main() {
       var rejected = 0;
       await tester.pumpWidget(
         _app(
-          ProofCard(
-            name: 'Ali',
-            onConfirm: () {},
-            onReject: () => rejected++,
-          ),
+          ProofCard(name: 'Ali', onConfirm: () {}, onReject: () => rejected++),
         ),
       );
       await tester.tap(find.text('bf_bill_proof_reject'));
@@ -211,7 +207,7 @@ void main() {
       expect(find.text('PayPal'), findsOneWidget);
       expect(find.text('bf_bill_pay_amount_filled'), findsOneWidget);
       expect(find.text('Apple Cash'), findsOneWidget);
-      expect(find.text('+15551234567'), findsOneWidget);
+      expect(find.text('bd2_apple_cash_hint'), findsOneWidget);
       expect(find.text('bf_bill_pay_open'), findsNWidgets(entries.length));
       expect(find.text('PP'), findsOneWidget);
 
@@ -248,6 +244,29 @@ void main() {
     expect(find.text('bf_bill_status_paid'), findsOneWidget);
     expect(find.text('bf_bill_status_check_proof'), findsOneWidget);
     expect(find.text('bf_bill_status_not_yet'), findsOneWidget);
+  });
+
+  testWidgets('status pill wording: owes, sent, check proof', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        const Column(
+          children: [
+            PayStatusPill(status: PayStatus.notYet, owesText: 'E£400'),
+            PayStatusPill(status: PayStatus.review, hasProof: false),
+            PayStatusPill(
+              status: PayStatus.review,
+              self: true,
+              hasProof: false,
+            ),
+          ],
+        ),
+      ),
+    );
+    expect(find.text('bd2_status_owes'), findsOneWidget);
+    // No proof attached: never "Check proof".
+    expect(find.text('bd2_status_sent_confirm'), findsOneWidget);
+    expect(find.text('bf_bill_status_check_proof'), findsNothing);
+    expect(find.text('bf_bill_status_waiting'), findsOneWidget);
   });
 
   testWidgets('participant view: owe-amber hero, breakdown, pay list, CTA', (
